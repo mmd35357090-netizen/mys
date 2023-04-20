@@ -1,5 +1,5 @@
 import 'package:foap/components/place_picker/entities/entities.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class NearbyPlaceItem extends StatelessWidget {
   final NearbyPlace nearbyPlace;
@@ -20,8 +20,9 @@ class NearbyPlaceItem extends StatelessWidget {
               CachedNetworkImage(imageUrl: nearbyPlace.icon!, width: 16),
               const SizedBox(width: 24),
               Expanded(
-                  child: Text("${nearbyPlace.name}",
-                      style: Theme.of(context).textTheme.titleSmall))
+                  child: Heading6Text(
+                "${nearbyPlace.name}",
+              ))
             ],
           ),
         ),

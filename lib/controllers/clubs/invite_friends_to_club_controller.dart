@@ -5,6 +5,8 @@ import '../../helper/user_profile_manager.dart';
 import '../../model/user_model.dart';
 
 class InviteFriendsToClubController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxList<UserModel> following = <UserModel>[].obs;
   RxList<UserModel> selectedFriends = <UserModel>[].obs;
   String searchText = '';
@@ -26,7 +28,7 @@ class InviteFriendsToClubController extends GetxController {
       isLoading.value = true;
       ApiController()
           .getFollowingUsers(
-              page: page, userId: getIt<UserProfileManager>().user!.id)
+              page: page, userId: _userProfileManager.user.value!.id)
           .then((response) {
         isLoading.value = false;
         following.addAll(response.users);

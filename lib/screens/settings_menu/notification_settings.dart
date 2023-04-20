@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/notification_setting_controller.dart';
 
 class AppNotificationSettings extends StatefulWidget {
   const AppNotificationSettings({Key? key}) : super(key: key);
@@ -10,7 +12,7 @@ class AppNotificationSettings extends StatefulWidget {
 }
 
 class _AppNotificationSettingsState extends State<AppNotificationSettings> {
-  final NotificationSettingController settingController = Get.find();
+  final NotificationSettingController settingController = NotificationSettingController();
 
   @override
   void initState() {
@@ -21,7 +23,7 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -41,20 +43,19 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          BodyLargeText(
                             LocalizationString.turnOffAll,
-                            style: Theme.of(context).textTheme.bodyLarge!
-                                .copyWith(fontWeight: FontWeight.w900),
+                              weight: TextWeight.bold
                           ),
                           settingController.turnOfAll.value == 1
                               ? ThemeIconWidget(
                                   ThemeIcon.selectedRadio,
-                                  color: Theme.of(context).primaryColor,
+                                  color: AppColorConstants.themeColor,
                                 ).ripple(() {
                                   settingController.turnOfAll.value = 0;
                                 })
                               : ThemeIconWidget(ThemeIcon.circleOutline,
-                                      color: Theme.of(context).iconTheme.color)
+                                      color: AppColorConstants.iconColor)
                                   .ripple(() {
                                   settingController.turnOfAll.value = 1;
                                   settingController
@@ -79,10 +80,9 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        BodyLargeText(
           title,
-          style: Theme.of(context).textTheme.bodyLarge!
-              .copyWith(fontWeight: FontWeight.w900),
+            weight: TextWeight.bold
         ),
         const SizedBox(
           height: 10,
@@ -113,17 +113,16 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        BodyLargeText(
           title,
-          style: Theme.of(context).textTheme.bodyLarge,
         ),
         isSelected == true
             ? ThemeIconWidget(
                 ThemeIcon.selectedRadio,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
               )
             : ThemeIconWidget(ThemeIcon.circleOutline,
-                color: Theme.of(context).iconTheme.color)
+                color: AppColorConstants.iconColor)
       ],
     ).vP8.ripple(() {
       settingController.updateNotificationSetting(context: context,

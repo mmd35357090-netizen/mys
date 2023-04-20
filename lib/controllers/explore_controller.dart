@@ -1,5 +1,11 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/controllers/post_controller.dart';
 import 'package:get/get.dart';
+
+import '../apiHandler/api_controller.dart';
+import '../model/hash_tag.dart';
+import '../model/location.dart';
+import '../model/post_search_query.dart';
+import '../model/user_model.dart';
 
 class ExploreController extends GetxController {
   final PostController postController = Get.find<PostController>();

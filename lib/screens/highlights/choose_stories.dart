@@ -1,5 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/highlights_imports.dart';
 
 class ChooseStoryForHighlights extends StatefulWidget {
   const ChooseStoryForHighlights({Key? key}) : super(key: key);
@@ -10,7 +11,7 @@ class ChooseStoryForHighlights extends StatefulWidget {
 }
 
 class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
-  final HighlightsController _highlightsController = Get.find();
+  final HighlightsController _highlightsController = HighlightsController();
 
   final _numberOfColumns = 3;
 
@@ -32,7 +33,7 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -43,7 +44,7 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
             children: [
               ThemeIconWidget(
                 ThemeIcon.close,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 size: 27,
               ).ripple(() {
                 Get.back();
@@ -57,7 +58,7 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
               const Spacer(),
               ThemeIconWidget(
                 ThemeIcon.nextArrow,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 size: 27,
               ).ripple(() {
                 // create highlights
@@ -161,7 +162,7 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                   child: Container(
                     height: 20,
                     width: 20,
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: const ThemeIconWidget(ThemeIcon.checkMark),
                   ).circular)
               : Container()

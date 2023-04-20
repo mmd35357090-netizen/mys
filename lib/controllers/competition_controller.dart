@@ -1,7 +1,17 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import '../apiHandler/api_controller.dart';
+import '../model/competition_model.dart';
+import '../model/post_model.dart';
+import '../screens/competitions/earn_coins_for_contest_popup.dart';
+import '../screens/competitions/video_player_screen.dart';
+import '../screens/home_feed/enlarge_image_view.dart';
+import '../screens/post/select_media.dart';
 
 class CompetitionController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxList<CompetitionModel> current = <CompetitionModel>[].obs;
   RxList<CompetitionModel> completed = <CompetitionModel>[].obs;
   RxList<CompetitionModel> winners = <CompetitionModel>[].obs;
@@ -45,10 +55,11 @@ class CompetitionController extends GetxController {
 
         if (response.competitions.length == response.metaData?.perPage) {
           canLoadMoreCompetition = true;
-          page += 1;
         } else {
           canLoadMoreCompetition = false;
         }
+        page += 1;
+
         callback();
 
         update();
@@ -79,15 +90,13 @@ class CompetitionController extends GetxController {
   loadCompetitionDetail({required int id}) {
     ApiController().getCompetitionsDetail(id).then((response) {
       competition.value = response.competition;
-      print(
-          'modal.competitionPositions ${competition.value!.competitionPositions}');
 
       update();
     });
   }
 
   void joinCompetition(CompetitionModel competition, BuildContext context) {
-    int coin = getIt<UserProfileManager>().user!.coins;
+    int coin = _userProfileManager.user.value!.coins;
 
     if (coin >= competition.joiningFee) {
       AppUtil.checkInternet().then((value) {
@@ -98,14 +107,13 @@ class CompetitionController extends GetxController {
               .then((response) async {
             EasyLoading.dismiss();
             AppUtil.showToast(
-                context: context, message: response.message, isSuccess: true);
+                 message: response.message, isSuccess: true);
             competition.isJoined = 1;
             update();
-            getIt<UserProfileManager>().refreshProfile();
+            _userProfileManager.refreshProfile();
           });
         } else {
           AppUtil.showToast(
-              context: context,
               message: LocalizationString.noInternet,
               isSuccess: false);
         }
@@ -119,7 +127,7 @@ class CompetitionController extends GetxController {
   viewMySubmission(CompetitionModel competition) async {
     var loggedInUserPost = competition.posts
         .where((element) =>
-            element.user.id == getIt<UserProfileManager>().user!.id)
+            element.user.id == _userProfileManager.user.value!.id)
         .toList();
     //User have already published post for this competition
     PostModel postModel = loggedInUserPost.first;

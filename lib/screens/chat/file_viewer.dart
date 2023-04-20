@@ -1,4 +1,4 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class FileViewer extends StatefulWidget {
   final String filePath;

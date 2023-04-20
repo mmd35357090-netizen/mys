@@ -1,6 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
+import 'dart:async';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/screens/add_on/model/verification_request_model.dart';
 
 class RequestVerificationController extends GetxController {
   RxList<VerificationRequest> verificationRequests =
@@ -57,14 +61,12 @@ class RequestVerificationController extends GetxController {
   submitRequest(BuildContext context) async {
     if (documentType.value.text.isEmpty) {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.pleaseSelectDocumentType,
           isSuccess: false);
       return;
     }
     if (selectedImages.isEmpty) {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.pleaseUploadProof,
           isSuccess: false);
       return;
@@ -95,7 +97,6 @@ class RequestVerificationController extends GetxController {
       EasyLoading.dismiss();
       if (response.success) {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.verificationRequestSent,
             isSuccess: true);
 
@@ -105,7 +106,6 @@ class RequestVerificationController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.errorMessage,
             isSuccess: false);
         Get.back();

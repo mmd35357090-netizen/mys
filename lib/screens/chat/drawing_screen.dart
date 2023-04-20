@@ -1,6 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:typed_data';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import '../../util/constant_util.dart';
 
 class DrawingScreen extends StatefulWidget {
   const DrawingScreen({Key? key}) : super(key: key);
@@ -111,12 +114,11 @@ class _DrawingScreenState extends State<DrawingScreen> {
               height: strokeWidth * 2,
               color: Colors.black,
             ).borderWithRadius(
-                context: context,
                 value: _drawingBoardController.selectedStrokeWidth.value ==
                         strokeWidth
                     ? 5
                     : 0,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 radius: strokeWidth + 5)),
       ),
     );
@@ -158,9 +160,9 @@ class _DrawingScreenState extends State<DrawingScreen> {
         Container(
           height: 30,
           width: 30,
-          color: Theme.of(context).backgroundColor,
+          color: AppColorConstants.backgroundColor,
           child: const ThemeIconWidget(ThemeIcon.edit),
-        ).borderWithRadius(context: context, value: 5, radius: 1),
+        ).borderWithRadius(value: 5, radius: 1),
         SizedBox(
           width: MediaQuery.of(context).size.width - 80,
           height: 50,
@@ -184,7 +186,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
           height: 30,
           width: 30,
           color: Colors.white,
-        ).borderWithRadius(context: context, value: 5, radius: 1),
+        ).borderWithRadius(value: 5, radius: 1),
         SizedBox(
           width: MediaQuery.of(context).size.width - 80,
           height: 50,
@@ -236,11 +238,10 @@ class _DrawingScreenState extends State<DrawingScreen> {
               : 40,
           color: color,
         ).border(
-            context: context,
             value: _drawingBoardController.selectedStrokeColor.value == color
                 ? 5
                 : 0,
-            color: Theme.of(context).primaryColor)).ripple(() {
+            color: AppColorConstants.themeColor)).ripple(() {
       _drawingController.setStyle(color: color);
       _drawingBoardController.setStrokeColor(color);
     });
@@ -257,12 +258,11 @@ class _DrawingScreenState extends State<DrawingScreen> {
           height: 40,
           color: color,
         ).border(
-            context: context,
             value:
                 _drawingBoardController.selectedBackgroundColor.value == color
                     ? 5
                     : 0,
-            color: Theme.of(context).primaryColor)).ripple(() {
+            color: AppColorConstants.themeColor)).ripple(() {
       _drawingBoardController.setBackgroundColor(color);
     });
   }

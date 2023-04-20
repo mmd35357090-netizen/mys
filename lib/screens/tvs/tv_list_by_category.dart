@@ -1,7 +1,9 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/screens/tvs/tv_channel_detail.dart';
-import 'package:get/get.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/tv_imports.dart';
 import 'package:foap/model/live_tv_model.dart';
+import 'package:get/get.dart';
+
+import '../../model/category_model.dart';
 
 
 class TvListByCategory extends StatefulWidget {
@@ -27,7 +29,7 @@ class _TvListByCategoryState extends State<TvListByCategory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
@@ -37,7 +39,7 @@ class _TvListByCategoryState extends State<TvListByCategory> {
                   sliver: SliverPadding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     sliver: SliverAppBar(
-                      backgroundColor: Theme.of(context).backgroundColor,
+                      backgroundColor: AppColorConstants.backgroundColor,
                       expandedHeight: 200.0,
                       floating: true,
                       pinned: true,
@@ -45,7 +47,7 @@ class _TvListByCategoryState extends State<TvListByCategory> {
                       leading: ThemeIconWidget(
                         ThemeIcon.backArrow,
                         size: 18,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                       ).ripple(() {
                         Get.back();
                       }),

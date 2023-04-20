@@ -1,7 +1,15 @@
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
 
+import '../../apiHandler/api_controller.dart';
+import '../../manager/db_manager.dart';
 import '../../model/club_join_request.dart';
+import '../../model/club_model.dart';
+import '../../model/post_model.dart';
+import '../../model/post_search_query.dart';
+import '../../screens/dashboard/posts.dart';
+import '../../screens/profile/other_user_profile.dart';
+import '../chat_and_call/chat_detail_controller.dart';
 
 class ClubDetailController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();

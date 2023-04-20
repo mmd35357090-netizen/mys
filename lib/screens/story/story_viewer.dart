@@ -1,5 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/story_imports.dart';
 import 'package:get/get.dart';
+import 'package:keyboard_attachable/keyboard_attachable.dart';
+import 'package:story_view/utils.dart';
+
+import '../../universal_components/rounded_input_field.dart';
+import '../profile/my_profile.dart';
+import '../profile/other_user_profile.dart';
+import '../settings_menu/settings_controller.dart';
 
 class StoryViewer extends StatefulWidget {
   final StoryModel story;
@@ -14,8 +22,9 @@ class StoryViewer extends StatefulWidget {
 
 class _StoryViewerState extends State<StoryViewer> {
   final controller = StoryController();
-  final AppStoryController storyController = Get.find();
+  final AppStoryController storyController = AppStoryController();
   final SettingsController settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -25,7 +34,7 @@ class _StoryViewerState extends State<StoryViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       resizeToAvoidBottomInset: false,
       body: storyWidget(),
     );
@@ -86,7 +95,7 @@ class _StoryViewerState extends State<StoryViewer> {
         // backgroundColor: Colors.blue,
         child: Container(
           height: 60,
-          color: Theme.of(context).primaryColor,
+          color: AppColorConstants.themeColor,
           child: Row(
             children: [
               Expanded(
@@ -96,7 +105,7 @@ class _StoryViewerState extends State<StoryViewer> {
               ),
               ThemeIconWidget(
                 ThemeIcon.send,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
               )
             ],
           ).hP25,
@@ -121,18 +130,17 @@ class _StoryViewerState extends State<StoryViewer> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                BodyMediumText(
                   widget.story.userName,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w600, color: Colors.white),
+    weight: TextWeight.medium,
+    color: Colors.white
+
                 ),
                 Obx(() => storyController.storyMediaModel.value != null
-                    ? Text(
+                    ? BodyMediumText(
                         storyController.storyMediaModel.value!.createdAt,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(color: Colors.white70),
+                        color: AppColorConstants.grayscale100,
+
                       )
                     : Container())
               ],
@@ -140,13 +148,13 @@ class _StoryViewerState extends State<StoryViewer> {
           ],
         ),
         if (widget.story.media.first.userId ==
-            getIt<UserProfileManager>().user!.id)
+            _userProfileManager.user.value!.id)
           SizedBox(
             height: 25,
             width: 40,
             child: ThemeIconWidget(
               ThemeIcon.more,
-              color: Theme.of(context).iconTheme.color,
+              color: AppColorConstants.iconColor,
               size: 20,
             ).ripple(() {
               openActionPopup();
@@ -155,7 +163,7 @@ class _StoryViewerState extends State<StoryViewer> {
       ],
     ).ripple(() {
       int userId = widget.story.media.first.userId;
-      if (userId == getIt<UserProfileManager>().user!.id) {
+      if (userId == _userProfileManager.user.value!.id) {
         Get.to(() => const MyProfile(showBack: true));
       } else {
         Get.to(() => OtherUserProfile(
@@ -173,7 +181,7 @@ class _StoryViewerState extends State<StoryViewer> {
         builder: (context) => Wrap(
               children: [
                 ListTile(
-                    title: Center(child: Text(LocalizationString.deleteStory)),
+                    title: Center(child: BodyLargeText(LocalizationString.deleteStory)),
                     onTap: () async {
                       Get.back();
                       controller.play();
@@ -184,7 +192,7 @@ class _StoryViewerState extends State<StoryViewer> {
                     }),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () {
                       controller.play();
                       Get.back();
@@ -200,7 +208,7 @@ class _StoryViewerState extends State<StoryViewer> {
 //     children: [
 //       Text(
 //         widget.story.title,
-//         style: Theme.of(context).textTheme.bodyLarge.bold,
+//         style: TextStyle(fontSize: FontSizes.b2).bold,
 //         textAlign: TextAlign.center,
 //       ).hP16,
 //       divider(height: 0.5, color: AppTheme.dividerColor).tP16,

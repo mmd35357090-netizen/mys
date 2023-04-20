@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:ripple_wave/ripple_wave.dart';
 
 class FindRandomUser extends StatefulWidget {
   final bool isCalling;
@@ -14,7 +16,7 @@ class FindRandomUser extends StatefulWidget {
 }
 
 class _FindRandomUserState extends State<FindRandomUser> {
-  final RandomChatAndCallController _randomChatAndCallController = Get.find();
+  final RandomChatAndCallController _randomChatAndCallController = RandomChatAndCallController();
   final ChatDetailController _chatDetailController = Get.find();
 
   @override
@@ -33,7 +35,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -49,7 +51,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
                       height: 100,
                     ),
                     RippleWave(
-                      color: Theme.of(context).primaryColor,
+                      color: AppColorConstants.themeColor,
                       childTween: Tween(begin: 0.2, end: 1),
                       child: const Icon(
                         Icons.emoji_emotions,
@@ -60,12 +62,9 @@ class _FindRandomUserState extends State<FindRandomUser> {
                     const SizedBox(
                       height: 150,
                     ),
-                    Text(
+                    Heading3Text(
                       LocalizationString.findingPerfectUserToChat,
-                      style: Theme.of(context)
-                          .textTheme
-                          .displayMedium!
-                          .copyWith(fontWeight: FontWeight.w200),
+                      weight: TextWeight.regular,
                       textAlign: TextAlign.center,
                     ).hP25,
                   ],
@@ -79,13 +78,10 @@ class _FindRandomUserState extends State<FindRandomUser> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Text(
+                    Heading4Text(
                       _randomChatAndCallController
                           .randomOnlineUser.value!.userName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .displaySmall!
-                          .copyWith(fontWeight: FontWeight.w900),
+                      weight: TextWeight.bold,
                     ),
                     const SizedBox(
                       height: 50,
@@ -95,7 +91,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
                         : SizedBox(
                             height: 50,
                             width: 250,
-                            child: FilledButtonType1(
+                            child: AppThemeButton(
                                 text: LocalizationString.chat,
                                 onPress: () {
                                   EasyLoading.show(
@@ -137,16 +133,13 @@ class _FindRandomUserState extends State<FindRandomUser> {
               const SizedBox(
                 height: 5,
               ),
-              Text(
+              BodyMediumText(
                 LocalizationString.audio,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium
               ),
             ],
           ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
-        ).round(10).shadow(context: context, shadowOpacity: 0.1).ripple(() {
+        ).round(10).backgroundCard( shadowOpacity: 0.1).ripple(() {
           audioCall();
         }),
         const SizedBox(
@@ -162,16 +155,13 @@ class _FindRandomUserState extends State<FindRandomUser> {
               const SizedBox(
                 height: 5,
               ),
-              Text(
+              BodyMediumText(
                 LocalizationString.video,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium
               ),
             ],
           ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
-        ).round(10).shadow(context: context, shadowOpacity: 0.1).ripple(() {
+        ).round(10).backgroundCard( shadowOpacity: 0.1).ripple(() {
           videoCall();
         }),
       ],

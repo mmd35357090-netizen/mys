@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class InputField extends StatefulWidget {
   final String? label;
@@ -108,22 +108,22 @@ class _InputFieldState extends State<InputField> {
 
   @override
   Widget build(BuildContext context) {
-    cursorColor = widget.cursorColor ?? Theme.of(context).iconTheme.color!;
+    cursorColor = widget.cursorColor ?? AppColorConstants.iconColor;
 
     return Container(
       decoration: BoxDecoration(
         color: isError == false
             ? backgroundColor
             : (showDivider == false && showBorder == false)
-                ? Theme.of(context).errorColor
+                ? AppColorConstants.red
                 : backgroundColor,
         borderRadius: BorderRadius.circular(cornerRadius ?? 0),
         border: showBorder == true
             ? Border.all(
                 width: 0.5,
                 color: isError == true
-                    ? Theme.of(context).errorColor
-                    : borderColor ?? Theme.of(context).dividerColor)
+                    ? AppColorConstants.red
+                    : borderColor ?? AppColorConstants.dividerColor)
             : null,
       ),
       // margin: EdgeInsets.symmetric(vertical: 5),
@@ -138,22 +138,12 @@ class _InputFieldState extends State<InputField> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           (label != null && showLabelInNewLine == true)
-              ? Text(label!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontWeight: FontWeight.w600))
-                  .bP4
+              ? BodyMediumText(label!, weight: TextWeight.medium).bP4
               : Container(),
           Row(
             children: [
               (label != null && showLabelInNewLine == false)
-                  ? Text(label!,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(fontWeight: FontWeight.w600))
-                      .bP4
+                  ? BodyMediumText(label!, weight: TextWeight.medium).bP4
                   : Container(),
               iconOnRightSide == false ? iconView() : Container(),
               Expanded(
@@ -165,7 +155,9 @@ class _InputFieldState extends State<InputField> {
                         : TextInputType.text,
                     textAlign: TextAlign.left,
                     style: widget.textStyle ??
-                        Theme.of(context).textTheme.bodyMedium!,
+                        TextStyle(
+                            fontSize: FontSizes.h6,
+                            color: AppColorConstants.grayscale900),
                     onChanged: widget.onChanged,
                     maxLines: maxLines,
                     decoration: InputDecoration(
@@ -175,9 +167,12 @@ class _InputFieldState extends State<InputField> {
                             const EdgeInsets.only(left: 10, right: 10),
                         counterText: "",
                         // labelText: hintText,
-                        labelStyle: Theme.of(context).textTheme.bodyLarge,
-                        hintStyle: widget.textStyle ??
-                            Theme.of(context).textTheme.bodyMedium!,
+                        labelStyle: TextStyle(
+                            fontSize: FontSizes.b2,
+                            color: AppColorConstants.grayscale700),
+                        hintStyle: TextStyle(
+                            fontSize: FontSizes.h6,
+                            color: AppColorConstants.grayscale500),
                         hintText: hintText),
                   ),
                   onFocusChange: (hasFocus) {
@@ -200,17 +195,17 @@ class _InputFieldState extends State<InputField> {
         ? Container(
             height: 0.5,
             color: startedEditing == true
-                ? Theme.of(context).primaryColor
+                ? AppColorConstants.themeColor
                 : isError == true
-                    ? Theme.of(context).errorColor
-                    : Theme.of(context).dividerColor)
+                    ? AppColorConstants.red
+                    : AppColorConstants.dividerColor)
         : Container();
   }
 
   Widget iconView() {
     return icon != null
         ? ThemeIconWidget(icon!,
-                color: iconColor ?? Theme.of(context).primaryColor, size: 20)
+                color: iconColor ?? AppColorConstants.themeColor, size: 20)
             .rP16
         : Container();
   }
@@ -261,7 +256,7 @@ class _InputPriceFieldState extends State<InputPriceField> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).backgroundColor,
+        color: AppColorConstants.backgroundColor,
         borderRadius: BorderRadius.circular(5),
       ),
       height: 80,
@@ -269,24 +264,19 @@ class _InputPriceFieldState extends State<InputPriceField> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           widget.label != null
-              ? Text(widget.label!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontWeight: FontWeight.w600))
-                  .bP8
+              ? BodyMediumText(
+                  widget.label!,
+                  weight: TextWeight.medium,
+                ).bP8
               : Container(),
           Row(
             children: [
               Row(
                 children: [
-                  Text(
-                    widget.currencyText ?? "+1",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900),
-                  ).hP8.ripple(() {
+                  BodyLargeText(widget.currencyText ?? "+1",
+                          weight: TextWeight.bold)
+                      .hP8
+                      .ripple(() {
                     showCurrencyPicker(
                       context: context,
                       showFlag: true,
@@ -306,17 +296,17 @@ class _InputPriceFieldState extends State<InputPriceField> {
               Container(
                 width: 1,
                 height: 20,
-                color: Theme.of(context).dividerColor,
+                color: AppColorConstants.dividerColor,
               ).hP16,
               Expanded(
                   child: TextField(
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: TextStyle(fontSize: FontSizes.b3),
                 controller: widget.controller,
                 onChanged: widget.onChanged,
                 keyboardType: TextInputType.number,
-                cursorColor: Theme.of(context).iconTheme.color,
+                cursorColor: AppColorConstants.iconColor,
                 decoration: InputDecoration(
-                  hintStyle: Theme.of(context).textTheme.bodyMedium,
+                  hintStyle: TextStyle(fontSize: FontSizes.b3),
                   hintText: widget.hintText,
                   border: InputBorder.none,
                 ),
@@ -364,7 +354,7 @@ class _DropDownFieldState extends State<DropDownField> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: widget.backgroundColor ?? Theme.of(context).backgroundColor,
+        color: widget.backgroundColor ?? AppColorConstants.backgroundColor,
         borderRadius: BorderRadius.circular(5),
       ),
       height: 60,
@@ -373,12 +363,7 @@ class _DropDownFieldState extends State<DropDownField> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           widget.label != null
-              ? Text(widget.label!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontWeight: FontWeight.w600))
-                  .bP8
+              ? BodyMediumText(widget.label!, weight: TextWeight.medium).bP8
               : Container(),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -388,12 +373,12 @@ class _DropDownFieldState extends State<DropDownField> {
                 absorbing: true,
                 child: TextField(
                   readOnly: true,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: TextStyle(fontSize: FontSizes.b3),
                   controller: widget.controller,
                   keyboardType: TextInputType.number,
-                  cursorColor: Theme.of(context).iconTheme.color,
+                  cursorColor: AppColorConstants.iconColor,
                   decoration: InputDecoration(
-                    hintStyle: Theme.of(context).textTheme.bodyMedium,
+                    hintStyle: TextStyle(fontSize: FontSizes.b3),
                     hintText: widget.hintText,
                     border: InputBorder.none,
                   ),
@@ -401,7 +386,7 @@ class _DropDownFieldState extends State<DropDownField> {
               )),
               ThemeIconWidget(
                 ThemeIcon.downArrow,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 25,
               ),
               const SizedBox(
@@ -485,8 +470,8 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
 
   @override
   Widget build(BuildContext context) {
-    cursorColor = widget.cursorColor ?? Theme.of(context).iconTheme.color;
-    textStyle = widget.textStyle ?? Theme.of(context).textTheme.titleMedium;
+    cursorColor = widget.cursorColor ?? AppColorConstants.iconColor;
+    // textStyle = widget.textStyle ?? TextStyle(fontSize: FontSizes.h5);
     return Container(
       // color:Colors.red,
       // margin: EdgeInsets.symmetric(vertical: 5),
@@ -495,15 +480,15 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
         color: isError == false
             ? backgroundColor
             : (showDivider == false && showBorder == false)
-                ? Theme.of(context).errorColor
+                ? AppColorConstants.red
                 : backgroundColor,
         borderRadius: BorderRadius.circular(cornerRadius ?? 0),
         border: showBorder == true
             ? Border.all(
                 width: 0.5,
                 color: isError == true
-                    ? Theme.of(context).errorColor
-                    : borderColor ?? Theme.of(context).dividerColor)
+                    ? AppColorConstants.red
+                    : borderColor ?? AppColorConstants.dividerColor)
             : null,
       ),
       height: widget.label != null ? 72 : 60,
@@ -512,16 +497,11 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           widget.label != null
-              ? Text(widget.label!,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontWeight: FontWeight.w600))
+              ? BodyMediumText(widget.label!, weight: TextWeight.medium)
               : Container(),
           Row(children: [
-            Text(
+            BodyLargeText(
               '${widget.phoneCodeText}',
-              style: textStyle,
             ).hP8.ripple(() {
               showCountryPicker(
                 context: context,
@@ -538,7 +518,7 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
             Container(
               width: 0.5,
               height: 20,
-              color: Theme.of(context).dividerColor,
+              color: AppColorConstants.dividerColor,
             ).hP8,
             Expanded(
               child: SizedBox(
@@ -548,7 +528,9 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
                       controller: controller,
                       keyboardType: TextInputType.phone,
                       textAlign: TextAlign.left,
-                      style: textStyle,
+                      style: TextStyle(
+                          fontSize: FontSizes.h6,
+                          color: AppColorConstants.grayscale900),
                       onChanged: widget.onChanged,
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -556,11 +538,10 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
                               const EdgeInsets.only(left: 10, right: 10),
                           counterText: "",
                           // labelText: hintText,
-                          // labelStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor),
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(color: Theme.of(context).primaryColor),
+                          // labelStyle: TextStyle(fontSize: FontSizes.b2)!.copyWith(color: ColorConstants.themeColor),
+                          hintStyle: TextStyle(
+                              fontSize: FontSizes.h6,
+                              color: AppColorConstants.grayscale600),
                           hintText: hintText),
                     ),
                     onFocusChange: (hasFocus) {
@@ -581,10 +562,10 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
         ? Container(
             height: 0.5,
             color: startedEditing == true
-                ? Theme.of(context).primaryColor
+                ? AppColorConstants.themeColor
                 : isError == true
-                    ? Theme.of(context).errorColor
-                    : Theme.of(context).dividerColor)
+                    ? AppColorConstants.red
+                    : AppColorConstants.dividerColor)
         : Container();
   }
 }
@@ -634,26 +615,21 @@ class _InputDateFieldState extends State<InputDateField> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           widget.label != null
-              ? Text(widget.label!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontWeight: FontWeight.w600))
-                  .bP8
+              ? BodyMediumText(widget.label!, weight: TextWeight.medium).bP8
               : Container(),
           Container(
             width: 80,
             height: 50,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: TextField(
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: TextStyle(fontSize: FontSizes.b3),
               textAlign: TextAlign.center,
               controller: controller,
               // onChanged: onChanged,
-              cursorColor: Theme.of(context).iconTheme.color,
+              cursorColor: AppColorConstants.iconColor,
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: Theme.of(context).textTheme.bodyMedium,
+                hintStyle: TextStyle(fontSize: FontSizes.b3),
                 border: InputBorder.none,
               ),
               readOnly: true,
@@ -729,25 +705,20 @@ class _RoundedInputDateTimeFieldState extends State<RoundedInputDateTimeField> {
       child: Column(
         children: [
           widget.label != null
-              ? Text(widget.label!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontWeight: FontWeight.w600))
-                  .bP8
+              ? BodyMediumText(widget.label!, weight: TextWeight.medium).bP8
               : Container(),
           Container(
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: Center(
               child: TextField(
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: TextStyle(fontSize: FontSizes.b3),
                 textAlign: TextAlign.left,
                 controller: controller,
                 // onChanged: onChanged,
-                cursorColor: Theme.of(context).iconTheme.color,
+                cursorColor: AppColorConstants.iconColor,
                 decoration: InputDecoration(
                   hintText: hintText,
-                  hintStyle: Theme.of(context).textTheme.bodyMedium,
+                  hintStyle: TextStyle(fontSize: FontSizes.b3),
                   border: InputBorder.none,
                 ),
                 readOnly: true,
@@ -791,20 +762,20 @@ class DropdownBorderedField extends StatefulWidget {
 
   final TextStyle? textStyle;
 
-  const DropdownBorderedField({
-    Key? key,
-    this.hintText,
-    this.controller,
-    this.icon,
-    this.iconColor,
-    this.iconOnRightSide = false,
-    this.backgroundColor,
-    this.showBorder = false,
-    this.borderColor,
-    this.cornerRadius = 0,
-    this.textStyle,
-    this.onTap
-  }) : super(key: key);
+  const DropdownBorderedField(
+      {Key? key,
+      this.hintText,
+      this.controller,
+      this.icon,
+      this.iconColor,
+      this.iconOnRightSide = false,
+      this.backgroundColor,
+      this.showBorder = false,
+      this.borderColor,
+      this.cornerRadius = 0,
+      this.textStyle,
+      this.onTap})
+      : super(key: key);
 
   @override
   State<DropdownBorderedField> createState() => _DropdownBorderedState();
@@ -844,7 +815,7 @@ class _DropdownBorderedState extends State<DropdownBorderedField> {
         border: showBorder == true
             ? Border.all(
                 width: 0.5,
-                color: borderColor ?? Theme.of(context).dividerColor)
+                color: borderColor ?? AppColorConstants.dividerColor)
             : null,
       ),
       height: 60,
@@ -859,17 +830,23 @@ class _DropdownBorderedState extends State<DropdownBorderedField> {
                     ? TextInputType.emailAddress
                     : TextInputType.text,
                 textAlign: TextAlign.left,
-                style:
-                    widget.textStyle ?? Theme.of(context).textTheme.bodyMedium!,
+                style: widget.textStyle ??
+                    TextStyle(
+                        fontSize: FontSizes.b3,
+                        color: AppColorConstants.grayscale900),
                 decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.only(left: 10, right: 10),
                     counterText: "",
                     // labelText: hintText,
-                    labelStyle: Theme.of(context).textTheme.bodyLarge,
+                    labelStyle: TextStyle(
+                        fontSize: FontSizes.b2,
+                        color: AppColorConstants.grayscale900),
                     hintStyle: widget.textStyle ??
-                        Theme.of(context).textTheme.bodyMedium!,
+                        TextStyle(
+                            fontSize: FontSizes.b3,
+                            color: AppColorConstants.grayscale900),
                     hintText: hintText),
               )),
         ),
@@ -883,7 +860,7 @@ class _DropdownBorderedState extends State<DropdownBorderedField> {
   Widget iconView() {
     return icon != null
         ? ThemeIconWidget(icon!,
-                color: iconColor ?? Theme.of(context).primaryColor, size: 20)
+                color: iconColor ?? AppColorConstants.themeColor, size: 20)
             .rP16
         : Container();
   }

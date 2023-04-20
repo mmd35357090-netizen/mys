@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class DrawingBoardController extends GetxController {
   RxDouble selectedStrokeWidth = 2.toDouble().obs;

@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class ReplyOriginalMessageTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -17,19 +18,16 @@ class ReplyOriginalMessageTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              BodyLargeText(
                 message.isMineMessage
                     ? LocalizationString.you
                     : message.userName,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).primaryColor.darken(0.5)),
+                weight: TextWeight.bold,
+                color: AppColorConstants.themeColor.darken(0.5),
               ),
               const SizedBox(height: 15),
-
               messageTypeShortInfo(
                 message: message,
-                context: context,
               )
             ],
           ).p8,

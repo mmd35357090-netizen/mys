@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/settings_menu/settings_controller.dart';
 import 'package:get/get.dart';
 
 class ChangeLanguage extends StatefulWidget {
@@ -20,7 +21,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -40,9 +41,8 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                               _settingsController.languagesList[index];
                           return Row(
                             children: [
-                              Text(
+                              BodyLargeText(
                                 language['language_name']!,
-                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               const Spacer(),
                               _settingsController.currentLanguage.value ==
@@ -50,7 +50,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                                   ? ThemeIconWidget(
                                       ThemeIcon.checkMarkWithCircle,
                                       size: 20,
-                                      color: Theme.of(context).primaryColor,
+                                      color: AppColorConstants.themeColor,
                                     )
                                   : Container()
                             ],

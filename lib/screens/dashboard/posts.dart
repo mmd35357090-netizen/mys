@@ -1,5 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+import '../../components/post_card.dart';
+import '../../controllers/post_controller.dart';
+import '../../model/post_model.dart';
+import '../../model/post_search_query.dart';
+import '../post/view_post_insight.dart';
+import '../settings_menu/notifications.dart';
 
 class Posts extends StatefulWidget {
   final String? hashTag;
@@ -76,7 +84,7 @@ class _PostsState extends State<Posts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -88,7 +96,7 @@ class _PostsState extends State<Posts> {
               children: [
                 ThemeIconWidget(
                   ThemeIcon.backArrow,
-                  color: Theme.of(context).iconTheme.color,
+                  color: AppColorConstants.iconColor,
                   size: 25,
                 ).ripple(() {
                   Get.back();
@@ -102,7 +110,7 @@ class _PostsState extends State<Posts> {
                 const Spacer(),
                 ThemeIconWidget(
                   ThemeIcon.notification,
-                  color: Theme.of(context).iconTheme.color,
+                  color: AppColorConstants.iconColor,
                   size: 25,
                 ).ripple(() {
                   Get.to(() => const NotificationsScreen());
@@ -142,7 +150,7 @@ class _PostsState extends State<Posts> {
       return _postController.isLoadingPosts
           ? const HomeScreenShimmer()
           : posts.isEmpty
-              ? Center(child: Text(LocalizationString.noData))
+              ? Center(child: BodyLargeText(LocalizationString.noData))
               : ScrollablePositionedList.builder(
                   itemScrollController: itemScrollController,
                   itemPositionsListener: itemPositionsListener,
@@ -158,12 +166,9 @@ class _PostsState extends State<Posts> {
                               _postController.postTextTapHandler(
                                   post: model, text: text);
                             },
-                            // mediaTapHandler: (post){
-                            //   Get.to(()=> PostMediaFullScreen(post: post));
-                            // },
-                            // likeTapHandler: () {
-                            //   postController.likeUnlikePost(model, context);
-                            // },
+                            viewInsightHandler: () {
+                              Get.to(() => ViewPostInsights(post: model));
+                            },
                             removePostHandler: () {
                               _postController.removePostFromList(model);
                             },

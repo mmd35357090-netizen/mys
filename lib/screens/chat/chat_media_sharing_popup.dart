@@ -1,7 +1,18 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_contacts/contact.dart';
 import 'package:foap/components/place_picker/place_picker.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/file_extension.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/drawing_screen.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:giphy_get/giphy_get.dart';
+
+import '../../model/location.dart';
+import '../../util/constant_util.dart';
+import '../settings_menu/settings_controller.dart';
 
 class SharingMediaType {
   ThemeIcon icon;
@@ -96,7 +107,7 @@ class _ChatMediaSharingOptionPopupState
       children: [
         Expanded(
           child: Container(
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: GridView.builder(
                 itemCount: mediaTypes.length,
                 padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
@@ -112,7 +123,7 @@ class _ChatMediaSharingOptionPopupState
                       Container(
                           height: 40,
                           width: 40,
-                          color: Theme.of(context).cardColor.darken(),
+                          color: AppColorConstants.cardColor.darken(),
                           child: ThemeIconWidget(
                             mediaTypes[index].icon,
                             size: 18,
@@ -120,9 +131,8 @@ class _ChatMediaSharingOptionPopupState
                       const SizedBox(
                         height: 10,
                       ),
-                      Text(
+                      BodyMediumText(
                         mediaTypes[index].text,
-                        style: Theme.of(context).textTheme.bodyMedium,
                       )
                     ],
                   ).ripple(() {
@@ -139,11 +149,11 @@ class _ChatMediaSharingOptionPopupState
           child: Container(
             height: 50,
             width: 50,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: Center(
               child: ThemeIconWidget(
                 ThemeIcon.close,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 25,
               ),
             ),

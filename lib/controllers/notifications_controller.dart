@@ -1,6 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/model/notification_modal.dart';
 import 'package:get/get.dart';
-
 class NotificationController extends GetxController {
   RxList<NotificationModel> notifications = <NotificationModel>[].obs;
 

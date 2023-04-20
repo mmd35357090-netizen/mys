@@ -1,16 +1,17 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
 
 class MediaListViewer extends StatefulWidget {
   final ChatRoomModel chatRoom;
   final List<ChatMessageModel> medias;
   final int startFrom;
 
-  const MediaListViewer(
-      {Key? key,
-      required this.medias,
-      required this.chatRoom,
-      required this.startFrom})
+  const MediaListViewer({Key? key,
+    required this.medias,
+    required this.chatRoom,
+    required this.startFrom})
       : super(key: key);
 
   @override
@@ -18,7 +19,7 @@ class MediaListViewer extends StatefulWidget {
 }
 
 class _MediaListViewerState extends State<MediaListViewer> {
-  final MediaListViewerController mediaListViewerController = Get.find();
+  final MediaListViewerController mediaListViewerController = MediaListViewerController();
 
   @override
   void initState() {
@@ -36,66 +37,72 @@ class _MediaListViewerState extends State<MediaListViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: SizedBox(
           child: Column(
-        children: [
-          const SizedBox(
-            height: 50,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ThemeIconWidget(
-                ThemeIcon.backArrow,
-                color: Theme.of(context).iconTheme.color,
-                size: 20,
-              ).p8.ripple(() {
-                Get.back();
-              }),
-              Text(
-                LocalizationString.media,
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w900).copyWith(color: Theme.of(context).primaryColor),
+              const SizedBox(
+                height: 50,
               ),
-              ThemeIconWidget(
-                ThemeIcon.delete,
-                size: 25,
-                color: Theme.of(context).iconTheme.color,
-              ).ripple(() {
-                mediaListViewerController.deleteMessage(
-                    inChatRoom: widget.chatRoom);
-              })
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ThemeIconWidget(
+                    ThemeIcon.backArrow,
+                    color: AppColorConstants.iconColor,
+                    size: 20,
+                  ).p8.ripple(() {
+                    Get.back();
+                  }),
+                  Heading5Text(
+                    LocalizationString.media,
+                    weight: TextWeight.bold,
+                    color: AppColorConstants.themeColor,
+                  ),
+                  ThemeIconWidget(
+                    ThemeIcon.delete,
+                    size: 25,
+                    color: AppColorConstants.iconColor,
+                  ).ripple(() {
+                    mediaListViewerController.deleteMessage(
+                        inChatRoom: widget.chatRoom);
+                  })
+                ],
+              ).hP16,
+              divider(context: context).vP8,
+              GetBuilder<MediaListViewerController>(
+                  init: mediaListViewerController,
+                  builder: (ctx) {
+                    return CarouselSlider(
+                      items: addImages(),
+                      options: CarouselOptions(
+                          enlargeCenterPage: false,
+                          enableInfiniteScroll: false,
+                          height: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.8,
+                          viewportFraction: 1,
+                          onPageChanged: (index, reason) {
+                            mediaListViewerController.setCurrentMediaIndex(
+                                index);
+                          },
+                          initialPage: widget.startFrom),
+                    );
+                  }),
             ],
-          ).hP16,
-          divider(context: context).vP8,
-          GetBuilder<MediaListViewerController>(
-              init: mediaListViewerController,
-              builder: (ctx) {
-                return CarouselSlider(
-                  items: addImages(),
-                  options: CarouselOptions(
-                      enlargeCenterPage: false,
-                      enableInfiniteScroll: false,
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      viewportFraction: 1,
-                      onPageChanged: (index, reason) {
-                        mediaListViewerController.setCurrentMediaIndex(index);
-                      },
-                      initialPage: widget.startFrom),
-                );
-              }),
-        ],
-      )),
+          )),
     );
   }
 
   List<Widget> addImages() {
     return widget.medias
-        .map((item) => MessageImage(
-              message: item,
-              fitMode: BoxFit.contain,
-              disableRoundCorner: true,
-            ))
+        .map((item) =>
+        MessageImage(
+          message: item,
+          fitMode: BoxFit.contain,
+          disableRoundCorner: true,
+        ))
         .toList();
   }
 }

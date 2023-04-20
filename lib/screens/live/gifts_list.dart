@@ -1,5 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/gift_controller.dart';
+import '../../model/gift_model.dart';
+import '../../segmentAndMenu/horizontal_menu.dart';
+import '../settings_menu/coin_packages_widget.dart';
 
 class GiftsPageView extends StatefulWidget {
   final Function(GiftModel) giftSelectedCompletion;
@@ -12,6 +17,8 @@ class GiftsPageView extends StatefulWidget {
 }
 
 class _GiftsPageViewState extends State<GiftsPageView> {
+  final UserProfileManager _userProfileManager = Get.find();
+
   int currentView = 0;
   List<Widget> pages = [];
 
@@ -28,48 +35,43 @@ class _GiftsPageViewState extends State<GiftsPageView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).primaryColor.darken(0.48),
+      color: AppColorConstants.themeColor.darken(0.48),
       child: Column(
         children: [
           Container(
             height: 60,
-            color: Theme.of(context).primaryColor.darken(0.48),
+            color: AppColorConstants.themeColor.darken(0.48),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    BodyLargeText(
                       '${LocalizationString.availableCoins} : ',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.w500),
+                        weight: TextWeight.medium
                     ),
                     ThemeIconWidget(
                       ThemeIcon.diamond,
                       size: 20,
-                      color: Theme.of(context).primaryColor,
+                      color: AppColorConstants.themeColor,
                     ),
                     const SizedBox(
                       width: 5,
                     ),
                     Text(
-                      getIt<UserProfileManager>().user!.coins.toString(),
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      _userProfileManager.user.value!.coins.toString(),
+                      style: TextStyle(
+            fontSize: FontSizes.b2),
                     ),
                   ],
                 ),
                 currentView == 0
                     ? Container(
-                            color: Theme.of(context).primaryColor,
-                            child: Text(
+                            color: AppColorConstants.themeColor,
+                            child: BodyLargeText(
                               LocalizationString.coins,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(fontWeight: FontWeight.w700),
+                                weight: TextWeight.semiBold
                             ).setPadding(left: 10, right: 10, top: 5, bottom: 5))
                         .round(20)
                         .ripple(() {
@@ -110,7 +112,7 @@ class GiftsListing extends StatefulWidget {
 }
 
 class _GiftsListingState extends State<GiftsListing> {
-  final GiftController _giftController = Get.find();
+  final GiftController _giftController = GiftController();
 
   @override
   void initState() {
@@ -126,7 +128,7 @@ class _GiftsListingState extends State<GiftsListing> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).backgroundColor.darken(),
+      color: AppColorConstants.backgroundColor.darken(),
       child: Column(
         children: [
           const SizedBox(
@@ -188,7 +190,7 @@ class _GiftsListingState extends State<GiftsListing> {
             ThemeIconWidget(
               ThemeIcon.diamond,
               size: 15,
-              color: Theme.of(context).primaryColor,
+              color: AppColorConstants.themeColor,
             ),
             const SizedBox(
               width: 5,

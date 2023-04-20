@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/post/view_post_insight.dart';
 import 'package:get/get.dart';
+
+import '../../components/post_card.dart';
+import '../../controllers/single_post_detail_controller.dart';
 
 class SinglePostDetail extends StatefulWidget {
   final int postId;
@@ -11,7 +15,8 @@ class SinglePostDetail extends StatefulWidget {
 }
 
 class _SinglePostDetailState extends State<SinglePostDetail> {
-  final SinglePostDetailController singlePostDetailController = Get.find();
+  final SinglePostDetailController singlePostDetailController =
+      SinglePostDetailController();
 
   @override
   void initState() {
@@ -28,7 +33,7 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -45,14 +50,10 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
                 return singlePostDetailController.post.value == null &&
                         singlePostDetailController.isLoading == false
                     ? Center(
-                        child: Text(
+                        child: Heading3Text(
                           LocalizationString.postDeleted,
-                          style: Theme.of(context)
-                              .textTheme
-                              .displaySmall!
-                              .copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  color: Theme.of(context).primaryColor),
+                          weight: TextWeight.bold,
+                          color: AppColorConstants.themeColor,
                         ),
                       )
                     : singlePostDetailController.isLoading == false
@@ -63,6 +64,11 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
                             //   singlePostDetailController
                             //       .likeUnlikePost(context);
                             // },
+                            viewInsightHandler: () {
+                              Get.to(() => ViewPostInsights(
+                                  post:
+                                      singlePostDetailController.post.value!));
+                            },
                             removePostHandler: () {
                               Get.back();
                             },

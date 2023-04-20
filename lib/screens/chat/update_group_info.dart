@@ -1,5 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../universal_components/rounded_input_field.dart';
 
 class UpdateGroupInfo extends StatefulWidget {
   final ChatRoomModel group;
@@ -11,7 +16,8 @@ class UpdateGroupInfo extends StatefulWidget {
 }
 
 class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
-  final EnterGroupInfoController enterGroupInfoController = Get.find();
+  final EnterGroupInfoController enterGroupInfoController =
+      EnterGroupInfoController();
 
   final TextEditingController groupName = TextEditingController();
   final TextEditingController groupDescription = TextEditingController();
@@ -28,7 +34,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -48,13 +54,9 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Text(
-                      LocalizationString.update,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.w600),
-                    ).ripple(() {
+                    Heading5Text(LocalizationString.update,
+                            weight: TextWeight.medium)
+                        .ripple(() {
                       updateGroup();
                     }),
                   ],
@@ -63,13 +65,8 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                   left: 0,
                   right: 0,
                   child: Center(
-                    child: Text(
-                      LocalizationString.createGroup,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.w600),
-                    ),
+                    child: Heading5Text(LocalizationString.createGroup,
+                        weight: TextWeight.medium),
                   ),
                 )
               ],
@@ -88,7 +85,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                     Obx(() => Container(
                           height: 50,
                           width: 50,
-                          color: Theme.of(context).cardColor.darken(),
+                          color: AppColorConstants.cardColor.darken(),
                           child:
                               enterGroupInfoController.groupImagePath.isNotEmpty
                                   ? Image.file(
@@ -120,7 +117,6 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                       child: InputField(
                         controller: groupName,
                         showDivider: true,
-                        textStyle: Theme.of(context).textTheme.titleSmall,
                         hintText: LocalizationString.groupName,
                         cornerRadius: 5,
                       ),
@@ -131,7 +127,6 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                   maxLines: 5,
                   controller: groupDescription,
                   showDivider: true,
-                  textStyle: Theme.of(context).textTheme.titleSmall,
                   hintText: LocalizationString.describeAboutGroup,
                   cornerRadius: 5,
                 )
@@ -146,9 +141,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
   updateGroup() {
     if (groupName.text.isEmpty) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.pleaseEnterGroupName,
-          isSuccess: false);
+          message: LocalizationString.pleaseEnterGroupName, isSuccess: false);
       return;
     }
 
@@ -168,12 +161,13 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                 Padding(
                     padding: const EdgeInsets.only(
                         left: 20, right: 20, top: 20, bottom: 25),
-                    child: Text(LocalizationString.addPhoto,
-                        style: Theme.of(context).textTheme.bodyLarge)),
+                    child: BodyLargeText(
+                      LocalizationString.addPhoto,
+                    )),
                 ListTile(
                     leading: Icon(Icons.camera_alt_outlined,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.takePhoto),
+                        color: AppColorConstants.iconColor),
+                    title: BodyLargeText(LocalizationString.takePhoto),
                     onTap: () {
                       Get.back();
                       picker
@@ -188,8 +182,8 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                 divider(context: context),
                 ListTile(
                     leading: Icon(Icons.wallpaper_outlined,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.chooseFromGallery),
+                        color: AppColorConstants.iconColor),
+                    title: BodyLargeText(LocalizationString.chooseFromGallery),
                     onTap: () async {
                       Get.back();
                       picker
@@ -203,9 +197,8 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                     }),
                 divider(context: context),
                 ListTile(
-                    leading: Icon(Icons.close,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.cancel),
+                    leading: Icon(Icons.close, color: AppColorConstants.iconColor),
+                    title: BodyLargeText(LocalizationString.cancel),
                     onTap: () => Get.back()),
               ],
             ));

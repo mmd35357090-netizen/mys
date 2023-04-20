@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
+import 'package:detectable_text_field/widgets/detectable_text.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../apiHandler/api_controller.dart';
+import '../model/comment_model.dart';
+import '../screens/dashboard/posts.dart';
+import '../screens/profile/other_user_profile.dart';
 
 class CommentTile extends StatefulWidget {
   final CommentModel model;
@@ -32,7 +39,7 @@ class CommentTileState extends State<CommentTile> {
               AvatarView(
                 url: model.userPicture,
                 name: model.userName,
-                size: 28,
+                size: 35,
               ).ripple(() {
                 Get.to(() => OtherUserProfile(userId: model.userId));
               }),
@@ -42,11 +49,9 @@ class CommentTileState extends State<CommentTile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // const SizedBox(height: 4),
-                  Text(
+                  Heading6Text(
                     model.userName,
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        // color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w700),
+                    weight: TextWeight.medium,
                   ).ripple(() {
                     Get.to(() => OtherUserProfile(userId: model.userId));
                   }),
@@ -56,11 +61,13 @@ class CommentTileState extends State<CommentTile> {
                       "(?!\\n)(?:^|\\s)([#@]([$detectionContentLetters]+))|$urlRegexContent",
                       multiLine: true,
                     ),
-                    detectedStyle: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w700),
-                    basicStyle: Theme.of(context).textTheme.bodyLarge,
+                    detectedStyle: TextStyle(
+                        fontSize: FontSizes.b3,
+                        fontWeight: TextWeight.semiBold,
+                        color: AppColorConstants.grayscale900),
+                    basicStyle: TextStyle(
+                        fontSize: FontSizes.b3,
+                        color: AppColorConstants.grayscale900),
                     onTap: (tappedText) {
                       commentTextTapHandler(text: tappedText);
                       // postCardController.titleTextTapped(text: tappedText,post: widget.model);
@@ -70,13 +77,7 @@ class CommentTileState extends State<CommentTile> {
               ))
             ],
           )),
-          Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Text(model.commentTime,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w600)))
+          BodySmallText(model.commentTime, weight: TextWeight.medium).tP4
         ]);
   }
 

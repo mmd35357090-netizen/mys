@@ -1,7 +1,24 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:foap/helper/common_import.dart';
-import 'package:push/push.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_fgbg/flutter_fgbg.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/controllers/agora_call_controller.dart';
+import 'package:foap/controllers/agora_live_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/call_model.dart';
+import 'package:foap/screens/chat/chat_detail.dart';
+import 'package:foap/screens/competitions/competition_detail_screen.dart';
+import 'package:foap/screens/home_feed/comments_screen.dart';
+import 'package:foap/screens/profile/other_user_profile.dart';
+// import 'package:push/push.dart';
 import 'package:get/get.dart';
+import 'package:overlay_support/overlay_support.dart';
+
+import '../util/shared_prefs.dart';
+
 
 class FCM {
   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -12,7 +29,7 @@ class FCM {
 
   setNotifications() {
     FirebaseMessaging.onMessage.listen(
-          (message) async {
+      (message) async {
         if (message.data.containsKey('data')) {
           // Handle data message
           streamCtlr.sink.add(message.data['data']);
@@ -33,7 +50,7 @@ class FCM {
       }
     });
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+    _firebaseMessaging.onTokenRefresh.listen((fcmToken) {
       SharedPrefs().setFCMToken(fcmToken);
     }).onError((err) {});
   }
@@ -46,10 +63,40 @@ class FCM {
 }
 
 class NotificationManager {
-  final AgoraLiveController agoraLiveController = Get.find();
-  final AgoraCallController agoraCallController = Get.find();
+  static final NotificationManager _singleton = NotificationManager._internal();
+
+  factory NotificationManager() {
+    return _singleton;
+  }
+
+  NotificationManager._internal();
+
+  initialize() {
+    // flutterLocalNotificationsPlugin.initialize(const InitializationSettings());
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod:
+            AwesomeNotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod:
+            AwesomeNotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod:
+            AwesomeNotificationController.onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod:
+            AwesomeNotificationController.onDismissActionReceivedMethod);
+    // AwesomeNotifications().actionStream.listen((action) {
+    //   AwesomeNotifications().dismissAllNotifications();
+    //
+    //   if (action.buttonKeyPressed == "answer") {
+    //     actionOnCall(action.payload!, true);
+    //   } else if (action.buttonKeyPressed == "decline") {
+    //     actionOnCall(action.payload!, false);
+    //   }
+    // });
+
+    // notificationHandlers();
+  }
 
   actionOnCall(Map<String, String?> data, bool accept) {
+    final AgoraCallController agoraCallController = Get.find();
     String channelName = data['channelName'] as String;
     String token = data['token'] as String;
     String callType = data['callType'] as String;
@@ -75,74 +122,21 @@ class NotificationManager {
     });
   }
 
-  initialize() {
-    // flutterLocalNotificationsPlugin.initialize(const InitializationSettings());
-    AwesomeNotifications().actionStream.listen((action) {
-      AwesomeNotifications().dismissAllNotifications();
+  parseNotificationMessage(RemoteMessage message) {
+    String? callType = message.data['callType'] as String?;
 
-      if (action.buttonKeyPressed == "answer") {
-        actionOnCall(action.payload!, true);
-      } else if (action.buttonKeyPressed == "decline") {
-        actionOnCall(action.payload!, false);
-      }
-    });
-
-    Push.instance.onNewToken.listen((token) {
-      // print("Just got a new FCM registration token: $token");
-      SharedPrefs().setFCMToken(token);
-    });
-
-    // Handle notification launching app from terminated state
-    Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
-      if (data == null) {
-        // print("App was not launched by tapping a notification");
+    if (callType != null) {
+      handleCallNotification(message.data);
+    } else {
+      if (Platform.isAndroid) {
+        handleAndroidNotifications(message.data);
       } else {
-        // print('Notification tap launched app from terminated state:\n'
-        //     'RemoteMessage: ${data} \n');
-        String? callType = data['callType'] as String?;
-
-        if (callType != null) {
-          handleCallNotification(data);
-        } else {
-          parseNotificationData(data, true);
-        }
+        FGBGEvents.stream.listen((event) {
+          parseNotificationData(
+              message.data, event == FGBGType.foreground ? true : false);
+        });
       }
-    });
-
-    // Handle notification taps
-    Push.instance.onNotificationTap.listen((data) {
-      String? callType = data['callType'] as String?;
-
-      if (callType != null) {
-        handleCallNotification(data);
-      } else {
-        parseNotificationData(data, true);
-      }
-    });
-
-    // Handle push notifications
-    Push.instance.onMessage.listen((message) {
-      String? callType = message.data?['callType'] as String?;
-
-      if (callType != null) {
-        handleCallNotification(message.data!);
-      } else {
-        parseNotificationData(message.data, true);
-      }
-    });
-
-    // Handle push notifications
-    Push.instance.onBackgroundMessage.listen((message) async {
-      String? callType = message.data?['callType'] as String?;
-
-      if (callType != null) {
-        handleCallNotification(message.data!);
-      } else {
-        if (Platform.isAndroid) {
-          handleAndroidNotifications(message.data!);
-        }
-      }
-    });
+    }
   }
 
   handleAndroidNotifications(Map<String?, Object?> data) {
@@ -235,6 +229,8 @@ class NotificationManager {
   }
 
   parseNotificationData(dynamic data, bool isInForeground) {
+    final AgoraLiveController agoraLiveController = Get.find();
+
     int notificationType =
         int.parse(data['notification_type'] as String? ?? '0');
 
@@ -250,21 +246,21 @@ class NotificationManager {
             return Container(
               color: Colors.transparent,
               child: Card(
-                color: Theme.of(context).cardColor,
+                color: AppColorConstants.cardColor,
                 margin: const EdgeInsets.symmetric(horizontal: 8),
                 child: ListTile(
                   leading: UserAvatarView(
                     size: 40,
                     user: response.user!,
                   ),
-                  title: Text(
+                  title: Heading5Text(
                     LocalizationString.newFollower,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: Theme.of(context).primaryColor),
+                    weight: TextWeight.bold,
+                    color: AppColorConstants.themeColor,
                   ),
-                  subtitle: Text(message,
-                      style: Theme.of(context).textTheme.titleSmall),
+                  subtitle: Heading6Text(
+                    message,
+                  ),
                 ).vp(12).ripple(() {
                   OverlaySupportEntry.of(context)!.dismiss();
                   Get.to(() => OtherUserProfile(userId: referenceId));
@@ -282,21 +278,24 @@ class NotificationManager {
           return Container(
             color: Colors.transparent,
             child: Card(
-              color: Theme.of(context).cardColor,
+              color: AppColorConstants.cardColor,
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: ListTile(
-                title: Text(
+                title: Heading5Text(
                   LocalizationString.newComment,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: Theme.of(context).primaryColor),
+                  weight: TextWeight.bold,
+                  color: AppColorConstants.themeColor,
                 ),
-                subtitle: Text(message,
-                    style: Theme.of(context).textTheme.titleSmall),
+                subtitle: Heading6Text(
+                  message,
+                ),
               ).vp(12).ripple(() {
                 OverlaySupportEntry.of(context)!.dismiss();
-                Get.to(
-                    () => CommentsScreen(postId: referenceId, handler: () {},commentPostedCallback: (){},));
+                Get.to(() => CommentsScreen(
+                      postId: referenceId,
+                      handler: () {},
+                      commentPostedCallback: () {},
+                    ));
               }),
             ).setPadding(top: 50, left: 8, right: 8).round(10),
           );
@@ -317,21 +316,21 @@ class NotificationManager {
             return Container(
               color: Colors.transparent,
               child: Card(
-                color: Theme.of(context).cardColor,
+                color: AppColorConstants.cardColor,
                 margin: const EdgeInsets.symmetric(horizontal: 8),
                 child: ListTile(
                   leading: UserAvatarView(
                     size: 40,
                     user: response.user!,
                   ),
-                  title: Text(
+                  title: Heading5Text(
                     LocalizationString.live,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: Theme.of(context).primaryColor),
+                    weight: TextWeight.bold,
+                    color: AppColorConstants.themeColor,
                   ),
-                  subtitle:
-                      Text(body, style: Theme.of(context).textTheme.titleSmall),
+                  subtitle: Heading6Text(
+                    body,
+                  ),
                 ).vp(12).ripple(() {
                   OverlaySupportEntry.of(context)!.dismiss();
 
@@ -358,7 +357,11 @@ class NotificationManager {
       } else if (notificationType == 2) {
         int referenceId = int.parse(data['reference_id'] as String);
         // comment notification
-        Get.to(() => CommentsScreen(postId: referenceId, handler: () {},commentPostedCallback: (){},));
+        Get.to(() => CommentsScreen(
+              postId: referenceId,
+              handler: () {},
+              commentPostedCallback: () {},
+            ));
       } else if (notificationType == 4) {
         int referenceId = int.parse(data['reference_id'] as String);
         // new competition added notification
@@ -372,8 +375,7 @@ class NotificationManager {
         if (roomId != null) {
           ApiController().getChatRoomDetail(roomId).then((response) {
             if (response.room != null) {
-              Get.to(
-                  () => ChatDetail(chatRoom: response.room!));
+              Get.to(() => ChatDetail(chatRoom: response.room!));
             }
           });
         }
@@ -394,6 +396,109 @@ class NotificationManager {
           agoraLiveController.joinAsAudience(live: live);
         });
       }
+    }
+
+    // notificationHandlers() {
+    //   Push.instance.onNewToken.listen((token) {
+    //     print('Push.instance.onNewToken');
+    //     // print("Just got a new FCM registration token: $token");
+    //     SharedPrefs().setFCMToken(token);
+    //   });
+    //
+    //   // Handle notification launching app from terminated state
+    //   Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
+    //     if (data == null) {
+    //       // print("App was not launched by tapping a notification");
+    //     } else {
+    //       // print('Notification tap launched app from terminated state:\n'
+    //       //     'RemoteMessage: ${data} \n');
+    //       String? callType = data['callType'] as String?;
+    //
+    //       if (callType != null) {
+    //         handleCallNotification(data);
+    //       } else {
+    //         parseNotificationData(data, true);
+    //       }
+    //     }
+    //   });
+    //
+    //   // Handle notification taps
+    //   Push.instance.onNotificationTap.listen((data) {
+    //     String? callType = data['callType'] as String?;
+    //
+    //     if (callType != null) {
+    //       handleCallNotification(data);
+    //     } else {
+    //       parseNotificationData(data, true);
+    //     }
+    //   });
+    //
+    //   // Handle push notifications
+    //   Push.instance.onMessage.listen((message) {
+    //     // print('Push.instance.onMessage');
+    //     //
+    //     // String? callType = message.data?['callType'] as String?;
+    //     //
+    //     // if (callType != null) {
+    //     //   handleCallNotification(message.data!);
+    //     // } else {
+    //     //   parseNotificationData(message.data, true);
+    //     // }
+    //   });
+    //
+    //   // Handle push notifications
+    //   Push.instance.onBackgroundMessage.listen((message) async {
+    //     print('Push.instance.onBackgroundMessage');
+    //
+    //     // String? callType = message.data?['callType'] as String?;
+    //     //
+    //     // if (callType != null) {
+    //     //   handleCallNotification(message.data!);
+    //     // } else {
+    //     //   if (Platform.isAndroid) {
+    //     //     handleAndroidNotifications(message.data!);
+    //     //   }
+    //     // }
+    //   });
+    // }
+  }
+}
+
+class AwesomeNotificationController {
+  /// Use this method to detect when a new notification or a schedule is created
+  @pragma("vm:entry-point")
+  static Future<void> onNotificationCreatedMethod(
+      ReceivedNotification receivedNotification) async {
+    // Your code goes here
+  }
+
+  /// Use this method to detect every time that a new notification is displayed
+  @pragma("vm:entry-point")
+  static Future<void> onNotificationDisplayedMethod(
+      ReceivedNotification receivedNotification) async {
+    // Your code goes here
+  }
+
+  /// Use this method to detect if the user dismissed a notification
+  @pragma("vm:entry-point")
+  static Future<void> onDismissActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    // Your code goes here
+  }
+
+  /// Use this method to detect when the user taps on a notification or action button
+  @pragma("vm:entry-point")
+  static Future<void> onActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    // Your code goes here
+
+    // Navigate into pages, avoiding to open the notification details page over another details page already opened
+
+    AwesomeNotifications().dismissAllNotifications();
+    if (receivedAction.buttonKeyPressed == "answer") {
+      NotificationManager().actionOnCall(receivedAction.payload!, true);
+    } else if (receivedAction.buttonKeyPressed == "decline") {
+      NotificationManager().actionOnCall(receivedAction.payload!, false);
     }
   }
 }

@@ -1,10 +1,28 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:camera/camera.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/add_on/ui/dating/profile/set_location.dart';
 import 'package:get/get.dart';
-
-import '../screens/login_sign_up/set_profile_category_type.dart';
+import '../util/shared_prefs.dart';
+import 'package:flutter/services.dart';
+import 'dart:io';
+import 'dart:async';
+import 'package:foap/manager/location_manager.dart';
+import 'package:foap/util/form_validator.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/components/custom_gallery_picker.dart';
+import 'package:foap/controllers/login_controller.dart';
+import 'package:foap/controllers/post_controller.dart';
+import 'package:foap/model/payment_model.dart';
+import 'package:foap/model/gift_model.dart';
+import 'package:foap/model/post_model.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:foap/screens/profile/verify_otp_for_phone_number.dart';
+import 'package:foap/screens/login_sign_up/login_screen.dart';
+import 'package:foap/screens/login_sign_up/set_profile_category_type.dart';
 
 class ProfileController extends GetxController {
   final PostController postController = Get.find<PostController>();
+  final UserProfileManager _userProfileManager = Get.find();
 
   Rx<UserModel?> user = Rx<UserModel?>(null);
 
@@ -59,10 +77,10 @@ class ProfileController extends GetxController {
   }
 
   getMyProfile() async {
-    // user.value = getIt<UserProfileManager>().user!;
+    // user.value = _userProfileManager.user.value!;
     // update();
-    await getIt<UserProfileManager>().refreshProfile();
-    user.value = getIt<UserProfileManager>().user!;
+    await _userProfileManager.refreshProfile();
+    user.value = _userProfileManager.user.value!;
     update();
   }
 
@@ -83,31 +101,25 @@ class ProfileController extends GetxController {
       required BuildContext context}) {
     if (FormValidator().isTextEmpty(country)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.pleaseEnterCountry,
-          isSuccess: false);
+          message: LocalizationString.pleaseEnterCountry, isSuccess: false);
     } else if (FormValidator().isTextEmpty(city)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.pleaseEnterCity,
-          isSuccess: false);
+          message: LocalizationString.pleaseEnterCity, isSuccess: false);
     } else {
       AppUtil.checkInternet().then((value) {
         if (value) {
           EasyLoading.show(status: LocalizationString.loading);
-          getIt<UserProfileManager>().user!.country = country;
-          getIt<UserProfileManager>().user!.city = city;
+          _userProfileManager.user.value!.country = country;
+          _userProfileManager.user.value!.city = city;
 
           ApiController()
-              .updateUserProfile(getIt<UserProfileManager>().user!)
+              .updateUserProfile(_userProfileManager.user.value!)
               .then((response) {
             if (response.success == true) {
               EasyLoading.dismiss();
               AppUtil.showToast(
-                  context: context,
-                  message: LocalizationString.profileUpdated,
-                  isSuccess: true);
-              getIt<UserProfileManager>().refreshProfile();
+                  message: LocalizationString.profileUpdated, isSuccess: true);
+              _userProfileManager.refreshProfile();
 
               user.value!.country = country;
               user.value!.city = city;
@@ -116,10 +128,7 @@ class ProfileController extends GetxController {
                 Get.back();
               });
             } else {
-              AppUtil.showToast(
-                  context: context,
-                  message: response.message,
-                  isSuccess: false);
+              AppUtil.showToast(message: response.message, isSuccess: false);
             }
           });
         }
@@ -134,22 +143,15 @@ class ProfileController extends GetxController {
       required BuildContext context}) {
     if (FormValidator().isTextEmpty(oldPassword)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.enterOldPassword,
-          isSuccess: false);
+          message: LocalizationString.enterOldPassword, isSuccess: false);
     } else if (FormValidator().isTextEmpty(newPassword)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.enterNewPassword,
-          isSuccess: false);
+          message: LocalizationString.enterNewPassword, isSuccess: false);
     } else if (FormValidator().isTextEmpty(confirmPassword)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.enterConfirmPassword,
-          isSuccess: false);
+          message: LocalizationString.enterConfirmPassword, isSuccess: false);
     } else if (newPassword != confirmPassword) {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.passwordsDoesNotMatched,
           isSuccess: false);
     } else {
@@ -160,10 +162,9 @@ class ProfileController extends GetxController {
               .changePassword(oldPassword, newPassword)
               .then((response) async {
             EasyLoading.dismiss();
-            AppUtil.showToast(
-                context: context, message: response.message, isSuccess: true);
+            AppUtil.showToast(message: response.message, isSuccess: true);
             if (response.success) {
-              getIt<UserProfileManager>().refreshProfile();
+              _userProfileManager.refreshProfile();
               Future.delayed(const Duration(milliseconds: 500), () {
                 Get.to(() => const LoginScreen());
               });
@@ -171,9 +172,7 @@ class ProfileController extends GetxController {
           });
         } else {
           AppUtil.showToast(
-              context: context,
-              message: LocalizationString.noInternet,
-              isSuccess: false);
+              message: LocalizationString.noInternet, isSuccess: false);
         }
       });
     }
@@ -182,9 +181,7 @@ class ProfileController extends GetxController {
   updatePaypalId({required String paypalId, required BuildContext context}) {
     if (FormValidator().isTextEmpty(paypalId)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.pleaseEnterPaypalId,
-          isSuccess: false);
+          message: LocalizationString.pleaseEnterPaypalId, isSuccess: false);
     } else {
       AppUtil.checkInternet().then((value) {
         if (value) {
@@ -193,19 +190,15 @@ class ProfileController extends GetxController {
             if (response.success == true) {
               EasyLoading.dismiss();
               AppUtil.showToast(
-                  context: context,
                   message: LocalizationString.paymentDetailUpdated,
                   isSuccess: true);
-              getIt<UserProfileManager>().refreshProfile();
+              _userProfileManager.refreshProfile();
 
               Future.delayed(const Duration(milliseconds: 1200), () {
                 Get.back();
               });
             } else {
-              AppUtil.showToast(
-                  context: context,
-                  message: response.message,
-                  isSuccess: false);
+              AppUtil.showToast(message: response.message, isSuccess: false);
             }
           });
         }
@@ -219,9 +212,7 @@ class ProfileController extends GetxController {
       required BuildContext context}) {
     if (FormValidator().isTextEmpty(phoneNumber)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.enterPhoneNumber,
-          isSuccess: false);
+          message: LocalizationString.enterPhoneNumber, isSuccess: false);
     } else {
       AppUtil.checkInternet().then((value) {
         if (value) {
@@ -230,10 +221,9 @@ class ProfileController extends GetxController {
               .changePhone(countryCode, phoneNumber)
               .then((response) async {
             EasyLoading.dismiss();
-            AppUtil.showToast(
-                context: context, message: response.message, isSuccess: true);
+            AppUtil.showToast(message: response.message, isSuccess: true);
             if (response.success) {
-              getIt<UserProfileManager>().refreshProfile();
+              _userProfileManager.refreshProfile();
               Get.to(() => VerifyOTPPhoneNumberChange(
                     token: response.token!,
                   ));
@@ -241,9 +231,7 @@ class ProfileController extends GetxController {
           });
         } else {
           AppUtil.showToast(
-              context: context,
-              message: LocalizationString.noInternet,
-              isSuccess: false);
+              message: LocalizationString.noInternet, isSuccess: false);
         }
       });
     }
@@ -255,12 +243,9 @@ class ProfileController extends GetxController {
       required BuildContext context}) {
     if (FormValidator().isTextEmpty(userName)) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.pleaseEnterUserName,
-          isSuccess: false);
+          message: LocalizationString.pleaseEnterUserName, isSuccess: false);
     } else if (userNameCheckStatus.value != 1) {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.pleaseEnterValidUserName,
           isSuccess: false);
     } else {
@@ -271,7 +256,6 @@ class ProfileController extends GetxController {
             if (response.success == true) {
               EasyLoading.dismiss();
               AppUtil.showToast(
-                  context: context,
                   message: LocalizationString.userNameIsUpdated,
                   isSuccess: true);
               getMyProfile();
@@ -286,10 +270,7 @@ class ProfileController extends GetxController {
               }
             } else {
               EasyLoading.dismiss();
-              AppUtil.showToast(
-                  context: context,
-                  message: response.message,
-                  isSuccess: false);
+              AppUtil.showToast(message: response.message, isSuccess: false);
             }
           });
         }
@@ -310,13 +291,12 @@ class ProfileController extends GetxController {
           if (response.success == true) {
             EasyLoading.dismiss();
             AppUtil.showToast(
-                context: context,
-                message: LocalizationString.userNameIsUpdated,
-                isSuccess: true);
+                message: LocalizationString.categoryTypeUpdated, isSuccess: true);
             getMyProfile();
             if (isSigningUp == true) {
               if (isLoginFirstTime) {
-                Get.to(() => const SetLocation())!.then((value) {});
+                Get.to(() => SetLocation(isFromSignup: isSigningUp))!
+                    .then((value) {});
               } else {
                 isLoginFirstTime = false;
                 getIt<LocationManager>().postLocation();
@@ -329,8 +309,7 @@ class ProfileController extends GetxController {
             }
           } else {
             EasyLoading.dismiss();
-            AppUtil.showToast(
-                context: context, message: response.message, isSuccess: false);
+            AppUtil.showToast(message: response.message, isSuccess: false);
           }
         });
       }
@@ -354,30 +333,34 @@ class ProfileController extends GetxController {
     });
   }
 
-  void editProfileImageAction(XFile pickedFile, BuildContext context) {
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
+  void editProfileImageAction(XFile pickedFile, bool isCoverImage) async {
+    EasyLoading.show(status: LocalizationString.loading);
 
-        Uint8List compressedData = await File(pickedFile.path)
-            .compress(minHeight: 200, minWidth: 200, byQuality: 50);
-        ApiController()
-            .updateProfileImage(compressedData)
-            .then((response) async {
-          EasyLoading.dismiss();
+    if (isCoverImage) {
+      Uint8List compressedData = await File(pickedFile.path)
+          .compress(minHeight: 800, minWidth: 800, byQuality: 50);
+      ApiController()
+          .updateProfileCoverImage(compressedData)
+          .then((response) async {
+        EasyLoading.dismiss();
 
-          getIt<UserProfileManager>().refreshProfile().then((value) {
-            user.value = getIt<UserProfileManager>().user;
-            update();
-          });
+        _userProfileManager.refreshProfile().then((value) {
+          user.value = _userProfileManager.user.value;
+          update();
         });
-      } else {
-        AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
-      }
-    });
+      });
+    } else {
+      Uint8List compressedData = await File(pickedFile.path)
+          .compress(minHeight: 200, minWidth: 200, byQuality: 50);
+      ApiController().updateProfileImage(compressedData).then((response) async {
+        EasyLoading.dismiss();
+
+        _userProfileManager.refreshProfile().then((value) {
+          user.value = _userProfileManager.user.value;
+          update();
+        });
+      });
+    }
   }
 
   updateBioMetricSetting(bool value, BuildContext context) {
@@ -391,15 +374,12 @@ class ProfileController extends GetxController {
             .updateBiometricSetting(user.value!.isBioMetricLoginEnabled ?? 0)
             .then((response) {
           if (response.success == true) {
-            getIt<UserProfileManager>().refreshProfile();
+            _userProfileManager.refreshProfile();
             EasyLoading.dismiss();
             AppUtil.showToast(
-                context: context,
-                message: LocalizationString.profileUpdated,
-                isSuccess: true);
+                message: LocalizationString.profileUpdated, isSuccess: true);
           } else {
-            AppUtil.showToast(
-                context: context, message: response.message, isSuccess: false);
+            AppUtil.showToast(message: response.message, isSuccess: false);
           }
         });
       }
@@ -416,10 +396,7 @@ class ProfileController extends GetxController {
             user.value = response.user!;
             update();
           } else {
-            AppUtil.showToast(
-                context: Get.context!,
-                message: response.message,
-                isSuccess: false);
+            AppUtil.showToast(message: response.message, isSuccess: false);
           }
         });
       }
@@ -438,8 +415,7 @@ class ProfileController extends GetxController {
           if (response.success) {
             update();
           } else {
-            AppUtil.showToast(
-                context: context, message: response.message, isSuccess: false);
+            AppUtil.showToast(message: response.message, isSuccess: false);
           }
         });
       }
@@ -458,9 +434,7 @@ class ProfileController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: LocalizationString.noInternet, isSuccess: false);
       }
     });
   }
@@ -477,30 +451,25 @@ class ProfileController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: LocalizationString.noInternet, isSuccess: false);
       }
     });
   }
 
 //////////////********** other user profile **************/////////////////
 
-  void withdrawalRequest(BuildContext context) {
+  void withdrawalRequest() {
     AppUtil.checkInternet().then((value) {
       if (value) {
         EasyLoading.show(status: LocalizationString.loading);
         ApiController().performWithdrawalRequest().then((response) async {
           getMyProfile();
           EasyLoading.dismiss();
-          AppUtil.showToast(
-              context: context, message: response.message, isSuccess: true);
+          AppUtil.showToast(message: response.message, isSuccess: true);
         });
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: LocalizationString.noInternet, isSuccess: false);
       }
     });
   }
@@ -513,14 +482,11 @@ class ProfileController extends GetxController {
           EasyLoading.dismiss();
           await getMyProfile();
           callback();
-          AppUtil.showToast(
-              context: context, message: response.message, isSuccess: true);
+          AppUtil.showToast(message: response.message, isSuccess: true);
         });
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: LocalizationString.noInternet, isSuccess: false);
       }
     });
   }
@@ -642,7 +608,7 @@ class ProfileController extends GetxController {
   }
 
   sendGift(GiftModel gift) {
-    if (getIt<UserProfileManager>().user!.coins > gift.coins) {
+    if (_userProfileManager.user.value!.coins > gift.coins) {
       sendingGift.value = gift;
       ApiController()
           .sendGift(
@@ -653,8 +619,12 @@ class ProfileController extends GetxController {
         });
 
         // refresh profile to get updated wallet info
-        getIt<UserProfileManager>().refreshProfile();
+        _userProfileManager.refreshProfile();
       });
     } else {}
+  }
+
+  otherUserProfileView({required int refId, required int sourceType}) {
+    ApiController().otherUserProfileView(refId: refId, sourceType: sourceType);
   }
 }

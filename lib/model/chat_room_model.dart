@@ -1,5 +1,7 @@
 import 'dart:convert';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'chat_message_model.dart';
+import 'package:get/get.dart';
 
 class ChatRoomMember {
   int id;
@@ -136,9 +138,11 @@ class ChatRoomModel {
   }
 
   ChatRoomMember get opponent {
+    final UserProfileManager userProfileManager = Get.find();
+
     return roomMembers
         .where((element) =>
-            element.userDetail.id != getIt<UserProfileManager>().user!.id)
+            element.userDetail.id != userProfileManager.user.value!.id)
         .first;
   }
 

@@ -1,6 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/user_model.dart';
 import 'package:get/get.dart';
-
 class RandomLivesController extends GetxController {
   RxList<UserModel> randomUsers = <UserModel>[].obs;
 

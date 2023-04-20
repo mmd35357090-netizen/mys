@@ -1,9 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:get/get.dart';
 
 class PasswordChangedPopup extends StatelessWidget {
+  final UserProfileManager _userProfileManager = Get.find();
+
   final VoidCallback dismissHandler;
 
-  const PasswordChangedPopup({Key? key, required this.dismissHandler})
+  PasswordChangedPopup({Key? key, required this.dismissHandler})
       : super(key: key);
 
   @override
@@ -14,7 +17,7 @@ class PasswordChangedPopup extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            color: Theme.of(context).disabledColor.withOpacity(0.2),
+            color: AppColorConstants.disabledColor,
           ).ripple(() {
             dismissHandler();
           }),
@@ -24,53 +27,38 @@ class PasswordChangedPopup extends StatelessWidget {
             right: 0,
             child: Container(
               height: 360,
-              color: Theme.of(context).backgroundColor,
+              color: AppColorConstants.backgroundColor,
               child: Column(
                 children: [
-                  Text(
-                    'Password changed successfully!',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: Theme.of(context).backgroundColor)
-                        .copyWith(fontWeight: FontWeight.w900),
-                  ).bp(20),
+                  Heading5Text('Password changed successfully!',
+                          weight: TextWeight.bold)
+                      .bp(20),
                   SizedBox(
                     height: 92,
                     width: 92,
                     child: Container(
-                      color: Theme.of(context).primaryColor.withOpacity(0.5),
+                      color: AppColorConstants.themeColor.withOpacity(0.5),
                       height: 92,
                       width: 92,
                       child: ThemeIconWidget(ThemeIcon.checkMark,
-                          size: 45, color: Theme.of(context).primaryColor),
+                          size: 45, color: AppColorConstants.themeColor),
                     ).circular.p(10),
                   )
                       .borderWithRadius(
-                          context: context,
                           value: 1,
                           radius: 46,
                           color:
-                              Theme.of(context).disabledColor.withOpacity(0.1))
+                              AppColorConstants.disabledColor.withOpacity(0.1))
                       .vP25,
-                  Text(
+                  Heading5Text(
                     'Your password has been changed successfully',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: Theme.of(context).backgroundColor),
+                    color: AppColorConstants.backgroundColor,
                   ).ripple(() {}).bp(10),
-                  FilledButtonType1(
-                    isEnabled: true,
-                    enabledTextStyle: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(
-                            fontWeight: FontWeight.w900, color: Colors.white),
+                  AppThemeButton(
                     text: 'Back to login',
                     onPress: () {
-                      getIt<UserProfileManager>().logout();
+                      _userProfileManager.logout();
                     },
                   ).hP16
                 ],

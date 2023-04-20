@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:foap/theme/icon_enum.dart';
 import 'package:foap/helper/extension.dart';
 import 'package:foap/theme/theme_icon.dart';
+
+import '../components/custom_texts.dart';
+import '../util/app_config_constants.dart';
 
 class PasswordField extends StatefulWidget {
   final String? hintText;
@@ -70,7 +72,6 @@ class _PasswordFieldState extends State<PasswordField> {
   late TextEditingController? controller;
 
   late Color? cursorColor;
-  late TextStyle? textStyle;
 
   @override
   void initState() {
@@ -92,7 +93,6 @@ class _PasswordFieldState extends State<PasswordField> {
     cornerRadius = widget.cornerRadius;
 
     cursorColor = widget.cursorColor;
-    textStyle = widget.textStyle;
 
     super.initState();
   }
@@ -104,15 +104,15 @@ class _PasswordFieldState extends State<PasswordField> {
         color: isError == false
             ? backgroundColor
             : (showDivider == false && showBorder == false)
-                ? Theme.of(context).errorColor
+                ? AppColorConstants.red
                 : backgroundColor,
         borderRadius: BorderRadius.circular(cornerRadius ?? 0),
         border: showBorder == true
             ? Border.all(
                 width: 0.5,
                 color: isError == true
-                    ? Theme.of(context).errorColor
-                    : borderColor ?? Theme.of(context).dividerColor)
+                    ? AppColorConstants.red
+                    : borderColor ?? AppColorConstants.dividerColor)
             : null,
       ),
       // margin: EdgeInsets.symmetric(vertical: 5),
@@ -121,35 +121,34 @@ class _PasswordFieldState extends State<PasswordField> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           (label != null && showLabelInNewLine == true)
-              ? Text(label!,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600))
-                  .bP4
+              ? BodyMediumText(label!, weight: TextWeight.medium).bP4
               : Container(),
           Expanded(
             child: Row(
               children: [
                 (label != null && showLabelInNewLine == false)
-                    ? Text(label!,
-                            style:
-                                Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600))
-                        .bP4
+                    ? BodyMediumText(label!, weight: TextWeight.medium).bP4
                     : Container(),
                 iconView(),
                 Expanded(
                     child: Focus(
                   child: TextField(
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: TextStyle(
+                              fontSize: FontSizes.h6,
+                              color: AppColorConstants.grayscale900),
                           controller: controller,
                           onChanged: onChanged,
-                          cursorColor: Theme.of(context).primaryColor,
+                          cursorColor: AppColorConstants.themeColor,
                           obscureText: !showPassword,
                           decoration: InputDecoration(
                             contentPadding:
                                 const EdgeInsets.only(left: 10, right: 10),
                             // labelText: hintText,
                             hintText: hintText,
-                            labelStyle: Theme.of(context).textTheme.bodyLarge,
-                            hintStyle: Theme.of(context).textTheme.titleMedium,
+                            labelStyle: TextStyle(fontSize: FontSizes.b2),
+                            hintStyle: TextStyle(
+                                fontSize: FontSizes.h6,
+                                color: AppColorConstants.grayscale500),
                             border: InputBorder.none,
                             floatingLabelBehavior: FloatingLabelBehavior.never,
                           ))
@@ -177,7 +176,7 @@ class _PasswordFieldState extends State<PasswordField> {
             children: [
               ThemeIconWidget(
                 showPassword == false ? ThemeIcon.showPwd : ThemeIcon.hidePwd,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 20,
               ).ripple(() {
                 setState(() {
@@ -197,10 +196,10 @@ class _PasswordFieldState extends State<PasswordField> {
         ? Container(
             height: 0.5,
             color: startedEditing == true
-                ? Theme.of(context).primaryColor
+                ? AppColorConstants.themeColor
                 : isError == true
-                    ? Theme.of(context).errorColor
-                    : Theme.of(context).dividerColor)
+                    ? AppColorConstants.red
+                    : AppColorConstants.dividerColor)
         : Container();
   }
 
@@ -208,7 +207,7 @@ class _PasswordFieldState extends State<PasswordField> {
     return icon != null
         ? ThemeIconWidget(
             icon!,
-            color: iconColor ?? Theme.of(context).primaryColor,
+            color: iconColor ?? AppColorConstants.themeColor,
             size: 20,
           ).rP16
         : Container();

@@ -1,4 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class MessageImage extends StatelessWidget {
   final ChatMessageModel message;
@@ -33,7 +36,7 @@ class MessageImage extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.done) {
               return imageFromUrl();
             } else {
-              return AppUtil.addProgressIndicator(context,100);
+              return AppUtil.addProgressIndicator(size:100);
             }
           }
         });
@@ -52,7 +55,7 @@ class MessageImage extends StatelessWidget {
           : BoxFit.contain,
       width: double.infinity,
       height: double.infinity,
-      placeholder: (context, url) => AppUtil.addProgressIndicator(context,100),
+      placeholder: (context, url) => AppUtil.addProgressIndicator(size:100),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     ).round(disableRoundCorner == false ? 10 : 0);
   }

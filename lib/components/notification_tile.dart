@@ -1,4 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../model/notification_modal.dart';
 
 class NotificationTileType4 extends StatelessWidget {
   final NotificationModel notification;
@@ -20,34 +22,42 @@ class NotificationTileType4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(notification.title,
-                  style: subTitleTextStyle ??
-                      Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontWeight: FontWeight.w700)),
-            ),
-            Text(notification.notificationTime(),
-                style: dateTextStyle ?? Theme.of(context).textTheme.bodySmall),
-          ],
-        ).bP8,
-        Text(notification.message,
-            style: titleTextStyle ?? Theme.of(context).textTheme.bodyMedium),
+        if (notification.actionBy != null)
+          UserAvatarView(user: notification.actionBy!),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BodyMediumText(notification.title, weight: TextWeight.semiBold)
+                  .bP8,
+              BodyMediumText(
+                notification.message,
+              ).bP8,
+              BodySmallText(
+                notification.notificationTime(),
+                color: AppColorConstants.grayscale500,
+              ),
+            ],
+          ).setPadding(top: 16, bottom: 16, left: 8, right: 8),
+        ),
+        if (notification.type == NotificationType.like ||
+            notification.type == NotificationType.comment)
+          CachedNetworkImage(
+                  height: 60,
+                  width: 60,
+                  imageUrl: notification.post!.gallery.first.thumbnail)
+              .round(10),
+        if (notification.type == NotificationType.follow)
+          if (notification.actionBy?.isFollowing == false)
+            AppThemeButton(text: LocalizationString.followBack, onPress: () {})
       ],
-    ).setPadding(top: 16, bottom: 16, left: 8, right: 8).shadowWithBorder(
-        context: context,
+    ).hP8.shadowWithBorder(
         borderWidth: 0.2,
         shadowOpacity: 0.5,
         borderColor: borderColor,
         radius: 10,
-        fillColor: backgroundColor ?? Theme.of(context).backgroundColor);
+        fillColor: backgroundColor ?? AppColorConstants.backgroundColor);
   }
 }

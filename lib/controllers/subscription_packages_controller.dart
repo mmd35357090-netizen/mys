@@ -1,8 +1,17 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
+import 'dart:io';
+import 'dart:async';
+import 'package:foap/util/ad_helper.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/model/package_model.dart';
+
 class SubscriptionPackageController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxList<PackageModel> packages = <PackageModel>[].obs;
   Rx<UserModel> user = UserModel().obs;
 
@@ -61,7 +70,7 @@ class SubscriptionPackageController extends GetxController {
     RewardedInterstitialAds().show(() {
       ApiController().rewardCoins().then((response) {
         if (response.success == true) {
-          getIt<UserProfileManager>().refreshProfile();
+          _userProfileManager.refreshProfile();
         } else {}
       });
     });
@@ -76,7 +85,6 @@ class SubscriptionPackageController extends GetxController {
         if (purchaseDetails.status == PurchaseStatus.error) {
           //show error
           AppUtil.showToast(
-              context: context,
               message: LocalizationString.purchaseError,
               isSuccess: false);
         } else if (purchaseDetails.status == PurchaseStatus.purchased) {
@@ -95,7 +103,7 @@ class SubscriptionPackageController extends GetxController {
               //       context: context,
               //       message: LocalizationString.coinsAdded,
               //       isSuccess: true);
-              //   getIt<UserProfileManager>().refreshProfile();
+              //   _userProfileManager.refreshProfile();
               //   if (response.success) {
               //     user.value.coins = packages[selectedPackage.value].coin;
               //   }
@@ -143,10 +151,9 @@ class SubscriptionPackageController extends GetxController {
             boughtPackage.price.toString())
         .then((response) {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.coinsAdded,
           isSuccess: true);
-      getIt<UserProfileManager>().refreshProfile();
+      _userProfileManager.refreshProfile();
       if (response.success) {
         user.value.coins = boughtPackage.coin;
       }
@@ -159,10 +166,9 @@ class SubscriptionPackageController extends GetxController {
             packages[0].id.toString(), purchaseId, packages[0].price.toString())
         .then((response) {
       AppUtil.showToast(
-          context: context,
           message: '${packages[0].coin} ${LocalizationString.coinsAdded}',
           isSuccess: true);
-      getIt<UserProfileManager>().refreshProfile();
+      _userProfileManager.refreshProfile();
       if (response.success) {
         user.value.coins = packages[0].coin;
       }

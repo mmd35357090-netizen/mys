@@ -1,4 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:foap/helper/imports/common_import.dart';
 
 
 ///This class will contain the necessary data of selected media

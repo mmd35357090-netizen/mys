@@ -1,7 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/profile/set_profile_category_controller.dart';
+import '../../../model/category_model.dart';
+import 'find_random_user.dart';
 
 class ChooseProfileCategory extends StatefulWidget {
   final bool isCalling;
@@ -28,7 +30,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -40,20 +42,15 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
           const SizedBox(
             height: 20,
           ),
-          Text(LocalizationString.setProfileCategoryType,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(fontWeight: FontWeight.w600)),
+          Heading3Text(LocalizationString.setProfileCategoryType,
+              ),
           const SizedBox(
             height: 20,
           ),
-          Text(LocalizationString.weWillSearchUserInCategory,
+          BodySmallText(LocalizationString.weWillSearchUserInCategory,
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w600)),
+              weight: TextWeight.medium,
+             ),
           const SizedBox(
             height: 20,
           ),
@@ -70,7 +67,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
                       children: [
                         Text(
                           category.name,
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: TextStyle(fontSize: FontSizes.h6),
                         ),
                         const ThemeIconWidget(ThemeIcon.nextArrow)
                       ],
@@ -84,7 +81,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
                   separatorBuilder: (ctx, index) {
                     return const SizedBox(height: 20);
                   }))),
-          FilledButtonType1(
+          AppThemeButton(
               text: LocalizationString.skip,
               onPress: () {
                 Get.to(() => FindRandomUser(isCalling: widget.isCalling));

@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/login_signup_imports.dart';
+
+import '../../universal_components/rounded_input_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -15,7 +18,7 @@ class ForgotPasswordState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
@@ -36,19 +39,12 @@ class ForgotPasswordState extends State<ForgotPasswordScreen> {
             ),
             Text(
               LocalizationString.forgotPwd,
-              style: Theme.of(context)
-                  .textTheme
-                  .displayMedium!
-                  .copyWith(color: Theme.of(context).primaryColor)
-                  .copyWith(fontWeight: FontWeight.w900),
+              style: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.bold,color: AppColorConstants.themeColor),
               textAlign: TextAlign.start,
             ),
-            Text(
+            Heading3Text(
               LocalizationString.helpToGetAccount,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall!
-                  .copyWith(fontWeight: FontWeight.w600),
+              weight: TextWeight.medium,
               textAlign: TextAlign.start,
             ).setPadding(top: 10, bottom: 80),
             addTextField(),
@@ -58,12 +54,9 @@ class ForgotPasswordState extends State<ForgotPasswordScreen> {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: Text(
+              child: Heading5Text(
                 LocalizationString.loginAnotherAccount,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
+                weight: TextWeight.medium,
                 textAlign: TextAlign.start,
               ).ripple(() {
                 Get.back();
@@ -88,16 +81,12 @@ class ForgotPasswordState extends State<ForgotPasswordScreen> {
   }
 
   addSubmitBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
         loginController.forgotPassword(email: email.text, context: context);
       },
       text: LocalizationString.sendOTP,
-      enabledTextStyle: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-      isEnabled: true,
+
     ).setPadding(top: 25);
   }
 }

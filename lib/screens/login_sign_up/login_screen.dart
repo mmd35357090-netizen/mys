@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/login_signup_imports.dart';
+
+import '../../universal_components/rounded_input_field.dart';
+import '../../universal_components/rounded_password_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -24,7 +28,7 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: GestureDetector(
             onTap: () {
@@ -38,19 +42,13 @@ class LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.08,
                     ),
-                    Text(LocalizationString.welcome,
-                        style: Theme.of(context)
-                            .textTheme
-                            .displayMedium!
-                            .copyWith(fontWeight: FontWeight.w900)),
+                    Heading3Text(LocalizationString.welcome,
+                        weight: TextWeight.bold),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.01,
                     ),
-                    Text(LocalizationString.signInMessage,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall!
-                            .copyWith(fontWeight: FontWeight.w600)),
+                    Heading3Text(LocalizationString.signInMessage,
+                        weight: TextWeight.medium),
 
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.1,
@@ -58,7 +56,6 @@ class LoginScreenState extends State<LoginScreen> {
                     InputField(
                       controller: email,
                       showDivider: true,
-                      textStyle: Theme.of(context).textTheme.titleSmall,
                       hintText: LocalizationString.emailOrUsername,
                       cornerRadius: 5,
                     ),
@@ -72,10 +69,9 @@ class LoginScreenState extends State<LoginScreen> {
                       cornerRadius: 5,
                       hintText: LocalizationString.password,
                       showRevealPasswordIcon: true,
-                      textStyle: Theme.of(context)
-                          .textTheme
-                          .titleSmall!
-                          .copyWith(color: Theme.of(context).primaryColor),
+                      textStyle: TextStyle(
+                          fontSize: FontSizes.h6,
+                          color: AppColorConstants.themeColor),
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.04,
@@ -89,13 +85,11 @@ class LoginScreenState extends State<LoginScreen> {
                         Get.to(() => const ForgotPasswordScreen());
                       },
                       child: Center(
-                        child: Text(LocalizationString.forgotPwd,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: Theme.of(context).primaryColor)),
+                        child: BodyMediumText(
+                          LocalizationString.forgotPwd,
+                          weight: TextWeight.bold,
+                          color: AppColorConstants.themeColor,
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -107,39 +101,34 @@ class LoginScreenState extends State<LoginScreen> {
                         Container(
                           height: 1,
                           width: MediaQuery.of(context).size.width * 0.37,
-                          color: Theme.of(context).primaryColor,
+                          color: AppColorConstants.themeColor,
                         ),
-                        Text(
+                        Heading6Text(
                           LocalizationString.or,
-                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         Container(
                           height: 1,
                           width: MediaQuery.of(context).size.width * 0.37,
-                          color: Theme.of(context).primaryColor,
+                          color: AppColorConstants.themeColor,
                         )
                       ],
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.04,
                     ),
-                    const SocialLogin().setPadding(left: 65, right: 65),
+                    const SocialLogin(hidePhoneLogin: false).setPadding(left: 65, right: 65),
                     const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        Heading6Text(
                           LocalizationString.dontHaveAccount,
-                          style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        Text(LocalizationString.signUp,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).primaryColor))
-                            .ripple(() {
+                        Heading6Text(
+                          LocalizationString.signUp,
+                          weight: TextWeight.medium,
+                          color: AppColorConstants.themeColor,
+                        ).ripple(() {
                           Get.to(() => const SignUpScreen());
                         }),
                       ],
@@ -156,16 +145,11 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Widget addLoginBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
-        controller.login(email.text.trim(), password.text.trim(), context);
+        controller.login(email.text.trim(), password.text.trim());
       },
       text: LocalizationString.signIn,
-      enabledTextStyle: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-      isEnabled: true,
     );
   }
 }

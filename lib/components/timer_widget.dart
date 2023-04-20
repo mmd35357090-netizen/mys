@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:async';
+import 'package:foap/helper/imports/common_import.dart';
 
 class TimerView extends StatefulWidget {
   final Function? updateTimerStatus;
@@ -46,12 +47,9 @@ class TimerViewState extends State<TimerView> {
     return _getResendVerificationButton();
   }
 
-  Widget _getResendVerificationButton() =>
-      Text(getFormatDuration(Duration(seconds: _counter)),
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall!
-              .copyWith(fontWeight: FontWeight.w600));
+  Widget _getResendVerificationButton() => Heading6Text(
+        getFormatDuration(Duration(seconds: _counter)),
+      );
 
   String getFormatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");

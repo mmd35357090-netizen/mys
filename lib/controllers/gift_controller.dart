@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
+
+import '../apiHandler/api_controller.dart';
+import '../model/category_model.dart';
+import '../model/gift_model.dart';
 
 class GiftController extends GetxController {
   RxList<GiftCategoryModel> giftsCategories = <GiftCategoryModel>[].obs;

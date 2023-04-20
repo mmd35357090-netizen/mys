@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class ImageChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -23,7 +24,7 @@ class ImageChatTile extends StatelessWidget {
                 top: 0,
                 bottom: 0,
                 child:
-                    Center(child: AppUtil.addProgressIndicator(context, 100)))
+                    Center(child: AppUtil.addProgressIndicator(size:100)))
             : Container()
       ],
     );

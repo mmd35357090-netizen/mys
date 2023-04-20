@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class ReplyTextChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -20,8 +21,8 @@ class ReplyTextChatTile extends StatelessWidget {
         Container(
             height: 70,
             color: message.isMineMessage
-                ? Theme.of(context).disabledColor
-                : Theme.of(context).primaryColor,
+                ? AppColorConstants.disabledColor
+                : AppColorConstants.themeColor,
             child: ReplyOriginalMessageTile(
               message: message.repliedOnMessage,
               replyMessageTapHandler: replyMessageTapHandler,
@@ -29,10 +30,9 @@ class ReplyTextChatTile extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        Text(
+        BodyLargeText(
           message.textMessage,
           maxLines: 1,
-          style: Theme.of(context).textTheme.bodyLarge,
         ).round(8),
       ],
     );

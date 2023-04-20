@@ -1,4 +1,4 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/faq_controller.dart';
@@ -19,7 +19,7 @@ class _FaqListState extends State<FaqList> {
   //   {'question' :'5.Faq5', 'answer': 'Faq answer5'},
   // ];
 
-  final FAQController _faqController = Get.find();
+  final FAQController _faqController = FAQController();
 
   @override
   void initState() {
@@ -29,36 +29,42 @@ class _FaqListState extends State<FaqList> {
 
   @override
   void dispose() {
-   // _faqController.dispose();
+    // _faqController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
             height: 50,
           ),
-          backNavigationBar(context:context, title:LocalizationString.faq),
+          backNavigationBar(context: context, title: LocalizationString.faq),
           divider(context: context).tP8,
           Expanded(
-            child: Obx(()=> ListView.builder(
+              child: Obx(
+            () => ListView.builder(
                 padding: const EdgeInsets.only(bottom: 50),
                 itemCount: _faqController.faqs.length,
                 itemBuilder: (ctx, index) {
                   return ExpansionTile(
-                    title: Text(_faqController.faqs[index].question, style: Theme.of(context).textTheme.bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900)),
-                    children:  <Widget>[
-                      ListTile(title: Text(_faqController.faqs[index].answer, style: Theme.of(context).textTheme.bodyLarge)),
+                    title: BodyLargeText(
+                      _faqController.faqs[index].question,
+                      weight: TextWeight.bold,
+                    ),
+                    children: <Widget>[
+                      ListTile(
+                          title: BodyLargeText(
+                        _faqController.faqs[index].answer,
+                      )),
                     ],
                     onExpansionChanged: (bool expanded) {},
                   );
-                }),)
-          )
+                }),
+          ))
         ],
       ),
     );

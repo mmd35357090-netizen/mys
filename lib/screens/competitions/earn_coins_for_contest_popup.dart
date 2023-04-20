@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../settings_menu/packages_screen.dart';
 
 class EarnCoinForContestPopup extends StatefulWidget {
   final int needCoins;
@@ -16,7 +18,7 @@ class _EarnCoinForContestPopupState extends State<EarnCoinForContestPopup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -27,40 +29,25 @@ class _EarnCoinForContestPopupState extends State<EarnCoinForContestPopup> {
           const Spacer(),
           Container(
                   height: 450,
-                  color: Theme.of(context).backgroundColor,
+                  color: AppColorConstants.backgroundColor,
                   child: Column(
                     children: [
-                      Text(
+                      Heading6Text(
                         LocalizationString.youNeed,
-                        style: Theme.of(context).textTheme.titleSmall,
                       ).bp(20),
-                      Text(
+                      Heading4Text(
                         '${widget.needCoins} ${LocalizationString.coins}',
-                        style: Theme.of(context)
-                            .textTheme
-                            .displaySmall!
-                            .copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).primaryColor),
+                        weight: TextWeight.bold,
+                        color: AppColorConstants.themeColor,
                       ).bp(15),
-                      Text(
+                      Heading6Text(
                         LocalizationString.toJoinThisCompetition,
-                        style: Theme.of(context).textTheme.titleSmall,
                       ).bp(120),
-                      Text(
+                      Heading5Text(
                         LocalizationString.watchAdsToEarnCoins,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(color: Theme.of(context).primaryColor),
+                        color: AppColorConstants.themeColor,
                       ).ripple(() {}).bp(20),
-                      FilledButtonType1(
-                        isEnabled: true,
-                        enabledTextStyle: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(fontWeight: FontWeight.w900)
-                            .copyWith(color: Colors.white),
+                      AppThemeButton(
                         text: LocalizationString.buyCoins,
                         onPress: () {
                           Get.back();

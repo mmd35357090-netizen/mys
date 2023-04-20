@@ -1,9 +1,16 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/screens/profile/other_user_profile.dart';
+
+import '../model/post_model.dart';
+import '../model/post_search_query.dart';
 
 class PostController extends GetxController {
   RxList<PostModel> posts = <PostModel>[].obs;
   RxList<PostModel> mentions = <PostModel>[].obs;
+
+  Rx<PostInsight?> insight = Rx<PostInsight?>(null);
 
   int totalPages = 100;
 
@@ -147,32 +154,10 @@ class PostController extends GetxController {
         ApiController().reportPost(postId).then((response) async {});
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: true);
+            message: LocalizationString.noInternet, isSuccess: true);
       }
     });
   }
-
-  // void likeUnlikePost(PostModel post, BuildContext context) {
-  //   post.isLike = !post.isLike;
-  //   post.totalLike = post.isLike ? (post.totalLike) + 1 : (post.totalLike) - 1;
-  //   AppUtil.checkInternet().then((value) async {
-  //     if (value) {
-  //       ApiController()
-  //           .likeUnlike(post.isLike, post.id)
-  //           .then((response) async {});
-  //     } else {
-  //       AppUtil.showToast(
-  //           context: context,
-  //           message: LocalizationString.noInternet,
-  //           isSuccess: true);
-  //     }
-  //   });
-  //
-  //   posts.refresh();
-  //   update();
-  // }
 
   postTextTapHandler({required PostModel post, required String text}) {
     if (text.startsWith('#')) {
@@ -201,5 +186,12 @@ class PostController extends GetxController {
         // print('not found');
       }
     }
+  }
+
+  viewInsight(int postId) {
+    ApiController().getPostInsight(postId).then((response) {
+      insight.value = response.insight;
+      insight.refresh();
+    });
   }
 }

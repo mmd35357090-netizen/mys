@@ -1,5 +1,9 @@
 import 'package:foap/components/call_history_tile.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/controllers/chat_and_call/call_history_controller.dart';
+import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/chat/chat_detail.dart';
+import 'package:foap/screens/chat/select_users.dart';
 import 'package:get/get.dart';
 
 class CallHistory extends StatefulWidget {
@@ -10,7 +14,7 @@ class CallHistory extends StatefulWidget {
 }
 
 class _CallHistoryState extends State<CallHistory> {
-  final CallHistoryController _callHistoryController = Get.find();
+  final CallHistoryController _callHistoryController = CallHistoryController();
   final ChatDetailController _chatDetailController = Get.find();
 
   @override
@@ -28,7 +32,7 @@ class _CallHistoryState extends State<CallHistory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -68,7 +72,7 @@ class _CallHistoryState extends State<CallHistory> {
                                   .ripple(() {
                                 _callHistoryController.reInitiateCall(
                                     call: _callHistoryController.calls[index],
-                                    context: context);
+                                    );
                               });
                             },
                             separatorBuilder: (ctx, index) {

@@ -1,12 +1,16 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../screens/settings_menu/settings_controller.dart';
 
 class ForceUpdateView extends StatelessWidget {
   ForceUpdateView({Key? key}) : super(key: key);
-  SettingsController settingsController = Get.find();
+  final SettingsController settingsController = Get.find();
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      color: AppColorConstants.backgroundColor,
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: Center(
@@ -21,23 +25,17 @@ class ForceUpdateView extends StatelessWidget {
             'assets/force_update.png',
             fit: BoxFit.contain,
           ).p25),
-          Text(
+          Heading4Text(
             LocalizationString.timeToUpdateApp.toUpperCase(),
-            style: Theme.of(context)
-                .textTheme
-                .displaySmall!
-                .copyWith(fontWeight: FontWeight.w900),
+            weight: TextWeight.bold,
             textAlign: TextAlign.center,
           ).hP25,
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.03,
           ),
-          Text(
+          Heading3Text(
             LocalizationString.usingOlderVersionMessage,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(fontWeight: FontWeight.w300),
+            weight: TextWeight.regular,
             textAlign: TextAlign.center,
           ).hP25,
           SizedBox(
@@ -46,7 +44,7 @@ class ForceUpdateView extends StatelessWidget {
           SizedBox(
             height: 50,
             width: 280,
-            child: FilledButtonType1(
+            child: AppThemeButton(
               cornerRadius: 25,
               text: LocalizationString.update,
               onPress: () async {
@@ -71,6 +69,7 @@ class InvalidPurchaseView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColorConstants.backgroundColor,
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -86,23 +85,17 @@ class InvalidPurchaseView extends StatelessWidget {
               'assets/force_update.png',
               fit: BoxFit.contain,
             ).p25),
-            Text(
+            Heading4Text(
               'Invalid purchase code'.toUpperCase(),
-              style: Theme.of(context)
-                  .textTheme
-                  .displaySmall!
-                  .copyWith(fontWeight: FontWeight.w900),
+              weight: TextWeight.bold,
               textAlign: TextAlign.center,
             ).hP25,
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.03,
             ),
-            Text(
+            Heading3Text(
               'Please buy the original code from codecanyon.net to use this app',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(fontWeight: FontWeight.w300),
+              weight: TextWeight.regular,
               textAlign: TextAlign.center,
             ).hP25,
             SizedBox(
@@ -111,7 +104,7 @@ class InvalidPurchaseView extends StatelessWidget {
             SizedBox(
               height: 50,
               width: 280,
-              child: FilledButtonType1(
+              child: AppThemeButton(
                 cornerRadius: 25,
                 text: LocalizationString.ok,
                 onPress: () async {

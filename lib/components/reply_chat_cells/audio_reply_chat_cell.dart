@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+
+import '../../manager/player_manager.dart';
 
 class ReplyAudioChatTile extends StatefulWidget {
   final ChatMessageModel message;
@@ -39,8 +42,8 @@ class _ReplyAudioChatTileState extends State<ReplyAudioChatTile> {
         Container(
                 height: 70,
                 color: widget.message.isMineMessage
-                    ? Theme.of(context).disabledColor.withOpacity(0.2)
-                    : Theme.of(context).primaryColor.withOpacity(0.2),
+                    ? AppColorConstants.disabledColor
+                    : AppColorConstants.themeColor.withOpacity(0.2),
                 child: ReplyOriginalMessageTile(
                     message: widget.message.repliedOnMessage,
                     replyMessageTapHandler: widget.replyMessageTapHandler))

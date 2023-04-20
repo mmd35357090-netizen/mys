@@ -1,7 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:chewie/chewie.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
-
+import 'package:video_player/video_player.dart';
+import '../controllers/live_tv_streaming_controller.dart';
 import '../model/live_tv_model.dart';
+import '../screens/settings_menu/settings_controller.dart';
 
 class SocialifiedVideoPlayer extends StatefulWidget {
   final String url;
@@ -104,9 +107,9 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                             // from a non-existent URL
                             errorBuilder: (context, errorMessage) {
                               return Center(
-                                child: Text(
+                                child: BodyLargeText(
                                   errorMessage,
-                                  style: const TextStyle(color: Colors.white),
+                                  color: AppColorConstants.grayscale100,
                                 ),
                               );
                             },
@@ -137,9 +140,8 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
+                      Heading4Text(
                         LocalizationString.subscribeChannelToView,
-                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(
                         height: 20,
@@ -147,7 +149,7 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                       SizedBox(
                         height: 50,
                         width: 250,
-                        child: FilledButtonType1(
+                        child: AppThemeButton(
                           text:
                           '${LocalizationString.subscribeUsing} (${widget.tvModel!.coinsNeededToUnlock} ${LocalizationString.coins})',
                           onPress: () {
@@ -159,7 +161,6 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                                   isFreeTimePlayed = false;
 
                                   AppUtil.showToast(
-                                      context: context,
                                       message: LocalizationString
                                           .youAreSubscribedNow,
                                       isSuccess: true);
@@ -182,14 +183,14 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
               top: 0,
               child: Container(
                 height: 80,
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: AppColorConstants.themeColor.withOpacity(0.1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ThemeIconWidget(
                       ThemeIcon.backArrow,
                       size: 18,
-                      color: Theme.of(context).iconTheme.color,
+                      color: AppColorConstants.iconColor,
                     ).ripple(() {
                       Get.back();
                     }),

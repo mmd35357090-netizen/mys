@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+
+import '../../components/custom_gallery_picker.dart';
 
 class ChooseMediaForChat extends StatefulWidget {
   final Function(List<Media>) selectedMediaCompletetion;
@@ -12,7 +15,7 @@ class ChooseMediaForChat extends StatefulWidget {
 }
 
 class _ChooseMediaForChatState extends State<ChooseMediaForChat> {
-  final SelectMediaController selectMediaController = Get.find();
+  final SelectMediaController selectMediaController = SelectMediaController();
 
   @override
   void initState() {
@@ -51,7 +54,7 @@ class _ChooseMediaForChatState extends State<ChooseMediaForChat> {
                               bottom: 0,
                               right: 0,
                               child: Container(
-                                color: Theme.of(context).primaryColor,
+                                color: AppColorConstants.themeColor,
                                 height: 60,
                                 width: 60,
                                 child: const ThemeIconWidget(
@@ -77,11 +80,11 @@ class _ChooseMediaForChatState extends State<ChooseMediaForChat> {
           child: Container(
             height: 50,
             width: 50,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: Center(
               child: ThemeIconWidget(
                 ThemeIcon.close,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 25,
               ),
             ),

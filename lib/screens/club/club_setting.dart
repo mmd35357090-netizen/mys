@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 class ClubSettings extends StatefulWidget {
@@ -18,12 +19,12 @@ class ClubSettings extends StatefulWidget {
 }
 
 class _ClubSettingsState extends State<ClubSettings> {
-  final ClubsController _clubsController = Get.find();
+  final ClubsController _clubsController = ClubsController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -37,9 +38,8 @@ class _ClubSettingsState extends State<ClubSettings> {
               children: [
                 Row(
                   children: [
-                    Text(
+                    Heading6Text(
                       LocalizationString.editClubInfo,
-                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const Spacer(),
                     const ThemeIconWidget(
@@ -59,9 +59,8 @@ class _ClubSettingsState extends State<ClubSettings> {
                 divider(context: context).vP16,
                 Row(
                   children: [
-                    Text(
+                    Heading6Text(
                       LocalizationString.editClubImage,
-                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const Spacer(),
                     const ThemeIconWidget(
@@ -81,18 +80,13 @@ class _ClubSettingsState extends State<ClubSettings> {
                 divider(context: context).vP16,
                 Row(
                   children: [
-                    Text(
-                      LocalizationString.deleteClub,
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).errorColor),
-                    ),
+                    Heading6Text(LocalizationString.deleteClub,
+                        weight: TextWeight.medium, color: AppColorConstants.red),
                   ],
                 ).ripple(() {
                   AppUtil.showConfirmationAlert(
                       title: LocalizationString.deleteClub,
                       subTitle: LocalizationString.areYouSureToDeleteClub,
-                      cxt: context,
                       okHandler: () {
                         _clubsController.deleteClub(
                             club: widget.club,

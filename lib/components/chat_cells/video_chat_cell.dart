@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class VideoChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -14,21 +15,6 @@ class VideoChatTile extends StatelessWidget {
       // width: 280,
       child: Stack(
         children: [
-          // message.media != null
-          //     ? Stack(
-          //   children: [
-          //     Image.memory(
-          //       message.media!.thumbnail!,
-          //       fit: BoxFit.cover,
-          //       height: double.infinity,
-          //       width: double.infinity,
-          //     ).round(15),
-          //     Positioned(
-          //         child: Center(
-          //             child: AppUtil.addProgressIndicator(context))),
-          //   ],
-          // )
-          //     :
           MessageImage(
             message: message,
             fitMode: BoxFit.cover,
@@ -51,7 +37,7 @@ class VideoChatTile extends StatelessWidget {
           message.messageStatusType == MessageStatus.sending
               ? Positioned(
                   child:
-                      Center(child: AppUtil.addProgressIndicator(context, 100)))
+                      Center(child: AppUtil.addProgressIndicator(size:100)))
               : Container()
         ],
       ),

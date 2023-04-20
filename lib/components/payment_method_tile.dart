@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../screens/settings_menu/settings_controller.dart';
 
 class PaymentMethodTile extends StatelessWidget {
   const PaymentMethodTile({
@@ -19,7 +21,7 @@ class PaymentMethodTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final SettingsController settingsController = Get.find();
     return Container(
-            color: settingsController.isDarkMode.value
+            color: settingsController.darkMode.value
                 ? Colors.white
                 : Colors.black,
             height: 50,

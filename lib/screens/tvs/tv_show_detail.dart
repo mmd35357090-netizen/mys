@@ -1,8 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:auto_orientation/auto_orientation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/model/live_tv_model.dart';
 
+import '../../components/live_tv_player.dart';
 import '../../model/tv_show_model.dart';
+import 'package:foap/helper/imports/tv_imports.dart';
 
 class TVShowDetail extends StatefulWidget {
   final TvModel tvModel;
@@ -59,7 +64,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
       }
       return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
         return Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor,
+          backgroundColor: AppColorConstants.backgroundColor,
           body: Column(
             children: [
               if (orientation == Orientation.portrait)
@@ -100,35 +105,6 @@ class _TVShowDetailState extends State<TVShowDetail> {
       });
     });
   }
-
-  // Widget segmentView() {
-  //   List<String> tabs = [
-  //     LocalizationString.info,
-  //     LocalizationString.chat,
-  //   ];
-  //   return DefaultTabController(
-  //     length: tabs.length,
-  //     initialIndex: 0,
-  //     child: SizedBox(
-  //       height: 460,
-  //       child: Column(children: [
-  //         TabBar(
-  //           labelColor: Colors.white,
-  //           unselectedLabelColor: Theme.of(context).dividerColor,
-  //           tabs: List.generate(tabs.length, (int index) {
-  //             return Tab(
-  //               text: tabs[index],
-  //             );
-  //           }),
-  //         ),
-  //         const SizedBox(
-  //           height: 10,
-  //         ),
-  //         Expanded(child: TabBarView(children: [detailView(), liveChatView()]))
-  //       ]),
-  //     ),
-  //   );
-  // }
 
   Widget detailView() {
     return ListView.builder(
@@ -173,13 +149,13 @@ class _TVShowDetailState extends State<TVShowDetail> {
         Row(
           children: [
             Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: Text(widget.showModel.ageGroup ?? "")
                         .setPadding(left: 10, right: 10, top: 5, bottom: 5))
                 .round(10),
             const SizedBox(width: 10),
             Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: Text(widget.showModel.language ?? "")
                         .setPadding(left: 10, right: 10, top: 5, bottom: 5))
                 .round(10),
@@ -198,19 +174,11 @@ class _TVShowDetailState extends State<TVShowDetail> {
             ),
             Column(
               children: [
-                Text(
+                BodyLargeText(
                   widget.showModel.name ?? '',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.w700),
+                  weight: TextWeight.semiBold,
                   // maxLines: 3,
                 ),
-                // Text(
-                //   widget.tvModel.description,
-                //   style: Theme.of(context).textTheme.bodySmall,
-                //   // maxLines: 3,
-                // )
               ],
             )
           ],
@@ -218,9 +186,8 @@ class _TVShowDetailState extends State<TVShowDetail> {
         const SizedBox(
           height: 10,
         ),
-        Text(
+        BodyMediumText(
           widget.showModel.description ?? '',
-          style: Theme.of(context).textTheme.bodyMedium,
           // maxLines: 3,
         ),
       ],

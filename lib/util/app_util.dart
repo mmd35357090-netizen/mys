@@ -1,12 +1,9 @@
 import 'package:connectivity/connectivity.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 class AppUtil {
-  static showToast(
-      {required BuildContext context,
-      required String message,
-      required bool isSuccess}) {
+  static showToast({required String message, required bool isSuccess}) {
     Get.snackbar(
         isSuccess == true
             ? LocalizationString.success
@@ -14,16 +11,16 @@ class AppUtil {
         message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: isSuccess == true
-            ? Theme.of(context).primaryColor.darken()
-            : Theme.of(context).errorColor.lighten(),
-        icon: Icon(Icons.error, color: Theme.of(context).iconTheme.color));
+            ? AppColorConstants.themeColor.darken()
+            : AppColorConstants.red.lighten(),
+        icon: Icon(Icons.error, color: AppColorConstants.iconColor));
   }
 
   static void hideKeyboard(BuildContext context) {
     FocusScope.of(context).requestFocus(FocusNode());
   }
 
-  static Widget addProgressIndicator(BuildContext context, double? size) {
+  static Widget addProgressIndicator({double? size}) {
     return Center(
         child: SizedBox(
       width: size ?? 50,
@@ -31,8 +28,7 @@ class AppUtil {
       child: CircularProgressIndicator(
           strokeWidth: 2.0,
           backgroundColor: Colors.black12,
-          valueColor:
-              AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor)),
+          valueColor: AlwaysStoppedAnimation<Color>(AppColorConstants.themeColor)),
     ));
   }
 
@@ -59,11 +55,9 @@ class AppUtil {
   static void showConfirmationAlert(
       {required String title,
       required String subTitle,
-      required BuildContext cxt,
       required VoidCallback okHandler}) {
-    print('showDialog');
     showDialog(
-      context: cxt,
+      context: Get.context!,
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -71,21 +65,21 @@ class AppUtil {
           child: Container(
             height: 200,
             width: Get.width,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w900)),
+                Heading3Text(
+                  title,
+                  color: AppColorConstants.themeColor,
+                  weight: TextWeight.bold,
+                ),
                 const SizedBox(
                   height: 10,
                 ),
-                Text(
+                Heading6Text(
                   subTitle,
-                  style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(
                   height: 20,
@@ -98,7 +92,7 @@ class AppUtil {
                         SizedBox(
                           width: 100,
                           height: 40,
-                          child: BorderButtonType1(
+                          child: AppThemeBorderButton(
                               text: LocalizationString.yes,
                               onPress: () {
                                 Get.back(closeOverlays: true);
@@ -111,8 +105,8 @@ class AppUtil {
                         SizedBox(
                           width: 100,
                           height: 40,
-                          child: FilledButtonType1(
-                              isEnabled: true,
+                          child: AppThemeButton(
+
                               text: LocalizationString.no,
                               onPress: () {
                                 Get.back(closeOverlays: true);
@@ -136,10 +130,9 @@ class AppUtil {
   static void showDemoAppConfirmationAlert(
       {required String title,
       required String subTitle,
-      required BuildContext cxt,
       required VoidCallback okHandler}) {
     showDialog(
-      context: cxt,
+      context: Get.context!,
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -147,21 +140,21 @@ class AppUtil {
           child: Container(
             height: 200,
             width: Get.width,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w900)),
+                Heading3Text(
+                  title,
+                  color: AppColorConstants.themeColor,
+                  weight: TextWeight.bold,
+                ),
                 const SizedBox(
                   height: 10,
                 ),
-                Text(
+                BodyLargeText(
                   subTitle,
-                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(
                   height: 25,
@@ -174,7 +167,7 @@ class AppUtil {
                         SizedBox(
                           width: 100,
                           height: 30,
-                          child: BorderButtonType1(
+                          child: AppThemeBorderButton(
                               text: LocalizationString.ok,
                               onPress: () {
                                 Get.back(closeOverlays: true);

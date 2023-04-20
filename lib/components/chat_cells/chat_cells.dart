@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ChatMessageTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -32,7 +34,7 @@ class ChatMessageTile extends StatelessWidget {
                                 ? ThemeIcon.checkMarkWithCircle
                                 : ThemeIcon.circleOutline,
                             size: 20,
-                            color: Theme.of(context).disabledColor,
+                            color: AppColorConstants.disabledColor,
                           ).ripple(() {
                             chatDetailController.selectMessage(message);
                           }),
@@ -50,8 +52,8 @@ class ChatMessageTile extends StatelessWidget {
                               MessageContentType.sticker
                       ? Colors.transparent
                       : message.isMineMessage
-                          ? Theme.of(context).backgroundColor
-                          : Theme.of(context).primaryColor.darken(0.05),
+                          ? AppColorConstants.backgroundColor
+                          : AppColorConstants.themeColor.darken(0.05),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -62,11 +64,10 @@ class ChatMessageTile extends StatelessWidget {
                                 ThemeIconWidget(
                                   ThemeIcon.fwd,
                                   size: 15,
-                                  color: Theme.of(context).iconTheme.color,
+                                  color: AppColorConstants.iconColor,
                                 ).rotate(-40).rP4,
-                                Text(
+                                BodyLargeText(
                                   LocalizationString.forward,
-                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               ],
                             )
@@ -178,12 +179,10 @@ class ChatMessageTile extends StatelessWidget {
   }
 
   Widget nameWidget(BuildContext context) {
-    return Text(
+    return BodyLargeText(
       message.isMineMessage ? LocalizationString.you : message.sender!.userName,
-      style: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900),
+      weight: TextWeight.bold,
+
     );
   }
 }
@@ -219,16 +218,13 @@ class MessageDeliveryStatusView extends StatelessWidget {
             message.isStar == 1
                 ? ThemeIconWidget(
                     ThemeIcon.filledStar,
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     size: 15,
                   ).rP4
                 : Container(),
-            Text(
+            BodySmallText(
               message.messageTime,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w600),
+              weight:TextWeight.medium,
             ),
             const SizedBox(
               width: 5,
@@ -245,7 +241,7 @@ class MessageDeliveryStatusView extends StatelessWidget {
                     size: 15,
                     color: message.messageStatusType == MessageStatus.read
                         ? Colors.blue
-                        : Theme.of(context).iconTheme.color,
+                        : AppColorConstants.iconColor,
                   )
                 : Container(),
           ],

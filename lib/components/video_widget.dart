@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'dart:math';
-import 'package:foap/helper/common_import.dart';
+import 'package:chewie/chewie.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:video_player/video_player.dart';
 
 bool isMute = false;
 
@@ -20,7 +23,6 @@ class VideoPostTile extends StatefulWidget {
 }
 
 class _VideoPostTileState extends State<VideoPostTile> {
-  // final VideoPostTileController videoPostTileController = Get.find();
   late Future<void> initializeVideoPlayerFuture;
   VideoPlayerController? videoPlayerController;
   bool isPlayed = false;

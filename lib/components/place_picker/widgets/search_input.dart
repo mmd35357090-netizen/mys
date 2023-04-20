@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 /// Custom Search input field, showing the search and clear icons.
 class SearchInput extends StatefulWidget {
@@ -61,8 +61,7 @@ class SearchInputState extends State<SearchInput> {
       ),
       child: Row(
         children: <Widget>[
-          Icon(Icons.search,
-              color: Theme.of(context).textTheme.bodyLarge!.color),
+          Icon(Icons.search, color: AppColorConstants.iconColor),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(

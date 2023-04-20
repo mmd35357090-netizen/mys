@@ -1,5 +1,11 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/call_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:pip_view/pip_view.dart';
+import 'package:wakelock/wakelock.dart';
+
+import '../../components/timer_widget.dart';
+import '../dashboard/dashboard_screen.dart';
 
 class AudioCallingScreen extends StatefulWidget {
   final Call call;
@@ -125,14 +131,11 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
         children: [
           agoraCallController.reConnectingRemoteView.value == true
               ? Container(
-                  color: Theme.of(context).errorColor,
+                  color: AppColorConstants.red,
                   child: Center(
-                      child: Text(
+                      child: Heading3Text(
                     LocalizationString.reConnecting,
-                    style: Theme.of(context)
-                        .textTheme
-                        .displaySmall!
-                        .copyWith(color: Colors.white),
+                    color: AppColorConstants.grayscale100,
                   )))
               : const SizedBox(),
           Center(child: opponentInfo(isFloating)),
@@ -163,20 +166,18 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
+              Heading3Text(
                 widget.call.opponent.userName,
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall!
-                    .copyWith(color: Colors.white, fontWeight: FontWeight.w900),
+                weight: TextWeight.bold,
+                color: AppColorConstants.grayscale100,
               ),
               const SizedBox(
                 height: 5,
               ),
-              Text(
+              BodyLargeText(
                 LocalizationString.ringing,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Colors.white70, fontWeight: FontWeight.w600),
+                weight: TextWeight.medium,
+                color: AppColorConstants.grayscale500,
               )
             ],
           );
@@ -210,8 +211,8 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
           children: <Widget>[
             Obx(() => Container(
                   color: agoraCallController.mutedAudio.value
-                      ? Theme.of(context).primaryColor.withOpacity(0.5)
-                      : Theme.of(context).primaryColor,
+                      ? AppColorConstants.themeColor.withOpacity(0.5)
+                      : AppColorConstants.themeColor,
                   height: 50,
                   width: 50,
                   child: ThemeIconWidget(
@@ -225,7 +226,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
               agoraCallController.onToggleMuteAudio();
             }),
             Container(
-              color: Theme.of(context).errorColor,
+              color: AppColorConstants.red,
               height: 50,
               width: 50,
               child: const ThemeIconWidget(
@@ -247,7 +248,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              color: Theme.of(context).errorColor,
+              color: AppColorConstants.red,
               height: 50,
               width: 50,
               child: const ThemeIconWidget(
@@ -259,7 +260,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
               agoraCallController.declineCall(call: widget.call);
             }),
             Container(
-              color: Theme.of(context).primaryColor,
+              color: AppColorConstants.themeColor,
               height: 50,
               width: 50,
               child: const ThemeIconWidget(

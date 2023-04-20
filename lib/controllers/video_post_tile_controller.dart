@@ -1,6 +1,7 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:get/get.dart';
+import 'dart:async';
 
+import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 class VideoPostTileController extends GetxController {
   late Future<void> initializeVideoPlayerFuture;
   VideoPlayerController? videoPlayerController;

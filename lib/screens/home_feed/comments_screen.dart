@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:async';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:profanity_filter/profanity_filter.dart';
+import '../../components/comment_card.dart';
+import '../../components/hashtag_tile.dart';
+import '../../components/user_card.dart';
+import '../../controllers/comments_controller.dart';
+import '../../model/post_model.dart';
 
 class CommentsScreen extends StatefulWidget {
   final PostModel? model;
@@ -35,7 +42,7 @@ class CommentsScreenState extends State<CommentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Theme.of(context).backgroundColor,
+        color: AppColorConstants.cardColor.darken(),
         child: Column(
           children: <Widget>[
             SizedBox(
@@ -50,7 +57,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                     child: Container(
                       // height: 500,
                       width: double.infinity,
-                      color: Theme.of(context).disabledColor.withOpacity(0.1),
+                      color: AppColorConstants.disabledColor,
                       child: _commentsController.hashTags.isNotEmpty
                           ? hashTagView()
                           : _commentsController.searchedUsers.isNotEmpty
@@ -109,16 +116,14 @@ class CommentsScreenState extends State<CommentsScreen> {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: LocalizationString.writeComment,
-                hintStyle: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
+                hintStyle: TextStyle(
+                    fontSize: FontSizes.h6,
+                    color: AppColorConstants.grayscale700),
               ),
               textInputAction: TextInputAction.send,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: FontSizes.h6,
+                  color: AppColorConstants.grayscale900),
               onSubmitted: (_) {
                 addNewMessage();
               },
@@ -129,14 +134,14 @@ class CommentsScreenState extends State<CommentsScreen> {
                         .jumpTo(_controller.position.maxScrollExtent));
               },
             ).hP8;
-          }).borderWithRadius(context: context, value: 0.5, radius: 25)),
+          }).borderWithRadius(value: 0.5, radius: 25)),
           SizedBox(
             width: 50.0,
             child: InkWell(
               onTap: addNewMessage,
               child: Icon(
                 Icons.send,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
               ),
             ),
           )
@@ -151,9 +156,7 @@ class CommentsScreenState extends State<CommentsScreen> {
       bool hasProfanity = filter.hasProfanity(commentInputField.text);
       if (hasProfanity) {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.notAllowedMessage,
-            isSuccess: true);
+            message: LocalizationString.notAllowedMessage, isSuccess: true);
         return;
       }
 

@@ -1,6 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/random_chat/choose_profile_category.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:progress_state_button/progress_button.dart';
+import '../../components/user_card.dart';
+import '../../controllers/agora_call_controller.dart';
+import '../../helper/permission_utils.dart';
+import '../../model/call_model.dart';
 
 class SelectUserForChat extends StatefulWidget {
   final Function(UserModel) userSelected;
@@ -13,7 +20,8 @@ class SelectUserForChat extends StatefulWidget {
 }
 
 class SelectUserForChatState extends State<SelectUserForChat> {
-  final SelectUserForChatController _selectUserForChatController = Get.find();
+  final SelectUserForChatController _selectUserForChatController =
+      SelectUserForChatController();
   final AgoraCallController _agoraCallController = Get.find();
 
   @override
@@ -30,7 +38,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
       children: [
         Expanded(
           child: Container(
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.cardColor.darken(),
             width: double.infinity,
             child: Column(
               children: [
@@ -39,7 +47,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                 // ),
                 // SearchBar(
                 //         showSearchIcon: true,
-                //         iconColor: Theme.of(context).primaryColor,
+                //         iconColor: ColorConstants.themeColor,
                 //         onSearchChanged: (value) {
                 //           selectUserForChatController.searchTextChanged(value);
                 //         },
@@ -69,129 +77,120 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                         return _selectUserForChatController.followingIsLoading
                             ? const ShimmerUsers().hP16
                             : usersList.isNotEmpty
-                            ? ListView.separated(
-                          padding: const EdgeInsets.only(
-                              top: 20, bottom: 50),
-                          controller: scrollController,
-                          itemCount: usersList.length + 2,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return SizedBox(
-                                height: 40,
-                                child: Row(
-                                  children: [
-                                    Container(
-                                        color: Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.2),
-                                        child: ThemeIconWidget(
-                                          ThemeIcon.group,
-                                          size: 20,
-                                          color: Theme.of(context)
-                                              .primaryColor,
-                                        ).p8)
-                                        .circular,
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-                                    Text(
-                                      LocalizationString.createGroup,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(
-                                          fontWeight:
-                                          FontWeight.w900),
-                                    )
-                                  ],
-                                ),
-                              ).ripple(() {
-                                Get.back();
-                                Get.to(() =>
-                                const SelectUserForGroupChat());
-                              }).hP16;
-                            } else if (index == 1) {
-                              return SizedBox(
-                                height: 40,
-                                child: Row(
-                                  children: [
-                                    Container(
-                                        color: Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.2),
-                                        child: ThemeIconWidget(
-                                          ThemeIcon.randomChat,
-                                          size: 20,
-                                          color: Theme.of(context)
-                                              .primaryColor,
-                                        ).p8)
-                                        .circular,
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-                                    Text(
-                                      LocalizationString.strangerChat,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(
-                                          fontWeight:
-                                          FontWeight.w900),
-                                    )
-                                  ],
-                                ),
-                              ).ripple(() {
-                                Get.to(() => const ChooseProfileCategory(
-                                  isCalling: false,
-                                ));
-                              }).hP16;
-                            } else {
-                              return UserTile(
-                                profile: usersList[index - 2],
-                                viewCallback: () {
-                                  EasyLoading.show(
-                                      status:
-                                      LocalizationString.loading);
+                                ? ListView.separated(
+                                    padding: const EdgeInsets.only(
+                                        top: 20, bottom: 50),
+                                    controller: scrollController,
+                                    itemCount: usersList.length + 2,
+                                    itemBuilder: (context, index) {
+                                      if (index == 0) {
+                                        return SizedBox(
+                                          height: 40,
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                      color: AppColorConstants
+                                                          .themeColor
+                                                          .withOpacity(0.2),
+                                                      child: ThemeIconWidget(
+                                                        ThemeIcon.group,
+                                                        size: 15,
+                                                        color: AppColorConstants
+                                                            .themeColor,
+                                                      ).p8)
+                                                  .circular,
+                                              const SizedBox(
+                                                width: 16,
+                                              ),
+                                              Heading6Text(
+                                                LocalizationString.createGroup,
+                                                weight: TextWeight.semiBold,
+                                              )
+                                            ],
+                                          ),
+                                        ).ripple(() {
+                                          Get.back();
+                                          Get.to(() =>
+                                              const SelectUserForGroupChat());
+                                        }).hP16;
+                                      } else if (index == 1) {
+                                        return SizedBox(
+                                          height: 40,
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                      color: AppColorConstants
+                                                          .themeColor
+                                                          .withOpacity(0.2),
+                                                      child: ThemeIconWidget(
+                                                        ThemeIcon.randomChat,
+                                                        size: 15,
+                                                        color: AppColorConstants
+                                                            .themeColor,
+                                                      ).p8)
+                                                  .circular,
+                                              const SizedBox(
+                                                width: 16,
+                                              ),
+                                              Heading6Text(
+                                                LocalizationString.strangerChat,
+                                                weight: TextWeight.semiBold,
+                                              )
+                                            ],
+                                          ),
+                                        ).ripple(() {
+                                          Get.to(
+                                              () => const ChooseProfileCategory(
+                                                    isCalling: false,
+                                                  ));
+                                        }).hP16;
+                                      } else {
+                                        return UserTile(
+                                          profile: usersList[index - 2],
+                                          viewCallback: () {
+                                            EasyLoading.show(
+                                                status:
+                                                    LocalizationString.loading);
 
-                                  widget.userSelected(
-                                      usersList[index - 2]);
-                                },
-                                audioCallCallback: () {
-                                  Get.back();
-                                  initiateAudioCall(
-                                      context, usersList[index - 2]);
-                                },
-                                chatCallback: () {
-                                  EasyLoading.show(
-                                      status:
-                                      LocalizationString.loading);
+                                            widget.userSelected(
+                                                usersList[index - 2]);
+                                          },
+                                          audioCallCallback: () {
+                                            Get.back();
+                                            initiateAudioCall(
+                                                context, usersList[index - 2]);
+                                          },
+                                          chatCallback: () {
+                                            EasyLoading.show(
+                                                status:
+                                                    LocalizationString.loading);
 
-                                  widget.userSelected(
-                                      usersList[index - 2]);
-                                },
-                                videoCallCallback: () {
-                                  Get.back();
-                                  initiateVideoCall(
-                                      context, usersList[index - 2]);
-                                },
-                              ).hP16;
-                            }
-                          },
-                          separatorBuilder: (context, index) {
-                            if (index < 2) {
-                              return divider(context: context).vP16;
-                            }
+                                            widget.userSelected(
+                                                usersList[index - 2]);
+                                          },
+                                          videoCallCallback: () {
+                                            Get.back();
+                                            initiateVideoCall(
+                                                usersList[index - 2]);
+                                          },
+                                        ).hP16;
+                                      }
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      if (index < 2) {
+                                        return divider(context: context).vP16;
+                                      }
 
-                            return const SizedBox(
-                              height: 20,
-                            );
-                          },
-                        )
-                            : emptyUser(
-                            title: LocalizationString.noUserFound,
-                            subTitle:
-                            LocalizationString.followSomeUserToChat,
-                            context: context);
+                                      return const SizedBox(
+                                        height: 20,
+                                      );
+                                    },
+                                  )
+                                : emptyUser(
+                                    title: LocalizationString.noUserFound,
+                                    subTitle:
+                                        LocalizationString.followSomeUserToChat,
+                                  );
                       }),
                 ),
               ],
@@ -206,11 +205,11 @@ class SelectUserForChatState extends State<SelectUserForChat> {
           child: Container(
             height: 50,
             width: 50,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: Center(
               child: ThemeIconWidget(
                 ThemeIcon.close,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 25,
               ),
             ),
@@ -225,7 +224,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
     );
   }
 
-  void initiateVideoCall(BuildContext context, UserModel opponent) {
+  void initiateVideoCall(UserModel opponent) {
     PermissionUtils.requestPermission(
         [Permission.camera, Permission.microphone], context,
         isOpenSettings: false, permissionGrant: () async {
@@ -241,12 +240,10 @@ class SelectUserForChatState extends State<SelectUserForChat> {
       _agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
           isSuccess: false);
     });
@@ -255,27 +252,25 @@ class SelectUserForChatState extends State<SelectUserForChat> {
   void initiateAudioCall(BuildContext context, UserModel opponent) {
     PermissionUtils.requestPermission([Permission.microphone], context,
         isOpenSettings: false, permissionGrant: () async {
-          Call call = Call(
-              uuid: '',
-              callId: 0,
-              channelName: '',
-              token: '',
-              isOutGoing: true,
-              callType: 1,
-              opponent: opponent);
+      Call call = Call(
+          uuid: '',
+          callId: 0,
+          channelName: '',
+          token: '',
+          isOutGoing: true,
+          callType: 1,
+          opponent: opponent);
 
-          _agoraCallController.makeCallRequest(call: call);
-        }, permissionDenied: () {
-          AppUtil.showToast(
-              context: context,
-              message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
-              isSuccess: false);
-        }, permissionNotAskAgain: () {
-          AppUtil.showToast(
-              context: context,
-              message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
-              isSuccess: false);
-        });
+      _agoraCallController.makeCallRequest(call: call);
+    }, permissionDenied: () {
+      AppUtil.showToast(
+          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          isSuccess: false);
+    }, permissionNotAskAgain: () {
+      AppUtil.showToast(
+          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          isSuccess: false);
+    });
   }
 }
 
@@ -295,7 +290,8 @@ class SelectFollowingUserForMessageSending extends StatefulWidget {
 
 class SelectFollowingUserForMessageSendingState
     extends State<SelectFollowingUserForMessageSending> {
-  final SelectUserForChatController selectUserForChatController = Get.find();
+  final SelectUserForChatController selectUserForChatController =
+      SelectUserForChatController();
 
   @override
   void initState() {
@@ -316,7 +312,7 @@ class SelectFollowingUserForMessageSendingState
       children: [
         Container(
           height: 340,
-          color: Theme.of(context).backgroundColor,
+          color: AppColorConstants.backgroundColor,
           child: GetBuilder<SelectUserForChatController>(
               init: selectUserForChatController,
               builder: (ctx) {
@@ -335,44 +331,44 @@ class SelectFollowingUserForMessageSendingState
                 return selectUserForChatController.followingIsLoading
                     ? const ShimmerUsers().hP16
                     : usersList.isNotEmpty
-                    ? ListView.separated(
-                  padding: const EdgeInsets.only(top: 20, bottom: 50),
-                  controller: scrollController,
-                  itemCount: usersList.length,
-                  itemBuilder: (context, index) {
-                    UserModel user = usersList[index];
-                    return SendMessageUserTile(
-                      state: selectUserForChatController
-                          .completedActionUsers
-                          .contains(user)
-                          ? ButtonState.success
-                          : selectUserForChatController
-                          .failedActionUsers
-                          .contains(user)
-                          ? ButtonState.fail
-                          : selectUserForChatController
-                          .processingActionUsers
-                          .contains(user)
-                          ? ButtonState.loading
-                          : ButtonState.idle,
-                      profile: usersList[index],
-                      sendCallback: () {
-                        Get.back();
-                        widget.sendToUserCallback(usersList[index]);
-                      },
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return const SizedBox(
-                      height: 20,
-                    );
-                  },
-                ).hP16
-                    : emptyUser(
-                    title: LocalizationString.noUserFound,
-                    subTitle:
-                    LocalizationString.followFriendsToSendPost,
-                    context: context);
+                        ? ListView.separated(
+                            padding: const EdgeInsets.only(top: 20, bottom: 50),
+                            controller: scrollController,
+                            itemCount: usersList.length,
+                            itemBuilder: (context, index) {
+                              UserModel user = usersList[index];
+                              return SendMessageUserTile(
+                                state: selectUserForChatController
+                                        .completedActionUsers
+                                        .contains(user)
+                                    ? ButtonState.success
+                                    : selectUserForChatController
+                                            .failedActionUsers
+                                            .contains(user)
+                                        ? ButtonState.fail
+                                        : selectUserForChatController
+                                                .processingActionUsers
+                                                .contains(user)
+                                            ? ButtonState.loading
+                                            : ButtonState.idle,
+                                profile: usersList[index],
+                                sendCallback: () {
+                                  Get.back();
+                                  widget.sendToUserCallback(usersList[index]);
+                                },
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const SizedBox(
+                                height: 20,
+                              );
+                            },
+                          ).hP16
+                        : emptyUser(
+                            title: LocalizationString.noUserFound,
+                            subTitle:
+                                LocalizationString.followFriendsToSendPost,
+                          );
               }),
         ).round(20).p16,
         const SizedBox(
@@ -383,11 +379,11 @@ class SelectFollowingUserForMessageSendingState
           child: Container(
             height: 50,
             width: 50,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
             child: Center(
               child: ThemeIconWidget(
                 ThemeIcon.close,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 25,
               ),
             ),

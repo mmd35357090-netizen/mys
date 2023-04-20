@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/search_bar.dart';
+import '../../components/user_card.dart';
 import '../../controllers/clubs/invite_friends_to_club_controller.dart';
 
 class InviteUsersToClub extends StatefulWidget {
@@ -24,7 +27,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -44,13 +47,9 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Text(
-                      LocalizationString.invite,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall!
-                          .copyWith(fontWeight: FontWeight.w600),
-                    ).ripple(() {
+                    Heading6Text(LocalizationString.invite,
+                            weight: TextWeight.medium)
+                        .ripple(() {
                       _inviteFriendsToClubController
                           .sendClubJoinInvite(widget.clubId);
                     }),
@@ -62,22 +61,12 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Text(
-                      //   LocalizationString.invite,
-                      //   style: Theme.of(context)
-                      //       .textTheme
-                      //       .titleSmall!
-                      //       .copyWith(fontWeight: FontWeight.w600),
-                      // ),
+
                       Obx(() => _inviteFriendsToClubController
                               .selectedFriends.isNotEmpty
-                          ? Text(
+                          ? Heading6Text(
                               '${_inviteFriendsToClubController.selectedFriends.length} ${LocalizationString.friendsSelected}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(fontWeight: FontWeight.w500),
-                            )
+                              weight: TextWeight.medium)
                           : Container())
                     ],
                   ),
@@ -113,12 +102,9 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Text(
+                                    Heading6Text(
                                       usersList[index].userName,
                                       maxLines: 1,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
                                     )
                                   ],
                                 ),
@@ -129,7 +115,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                                 child: Container(
                                     height: 25,
                                     width: 25,
-                                    color: Theme.of(context).cardColor,
+                                    color: AppColorConstants.cardColor,
                                     child: const ThemeIconWidget(
                                       ThemeIcon.close,
                                       size: 20,
@@ -152,7 +138,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
           ),
           SearchBar(
                   showSearchIcon: true,
-                  iconColor: Theme.of(context).primaryColor,
+                  iconColor: AppColorConstants.themeColor,
                   onSearchChanged: (value) {
                     _inviteFriendsToClubController.searchTextChanged(value);
                   },

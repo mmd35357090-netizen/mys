@@ -1,6 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:auto_orientation/auto_orientation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/number_extension.dart';
 import 'package:get/get.dart';
 import 'package:foap/model/live_tv_model.dart';
+import '../../components/live_tv_player.dart';
+import '../../model/chat_message_model.dart';
+import 'package:foap/helper/imports/tv_imports.dart';
 
 class LiveTvPlayer extends StatefulWidget {
   final TvModel tvModel;
@@ -54,7 +61,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
       }
       return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
         return Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor,
+          backgroundColor: AppColorConstants.backgroundColor,
           body: Column(
             children: [
               if (orientation == Orientation.portrait)
@@ -69,20 +76,14 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                         ThemeIconWidget(
                           ThemeIcon.backArrow,
                           size: 18,
-                          color: Theme.of(context).iconTheme.color,
+                          color: AppColorConstants.iconColor,
                         ).ripple(() {
                           Get.back();
                         }),
-                        Text(
-                          widget.tvModel.name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
+                        BodyLargeText(widget.tvModel.name,
+                            weight: TextWeight.medium),
                         Obx(() => ThemeIconWidget(
                               _liveTvStreamingController
-
                                           .currentViewingTv.value?.isFav ==
                                       1
                                   ? ThemeIcon.favFilled
@@ -92,11 +93,11 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                                           .currentViewingTv.value?.isFav ==
                                       1
                                   ? Colors.red
-                                  : Theme.of(context).iconTheme.color,
+                                  : AppColorConstants.iconColor,
                             ).ripple(() {
-                              _liveTvStreamingController
-                                  .favUnfavTv(_liveTvStreamingController
-                                  .currentViewingTv.value!);
+                              _liveTvStreamingController.favUnfavTv(
+                                  _liveTvStreamingController
+                                      .currentViewingTv.value!);
                             })),
                       ],
                     ).setPadding(left: 16, right: 16, top: 8, bottom: 16),
@@ -134,22 +135,17 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
       children: [
         Container(
           height: 70,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    LocalizationString.liveChat,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  Text(
-                      '${widget.tvModel.totalViewer.formatNumber} ${LocalizationString.users}',
-                      style: Theme.of(context).textTheme.bodySmall)
+                  Heading4Text(LocalizationString.liveChat,
+                      weight: TextWeight.semiBold),
+                  BodySmallText(
+                    '${widget.tvModel.totalViewer.formatNumber} ${LocalizationString.users}',
+                  )
                 ],
               ),
               // const Spacer(),
@@ -176,7 +172,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                     itemCount: messages.length,
                     itemBuilder: (ctx, index) {
                       return Container(
-                        color: Theme.of(context).cardColor.withOpacity(0.5),
+                        color: AppColorConstants.cardColor.withOpacity(0.5),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -191,20 +187,14 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  BodyLargeText(
                                     messages[index].userName,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(fontWeight: FontWeight.w900)
-                                        .copyWith(color: Colors.white70),
+                                    weight: TextWeight.bold,
+                                    color: AppColorConstants.grayscale600,
                                   ),
-                                  Text(
+                                  BodyLargeText(
                                     messages[index].messageContent,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(color: Colors.white70),
+                                    color: AppColorConstants.grayscale600,
                                   ),
                                 ],
                               ),
@@ -238,28 +228,24 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
               Expanded(
                 child: Container(
                   height: 40,
-                  color: Theme.of(context).cardColor.withOpacity(0.8),
+                  color: AppColorConstants.cardColor.withOpacity(0.8),
                   child: TextField(
                     controller: messageTextField,
                     textAlign: TextAlign.start,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(color: Colors.white),
+                    style: TextStyle(
+                        fontSize: FontSizes.b2, color: AppColorConstants.grayscale100),
                     maxLines: 50,
                     decoration: InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                         border: InputBorder.none,
                         contentPadding:
                             const EdgeInsets.only(left: 10, right: 10, top: 5),
-                        labelStyle: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Theme.of(context).primaryColor),
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Theme.of(context).primaryColor),
+                        labelStyle: TextStyle(
+                            fontSize: FontSizes.b2,
+                            color: AppColorConstants.themeColor),
+                        hintStyle: TextStyle(
+                            fontSize: FontSizes.b2,
+                            color: AppColorConstants.themeColor),
                         hintText: LocalizationString.pleaseEnterMessage),
                   ),
                 ).round(10),
@@ -267,13 +253,10 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
               const SizedBox(
                 width: 10,
               ),
-              Text(
+              BodyLargeText(
                 LocalizationString.send,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).primaryColor)
-                    .copyWith(fontWeight: FontWeight.w700),
+                weight: TextWeight.medium,
+                color: AppColorConstants.themeColor,
               ).ripple(() {
                 sendMessage(widget.tvModel.id);
               }),

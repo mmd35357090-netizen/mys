@@ -1,7 +1,17 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 
+import '../controllers/agora_live_controller.dart';
+import '../controllers/profile_controller.dart';
+import '../model/call_model.dart';
 import '../model/club_join_request.dart';
+import '../model/club_member_model.dart';
+import '../model/gift_model.dart';
+import '../screens/profile/other_user_profile.dart';
+import '../screens/profile/update_profile.dart';
+import '../screens/settings_menu/settings_controller.dart';
 
 class UserInfo extends StatelessWidget {
   final UserModel model;
@@ -20,20 +30,13 @@ class UserInfo extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              model.userName,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w700),
-            ),
+            BodyLargeText(model.userName, weight: TextWeight.semiBold),
             const SizedBox(
               height: 5,
             ),
             model.country != null
-                ? Text(
+                ? BodySmallText(
                     '${model.country},${model.city}',
-                    style: Theme.of(context).textTheme.bodySmall,
                   )
                 : Container(),
           ],
@@ -102,14 +105,8 @@ class SelectableUserCardState extends State<SelectableUserCard> {
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          widget.model.userName,
-          maxLines: 1,
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(fontWeight: FontWeight.w400),
-        )
+        BodyLargeText(widget.model.userName,
+            maxLines: 1, weight: TextWeight.medium)
       ],
     );
   }
@@ -134,6 +131,7 @@ class SelectableUserTile extends StatefulWidget {
 }
 
 class SelectableUserTileState extends State<SelectableUserTile> {
+  final UserProfileManager _userProfileManager = Get.find();
   late final UserModel model;
 
   @override
@@ -154,7 +152,7 @@ class SelectableUserTileState extends State<SelectableUserTile> {
                 widget.isSelected == true
                     ? ThemeIcon.checkMarkWithCircle
                     : ThemeIcon.circleOutline,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 size: 25,
               )
             : Container()
@@ -162,7 +160,7 @@ class SelectableUserTileState extends State<SelectableUserTile> {
     ).ripple(
       () {
         if (widget.canSelect != true) {
-          if (model.id == getIt<UserProfileManager>().user!.id) {
+          if (model.id == _userProfileManager.user.value!.id) {
             Get.to(() => const UpdateProfile());
           } else {
             Get.to(() => OtherUserProfile(
@@ -236,17 +234,13 @@ class UserTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  BodyLargeText(
                     profile.userName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900),
+                    weight: TextWeight.bold,
                   ).bP4,
                   profile.country != null
-                      ? Text(
+                      ? BodyMediumText(
                           '${profile.city!}, ${profile.country!}',
-                          style: Theme.of(context).textTheme.bodyMedium,
                         )
                       : Container()
                 ],
@@ -268,28 +262,21 @@ class UserTile extends StatelessWidget {
             height: 35,
             width: 120,
             child: profile.isFollowing == false
-                ? BorderButtonType1(
+                ? AppThemeBorderButton(
                     // icon: ThemeIcon.message,
                     text: profile.isFollower == true
                         ? LocalizationString.followBack
                         : LocalizationString.follow,
-                    textStyle: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w600)
-                        .copyWith(color: Theme.of(context).primaryColor),
+                    textStyle: TextStyle(
+                        fontSize: FontSizes.b2,
+                        fontWeight: TextWeight.medium,
+                        color: AppColorConstants.themeColor),
                     onPress: () {
                       if (followCallback != null) {
                         followCallback!();
                       }
                     })
-                : FilledButtonType1(
-                    isEnabled: true,
-                    enabledTextStyle: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w600)
-                        .copyWith(color: Colors.white),
+                : AppThemeButton(
                     text: LocalizationString.unFollow,
                     onPress: () {
                       if (unFollowCallback != null) {
@@ -399,18 +386,14 @@ class RelationUserTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  BodyLargeText(
                     profile.userName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900),
+                    weight: TextWeight.bold,
                   ).bP4,
                   profile.country != null
-                      ? Text(
-                    '${profile.city!}, ${profile.country!}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  )
+                      ? BodyMediumText(
+                          '${profile.city!}, ${profile.country!}',
+                        )
                       : Container()
                 ],
               ).hP16,
@@ -430,26 +413,23 @@ class RelationUserTile extends StatelessWidget {
           SizedBox(
             height: 35,
             width: 120,
-            child:  BorderButtonType1(
-              // icon: ThemeIcon.message,
+            child: AppThemeBorderButton(
+                // icon: ThemeIcon.message,
                 text: LocalizationString.invite,
-                textStyle: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontWeight: FontWeight.w600)
-                    .copyWith(color: Theme.of(context).primaryColor),
+                textStyle: TextStyle(
+                    fontSize: FontSizes.b2,
+                    fontWeight: TextWeight.medium,
+                    color: AppColorConstants.themeColor),
                 onPress: () {
                   if (inviteCallback != null) {
                     inviteCallback!(profile.id);
                   }
-                })
-            ,
+                }),
           ),
       ],
     );
   }
 }
-
 
 class ClubMemberTile extends StatelessWidget {
   final ClubMemberModel member;
@@ -493,17 +473,11 @@ class ClubMemberTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    member.user!.userName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900),
-                  ).bP4,
+                  BodyLargeText(member.user!.userName, weight: TextWeight.bold)
+                      .bP4,
                   member.user!.country != null
-                      ? Text(
+                      ? BodyMediumText(
                           '${member.user!.city!}, ${member.user!.country!}',
-                          style: Theme.of(context).textTheme.bodyMedium,
                         )
                       : Container()
                 ],
@@ -522,11 +496,10 @@ class ClubMemberTile extends StatelessWidget {
                 height: 35,
                 width: 120,
                 child: Center(
-                  child: Text(
+                  child: BodyLargeText(
                     LocalizationString.admin,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor),
+                    weight: TextWeight.medium,
+                    color: AppColorConstants.themeColor,
                   ),
                 ),
               )
@@ -534,14 +507,9 @@ class ClubMemberTile extends StatelessWidget {
                 ? SizedBox(
                     height: 35,
                     width: 120,
-                    child: FilledButtonType1(
+                    child: AppThemeButton(
                         // icon: ThemeIcon.message,
                         text: LocalizationString.remove,
-                        enabledTextStyle: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600)
-                            .copyWith(color: Theme.of(context).primaryColor),
                         onPress: () {
                           if (removeBtnCallback != null) {
                             removeBtnCallback!();
@@ -554,61 +522,6 @@ class ClubMemberTile extends StatelessWidget {
   }
 }
 
-class EventMemberTile extends StatelessWidget {
-  final EventMemberModel member;
-  final VoidCallback? viewCallback;
-
-  const EventMemberTile({
-    Key? key,
-    required this.member,
-    this.viewCallback,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            UserAvatarView(
-              user: member.user!,
-              size: 40,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 200,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    member.user!.userName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900),
-                  ).bP4,
-                  member.user!.country != null
-                      ? Text(
-                          '${member.user!.city!}, ${member.user!.country!}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        )
-                      : Container()
-                ],
-              ).hP16,
-            ).ripple(() {
-              if (viewCallback != null) {
-                viewCallback!();
-              }
-            }),
-            // const Spacer(),
-          ],
-        ),
-        const Spacer(),
-      ],
-    );
-  }
-}
 
 class SendMessageUserTile extends StatelessWidget {
   final UserModel profile;
@@ -648,7 +561,7 @@ class SendMessageUserTile extends StatelessWidget {
                   width: 80,
                   child: ProgressButton.icon(
                       radius: 5.0,
-                      textStyle: Theme.of(context).textTheme.bodyLarge,
+                      textStyle: TextStyle(fontSize: FontSizes.b2),
                       iconedButtons: {
                         ButtonState.idle: IconedButton(
                             text: LocalizationString.send,
@@ -657,7 +570,7 @@ class SendMessageUserTile extends StatelessWidget {
                               color: Colors.white,
                               size: 15,
                             ),
-                            color: Theme.of(context).primaryColor.lighten(0.1)),
+                            color: AppColorConstants.themeColor.lighten(0.1)),
                         ButtonState.loading: IconedButton(
                             text: LocalizationString.loading,
                             color: Colors.white),
@@ -665,12 +578,12 @@ class SendMessageUserTile extends StatelessWidget {
                             text: LocalizationString.failed,
                             icon: const Icon(Icons.cancel,
                                 color: Colors.white, size: 15),
-                            color: Theme.of(context).errorColor),
+                            color: AppColorConstants.red),
                         ButtonState.success: IconedButton(
                             text: LocalizationString.sent,
                             icon: const Icon(Icons.check_circle,
                                 color: Colors.white, size: 15),
-                            color: Theme.of(context).primaryColor.darken())
+                            color: AppColorConstants.themeColor.darken())
                       },
                       onPressed: sendCallback,
                       state: state),
@@ -701,14 +614,13 @@ class BlockedUserTile extends StatelessWidget {
         SizedBox(
             height: 35,
             width: 110,
-            child: BorderButtonType1(
+            child: AppThemeBorderButton(
                 // icon: ThemeIcon.message,
                 text: LocalizationString.unblock,
-                textStyle: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontWeight: FontWeight.w600)
-                    .copyWith(color: Theme.of(context).primaryColor),
+                textStyle: TextStyle(
+                    fontSize: FontSizes.b2,
+                    fontWeight: TextWeight.medium,
+                    color: AppColorConstants.themeColor),
                 onPress: () {
                   if (unBlockCallback != null) {
                     unBlockCallback!();
@@ -747,13 +659,8 @@ class GifterUserTile extends StatelessWidget {
         const SizedBox(
           width: 5,
         ),
-        Text(
-          gift.giftDetail.coins.toString(),
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(fontWeight: FontWeight.w700),
-        )
+        BodyLargeText(gift.giftDetail.coins.toString(),
+            weight: TextWeight.semiBold)
       ],
     );
   }
@@ -775,8 +682,6 @@ class ClubJoinRequestTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AgoraLiveController agoraLiveController = Get.find();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -793,17 +698,11 @@ class ClubJoinRequestTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    request.user!.userName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900),
-                  ).bP4,
+                  BodyLargeText(request.user!.userName, weight: TextWeight.bold)
+                      .bP4,
                   request.user!.country != null
-                      ? Text(
+                      ? BodyMediumText(
                           '${request.user!.city!}, ${request.user!.country!}',
-                          style: Theme.of(context).textTheme.bodyMedium,
                         )
                       : Container()
                 ],
@@ -822,13 +721,9 @@ class ClubJoinRequestTile extends StatelessWidget {
             SizedBox(
                 height: 35,
                 width: 120,
-                child: FilledButtonType1(
+                child: AppThemeButton(
                     // icon: ThemeIcon.message,
                     text: LocalizationString.accept,
-                    enabledTextStyle: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w600),
                     onPress: () {
                       acceptBtnClicked();
                     })),
@@ -838,14 +733,13 @@ class ClubJoinRequestTile extends StatelessWidget {
             SizedBox(
                 height: 35,
                 width: 120,
-                child: BorderButtonType1(
+                child: AppThemeBorderButton(
                     // icon: ThemeIcon.message,
                     text: LocalizationString.decline,
-                    textStyle: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w600)
-                        .copyWith(color: Theme.of(context).primaryColor),
+                    textStyle: TextStyle(
+                        fontSize: FontSizes.b2,
+                        fontWeight: TextWeight.medium,
+                        color: AppColorConstants.themeColor),
                     onPress: () {
                       declineBtnClicked();
                     })),

@@ -1,10 +1,19 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
+import 'package:foap/screens/add_on/ui/event/events_dashboard.dart';
+import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
+import 'package:foap/screens/add_on/ui/reel/create_reel_video.dart';
 import 'package:get/get.dart';
+import '../../controllers/home_controller.dart';
 import '../chat/random_chat/choose_profile_category.dart';
 
-import '../podcast/podcast_list_dashboard.dart';
+import '../club/clubs_listing.dart';
+import '../competitions/competitions_screen.dart';
+import '../highlights/choose_stories.dart';
+import '../live/checking_feasibility.dart';
+import '../live/random_live_listing.dart';
+import '../story/choose_media_for_story.dart';
 import '../tvs/tv_dashboard.dart';
-import '../dating/dating_dashboard.dart';
 
 enum QuickLinkType {
   live,
@@ -51,7 +60,7 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Container(
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor.darken(),
           child: ListView(
               padding: EdgeInsets.zero,
               // spacing: 10,
@@ -71,7 +80,6 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                             title: 'Demo app',
                             subTitle:
                                 'This is demo app so might not find online user to test it',
-                            cxt: context,
                             okHandler: () {
                               Get.to(() => const ChooseProfileCategory(
                                     isCalling: false,
@@ -116,9 +124,9 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        SizedBox(
           height: 50,
-          color: Theme.of(context).cardColor,
+          // color: AppColorConstants.cardColor,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -132,11 +140,8 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
               const SizedBox(
                 width: 10,
               ),
-              Text(
+              Heading6Text(
                 link.heading.tr,
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
               ),
             ],
           ).hP16,

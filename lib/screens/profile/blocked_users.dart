@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/user_card.dart';
+import '../../controllers/blocked_users_controller.dart';
 
 class BlockedUsersList extends StatefulWidget {
   const BlockedUsersList({Key? key}) : super(key: key);
@@ -9,7 +12,7 @@ class BlockedUsersList extends StatefulWidget {
 }
 
 class BlockedUsersListState extends State<BlockedUsersList> {
-  final BlockedUsersController blockedUsersController = Get.find();
+  final BlockedUsersController blockedUsersController = BlockedUsersController();
 
   @override
   void initState() {
@@ -26,7 +29,7 @@ class BlockedUsersListState extends State<BlockedUsersList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(

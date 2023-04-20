@@ -1,7 +1,17 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:foap/components/custom_camera/delegates/camera_picker_text_delegate.dart';
 import 'package:foap/components/gallery_picker/gallery_media_picker.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/file_extension.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../screens/chat/media.dart';
+import 'custom_camera/constants/config.dart';
+import 'custom_camera/constants/constants.dart';
+import 'custom_camera/widgets/camera_picker.dart';
 
 extension FileCompressor on File {
   Future<Uint8List> compress(
@@ -20,7 +30,6 @@ extension FileCompressor on File {
 
 extension PickedAssetModelExtension on PickedAssetModel {
   Media toMedia() {
-
     Media media = Media();
     media.id = id;
     media.file = file;
@@ -74,11 +83,11 @@ class _CustomGalleryPickerState extends State<CustomGalleryPicker> {
           thumbnailBoxFix: BoxFit.cover,
           singlePick:
               !_customGalleryPickerController.allowMultipleSelection.value,
-          gridViewBackgroundColor: Theme.of(context).backgroundColor,
+          gridViewBackgroundColor: AppColorConstants.backgroundColor,
           imageBackgroundColor: Colors.black,
           maxPickImages: 10,
           appBarHeight: 50,
-          selectedBackgroundColor: Theme.of(context).backgroundColor,
+          selectedBackgroundColor: AppColorConstants.backgroundColor,
           selectedCheckColor: Colors.black87,
           selectedCheckBackgroundColor: Colors.white10,
           onlyVideos: widget.mediaType == PostMediaType.video,
@@ -103,7 +112,7 @@ class _CustomGalleryPickerState extends State<CustomGalleryPicker> {
                               color: _customGalleryPickerController
                                           .allowMultipleSelection.value ==
                                       true
-                                  ? Theme.of(context).primaryColor
+                                  ? AppColorConstants.themeColor
                                   : Colors.transparent,
                               child: const ThemeIconWidget(
                                 ThemeIcon.selectionType,

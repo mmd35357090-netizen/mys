@@ -1,5 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../model/post_model.dart';
+import '../profile/other_user_profile.dart';
+import 'comments_screen.dart';
 
 class EnlargeImageViewScreen extends StatefulWidget {
   final PostModel model;
@@ -25,7 +30,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -45,14 +50,11 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                     const Spacer(),
                     model == null
                         ? Container()
-                        : Text(
+                        : Heading6Text(
                                 model!.isReported
                                     ? LocalizationString.reported
                                     : LocalizationString.report,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(fontWeight: FontWeight.w600))
+                                weight: TextWeight.medium)
                             .ripple(() {
                             openReportPostPopup();
                           }),
@@ -69,12 +71,9 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                                 Get.to(() =>
                                     OtherUserProfile(userId: model!.user.id));
                               },
-                              child: Text(
+                              child: Heading5Text(
                                 model!.user.userName,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(fontWeight: FontWeight.w600),
+                                weight: TextWeight.medium,
                               )),
                         ),
                       ),
@@ -84,7 +83,8 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
             Expanded(
               child: Stack(children: [
                 CachedNetworkImage(
-                    imageUrl: widget.model.gallery.first.filePath).addPinchAndZoom(),
+                        imageUrl: widget.model.gallery.first.filePath)
+                    .addPinchAndZoom(),
                 model == null
                     ? Container()
                     : Positioned(
@@ -107,15 +107,11 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                                     const SizedBox(
                                       width: 5,
                                     ),
-                                    Text(
+                                    BodyLargeText(
                                         model!.totalLike > 1
                                             ? '${model!.totalLike} ${LocalizationString.likes}'
                                             : '${model!.totalLike} ${LocalizationString.like}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w500))
+                                        weight: TextWeight.medium)
                                   ]),
                               Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -127,14 +123,9 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                                     InkWell(
                                       onTap: () => openComments(),
                                       child: model!.totalComment > 0
-                                          ? Text(
+                                          ? Heading5Text(
                                               '${model!.totalComment} ${LocalizationString.comments}',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium!
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w900))
+                                            )
                                           : Container(),
                                     )
                                   ])
@@ -152,19 +143,13 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
           context: context,
           builder: (context) => Wrap(
                 children: [
-                  Text(LocalizationString.wantToReport,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(fontWeight: FontWeight.w700))
+                  Heading3Text(LocalizationString.wantToReport,
+                          weight: TextWeight.semiBold)
                       .p16,
                   ListTile(
                       leading: const ThemeIconWidget(ThemeIcon.camera),
-                      title: Text(LocalizationString.report,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(fontWeight: FontWeight.w300)),
+                      title: Heading4Text(LocalizationString.report,
+                          weight: TextWeight.regular),
                       onTap: () async {
                         Navigator.of(context).pop();
                         reportPostApiCall();
@@ -172,11 +157,8 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                   divider(context: context),
                   ListTile(
                       leading: const ThemeIconWidget(ThemeIcon.close),
-                      title: Text(LocalizationString.cancel,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(fontWeight: FontWeight.w300)),
+                      title: Heading4Text(LocalizationString.cancel,
+                          weight: TextWeight.regular),
                       onTap: () => Navigator.of(context).pop()),
                 ],
               ));
@@ -216,7 +198,6 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
             .then((response) async {});
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: false);
       }
@@ -238,7 +219,6 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
         });
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: false);
       }

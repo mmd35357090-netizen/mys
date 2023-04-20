@@ -1,6 +1,8 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/model/preference_model.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:timeago/timeago.dart' as timeago;
+
+import 'chat_room_model.dart';
+import 'package:get/get.dart';
 
 class UserLiveCallDetail {
   int id = 0;
@@ -50,6 +52,8 @@ class UserModel {
 
   String? email = '';
   String? picture;
+  String? coverImage;
+
   String? bio = '';
   String? phone = '';
   String? country = '';
@@ -116,11 +120,15 @@ class UserModel {
     UserModel model = UserModel();
     model.id = json['id'];
     model.name = json['name'];
-    model.userName = json['username'].toString().toLowerCase();
+    model.userName = json['username'] == null
+        ? ''
+        : json['username'].toString().toLowerCase();
     model.category = json['category'] ?? 'Other';
 
     model.email = json['email'];
     model.picture = json['picture'];
+    model.coverImage = json['coverImageUrl'];
+
     model.bio = json['bio'];
     model.isFollowing = json['isFollowing'] == 1;
     model.isFollower = json['isFollower'] == 1;
@@ -273,7 +281,13 @@ class UserModel {
   }
 
   bool get isMe {
-    return id == getIt<UserProfileManager>().user!.id;
+    final UserProfileManager userProfileManager = Get.find();
+
+    return id == userProfileManager.user.value!.id;
+  }
+
+  bool get canUseDating {
+    return gender != null && dob != null && picture != null;
   }
 
   ChatRoomMember get toChatRoomMember {

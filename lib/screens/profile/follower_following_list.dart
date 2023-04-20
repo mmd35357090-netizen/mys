@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/user_card.dart';
+import '../../controllers/user_network_controller.dart';
+import 'other_user_profile.dart';
 
 class FollowerFollowingList extends StatefulWidget {
   final bool isFollowersList;
@@ -14,7 +18,7 @@ class FollowerFollowingList extends StatefulWidget {
 }
 
 class FollowerFollowingState extends State<FollowerFollowingList> {
-  final UserNetworkController _userNetworkController = Get.find();
+  final UserNetworkController _userNetworkController = UserNetworkController();
 
   @override
   void initState() {
@@ -33,14 +37,12 @@ class FollowerFollowingState extends State<FollowerFollowingList> {
 
   @override
   void didUpdateWidget(covariant FollowerFollowingList oldWidget) {
-    // TODO: implement didUpdateWidget
     loadData();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _userNetworkController.clear();
     super.dispose();
   }
@@ -48,7 +50,7 @@ class FollowerFollowingState extends State<FollowerFollowingList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(

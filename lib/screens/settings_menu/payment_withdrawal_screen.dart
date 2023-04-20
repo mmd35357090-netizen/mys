@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
+import '../../components/transaction_tile.dart';
+import '../../controllers/profile_controller.dart';
+import '../../model/payment_model.dart';
 
 class PaymentWithdrawalScreen extends StatefulWidget {
   const PaymentWithdrawalScreen({Key? key}) : super(key: key);
@@ -11,6 +15,7 @@ class PaymentWithdrawalScreen extends StatefulWidget {
 class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
   final ProfileController _profileController = Get.find();
   final SettingsController _settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   TextEditingController textController = TextEditingController();
 
@@ -27,7 +32,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SizedBox(
             height: 50,
@@ -49,13 +54,8 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
           Padding(
               padding:
                   const EdgeInsets.only(left: 15.0, top: 15.0, bottom: 15.0),
-              child: Text(
-                LocalizationString.transactionHistory,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontWeight: FontWeight.w900),
-              )),
+              child: BodyLargeText(LocalizationString.transactionHistory,
+                  weight: TextWeight.bold)),
           Expanded(
             child: GetBuilder<ProfileController>(
                 init: _profileController,
@@ -78,28 +78,20 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
         init: _profileController,
         builder: (ctx) {
           return Container(
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.cardColor,
             child: Row(
               children: [
                 Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          LocalizationString.availableBalanceToWithdraw,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
+                        BodySmallText(
+                            LocalizationString.availableBalanceToWithdraw,
+                            weight: TextWeight.medium),
                         const SizedBox(height: 10),
-                        Text(
-                          '\$${getIt<UserProfileManager>().user!.balance}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(fontWeight: FontWeight.w900),
-                        )
+                        Heading3Text(
+                            '\$${_userProfileManager.user.value!.balance}',
+                            weight: TextWeight.bold)
                       ]),
                 ),
                 withdrawBtn()
@@ -114,40 +106,28 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
         init: _profileController,
         builder: (ctx) {
           return Container(
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.cardColor,
             child: Row(
               children: [
                 Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        BodySmallText(
                           LocalizationString.availableCoins,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '${getIt<UserProfileManager>().user!.coins}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall!
-                                  .copyWith(fontWeight: FontWeight.w900),
-                            ),
+                            Heading3Text(
+                                '${_userProfileManager.user.value!.coins}',
+                                weight: TextWeight.bold),
                             const SizedBox(height: 5),
-                            Text(
-                              '= \$${(_settingsController.setting.value!.coinsValue * getIt<UserProfileManager>().user!.coins).toStringAsFixed(2)}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: Theme.of(context).primaryColor),
+                            BodyMediumText(
+                              '= \$${(_settingsController.setting.value!.coinsValue * _userProfileManager.user.value!.coins).toStringAsFixed(2)}',
+                              weight: TextWeight.bold,
+                              color: AppColorConstants.themeColor,
                             ),
                           ],
                         )
@@ -173,7 +153,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
               LocalizationString.enterNumberOfCoins,
             ),
             content: Container(
-              color: Theme.of(context).backgroundColor,
+              color: AppColorConstants.backgroundColor,
               child: Row(
                 children: [
                   Expanded(
@@ -184,7 +164,8 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                         ),
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: TextStyle(
+            fontSize: FontSizes.b2),
                         onChanged: (value) {
                           if (textController.text.isNotEmpty) {
                             _settingsController
@@ -199,22 +180,19 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                   ),
                   Obx(() => Container(
                         height: 50,
-                        color: Theme.of(context).primaryColor,
+                        color: AppColorConstants.themeColor,
                         child: Center(
-                          child: Text(
-                            '= \$${(_settingsController.redeemCoins * _settingsController.setting.value!.coinsValue).toStringAsFixed(2)}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(fontWeight: FontWeight.w500),
-                          ).hP8,
+                          child: BodyMediumText(
+                                  '= \$${(_settingsController.redeemCoins * _settingsController.setting.value!.coinsValue).toStringAsFixed(2)}',
+                                  weight: TextWeight.medium)
+                              .hP8,
                         ),
                       ).rightRounded(10)),
                 ],
               ),
             ).round(10),
             actions: <Widget>[
-              FilledButtonType1(
+              AppThemeButton(
                 text: LocalizationString.redeem,
                 onPress: () {
                   if (textController.text.isNotEmpty) {
@@ -222,9 +200,9 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                     if (coins >=
                         _settingsController
                             .setting.value!.minCoinsWithdrawLimit) {
-                      if (coins >= getIt<UserProfileManager>().user!.coins) {
+                      if (coins >=
+                          _userProfileManager.user.value!.coins) {
                         AppUtil.showToast(
-                            context: context,
                             message: LocalizationString.enterValidAmountOfCoins
                                 .replaceAll(
                                     '{{coins}}',
@@ -234,12 +212,11 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                             isSuccess: false);
                         return;
                       }
-                      _profileController.redeemRequest(coins, context,(){});
+                      _profileController.redeemRequest(coins, context, () {});
                       textController.text = '';
                       Navigator.pop(dialogContext);
                     } else {
                       AppUtil.showToast(
-                          context: context,
                           message: LocalizationString.minCoinsRedeemLimit
                               .replaceAll(
                                   '{{coins}}',
@@ -259,45 +236,41 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
   withdrawBtn() {
     return InkWell(
       onTap: () {
-        if (int.parse(getIt<UserProfileManager>().user!.balance) < 50) {
+        if (int.parse(_userProfileManager.user.value!.balance) < 50) {
           AppUtil.showToast(
-              context: context,
               message: LocalizationString.minWithdrawLimit.replaceAll(
                   '{{cash}}',
                   _settingsController.setting.value!.minWithdrawLimit
                       .toString()),
               isSuccess: false);
-        } else if ((getIt<UserProfileManager>().user!.paypalId ?? '').isEmpty) {
+        } else if ((_userProfileManager.user.value!.paypalId ?? '')
+            .isEmpty) {
           AppUtil.showToast(
-              context: context,
               message: LocalizationString.pleaseEnterPaypalId,
               isSuccess: false);
         } else {
-          _profileController.withdrawalRequest(context);
+          _profileController.withdrawalRequest();
         }
       },
       child: Center(
         child: Container(
             height: 35.0,
             width: 100,
-            color: Theme.of(context).primaryColor,
+            color: AppColorConstants.themeColor,
             child: Center(
-              child: Text(LocalizationString.withdraw,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w600)),
-            )).round(5).shadow(context: context),
+              child: BodySmallText(LocalizationString.withdraw,
+                  weight: TextWeight.medium),
+            )).round(5).backgroundCard(),
       ),
     );
   }
+
   redeemBtn() {
     return InkWell(
       onTap: () {
-        if (getIt<UserProfileManager>().user!.coins <
+        if (_userProfileManager.user.value!.coins <
             _settingsController.setting.value!.minCoinsWithdrawLimit) {
           AppUtil.showToast(
-              context: context,
               message: LocalizationString.minCoinsRedeemLimit.replaceAll(
                   '{{coins}}',
                   _settingsController.setting.value!.minCoinsWithdrawLimit
@@ -311,16 +284,12 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
         child: Container(
             height: 35.0,
             width: 100,
-            color: Theme.of(context).primaryColor,
+            color: AppColorConstants.themeColor,
             child: Center(
-              child: Text(LocalizationString.redeem,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w600)),
-            )).round(5).shadow(context: context),
+              child: BodySmallText(LocalizationString.redeem,
+                  weight: TextWeight.medium),
+            )).round(5).backgroundCard(),
       ),
     );
   }
-
 }

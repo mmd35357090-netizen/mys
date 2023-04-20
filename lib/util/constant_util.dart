@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 bool isDarkMode = true;
 

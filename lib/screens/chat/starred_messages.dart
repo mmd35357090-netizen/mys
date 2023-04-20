@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_contacts/contact.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:map_launcher/map_launcher.dart';
+import '../competitions/video_player_screen.dart';
+import '../post/single_post_detail.dart';
+import '../profile/other_user_profile.dart';
 
 class StarredMessages extends StatefulWidget {
   final ChatRoomModel? chatRoom;
@@ -30,7 +37,7 @@ class _StarredMessagesState extends State<StarredMessages> {
       bottom: false,
       top: false,
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -60,18 +67,15 @@ class _StarredMessagesState extends State<StarredMessages> {
           children: [
             ThemeIconWidget(
               ThemeIcon.backArrow,
-              color: Theme.of(context).iconTheme.color,
+              color: AppColorConstants.iconColor,
               size: 20,
             ).p8.ripple(() {
               Get.back();
             }),
             const Spacer(),
-            Text(
+            BodyLargeText(
               LocalizationString.edit,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w400),
+                weight: TextWeight.medium
             ).p8.ripple(() {
               _chatDetailController.setToActionMode(
                   mode: ChatMessageActionMode.edit);
@@ -82,9 +86,8 @@ class _StarredMessagesState extends State<StarredMessages> {
             left: 0,
             right: 0,
             child: Center(
-              child: Text(
+              child: BodyLargeText(
                 LocalizationString.starredMessages,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ))
       ],
@@ -93,46 +96,34 @@ class _StarredMessagesState extends State<StarredMessages> {
 
   Widget selectedMessageView() {
     return Container(
-      color: Theme.of(context).backgroundColor.darken(0.02),
+      color: AppColorConstants.backgroundColor.darken(0.02),
       height: 70,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          BodyLargeText(
             LocalizationString.delete,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w900),
+              weight: TextWeight.bold
           ).ripple(() {
             deleteMessageActionPopup();
           }),
-          Text(
+          BodyLargeText(
             LocalizationString.forward,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w900),
+              weight: TextWeight.bold
           ).ripple(() {
             selectUserForMessageForward();
           }),
-          Text(
+          BodyLargeText(
             LocalizationString.unStar,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w900),
+              weight: TextWeight.bold
           ).ripple(() {
             _chatRoomDetailController.unStarMessages();
             _chatDetailController.setToActionMode(
                 mode: ChatMessageActionMode.none);
           }),
-          Text(
+          BodyLargeText(
             LocalizationString.cancel,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w900),
+              weight: TextWeight.bold
           ).ripple(() {
             _chatDetailController.setToActionMode(
                 mode: ChatMessageActionMode.none);
@@ -224,7 +215,7 @@ class _StarredMessagesState extends State<StarredMessages> {
         final availableMaps = await MapLauncher.installedMaps;
 
         showModalBottomSheet(
-          context: context,
+          context: Get.context!,
           builder: (BuildContext context) {
             return SafeArea(
               child: SingleChildScrollView(
@@ -236,9 +227,8 @@ class _StarredMessagesState extends State<StarredMessages> {
                           coords: coords,
                           title: title,
                         ),
-                        title: Text(
+                        title: Heading5Text(
                           '${LocalizationString.openIn} ${map.mapName}',
-                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         leading: SvgPicture.asset(
                           map.icon,
@@ -265,28 +255,24 @@ class _StarredMessagesState extends State<StarredMessages> {
               children: [
                 ListTile(
                     title: Center(
-                        child: Text(
+                        child: Heading5Text(
                       contact.displayName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.w900),
+                            weight: TextWeight.bold
                     )),
                     onTap: () async {}),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.saveContact)),
+                    title: Center(child: BodyLargeText(LocalizationString.saveContact)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.addNewContact(contact);
                       AppUtil.showToast(
-                          context: context,
                           message: LocalizationString.contactSaved,
                           isSuccess: false);
                     }),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -332,7 +318,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                     ? ListTile(
                         title: Center(
                             child:
-                                Text(LocalizationString.deleteMessageForAll)),
+                            BodyLargeText(LocalizationString.deleteMessageForAll)),
                         onTap: () async {
                           Get.back();
                           _chatDetailController.deleteMessage(deleteScope: 2);
@@ -341,7 +327,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                     : Container(),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () => Get.back()),
               ],
             ));

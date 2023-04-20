@@ -1,4 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../../apiHandler/api_controller.dart';
+import '../../model/post_model.dart';
 
 class PostChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -12,8 +16,8 @@ class PostChatTile extends StatelessWidget {
         width: double.infinity,
         child: Container(
           color: message.isMineMessage
-              ? Theme.of(context).disabledColor.withOpacity(0.2)
-              : Theme.of(context).primaryColor.withOpacity(0.2),
+              ? AppColorConstants.disabledColor
+              : AppColorConstants.themeColor.withOpacity(0.2),
           child: FutureBuilder<PostModel?>(
               future: getPostDetail(message.postContent.postId),
               builder:
@@ -21,13 +25,9 @@ class PostChatTile extends StatelessWidget {
                 if (snapshot.hasData) {
                   return snapshot.data == null
                       ? Center(
-                          child: Text(LocalizationString.postDeleted,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.w900)),
+                          child: Heading5Text(LocalizationString.postDeleted,
+                              weight: TextWeight.bold,
+                              color: AppColorConstants.themeColor),
                         )
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,12 +45,9 @@ class PostChatTile extends StatelessWidget {
                                 const SizedBox(
                                   width: 10,
                                 ),
-                                Text(
+                                BodyLargeText(
                                   snapshot.data!.user.userName,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(fontWeight: FontWeight.w600),
+                                  weight: TextWeight.medium,
                                 ),
                               ],
                             ).hP8,
@@ -64,12 +61,13 @@ class PostChatTile extends StatelessWidget {
                                     width: double.infinity,
                                     height: double.infinity,
                                     child: CachedNetworkImage(
-                                      imageUrl: snapshot.data!.gallery.first
-                                          .thumbnail,
+                                      imageUrl: snapshot
+                                          .data!.gallery.first.thumbnail,
                                       httpHeaders: const {'accept': 'image/*'},
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          AppUtil.addProgressIndicator(context,100),
+                                          AppUtil.addProgressIndicator(
+                                              size: 100),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
                                     ),
@@ -90,18 +88,13 @@ class PostChatTile extends StatelessWidget {
                   if (snapshot.data == null &&
                       snapshot.connectionState == ConnectionState.done) {
                     return Center(
-                      child: Text(
-                        LocalizationString.postDeleted,
-                        style: Theme.of(context)
-                            .textTheme
-                            .displayMedium!
-                            .copyWith(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.w900),
-                      ),
-                    );
+                        child: Heading3Text(
+                      LocalizationString.postDeleted,
+                      color: AppColorConstants.themeColor,
+                      weight: TextWeight.bold,
+                    ));
                   } else {
-                    return AppUtil.addProgressIndicator(context,100);
+                    return AppUtil.addProgressIndicator(size: 100);
                   }
                 }
               }),
@@ -131,8 +124,8 @@ class MinimalInfoPostChatTile extends StatelessWidget {
         width: double.infinity,
         child: Container(
           color: message.isMineMessage
-              ? Theme.of(context).disabledColor.withOpacity(0.2)
-              : Theme.of(context).primaryColor.withOpacity(0.2),
+              ? AppColorConstants.disabledColor
+              : AppColorConstants.themeColor.withOpacity(0.2),
           child: FutureBuilder<PostModel?>(
               future: getPostDetail(message.postContent.postId),
               builder:
@@ -148,7 +141,7 @@ class MinimalInfoPostChatTile extends StatelessWidget {
                           httpHeaders: const {'accept': 'image/*'},
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
-                              AppUtil.addProgressIndicator(context,100),
+                              AppUtil.addProgressIndicator(size:100),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
                         ),
@@ -166,18 +159,14 @@ class MinimalInfoPostChatTile extends StatelessWidget {
                   if (snapshot.data == null &&
                       snapshot.connectionState == ConnectionState.done) {
                     return Center(
-                      child: Text(
+                      child: Heading5Text(
                         LocalizationString.postDeleted,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.w900),
+                        weight: TextWeight.bold,
+                        color: AppColorConstants.themeColor,
                       ),
                     );
                   } else {
-                    return AppUtil.addProgressIndicator(context,100);
+                    return AppUtil.addProgressIndicator(size:100);
                   }
                 }
               }),

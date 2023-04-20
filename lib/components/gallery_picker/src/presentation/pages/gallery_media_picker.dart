@@ -4,8 +4,10 @@ import 'package:foap/components/gallery_picker/src/core/functions.dart';
 import 'package:foap/components/gallery_picker/src/presentation/pages/gallery_media_picker_controller.dart';
 import 'package:foap/components/gallery_picker/src/presentation/widgets/gallery_grid/gallery_grid_view.dart';
 import 'package:foap/components/gallery_picker/src/presentation/widgets/select_album_path/current_path_selector.dart';
-import 'package:foap/helper/common_import.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter/material.dart';
+
+import '../../../../custom_camera/constants/constants.dart';
 
 class GalleryMediaPicker extends StatefulWidget {
   /// maximum images allowed (default 2)

@@ -1,5 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:async';
+
+import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:get/get.dart';
+
+import '../../apiHandler/api_controller.dart';
+import '../../screens/dashboard/dashboard_screen.dart';
 
 class ChatHistoryController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();

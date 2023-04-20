@@ -1,7 +1,13 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:get/get.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as rtc_local_view;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as rtc_remote_view;
+import 'package:foap/components/timer_widget.dart';
+import 'package:foap/controllers/agora_call_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/call_model.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:get/get.dart';
+import 'package:pip_view/pip_view.dart';
+import 'package:wakelock/wakelock.dart';
 
 class VideoCallingScreen extends StatefulWidget {
   final Call call;
@@ -79,7 +85,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
         // _timerView(),
         _cameraView(isFloating),
         isFloating == false ? _connectedCallBottomPortionWidget() : Container(),
-        isFloating == false ? topBar(context) : Container(),
+        isFloating == false ? topBar() : Container(),
       ],
     );
   }
@@ -102,7 +108,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
         });
   }
 
-  Widget topBar(BuildContext context) {
+  Widget topBar() {
     return Column(
       children: [
         const SizedBox(
@@ -142,7 +148,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
     //     child: Text(
     //       LocalizationString.waitForJoiningLabel,
     //       textAlign: TextAlign.center,
-    //       style: Theme.of(context).textTheme.bodyLarge.themeColor,
+    //       style: TextStyle(fontSize: FontSizes.b2).themeColor,
     //     ),
     //   );
     // }
@@ -155,25 +161,19 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
         children: [
           agoraCallController.reConnectingRemoteView.value
               ? Container(
-                  color: Theme.of(context).errorColor,
+                  color: AppColorConstants.red,
                   child: Center(
-                      child: Text(
+                      child: Heading6Text(
                     LocalizationString.reConnecting,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(color: Colors.white70),
+                    color: AppColorConstants.grayscale700,
                   )))
               : agoraCallController.videoPaused.value
                   ? Container(
-                      color: Theme.of(context).primaryColor,
+                      color: AppColorConstants.themeColor,
                       child: Center(
-                          child: Text(
+                          child: Heading6Text(
                         LocalizationString.videoPaused,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(color: Colors.white70),
+                        color: AppColorConstants.grayscale700,
                       )))
                   : rtc_remote_view.SurfaceView(
                       uid: agoraCallController.remoteUserId.value,
@@ -207,26 +207,20 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
+              Heading6Text(
                 widget.call.opponent.userName,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontWeight: FontWeight.w900)
-                    .copyWith(color: Colors.white70),
+                weight: TextWeight.bold,
+                color: AppColorConstants.grayscale500,
               ),
               const SizedBox(
                 height: 5,
               ),
-              Text(
+              Heading5Text(
                 widget.call.isOutGoing
                     ? LocalizationString.ringing
                     : LocalizationString.incomingCall,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w600)
-                    .copyWith(color: Colors.white70),
+                weight: TextWeight.medium,
+                color: AppColorConstants.grayscale500,
               )
             ],
           );
@@ -270,8 +264,8 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
           children: <Widget>[
             Obx(() => Container(
                   color: agoraCallController.isFront.value
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).primaryColor.lighten(),
+                      ? AppColorConstants.themeColor
+                      : AppColorConstants.themeColor.lighten(),
                   height: 50,
                   width: 50,
                   child: const ThemeIconWidget(
@@ -284,8 +278,8 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
             }),
             Obx(() => Container(
                   color: agoraCallController.mutedVideo.value
-                      ? Theme.of(context).primaryColor.withOpacity(0.5)
-                      : Theme.of(context).primaryColor,
+                      ? AppColorConstants.themeColor.withOpacity(0.5)
+                      : AppColorConstants.themeColor,
                   height: 50,
                   width: 50,
                   child: ThemeIconWidget(
@@ -300,8 +294,8 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
             }),
             Obx(() => Container(
                   color: agoraCallController.mutedAudio.value
-                      ? Theme.of(context).primaryColor.withOpacity(0.5)
-                      : Theme.of(context).primaryColor,
+                      ? AppColorConstants.themeColor.withOpacity(0.5)
+                      : AppColorConstants.themeColor,
                   height: 50,
                   width: 50,
                   child: ThemeIconWidget(
@@ -315,7 +309,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               agoraCallController.onToggleMuteAudio();
             }),
             Container(
-              color: Theme.of(context).errorColor,
+              color: AppColorConstants.red,
               height: 50,
               width: 50,
               child: const ThemeIconWidget(
@@ -337,7 +331,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              color: Theme.of(context).errorColor,
+              color: AppColorConstants.red,
               height: 50,
               width: 50,
               child: const ThemeIconWidget(
@@ -346,10 +340,10 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                 color: Colors.white,
               ),
             ).circular.ripple(() {
-              agoraCallController.declineCall(call:widget.call);
+              agoraCallController.declineCall(call: widget.call);
             }),
             Container(
-              color: Theme.of(context).primaryColor,
+              color: AppColorConstants.themeColor,
               height: 50,
               width: 50,
               child: const ThemeIconWidget(

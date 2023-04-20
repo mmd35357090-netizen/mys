@@ -1,21 +1,54 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:foap/screens/add_on/model/preference_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:foap/apiHandler/api_param_model.dart';
 import 'package:http_parser/http_parser.dart';
-
-import '../controllers/dating_controller.dart';
-import '../model/live_tv_model.dart';
-import '../model/preference_model.dart';
+import 'package:latlng/latlng.dart';
+import '../screens/add_on/controller/dating/dating_controller.dart';
+import 'package:foap/helper/imports/models.dart';
+import 'package:foap/helper/imports/api_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import '../util/constant_util.dart';
+import '../util/shared_prefs.dart';
+export 'package:foap/apiHandler/api_response_model.dart';
+import 'package:get/get.dart';
 
 class ApiController {
+  final UserProfileManager _userProfileManager = Get.find();
   final JsonDecoder _decoder = const JsonDecoder();
 
   Future<ApiResponseModel> login(String email, String password) async {
     var url = NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.login;
     dynamic param = await ApiParamModel().getLoginParam(email, password);
 
+    return http
+        .post(Uri.parse(url), body: param)
+        .then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+          await getResponse(response.body, NetworkConstantsUtil.login);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> loginWithPhone(
+      {required String code, required String phone}) async {
+    String? fcmToken = await SharedPrefs().getFCMToken();
+    String? voipToken = await SharedPrefs().getVoipToken();
+    var url =
+        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.loginWithPhone;
+
+    dynamic param = {
+      "country_code": code,
+      "phone": phone,
+      "device_type": Platform.isAndroid ? '1' : '2',
+      "device_token": fcmToken ?? '',
+      "device_token_voip_ios": voipToken ?? ''
+    };
+
+    print(url);
+    print(param);
     return http
         .post(Uri.parse(url), body: param)
         .then((http.Response response) async {
@@ -44,6 +77,9 @@ class ApiController {
       String name, String email, String password) async {
     var url = NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.register;
     dynamic param = await ApiParamModel().getSignUpParam(name, email, password);
+
+    print('url $url');
+    print('param $param');
 
     return http
         .post(Uri.parse(url), body: param)
@@ -143,6 +179,22 @@ class ApiController {
             : NetworkConstantsUtil.verifyFwdPWDOTP);
 
     dynamic param = ApiParamModel().getVerifyOTPParam(token, otp);
+
+    return http
+        .post(Uri.parse(url), body: param)
+        .then((http.Response response) async {
+      final ApiResponseModel parsedResponse = await getResponse(
+          response.body, NetworkConstantsUtil.verifyFwdPWDOTP);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> verifyPhoneLoginOTP(String otp, String token) async {
+    var url = NetworkConstantsUtil.baseUrl +
+        NetworkConstantsUtil.verifyRegistrationOTP;
+
+    dynamic param = ApiParamModel().getVerifyOTPParam(token, otp);
+
     return http
         .post(Uri.parse(url), body: param)
         .then((http.Response response) async {
@@ -173,7 +225,6 @@ class ApiController {
         '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.profileCategoryTypes}';
 
     String? authKey = await SharedPrefs().getAuthorizationKey();
-
 
     return http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
@@ -280,6 +331,24 @@ class ApiController {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     var url = NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.postDetail;
     url = url.replaceAll('{id}', id.toString());
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+          await getResponse(response.body, NetworkConstantsUtil.postDetail);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> getPostInsight(int id) async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url = NetworkConstantsUtil.baseUrl +
+        NetworkConstantsUtil.postInsight +
+        id.toString();
+
+    print(url);
+    print("Bearer ${authKey!}");
 
     return await http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
@@ -570,6 +639,28 @@ class ApiController {
     });
   }
 
+  Future<ApiResponseModel> otherUserProfileView(
+      {required int refId, required int sourceType}) async {
+    var url = '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.userView}';
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    print(url);
+    print("Bearer ${authKey!}");
+    print({
+      'reference_id': refId.toString(),
+      'source_type': sourceType.toString()
+    });
+    return http.post(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }, body: {
+      'reference_id': refId.toString(),
+      'source_type': sourceType.toString()
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+          await getResponse(response.body, NetworkConstantsUtil.userView);
+      return parsedResponse;
+    });
+  }
+
   Future<ApiResponseModel> getMyProfile() async {
     var url = NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.getMyProfile;
     String? authKey = await SharedPrefs().getAuthorizationKey();
@@ -693,8 +784,8 @@ class ApiController {
     String? authKey = await SharedPrefs().getAuthorizationKey();
 
     var data = {
-      'latitude': location.latitude!.toString(),
-      'longitude': location.longitude!.toString(),
+      'latitude': location.latitude.toString(),
+      'longitude': location.longitude.toString(),
       'location': ''
     };
 
@@ -729,6 +820,26 @@ class ApiController {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     var postUri = Uri.parse(
         NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.updateProfileImage);
+    var request = http.MultipartRequest("POST", postUri);
+    request.headers.addAll({"Authorization": "Bearer ${authKey!}"});
+
+    request.files.add(http.MultipartFile.fromBytes('imageFile', imageFileData,
+        filename: '${DateTime.now().toIso8601String()}.jpg',
+        contentType: MediaType('image', 'jpg')));
+
+    return request.send().then((response) async {
+      final respStr = await response.stream.bytesToString();
+      final ApiResponseModel parsedResponse =
+          await getResponse(respStr, NetworkConstantsUtil.updateProfileImage);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> updateProfileCoverImage(
+      Uint8List imageFileData) async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var postUri = Uri.parse(NetworkConstantsUtil.baseUrl +
+        NetworkConstantsUtil.updateProfileCoverImage);
     var request = http.MultipartRequest("POST", postUri);
     request.headers.addAll({"Authorization": "Bearer ${authKey!}"});
 
@@ -1066,9 +1177,6 @@ class ApiController {
     var url =
         '${NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.getCompetitions}&page=$page';
 
-    print(url);
-    print("Bearer ${authKey!}");
-
     return await http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer $authKey"
     }).then((http.Response response) async {
@@ -1239,7 +1347,7 @@ class ApiController {
   Future<ApiResponseModel> getFollowerUsers({int? userId, int page = 1}) async {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     var url =
-        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.followers}${userId ?? getIt<UserProfileManager>().user!.id}&page=$page';
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.followers}${userId ?? _userProfileManager.user.value!.id}&page=$page';
 
     return await http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
@@ -1254,7 +1362,7 @@ class ApiController {
       {int? userId, int page = 1}) async {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     var url =
-        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.following}${userId ?? getIt<UserProfileManager>().user!.id}&page=$page';
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.following}${userId ?? _userProfileManager.user.value!.id}&page=$page';
 
     return await http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
@@ -1268,11 +1376,10 @@ class ApiController {
   Future<ApiResponseModel> getNotifications() async {
     var url =
         NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.getNotifications;
-
     String? authKey = await SharedPrefs().getAuthorizationKey();
 
     return http.get(Uri.parse(url), headers: {
-      "Authorization": "Bearer ${authKey!}"
+      "Authorization": "Bearer $authKey"
     }).then((http.Response response) async {
       final ApiResponseModel parsedResponse = await getResponse(
           response.body, NetworkConstantsUtil.getNotifications);
@@ -2343,10 +2450,10 @@ class ApiController {
     url =
         '$url&expand=payment,event,event.eventOrganisor,giftedToUser,giftedByUser';
     url = '$url&page=$page';
-
+    // print(url);
     // print("Bearer ${authKey!}");
     return await http.get(Uri.parse(url), headers: {
-      "Authorization": "Bearer ${authKey!}"
+      "Authorization": "Bearer $authKey"
     }).then((http.Response response) async {
       final ApiResponseModel parsedResponse =
           await getResponse(response.body, NetworkConstantsUtil.eventBookings);
@@ -2440,7 +2547,7 @@ class ApiController {
 
   Future<ApiResponseModel> getCurrentLiveUsers() async {
     var url =
-        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.currentLiveUsers}${getIt<UserProfileManager>().user!.id}';
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.currentLiveUsers}${_userProfileManager.user.value!.id}';
     String? authKey = await SharedPrefs().getAuthorizationKey();
 
     // print(url);

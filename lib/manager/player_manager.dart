@@ -1,6 +1,9 @@
-import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'dart:io';
+
+import 'package:foap/manager/progress_notifier.dart';
+import 'package:foap/screens/add_on/model/reel_music_model.dart';
 
 enum PlayStateState { paused, playing, loading, idle }
 

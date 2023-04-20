@@ -1,4 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../../util/shared_prefs.dart';
 
 class WallpaperForChatBackground extends StatefulWidget {
   final int roomId;
@@ -46,7 +48,7 @@ class _WallpaperForChatBackgroundState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(

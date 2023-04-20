@@ -1,4 +1,4 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 class SearchBar extends StatefulWidget {
@@ -23,14 +23,12 @@ class SearchBar extends StatefulWidget {
     this.onSearchChanged,
     this.iconColor,
     this.radius,
-
     this.backgroundColor,
     this.needBackButton,
     this.showSearchIcon,
     this.textStyle,
     this.shadowOpacity,
     this.hintText,
-
   }) : super(key: key);
 
   @override
@@ -79,24 +77,24 @@ class _SearchBarState extends State<SearchBar> {
           children: [
             needBackButton == true
                 ? IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: ThemeIconWidget(
-                  ThemeIcon.backArrow,
-                  color: Theme.of(context).primaryColor,
-                ))
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: ThemeIconWidget(
+                      ThemeIcon.backArrow,
+                      color: AppColorConstants.themeColor,
+                    ))
                 : Container(),
             showSearchIcon == true
                 ? ThemeIconWidget(
-              ThemeIcon.search,
-              color: iconColor,
-              size: 20,
-            ).lP16.ripple(() {
-              if (searchText != null && searchText!.length > 2) {
-                onSearchChanged!(searchText!);
-              }
-            })
+                    ThemeIcon.search,
+                    color: iconColor,
+                    size: 20,
+                  ).lP16.ripple(() {
+                    if (searchText != null && searchText!.length > 2) {
+                      onSearchChanged!(searchText!);
+                    }
+                  })
                 : Container(),
             Expanded(
               child: TextField(
@@ -117,18 +115,26 @@ class _SearchBarState extends State<SearchBar> {
                       onSearchStarted!();
                     }
                   },
-                  style: textStyle,
-                  cursorColor: Theme.of(context).iconTheme.color,
+                  style: textStyle ??
+                      TextStyle(
+                          fontSize: FontSizes.b3,
+                          color: AppColorConstants.grayscale900),
+                  cursorColor: AppColorConstants.iconColor,
                   decoration: InputDecoration(
-                    hintStyle: textStyle ?? Theme.of(context).textTheme.bodyMedium,
+                    hintStyle: textStyle ??
+                        TextStyle(
+                            fontSize: FontSizes.b3,
+                            color: AppColorConstants.grayscale700),
                     hintText: hintText ?? LocalizationString.searchAnything,
                     border: InputBorder.none,
-
                   )).setPadding(bottom: 4, left: 8),
             ),
           ],
         ),
       ),
-    ).shadow(context:context ,radius: radius ?? 20,fillColor: backgroundColor,shadowOpacity: shadowOpacity);
+    ).backgroundCard(
+        radius: radius ?? 20,
+        fillColor: backgroundColor,
+        shadowOpacity: shadowOpacity);
   }
 }

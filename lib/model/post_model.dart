@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/post_gallery.dart';
+import 'package:foap/screens/add_on/model/reel_music_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'club_model.dart';
+import 'package:get/get.dart';
 
 class PostModel {
   int id = 0;
@@ -37,7 +41,8 @@ class PostModel {
     model.id = json['id'];
     model.title = json['title'] ?? 'No title';
 
-    model.user = UserModel.fromJson(json['user']);
+    model.user =
+        json['user'] == null ? UserModel() : UserModel.fromJson(json['user']);
     model.competitionId = json['competition_id'];
     model.totalView = json['total_view'] ?? 0;
     model.totalLike = json['total_like'] ?? 0;
@@ -64,12 +69,16 @@ class PostModel {
           json['mentionUsers'].map((x) => MentionedUsers.fromJson(x)));
     }
 
-    model.createDate =
-        DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000).toUtc();
+    model.createDate = json['created_at'] == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
+            .toUtc();
 
-    model.postTime = timeago.format(model.createDate!);
+    model.postTime = model.createDate != null
+        ? timeago.format(model.createDate!)
+        : LocalizationString.justNow;
     model.audio =
-    json['audio'] == null ? null : ReelMusicModel.fromJson(json['audio']);
+        json['audio'] == null ? null : ReelMusicModel.fromJson(json['audio']);
     model.club = json['clubDetail'] == null
         ? null
         : ClubModel.fromJson(json['clubDetail']);
@@ -96,7 +105,9 @@ class PostModel {
   }
 
   bool get isMyPost {
-    return user.id == getIt<UserProfileManager>().user!.id;
+    final UserProfileManager userProfileManager = Get.find();
+
+    return user.id == userProfileManager.user.value!.id;
   }
 }
 
@@ -112,4 +123,52 @@ class MentionedUsers {
     model.userName = json['username'].toString().toLowerCase();
     return model;
   }
+}
+
+class PostInsight {
+  int totalView;
+  int totalImpression;
+  int viewFromFollowers;
+  int viewFromNonFollowers;
+  int viewFromMale;
+  int viewFromFemale;
+  int viewFromOther;
+  int viewFromGenderNotDisclosed;
+  int viewFromCountryNotDisclosed;
+  int viewFromProfileCategoryNotDisclosed;
+  int viewFromAgeNotDisclosed;
+  int profileViewFromPost;
+  int followFromPost;
+
+  PostInsight({
+    required this.totalView,
+    required this.totalImpression,
+    required this.viewFromFollowers,
+    required this.viewFromNonFollowers,
+    required this.viewFromMale,
+    required this.viewFromFemale,
+    required this.viewFromOther,
+    required this.viewFromGenderNotDisclosed,
+    required this.viewFromCountryNotDisclosed,
+    required this.viewFromProfileCategoryNotDisclosed,
+    required this.viewFromAgeNotDisclosed,
+    required this.profileViewFromPost,
+    required this.followFromPost,
+  });
+
+  factory PostInsight.fromJson(dynamic json) => PostInsight(
+      totalView: json['total_view'],
+      totalImpression: json['total_impression'],
+      viewFromFollowers: json['follower'],
+      viewFromNonFollowers: json['nonfollower'],
+      viewFromMale: json['male'],
+      viewFromFemale: json['female'],
+      viewFromOther: json['other'],
+      viewFromGenderNotDisclosed: json['gender_not_disclose'],
+      viewFromCountryNotDisclosed: json['country_not_disclose'],
+      viewFromProfileCategoryNotDisclosed:
+          json['profile_category_type_not_disclose'],
+      viewFromAgeNotDisclosed: json['age_not_disclose'],
+      profileViewFromPost: json['profile_view'],
+      followFromPost: json['follow_by_post']);
 }

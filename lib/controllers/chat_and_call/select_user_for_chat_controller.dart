@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../model/post_model.dart';
+import '../../model/user_model.dart';
 
 class SelectUserForChatController extends GetxController {
   final ChatDetailController chatDetailController = Get.find();

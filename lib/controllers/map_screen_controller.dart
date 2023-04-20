@@ -1,7 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:async';
+import 'dart:ui' as ui;
+
+import 'package:flutter/services.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as google_map;
-import 'dart:ui' as ui;
 import 'package:location/location.dart';
 
 class MapScreenController extends GetxController {

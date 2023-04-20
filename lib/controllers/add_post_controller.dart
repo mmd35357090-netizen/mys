@@ -1,5 +1,17 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:foap/components/custom_gallery_picker.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/string_extension.dart';
 import 'package:get/get.dart';
+import 'package:video_compress/video_compress.dart';
+
+import '../apiHandler/api_controller.dart';
+import '../model/hash_tag.dart';
+import '../screens/chat/media.dart';
+import '../screens/dashboard/dashboard_screen.dart';
+import 'home_controller.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddPostController extends GetxController {
   final HomeController _homeController = Get.find();
@@ -219,7 +231,7 @@ class AddPostController extends GetxController {
     }
 
     var responses = await Future.wait([
-      for (Media media in items) uploadMedia(media, competitionId, context)
+      for (Media media in items) uploadMedia(media, competitionId, )
     ]).whenComplete(() {});
 
     publishAction(
@@ -233,11 +245,11 @@ class AddPostController extends GetxController {
         audioId: audioId,
         audioStartTime: audioStartTime,
         audioEndTime: audioEndTime,
-        context: context);
+        );
   }
 
   Future<Map<String, String>> uploadMedia(
-      Media media, int? competitionId, BuildContext context) async {
+      Media media, int? competitionId) async {
     Map<String, String> gallery = {};
 
     await AppUtil.checkInternet().then((value) async {
@@ -302,7 +314,6 @@ class AddPostController extends GetxController {
       } else {
         isErrorInPosting.value = true;
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: false);
       }
@@ -315,7 +326,6 @@ class AddPostController extends GetxController {
     required String title,
     required List<String> tags,
     required List<String> mentions,
-    required BuildContext context,
     int? competitionId,
     int? clubId,
     bool isReel = false,
@@ -369,7 +379,6 @@ class AddPostController extends GetxController {
         isErrorInPosting.value = true;
 
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: false);
       }

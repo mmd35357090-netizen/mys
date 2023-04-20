@@ -1,5 +1,14 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
 import 'dart:math';
+
+import 'package:chewie/chewie.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:video_player/video_player.dart';
+
+import '../../components/video_widget.dart';
+import '../../manager/file_manager.dart';
+import '../../model/chat_message_model.dart';
+import '../../model/post_gallery.dart';
 
 // class VideoPlayerScreen extends StatefulWidget {
 //   final PostGallery? media;
@@ -41,7 +50,7 @@ import 'dart:math';
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//         backgroundColor: Theme.of(context).backgroundColor,
+//         backgroundColor: ColorConstants.backgroundColor,
 //         body: Column(
 //           children: [
 //             const SizedBox(
@@ -145,7 +154,7 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -272,38 +281,21 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
   }
 
   prepareVideo({required String url, required bool isLocalFile}) {
-    // print('prepareVideo ');
-
     if (videoPlayerController != null) {
-      // print('prepareVideo 1');
-
       videoPlayerController!.pause();
     }
-    // print('prepareVideo 2');
-
     if (isLocalFile) {
-      // print('prepareVideo 3');
-
       videoPlayerController = VideoPlayerController.file(File(url));
     } else {
-      // print('prepareVideo 4');
-
       videoPlayerController = VideoPlayerController.network(url);
     }
 
-    // print('prepareVideo 5');
     initializeVideoPlayerFuture = videoPlayerController!.initialize().then((_) {
-      // videoPlayed.remove(videoUrl);
-      // update();
       setState(() {});
       play();
-      // print('prepareVideo 6');
     });
 
     videoPlayerController!.addListener(checkVideoProgress);
-    // print('prepareVideo 7');
-
-    // });
   }
 
   openFullScreen() {

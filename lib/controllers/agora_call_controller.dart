@@ -1,9 +1,21 @@
+import 'dart:io';
+
 import 'package:agora_rtc_engine/rtc_engine.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/controllers/voip_controller.dart';
+import 'package:foap/helper/imports/call_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:wakelock/wakelock.dart';
+
+import '../manager/socket_manager.dart';
+import '../screens/settings_menu/settings_controller.dart';
+import '../util/ad_helper.dart';
+import '../util/constant_util.dart';
 
 class AgoraCallController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxInt remoteUserId = 0.obs;
 
   RtcEngine? _engine;
@@ -16,7 +28,7 @@ class AgoraCallController extends GetxController {
   RxBool mutedVideo = false.obs;
   RxBool switchMainView = false.obs;
   RxBool remoteJoined = false.obs;
-  SettingsController _settingsController = Get.find();
+  final SettingsController _settingsController = Get.find();
 
   // int callId = 0;
   final player = AudioPlayer();
@@ -48,7 +60,7 @@ class AgoraCallController extends GetxController {
     getIt<SocketManager>().emit(
         SocketConstants.callCreate,
         ({
-          CallArgParams.senderId: getIt<UserProfileManager>().user!.id,
+          CallArgParams.senderId: _userProfileManager.user.value!.id,
           CallArgParams.receiverId: call.opponent.id,
           CallArgParams.callType: call.callType,
           CallArgParams.localCallId: localCallId,
@@ -76,7 +88,7 @@ class AgoraCallController extends GetxController {
       await _engine!.leaveChannel();
 
       await _engine!.joinChannel(call.token, call.channelName, null,
-          getIt<UserProfileManager>().user!.id);
+          _userProfileManager.user.value!.id);
 
       if (call.callType == 1) {
         Get.to(() => AudioCallingScreen(call: call));
@@ -191,6 +203,9 @@ class AgoraCallController extends GetxController {
       }
       endCall(call);
     }
+    else if (status == 4) {
+      player.stop();
+    }
   }
 
   outgoingCallConfirmationReceived(Map<String, dynamic> updatedData) async {
@@ -264,7 +279,7 @@ class AgoraCallController extends GetxController {
   void acceptCall({required Call call}) async {
     getIt<SocketManager>().emit(SocketConstants.onAcceptCall, {
       'uuid': call.uuid,
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'status': 4,
       // 'channelName': call.channelName
     });
@@ -304,7 +319,7 @@ class AgoraCallController extends GetxController {
       }
       getIt<SocketManager>().emit(SocketConstants.onCompleteCall, {
         'uuid': call.uuid,
-        'userId': getIt<UserProfileManager>().user!.id,
+        'userId': _userProfileManager.user.value!.id,
         'status': 5,
         // 'channelName': call.channelName
       });
@@ -315,7 +330,7 @@ class AgoraCallController extends GetxController {
       }
       getIt<SocketManager>().emit(SocketConstants.onRejectCall, {
         'uuid': call.uuid,
-        'userId': getIt<UserProfileManager>().user!.id,
+        'userId': _userProfileManager.user.value!.id,
         'status': 2
       });
     }
@@ -327,7 +342,7 @@ class AgoraCallController extends GetxController {
   void declineCall({required Call call}) async {
     getIt<SocketManager>().emit(SocketConstants.onRejectCall, {
       'uuid': call.uuid,
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'status': 2
     });
     if (Platform.isIOS) {
@@ -341,7 +356,7 @@ class AgoraCallController extends GetxController {
   void timeOutCall(Call call) async {
     getIt<SocketManager>().emit(SocketConstants.onNotAnswered, {
       'uuid': call.uuid,
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'status': 3
     });
     if (Platform.isIOS) {

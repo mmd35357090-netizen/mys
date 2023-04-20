@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import '../../model/generic_item.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class ActionSheet extends StatefulWidget {
   final List<GenericItem> items;
@@ -29,7 +30,7 @@ class ActionSheetState extends State<ActionSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: (items.length * 76) + 100,
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor,
       child: Column(
         children: [
           Row(
@@ -42,18 +43,12 @@ class ActionSheetState extends State<ActionSheet> {
                 Navigator.pop(context);
               }),
               const Spacer(),
-              Text(LocalizationString.choosePrivacy,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.w600)),
+              BodyLargeText(LocalizationString.choosePrivacy,
+                  weight:TextWeight.medium),
               const Spacer(),
-              Text(
+              BodyLargeText(
                 LocalizationString.done,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontWeight: FontWeight.w600),
+                weight:TextWeight.medium,
               ).ripple(() {
                 if (selectedItem != null) {
                   itemCallBack(selectedItem!);
@@ -68,10 +63,10 @@ class ActionSheetState extends State<ActionSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
-                        color: Theme.of(context).backgroundColor,
+                        color: AppColorConstants.backgroundColor,
                         child: ThemeIconWidget(
                           items[i].icon!,
-                          color: Theme.of(context).iconTheme.color,
+                          color: AppColorConstants.iconColor,
                         ).p8)
                     .circular,
                 const SizedBox(width: 10),
@@ -79,19 +74,16 @@ class ActionSheetState extends State<ActionSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      BodyLargeText(
                         items[i].title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w700),
+                          weight: TextWeight.semiBold
+
                       ),
                       const SizedBox(
                         height: 5,
                       ),
-                      Text(
+                      BodySmallText(
                         items[i].subTitle!,
-                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
@@ -103,8 +95,8 @@ class ActionSheetState extends State<ActionSheet> {
                       : ThemeIcon.unSelectedRadio,
                   size: 25,
                   color: selectedItem?.id == items[i].id
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).iconTheme.color,
+                      ? AppColorConstants.themeColor
+                      : AppColorConstants.iconColor,
                 )
               ],
             ).p16.ripple(() {

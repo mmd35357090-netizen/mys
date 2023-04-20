@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/model/post_model.dart';
 
 class SinglePostDetailController extends GetxController {
   Rx<PostModel?> post = Rx<PostModel?>(null);
@@ -30,7 +32,7 @@ class SinglePostDetailController extends GetxController {
             .likeUnlike(post.value!.isLike, post.value!.id)
             .then((response) async {});
       } else {
-        AppUtil.showToast(context: context,
+        AppUtil.showToast(
             message: LocalizationString.noInternet, isSuccess: true);
       }
     });

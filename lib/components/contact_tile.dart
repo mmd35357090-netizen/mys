@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_contacts/contact.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class ContactTile extends StatelessWidget {
   final Contact contact;
@@ -16,13 +17,14 @@ class ContactTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(contact.displayName,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.w600)),
-              Text(contact.phones.map((e) => e.number).toList().join(','),
-                  style: Theme.of(context).textTheme.titleSmall)
+              Heading5Text(
+                contact.displayName,
+                weight: TextWeight.semiBold,
+              ),
+              BodyLargeText(
+                contact.phones.map((e) => e.number).toList().join(','),
+                color: AppColorConstants.grayscale400,
+              )
             ],
           ),
         ),
@@ -30,7 +32,7 @@ class ContactTile extends StatelessWidget {
             ? ThemeIconWidget(
                 ThemeIcon.checkMarkWithCircle,
                 size: 20,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
               )
             : const ThemeIconWidget(
                 ThemeIcon.circleOutline,

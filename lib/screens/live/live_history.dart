@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/number_extension.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/live_history_controller.dart';
+import '../../model/live_model.dart';
 
 class LiveHistory extends StatefulWidget {
   const LiveHistory({Key? key}) : super(key: key);
@@ -9,7 +13,7 @@ class LiveHistory extends StatefulWidget {
 }
 
 class LiveHistoryState extends State<LiveHistory> {
-  final LiveHistoryController _liveHistoryController = Get.find();
+  final LiveHistoryController _liveHistoryController = LiveHistoryController();
   final _controller = ScrollController();
 
   @override
@@ -38,7 +42,7 @@ class LiveHistoryState extends State<LiveHistory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SizedBox(
           height: 50,
@@ -55,7 +59,7 @@ class LiveHistoryState extends State<LiveHistory> {
                     itemBuilder: (ctx, index) {
                       LiveModel live = _liveHistoryController.lives[index];
                       return Container(
-                        color: Theme.of(context).cardColor,
+                        color: AppColorConstants.cardColor,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -64,14 +68,13 @@ class LiveHistoryState extends State<LiveHistory> {
                                 ThemeIconWidget(
                                   ThemeIcon.calendar,
                                   size: 15,
-                                  color: Theme.of(context).primaryColor,
+                                  color: AppColorConstants.themeColor,
                                 ),
                                 const SizedBox(
                                   width: 5,
                                 ),
-                                Text(
+                                BodySmallText(
                                   '${LocalizationString.startedAt} ${live.startedAt!}',
-                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),
@@ -81,14 +84,13 @@ class LiveHistoryState extends State<LiveHistory> {
                                 ThemeIconWidget(
                                   ThemeIcon.diamond,
                                   size: 15,
-                                  color: Theme.of(context).primaryColor,
+                                  color: AppColorConstants.themeColor,
                                 ),
                                 const SizedBox(
                                   width: 5,
                                 ),
-                                Text(
+                                BodySmallText(
                                   live.giftSummary!.totalCoin.toString(),
-                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                                 const Spacer(),
                                 Row(
@@ -96,18 +98,14 @@ class LiveHistoryState extends State<LiveHistory> {
                                     ThemeIconWidget(
                                       ThemeIcon.clock,
                                       size: 15,
-                                      color: Theme.of(context).primaryColor,
+                                      color: AppColorConstants.themeColor,
                                     ),
                                     const SizedBox(
                                       width: 5,
                                     ),
-                                    Text(
+                                    BodySmallText(
                                       live.totalTime.formatTime,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(
-                                              fontWeight: FontWeight.w600),
+                                      weight: TextWeight.medium,
                                     ),
                                   ],
                                 ),

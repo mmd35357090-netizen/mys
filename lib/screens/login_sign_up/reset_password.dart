@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/login_signup_imports.dart';
+
+import '../../universal_components/rounded_password_field.dart';
+import '../profile/password_changed_popup.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String token;
@@ -11,6 +15,8 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final UserProfileManager _userProfileManager = Get.find();
+
   TextEditingController newPassword = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
   late String token;
@@ -32,7 +38,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -50,26 +56,15 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
               //   height: 25,
               // )),
 
-              Text(
+              Heading2Text(
                 LocalizationString.resetPwd,
-                style: Theme.of(context)
-                    .textTheme
-                    .displayMedium!
-                    .copyWith(color: Theme.of(context).primaryColor)
-                    .copyWith(fontWeight: FontWeight.w900),
+                weight: TextWeight.bold,
+                color: AppColorConstants.themeColor,
                 textAlign: TextAlign.start,
               ),
               const SizedBox(
                 height: 40,
               ),
-              // Text(
-              //   LocalizationString.helpToGetAccount,
-              //   style: Theme.of(context)
-              //       .textTheme
-              //       .headlineSmall!
-              //       .copyWith(fontWeight: FontWeight.w600),
-              //   textAlign: TextAlign.start,
-              // ).setPadding(top: 10, bottom: 80),
               addTextField(newPassword, LocalizationString.newPassword),
               addTextField(confirmPassword, LocalizationString.confirmPassword)
                   .tP25,
@@ -84,14 +79,14 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 builder: (ctx) {
                   return controller.passwordReset == true
                       ? Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: PasswordChangedPopup(dismissHandler: () {
-                            controller.passwordReset = false;
-                            getIt<UserProfileManager>().logout();
-                          }))
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: PasswordChangedPopup(dismissHandler: () {
+                        controller.passwordReset = false;
+                        _userProfileManager.logout();
+                      }))
                       : Container();
                 })
           ],
@@ -110,15 +105,14 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         hintText: hint,
       ),
     ).vP8.borderWithRadius(
-          context: context,
-          value: 1,
-          radius: 5,
-          color: Theme.of(context).dividerColor,
-        );
+      value: 1,
+      radius: 5,
+      color: AppColorConstants.dividerColor,
+    );
   }
 
   addSubmitBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
         controller.resetPassword(
           context: context,
@@ -128,12 +122,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         );
       },
       text: LocalizationString.changePwd,
-      enabledTextStyle: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900)
-          .copyWith(color: Colors.white70),
-      isEnabled: true,
+
     );
   }
 }

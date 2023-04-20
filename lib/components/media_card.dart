@@ -1,4 +1,4 @@
-import '../helper/common_import.dart';
+import '../helper/imports/common_import.dart';
 
 class MediaCard extends StatelessWidget {
   final MediaModel model;
@@ -9,7 +9,7 @@ class MediaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 180,
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -18,19 +18,12 @@ class MediaCard extends StatelessWidget {
             fit: BoxFit.cover,
             height: 110,
           ).round(12),
-          Text(
-            model.name ?? '',
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall!
-                .copyWith(fontWeight: FontWeight.w300),
-          ).setPadding(top: 12, bottom: 6),
-          Text(
+          BodySmallText(model.name ?? '', weight: TextWeight.regular)
+              .setPadding(top: 12, bottom: 6),
+          BodySmallText(
             model.showTime ?? '',
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.w300),
+            weight: TextWeight.regular,
+            color: AppColorConstants.themeColor,
           ),
         ],
       ).p(12),

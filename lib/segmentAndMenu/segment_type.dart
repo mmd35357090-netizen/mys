@@ -1,5 +1,4 @@
-
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 enum SegmentType { segmnetType1, segmnetType2, segmnetType3, segmnetType4 }
 
@@ -31,7 +30,6 @@ class SegmentTab extends StatefulWidget {
     this.type,
     required this.title,
     required this.isSelected,
-
     this.inActiveBgColor,
     this.cornerRadius,
     this.activeBgColor,
@@ -91,9 +89,10 @@ class _SegmentTabState extends State<SegmentTab> {
                     ? ThemeIconWidget(
                         icon!,
                         color: isSelected == true
-                            ? widget.activeIconColor ?? Theme.of(context).backgroundColor
+                            ? widget.activeIconColor ??
+                                AppColorConstants.backgroundColor
                             : widget.inActiveIconColor ??
-                                Theme.of(context).primaryColor,
+                                AppColorConstants.themeColor,
                         size: 15,
                       )
                     : Container(
@@ -102,9 +101,11 @@ class _SegmentTabState extends State<SegmentTab> {
                 Text(title,
                         style: isSelected == true
                             ? widget.activeTextStyle ??
-                            Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w900)
+                                TextStyle(
+                                    fontSize: FontSizes.b3,
+                                    fontWeight: TextWeight.bold)
                             : widget.inActiveTextStyle ??
-                                Theme.of(context).textTheme.bodyMedium)
+                                TextStyle(fontSize: FontSizes.b3))
                     .hP8
               ],
             ).hP8
@@ -112,14 +113,19 @@ class _SegmentTabState extends State<SegmentTab> {
               child: Text(title,
                       style: isSelected == true
                           ? widget.activeTextStyle ??
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w900)
-                          : widget.inActiveTextStyle ?? Theme.of(context).textTheme.bodyMedium)
+                              TextStyle(
+                                  fontSize: FontSizes.b3,
+                                  fontWeight: TextWeight.bold)
+                          : widget.inActiveTextStyle ??
+                              TextStyle(fontSize: FontSizes.b3))
                   .hP16),
-    ).shadow(context:context ,
-        radius: cornerRadius,
-        fillColor: isSelected == true
-            ? widget.activeBgColor ?? Theme.of(context).primaryColor
-            : widget.inActiveBgColor).vP4;
+    )
+        .backgroundCard(
+            radius: cornerRadius,
+            fillColor: isSelected == true
+                ? widget.activeBgColor ?? AppColorConstants.themeColor
+                : widget.inActiveBgColor)
+        .vP4;
   }
 
   Widget segmentType2() {
@@ -131,9 +137,10 @@ class _SegmentTabState extends State<SegmentTab> {
                     ? ThemeIconWidget(
                         icon!,
                         color: isSelected == true
-                            ? widget.activeIconColor ?? Theme.of(context).backgroundColor
+                            ? widget.activeIconColor ??
+                                AppColorConstants.backgroundColor
                             : widget.inActiveIconColor ??
-                                Theme.of(context).primaryColor,
+                                AppColorConstants.themeColor,
                         size: 15,
                       )
                     : Container(
@@ -141,8 +148,14 @@ class _SegmentTabState extends State<SegmentTab> {
                       ),
                 Text(title,
                         style: isSelected == true
-                            ? widget.activeTextStyle ?? Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.w900)
-                            : widget.inActiveTextStyle ?? Theme.of(context).textTheme.displayMedium)
+                            ? widget.activeTextStyle ??
+                                TextStyle(
+                                    fontSize: FontSizes.b3,
+                                    fontWeight: TextWeight.bold)
+                            : widget.inActiveTextStyle ??
+                                TextStyle(
+                                  fontSize: FontSizes.b3,
+                                ))
                     .hP8
               ],
             ).hP8
@@ -152,13 +165,19 @@ class _SegmentTabState extends State<SegmentTab> {
               children: [
                 Text(title,
                         style: isSelected == true
-                            ? widget.activeTextStyle ?? Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.w900)
-                            : widget.inActiveTextStyle ?? Theme.of(context).textTheme.displayMedium)
+                            ? widget.activeTextStyle ??
+                                TextStyle(
+                                    fontSize: FontSizes.b3,
+                                    fontWeight: TextWeight.bold)
+                            : widget.inActiveTextStyle ??
+                                TextStyle(
+                                  fontSize: FontSizes.b3,
+                                ))
                     .bp(12),
                 Container(
                   height: 5,
                   color: isSelected == true
-                      ? widget.activeBgColor ?? Theme.of(context).primaryColor
+                      ? widget.activeBgColor ?? AppColorConstants.themeColor
                       : widget.inActiveBgColor,
                   width: 50,
                 ).round(5)
@@ -175,17 +194,21 @@ class _SegmentTabState extends State<SegmentTab> {
           height: 45,
           width: 50,
           color: isSelected == true
-              ? widget.activeBgColor ?? Theme.of(context).primaryColor
-              : widget.inActiveBgColor ?? Theme.of(context).disabledColor.withOpacity(0.1),
+              ? widget.activeBgColor ?? AppColorConstants.themeColor
+              : widget.inActiveBgColor ?? AppColorConstants.disabledColor,
           child: Image.asset(
             image!,
-            color: Theme.of(context).backgroundColor,
+            color: AppColorConstants.backgroundColor,
           ).p8,
         ).round(18).bP16,
         Text(title,
             style: isSelected == true
-                ? widget.activeTextStyle ?? Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w900)
-                : widget.inActiveTextStyle ?? Theme.of(context).textTheme.bodyMedium)
+                ? widget.activeTextStyle ??
+                    TextStyle(
+                        fontSize: FontSizes.b2, fontWeight: TextWeight.bold)
+                : widget.inActiveTextStyle ??
+                    TextStyle(
+                        fontSize: FontSizes.b2, fontWeight: TextWeight.bold))
       ],
     ).hP8);
   }

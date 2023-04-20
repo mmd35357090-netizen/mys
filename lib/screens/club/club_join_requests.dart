@@ -1,7 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
-import '../../model/club_join_request.dart';
+import '../../components/user_card.dart';
+import '../profile/other_user_profile.dart';
 
 class ClubJoinRequests extends StatefulWidget {
   final ClubModel club;
@@ -13,7 +15,7 @@ class ClubJoinRequests extends StatefulWidget {
 }
 
 class ClubJoinRequestsState extends State<ClubJoinRequests> {
-  final ClubDetailController _clubDetailController = Get.find();
+  final ClubDetailController _clubDetailController = ClubDetailController();
 
   @override
   void initState() {
@@ -23,7 +25,7 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(

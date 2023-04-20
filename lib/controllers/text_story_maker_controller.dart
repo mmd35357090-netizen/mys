@@ -1,6 +1,8 @@
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:foap/theme/theme.dart';
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
-
 class TextStoryMakerController extends GetxController {
   Rx<Color> selectedStrokeColor = Colors.black.obs;
   Rx<Color?> selectedBackgroundColor = Colors.white.obs;

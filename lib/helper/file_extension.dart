@@ -1,6 +1,8 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:mime/mime.dart';
+import 'dart:io';
 
+import 'package:foap/helper/enum.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:mime/mime.dart';
 extension FileExtension on File {
   GalleryMediaType get mediaType {
     final mimeType = lookupMimeType(path)!.toLowerCase();

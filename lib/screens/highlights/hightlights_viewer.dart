@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/highlights_imports.dart';
+import 'package:keyboard_attachable/keyboard_attachable.dart';
+import 'package:story_view/controller/story_controller.dart';
+import 'package:story_view/utils.dart';
+import 'package:story_view/widgets/story_view.dart';
+
+import '../../universal_components/rounded_input_field.dart';
 
 class HighlightViewer extends StatefulWidget {
   final HighlightsModel highlight;
@@ -22,7 +29,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       resizeToAvoidBottomInset: false,
       body: storyWidget(),
     );
@@ -78,7 +85,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
         // backgroundColor: Colors.blue,
         child: Container(
           height: 60,
-          color: Theme.of(context).primaryColor,
+          color: AppColorConstants.themeColor,
           child: Row(
             children: [
               Expanded(
@@ -88,7 +95,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
               ),
               ThemeIconWidget(
                 ThemeIcon.send,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
               )
             ],
           ).hP25,
@@ -115,17 +122,15 @@ class _HighlightViewerState extends State<HighlightViewer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      BodyMediumText(
                         highlightController
                             .storyMediaModel.value!.story.user!.userName,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                        weight: TextWeight.medium,
                       ),
-                      Text(
+                      BodyMediumText(
                         highlightController.storyMediaModel.value!.createdAt,
-                        style:
-                            Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white70),
+                        weight: TextWeight.medium,
+                        color: AppColorConstants.grayscale600,
                       )
                     ],
                   )),
@@ -138,7 +143,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
           width: 40,
           child: ThemeIconWidget(
             ThemeIcon.more,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
             size: 20,
           ).ripple(() {
             openActionPopup();

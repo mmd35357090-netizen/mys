@@ -8,6 +8,8 @@ import 'package:foap/components/place_picker/entities/entities.dart';
 import 'package:foap/components/place_picker/entities/localization_item.dart';
 import 'package:foap/components/place_picker/widgets/widgets.dart';
 
+import '../../../util/app_config_constants.dart';
+import '../../custom_texts.dart';
 import '../uuid.dart';
 
 /// Place picker widget made with map widget from
@@ -96,10 +98,10 @@ class PlacePickerState extends State<PlacePicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       appBar: AppBar(
         key: appBarKey,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         title: SearchInput(searchPlace),
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -136,11 +138,8 @@ class PlacePickerState extends State<PlacePicker> {
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                    child: Text(widget.localizationItem!.nearBy,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(fontWeight: FontWeight.w600)),
+                    child: Heading6Text(widget.localizationItem!.nearBy,
+                        weight: TextWeight.medium),
                   ),
                   Expanded(
                     child: ListView(
@@ -222,7 +221,7 @@ class PlacePickerState extends State<PlacePicker> {
       ),
     );
 
-    Overlay.of(context)!.insert(overlayEntry!);
+    Overlay.of(context).insert(overlayEntry!);
 
     autoCompleteSearch(place);
   }
@@ -333,7 +332,7 @@ class PlacePickerState extends State<PlacePicker> {
       ),
     );
 
-    Overlay.of(context)!.insert(overlayEntry!);
+    Overlay.of(context).insert(overlayEntry!);
   }
 
   /// Utility function to get clean readable name of a location. First checks

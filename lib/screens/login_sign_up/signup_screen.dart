@@ -1,6 +1,11 @@
 import 'package:flutter/gestures.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/login_signup_imports.dart';
+
+import '../../universal_components/rounded_input_field.dart';
+import '../../universal_components/rounded_password_field.dart';
+import '../settings_menu/settings_controller.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -22,7 +27,7 @@ class SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: GestureDetector(
           onTap: () {
@@ -33,20 +38,13 @@ class SignUpScreenState extends State<SignUpScreen> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.08,
             ),
-            Text(LocalizationString.hi,
-                style: Theme.of(context)
-                    .textTheme
-                    .displayMedium!
-                    .copyWith(color: Theme.of(context).primaryColor)
-                    .copyWith(fontWeight: FontWeight.w900)),
+            Heading2Text(LocalizationString.hi,
+                weight: TextWeight.bold, color: AppColorConstants.themeColor),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.01,
             ),
-            Text(LocalizationString.signUpMessage,
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall!
-                    .copyWith(fontWeight: FontWeight.w600)),
+            Heading2Text(LocalizationString.signUpMessage,
+                weight: TextWeight.medium),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.03,
             ),
@@ -60,7 +58,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                       child: InputField(
                         controller: name,
                         showDivider: true,
-                        textStyle: Theme.of(context).textTheme.titleSmall,
                         hintText: LocalizationString.userName,
                         onChanged: (value) {
                           if (value.length > 3) {
@@ -76,11 +73,11 @@ class SignUpScreenState extends State<SignUpScreen> {
                             ? loginController.userNameCheckStatus == 1
                                 ? ThemeIconWidget(
                                     ThemeIcon.checkMark,
-                                    color: Theme.of(context).primaryColor,
+                                    color: AppColorConstants.themeColor,
                                   )
                                 : ThemeIconWidget(
                                     ThemeIcon.close,
-                                    color: Theme.of(context).errorColor,
+                                    color: AppColorConstants.red,
                                   )
                             : Container()),
                     const SizedBox(
@@ -105,7 +102,6 @@ class SignUpScreenState extends State<SignUpScreen> {
               hintText: LocalizationString.password,
               showRevealPasswordIcon: true,
             ),
-
             Obx(() {
               return loginController.passwordStrength.value < 0.8 &&
                       password.text.isNotEmpty
@@ -131,15 +127,13 @@ class SignUpScreenState extends State<SignUpScreen> {
                         const SizedBox(
                           height: 5,
                         ),
-                        Text(
+                        BodySmallText(
                           loginController.passwordStrengthText.value,
-                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     )
                   : Container();
             }),
-
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.015,
             ),
@@ -154,13 +148,12 @@ class SignUpScreenState extends State<SignUpScreen> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.015,
             ),
-
             RichText(
               text: TextSpan(
                 children: <TextSpan>[
                   TextSpan(
                       text: LocalizationString.signingInTerms,
-                      style: Theme.of(context).textTheme.bodyMedium),
+                      style: TextStyle(fontSize: FontSizes.b3)),
                   TextSpan(
                       text: ' ${LocalizationString.termsOfService}',
                       recognizer: TapGestureRecognizer()
@@ -168,13 +161,12 @@ class SignUpScreenState extends State<SignUpScreen> {
                           loginController.launchUrlInBrowser(settingsController
                               .setting.value!.termsOfServiceUrl!);
                         },
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(color: Theme.of(context).primaryColor)),
+                      style: TextStyle(
+                          fontSize: FontSizes.b3,
+                          color: AppColorConstants.themeColor)),
                   TextSpan(
                       text: ' ${LocalizationString.and}',
-                      style: Theme.of(context).textTheme.bodyMedium),
+                      style: TextStyle(fontSize: FontSizes.b3)),
                   TextSpan(
                       text: ' ${LocalizationString.privacyPolicy}',
                       recognizer: TapGestureRecognizer()
@@ -182,55 +174,12 @@ class SignUpScreenState extends State<SignUpScreen> {
                           loginController.launchUrlInBrowser(settingsController
                               .setting.value!.privacyPolicyUrl!);
                         },
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(color: Theme.of(context).primaryColor)),
+                      style: TextStyle(
+                          fontSize: FontSizes.b4,
+                          color: AppColorConstants.themeColor)),
                 ],
               ),
             ),
-
-            // Wrap(
-            //   alignment: WrapAlignment.center,
-            //   children: [
-            //     Text(LocalizationString.signingInTerms,
-            //         style: Theme
-            //             .of(context)
-            //             .textTheme
-            //             .bodyMedium),
-            //     Text(LocalizationString.termsOfService,
-            //         style: Theme
-            //             .of(context)
-            //             .textTheme
-            //             .bodyMedium!
-            //             .copyWith(color: Theme
-            //             .of(context)
-            //             .primaryColor))
-            //         .ripple(() {
-            //       loginController
-            //           .launchUrlInBrowser(
-            //           settingsController.setting.value!.termsOfServiceUrl!);
-            //     }),
-            //     Text(LocalizationString.and,
-            //         style: Theme
-            //             .of(context)
-            //             .textTheme
-            //             .bodyMedium),
-            //     Text(LocalizationString.privacyPolicy,
-            //         style: Theme
-            //             .of(context)
-            //             .textTheme
-            //             .bodyMedium!
-            //             .copyWith(color: Theme
-            //             .of(context)
-            //             .primaryColor))
-            //         .ripple(() {
-            //       loginController
-            //           .launchUrlInBrowser(
-            //           settingsController.setting.value!.privacyPolicyUrl!);
-            //     }),
-            //   ],
-            // ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.04,
             ),
@@ -244,35 +193,35 @@ class SignUpScreenState extends State<SignUpScreen> {
                 Container(
                   height: 1,
                   width: MediaQuery.of(context).size.width * 0.35,
-                  color: Theme.of(context).primaryColor,
+                  color: AppColorConstants.themeColor,
                 ),
-                Text(
+                Heading5Text(
                   LocalizationString.or,
-                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Container(
                   height: 1,
                   width: MediaQuery.of(context).size.width * 0.35,
-                  color: Theme.of(context).primaryColor,
+                  color: AppColorConstants.themeColor,
                 )
               ],
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.01,
             ),
-            const SocialLogin().setPadding(left: 65, right: 65),
-            // const Spacer(),
+            const SocialLogin(hidePhoneLogin: false)
+                .setPadding(left: 45, right: 45),
+            const SizedBox(
+              height: 40,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                BodyLargeText(
                   LocalizationString.alreadyHaveAcc,
-                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                Text(LocalizationString.signIn,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.w600))
+                BodyLargeText(LocalizationString.signIn,
+                        weight: TextWeight.medium,
+                        color: AppColorConstants.themeColor)
                     .ripple(() {
                   Get.to(() => const LoginScreen());
                 })
@@ -291,14 +240,13 @@ class SignUpScreenState extends State<SignUpScreen> {
     return InputField(
       controller: controller,
       showDivider: true,
-      textStyle: Theme.of(context).textTheme.titleSmall,
       hintText: hintText,
       cornerRadius: 5,
     );
   }
 
   addSignUpBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
         FocusScope.of(context).requestFocus(FocusNode());
         loginController.register(
@@ -309,11 +257,6 @@ class SignUpScreenState extends State<SignUpScreen> {
             context: context);
       },
       text: LocalizationString.signUp,
-      enabledTextStyle: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-      isEnabled: true,
     );
   }
 }

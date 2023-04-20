@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/live_imports.dart';
+
+import '../../components/user_card.dart';
 
 class LiveJoinedUsers extends StatefulWidget {
   const LiveJoinedUsers({Key? key}) : super(key: key);
@@ -23,10 +26,9 @@ class _LiveJoinedUsersState extends State<LiveJoinedUsers> {
         const SizedBox(
           height: 20,
         ),
-        Text(
+        Heading6Text(
           LocalizationString.joinedUsers,
-          style: Theme.of(context).textTheme.titleSmall!
-              .copyWith(fontWeight: FontWeight.w900),
+            weight: TextWeight.bold
         ),
         const SizedBox(
           height: 20,

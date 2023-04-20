@@ -1,16 +1,12 @@
 import 'dart:developer';
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/model/preference_model.dart';
-import 'package:get/get.dart';
-import '../model/club_invitation.dart';
-import '../model/club_join_request.dart';
-import '../model/faq_model.dart';
-import '../model/live_tv_model.dart';
-import '../model/get_relationship_model.dart';
-import '../model/myRelations/my_invitation_model.dart';
-import '../model/myRelations/my_relations_model.dart';
-import '../model/tv_show_model.dart';
-import '../model/polls_model.dart';
+
+import 'package:foap/helper/imports/api_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/models.dart';
+import 'package:foap/screens/add_on/model/podcast_model.dart';
+import 'package:foap/screens/add_on/model/preference_model.dart';
+
+import '../screens/add_on/model/event_category_model.dart';
 
 class ApiResponseModel {
   bool success = true;
@@ -28,6 +24,8 @@ class ApiResponseModel {
 
   List<CompetitionModel> competitions = [];
   List<PostModel> posts = [];
+  PostInsight? insight;
+
   List<PollsQuestionModel> polls = [];
   List<StoryModel> stories = [];
   List<StoryMediaModel> myActiveStories = [];
@@ -119,7 +117,7 @@ class ApiResponseModel {
   String? stripePaymentIntentClientSecret;
   String? paypalClientToken;
   String? transactionId;
-  bool isLoginFirstTime = false;
+  // bool isLoginFirstTime = false;
 
   ApiResponseModel();
 
@@ -129,7 +127,7 @@ class ApiResponseModel {
     dynamic data = json['data'];
     model.isInvalidLogin = json['isInvalidLogin'] == null ? false : true;
 
-    // log(json.toString());
+    log(json.toString());
     // log(url);
 
     if (model.success) {
@@ -156,14 +154,14 @@ class ApiResponseModel {
           if (data['auth_key'] != null) {
             String username = data['user']['username'] ?? '';
             model.authKey = data['auth_key'];
-            if (data['is_login_first_time'] == 1) {
-              model.isLoginFirstTime = true;
-            }
-            if (username.isEmpty) {
-              model.isLoginFirstTime = true;
-            } else {
-              model.isLoginFirstTime = data['user']['is_login_first_time'] == 1;
-            }
+            // if (data['is_login_first_time'] == 1) {
+            //   model.isLoginFirstTime = true;
+            // }
+            // if (username.isEmpty) {
+            //   model.isLoginFirstTime = true;
+            // } else {
+            //   model.isLoginFirstTime = data['user']['is_login_first_time'] == 1;
+            // }
           }
         } else if (data['competition'] != null) {
           if (url == NetworkConstantsUtil.getCompetitions) {
@@ -185,7 +183,6 @@ class ApiResponseModel {
               items.map((x) => VerificationRequest.fromJson(x)));
 
           model.metaData = APIMetaData.fromJson(data['verification']['_meta']);
-
         } else if (data['results'] != null) {
           var items = data['results'];
           if (items != null && items.length > 0) {
@@ -229,7 +226,8 @@ class ApiResponseModel {
             if (items != null && items.length > 0) {
               model.myInvitations = List<MyInvitationsModel>.from(
                   items.map((x) => MyInvitationsModel.fromJson(x)));
-              model.metaData = APIMetaData.fromJson(data['invitation']['_meta']);
+              model.metaData =
+                  APIMetaData.fromJson(data['invitation']['_meta']);
             }
           }
         } else if (data['relations'] != null) {
@@ -564,6 +562,8 @@ class ApiResponseModel {
 
             model.metaData = APIMetaData.fromJson(data['post']['_meta']);
           }
+        } else if (data['insight'] != null) {
+          model.insight = PostInsight.fromJson(data['insight']);
         } else if (url == NetworkConstantsUtil.getPolls) {
           model.polls = [];
           var items = data['pollQuestion']['items'];

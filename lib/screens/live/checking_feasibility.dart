@@ -1,6 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as rtc_local_view;
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/live_imports.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CheckingLiveFeasibility extends StatefulWidget {
   const CheckingLiveFeasibility({Key? key}) : super(key: key);
@@ -41,7 +44,7 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
       Colors.red,
     ];
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Center(
         child: Stack(
           children: [
@@ -57,10 +60,10 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                           animatedTexts: [
                             ColorizeAnimatedText(
                               LocalizationString.checkingConnection,
-                              textStyle: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontWeight: FontWeight.w900),
+                              textStyle: TextStyle(
+                                  fontSize: FontSizes.h3,
+                                  fontWeight: FontWeight.bold
+                              ),
                               colors: colorizeColors,
                             ),
                           ],
@@ -76,8 +79,7 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                               Container(
                                 height: 200,
                                 width: 200,
-                                color: Theme.of(context)
-                                    .errorColor
+                                color: AppColorConstants.red
                                     .withOpacity(0.5),
                                 child: const ThemeIconWidget(
                                   ThemeIcon.camera,
@@ -90,10 +92,9 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                               Text(
                                 _agoraLiveController.errorMessage!,
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(fontWeight: FontWeight.w300),
+                                style: TextStyle(
+                                    fontSize: FontSizes.h3,
+                                    fontWeight: TextWeight.regular),
                               ),
                               const SizedBox(
                                 height: 20,
@@ -101,7 +102,7 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                               SizedBox(
                                 width: 200,
                                 height: 50,
-                                child: FilledButtonType1(
+                                child: AppThemeButton(
                                   text: LocalizationString.allow,
                                   onPress: () {
                                     openAppSettings();
@@ -115,10 +116,9 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                                 width: 200,
                                 height: 45,
                                 child: Center(
-                                  child: Text(
+                                  child: Heading4Text(
                                     LocalizationString.back,
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
+
                                   ),
                                 ),
                               ).ripple(() {
@@ -131,48 +131,28 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               const SizedBox(width: 20.0, height: 100.0),
-                              Text(
+                              Heading3Text(
                                 LocalizationString.goingLive,
-                                style: Theme.of(context).textTheme.displaySmall,
                               ),
                               const SizedBox(width: 20.0, height: 100.0),
                               DefaultTextStyle(
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displayMedium!
-                                    .copyWith(fontWeight: FontWeight.w700),
+                                style: TextStyle(fontSize: FontSizes.h3, fontWeight: TextWeight.semiBold),
                                 child: AnimatedTextKit(
                                   pause: const Duration(milliseconds: 10),
                                   totalRepeatCount: 1,
                                   animatedTexts: [
                                     RotateAnimatedText('3',
                                         duration: const Duration(seconds: 1),
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w200)),
+                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
                                     RotateAnimatedText('2',
                                         duration: const Duration(seconds: 1),
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w200)),
+                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
                                     RotateAnimatedText('1',
                                         duration: const Duration(seconds: 1),
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w200)),
+                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
                                     RotateAnimatedText(LocalizationString.go,
                                         duration: const Duration(seconds: 1),
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w200)),
+                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
                                   ],
                                   onTap: () {},
                                   onFinished: () {

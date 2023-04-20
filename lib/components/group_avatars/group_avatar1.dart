@@ -1,4 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../../model/category_model.dart';
 
 class CategoryAvatarType1 extends StatelessWidget {
   final CategoryModel category;
@@ -22,13 +24,10 @@ class CategoryAvatarType1 extends StatelessWidget {
               bottom: 5,
               left: 5,
               right: 5,
-              child: Text(
+              child: BodyMediumText(
                 category.name,
                 maxLines: 1,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
+                weight: TextWeight.semiBold,
               ))
         ],
       ),
@@ -53,15 +52,13 @@ class CategoryAvatarType2 extends StatelessWidget {
           height: 30,
           width: 30,
         ).circular,
-        const SizedBox(width: 10,),
-        Text(
-          category.name,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium!
-              .copyWith(fontWeight: FontWeight.w700),
-        )
+        const SizedBox(
+          width: 10,
+        ),
+        BodyMediumText(category.name, weight: TextWeight.semiBold)
       ],
-    ).setPadding(left: 8,right: 8,top: 4,bottom: 4).borderWithRadius(context: context, value: 1, radius: 20);
+    )
+        .setPadding(left: 8, right: 8, top: 4, bottom: 4)
+        .borderWithRadius( value: 1, radius: 20);
   }
 }

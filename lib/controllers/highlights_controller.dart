@@ -1,7 +1,17 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:foap/components/custom_gallery_picker.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/highlights_imports.dart';
 import 'package:get/get.dart';
 
+import '../apiHandler/api_controller.dart';
+import '../model/story_model.dart';
+
 class HighlightsController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxList<HighlightsModel> highlights = <HighlightsModel>[].obs;
   RxList<StoryMediaModel> selectedStoriesMedia = <StoryMediaModel>[].obs;
   RxList<StoryMediaModel> stories = <StoryMediaModel>[].obs;
@@ -80,7 +90,7 @@ class HighlightsController extends GetxController {
                 .toList()
                 .join(','))
         .then((value) async {
-      getHighlights(userId: getIt<UserProfileManager>().user!.id);
+      getHighlights(userId: _userProfileManager.user.value!.id);
       EasyLoading.dismiss();
 
       Get.close(2);

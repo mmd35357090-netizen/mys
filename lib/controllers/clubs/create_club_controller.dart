@@ -1,8 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'package:camera/camera.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../model/category_model.dart';
 
 class CreateClubController extends GetxController {
-  final ClubsController _clubsController = Get.find();
+  final ClubsController _clubsController = ClubsController();
 
   RxInt privacyType = 1.obs;
 
@@ -53,7 +58,6 @@ class CreateClubController extends GetxController {
       } else {
         EasyLoading.dismiss();
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.errorMessage,
             isSuccess: false);
       }
@@ -84,7 +88,6 @@ class CreateClubController extends GetxController {
       } else {
         EasyLoading.dismiss();
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.errorMessage,
             isSuccess: false);
       }

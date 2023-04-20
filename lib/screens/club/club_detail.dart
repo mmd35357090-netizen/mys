@@ -1,6 +1,17 @@
+import 'package:foap/helper/imports/club_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/number_extension.dart';
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../components/actionSheets/action_sheet1.dart';
+import '../../components/post_card.dart';
+import '../../controllers/chat_and_call/chat_detail_controller.dart';
+import '../../model/generic_item.dart';
+import '../../model/post_model.dart';
+import '../chat/chat_detail.dart';
+import '../post/select_media.dart';
+import '../post/view_post_insight.dart';
 
 class ClubDetail extends StatefulWidget {
   final ClubModel club;
@@ -19,7 +30,7 @@ class ClubDetail extends StatefulWidget {
 }
 
 class ClubDetailState extends State<ClubDetail> {
-  final ClubDetailController _clubDetailController = Get.find();
+  final ClubDetailController _clubDetailController = ClubDetailController();
   final ChatDetailController _chatDetailController = Get.find();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -51,13 +62,13 @@ class ClubDetailState extends State<ClubDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       floatingActionButton:
           _clubDetailController.club.value!.createdByUser!.isMe
               ? Container(
                   height: 50,
                   width: 50,
-                  color: Theme.of(context).primaryColor,
+                  color: AppColorConstants.themeColor,
                   child: const ThemeIconWidget(
                     ThemeIcon.edit,
                     size: 25,
@@ -95,11 +106,8 @@ class ClubDetailState extends State<ClubDetail> {
                       const SizedBox(
                         height: 24,
                       ),
-                      Text(_clubDetailController.club.value!.name!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontWeight: FontWeight.w600))
+                      BodyLargeText(_clubDetailController.club.value!.name!,
+                              weight: TextWeight.medium)
                           .hP16,
                       const SizedBox(
                         height: 12,
@@ -110,24 +118,18 @@ class ClubDetailState extends State<ClubDetail> {
                           const SizedBox(
                             width: 5,
                           ),
-                          Text(
+                          BodyMediumText(
                             _clubDetailController.club.value!.groupType,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(fontWeight: FontWeight.w600),
+                            weight: TextWeight.medium,
                           ),
                           const ThemeIconWidget(
                             ThemeIcon.circle,
                             size: 8,
                           ).hP8,
-                          Text(
-                            '${_clubDetailController.club.value!.totalMembers!.formatNumber} ${LocalizationString.clubMembers}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(fontWeight: FontWeight.w300),
-                          ).ripple(() {
+                          BodyMediumText(
+                                  '${_clubDetailController.club.value!.totalMembers!.formatNumber} ${LocalizationString.clubMembers}',
+                                  weight: TextWeight.regular)
+                              .ripple(() {
                             Get.to(() => ClubMembers(
                                 club: _clubDetailController.club.value!));
                           })
@@ -148,17 +150,21 @@ class ClubDetailState extends State<ClubDetail> {
                           padding: EdgeInsets.zero,
                           itemBuilder: (BuildContext context, index) {
                             return PostCard(
-                                model: _clubDetailController.posts[index],
-                                textTapHandler: (text) {},
-                                // likeTapHandler: () {},
-                                removePostHandler: () {},
-                                blockUserHandler: () {
-                                  // _homeController.removeUsersAllPostFromList(model);
-                                }
-                                // mediaTapHandler: (post){
-                                //   Get.to(()=> PostMediaFullScreen(post: post));
-                                // },
-                                );
+                              model: _clubDetailController.posts[index],
+                              textTapHandler: (text) {},
+                              // likeTapHandler: () {},
+                              removePostHandler: () {},
+                              blockUserHandler: () {
+                                // _homeController.removeUsersAllPostFromList(model);
+                              },
+                              viewInsightHandler: () {
+                                Get.to(() => ViewPostInsights(
+                                    post: _clubDetailController.posts[index]));
+                              },
+                              // mediaTapHandler: (post){
+                              //   Get.to(()=> PostMediaFullScreen(post: post));
+                              // },
+                            );
                           },
                           separatorBuilder: (BuildContext context, index) {
                             return const SizedBox(
@@ -184,7 +190,7 @@ class ClubDetailState extends State<ClubDetail> {
           Container(
                   // width: 40,
                   height: 30,
-                  color: Theme.of(context).primaryColor.withOpacity(0.2),
+                  color: AppColorConstants.themeColor.withOpacity(0.2),
                   child: Row(
                     children: [
                       Icon(
@@ -196,7 +202,9 @@ class ClubDetailState extends State<ClubDetail> {
                       const SizedBox(
                         width: 5,
                       ),
-                      Text(_clubDetailController.club.value!.isJoined == true
+                      BodyLargeText(_clubDetailController
+                                  .club.value!.isJoined ==
+                              true
                           ? LocalizationString.joined
                           : _clubDetailController.club.value!.isRequestBased ==
                                   true
@@ -222,7 +230,7 @@ class ClubDetailState extends State<ClubDetail> {
           Container(
                   // width: 40,
                   height: 30,
-                  color: Theme.of(context).primaryColor.withOpacity(0.2),
+                  color: AppColorConstants.themeColor.withOpacity(0.2),
                   child: Row(
                     children: [
                       const Icon(
@@ -232,7 +240,7 @@ class ClubDetailState extends State<ClubDetail> {
                       const SizedBox(
                         width: 5,
                       ),
-                      Text(LocalizationString.chat)
+                      BodyLargeText(LocalizationString.chat)
                     ],
                   ).hP8)
               .round(5)
@@ -248,20 +256,20 @@ class ClubDetailState extends State<ClubDetail> {
           Container(
                   // width: 40,
                   height: 30,
-                  color: Theme.of(context).primaryColor.withOpacity(0.2),
+                  color: AppColorConstants.themeColor.withOpacity(0.2),
                   child: Row(
                     children: [
                       Image.asset(
                         'assets/request.png',
                         fit: BoxFit.contain,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         height: 15,
                         width: 15,
                       ),
                       const SizedBox(
                         width: 5,
                       ),
-                      Text(LocalizationString.invite)
+                      BodyLargeText(LocalizationString.invite)
                     ],
                   ).hP8)
               .round(5)
@@ -304,11 +312,6 @@ class ClubDetailState extends State<ClubDetail> {
             ).ripple(() {
               Get.back();
             }),
-            // Obx(() => Text(
-            //       _clubDetailController.club.value!.name!,
-            //       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-            //           fontWeight: FontWeight.w600, color: Colors.white),
-            //     )),
             widget.club.amIAdmin
                 ? Row(
                     children: [
@@ -317,8 +320,7 @@ class ClubDetailState extends State<ClubDetail> {
                           : Stack(
                               children: [
                                 Container(
-                                  color: Theme.of(context)
-                                      .primaryColor
+                                  color: AppColorConstants.themeColor
                                       .withOpacity(0.2),
                                   child: const ThemeIconWidget(
                                     ThemeIcon.request,
@@ -335,7 +337,7 @@ class ClubDetailState extends State<ClubDetail> {
                                     child: Container(
                                       height: 10,
                                       width: 10,
-                                      color: Theme.of(context).errorColor,
+                                      color: AppColorConstants.red,
                                     ).circular)
                               ],
                             )),
@@ -384,6 +386,9 @@ class ClubDetailState extends State<ClubDetail> {
                   },
                   blockUserHandler: () {
                     _clubDetailController.removePostFromList(model);
+                  },
+                  viewInsightHandler: () {
+                    Get.to(() => ViewPostInsights(post: model));
                   },
                   // mediaTapHandler: (post){
                   //   Get.to(()=> PostMediaFullScreen(post: post));

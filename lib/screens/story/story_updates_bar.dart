@@ -1,5 +1,6 @@
 import 'package:foap/components/thumbnail_view.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/story_imports.dart';
 import 'package:get/get.dart';
 
 class StoryUpdatesBar extends StatelessWidget {
@@ -39,30 +40,27 @@ class StoryUpdatesBar extends StatelessWidget {
                             child: ThemeIconWidget(
                               ThemeIcon.plus,
                               size: 25,
-                              color: Theme.of(context).iconTheme.color,
+                              color: AppColorConstants.iconColor,
                             ),
                           )
                               .borderWithRadius(
-                                  context: context, value: 2, radius: 20)
+                                  value: 2, radius: 20)
                               .ripple(() {
                             addStoryCallback();
                           }),
                           const SizedBox(
                             height: 5,
                           ),
-                          Text(LocalizationString.yourStory.tr,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(fontWeight: FontWeight.w600))
+                          BodySmallText(LocalizationString.yourStory.tr,
+                              weight: TextWeight.medium)
                         ],
                       )
                     : Column(
                         children: [
                           MediaThumbnailView(
                             borderColor: stories[index].isViewed == true
-                                ? Theme.of(context).disabledColor
-                                : Theme.of(context).primaryColor,
+                                ? AppColorConstants.disabledColor
+                                : AppColorConstants.themeColor,
                             media: stories[index].media.last,
                           ).ripple(() {
                             viewStoryCallback(stories[index]);
@@ -71,12 +69,9 @@ class StoryUpdatesBar extends StatelessWidget {
                             height: 5,
                           ),
                           Expanded(
-                            child: Text(LocalizationString.yourStory.tr,
+                            child: BodySmallText(LocalizationString.yourStory.tr,
                                 maxLines: 1,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .copyWith(fontWeight: FontWeight.w600)),
+                                weight: TextWeight.medium),
                           )
                         ],
                       )
@@ -99,12 +94,9 @@ class StoryUpdatesBar extends StatelessWidget {
                       height: 5,
                     ),
                     Expanded(
-                        child: Text(liveUsers[index - 1].userName,
+                        child: BodySmallText(liveUsers[index - 1].userName,
                             maxLines: 1,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .copyWith(fontWeight: FontWeight.w600)).hP4)
+                            weight: TextWeight.medium).hP4)
                   ],
                 ));
           } else {
@@ -115,8 +107,8 @@ class StoryUpdatesBar extends StatelessWidget {
                     MediaThumbnailView(
                       borderColor:
                           stories[index - liveUsers.length].isViewed == true
-                              ? Theme.of(context).disabledColor
-                              : Theme.of(context).primaryColor,
+                              ? AppColorConstants.disabledColor
+                              : AppColorConstants.themeColor,
                       media: stories[index - liveUsers.length].media.last,
                     ).ripple(() {
                       viewStoryCallback(stories[index - liveUsers.length]);
@@ -127,12 +119,9 @@ class StoryUpdatesBar extends StatelessWidget {
                       height: 4,
                     ),
                     Expanded(
-                      child: Text(stories[index - liveUsers.length].userName,
+                      child: BodySmallText(stories[index - liveUsers.length].userName,
                           maxLines: 1,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(fontWeight: FontWeight.w600)).hP4,
+                          weight: TextWeight.medium).hP4,
                     ),
                   ],
                 ));

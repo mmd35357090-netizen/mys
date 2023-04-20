@@ -1,29 +1,26 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
 
 Widget messageTypeShortInfo({
   required ChatMessageModel message,
-  required BuildContext context,
 }) {
   return message.messageContentType == MessageContentType.reply
       ? messageTypeShortInfoFromType(
           type: message.messageReplyContentType,
           message: message,
-          context: context,
         )
       : messageTypeShortInfoFromType(
-          message: message, type: message.messageContentType, context: context);
+          message: message, type: message.messageContentType);
 }
 
 Widget messageTypeShortInfoFromType({
   required ChatMessageModel message,
   required MessageContentType type,
-  required BuildContext context,
 }) {
   return type == MessageContentType.text
-      ? Text(
+      ? BodyMediumText(
           message.textMessage,
           maxLines: 1,
-          style: Theme.of(context).textTheme.bodyMedium,
         )
       : type == MessageContentType.photo
           ? Row(
@@ -32,28 +29,16 @@ Widget messageTypeShortInfoFromType({
                   ThemeIcon.camera,
                   size: 12,
                 ).rP4,
-                Text(
-                  LocalizationString.photo,
-                  maxLines: 1,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontWeight: FontWeight.w300),
-                ),
+                BodyMediumText(LocalizationString.photo,
+                    maxLines: 1, weight: TextWeight.regular),
               ],
             )
           : type == MessageContentType.video
               ? Row(
                   children: [
                     const ThemeIconWidget(ThemeIcon.videoPost, size: 15).rP4,
-                    Text(
-                      LocalizationString.video,
-                      maxLines: 1,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontWeight: FontWeight.w300),
-                    ),
+                    BodyMediumText(LocalizationString.video,
+                        maxLines: 1, weight: TextWeight.regular),
                   ],
                 )
               : type == MessageContentType.gif ||
@@ -61,14 +46,8 @@ Widget messageTypeShortInfoFromType({
                   ? Row(
                       children: [
                         const ThemeIconWidget(ThemeIcon.gif, size: 15).rP4,
-                        Text(
-                          LocalizationString.gif,
-                          maxLines: 1,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(fontWeight: FontWeight.w300),
-                        ),
+                        BodyMediumText(LocalizationString.gif,
+                            maxLines: 1, weight: TextWeight.regular),
                       ],
                     )
                   : type == MessageContentType.post
@@ -78,14 +57,8 @@ Widget messageTypeShortInfoFromType({
                               ThemeIcon.camera,
                               size: 15,
                             ).rP4,
-                            Text(
-                              LocalizationString.post,
-                              maxLines: 1,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(fontWeight: FontWeight.w300),
-                            ),
+                            BodyMediumText(LocalizationString.post,
+                                maxLines: 1, weight: TextWeight.regular),
                           ],
                         )
                       : type == MessageContentType.audio
@@ -93,14 +66,8 @@ Widget messageTypeShortInfoFromType({
                               children: [
                                 const ThemeIconWidget(ThemeIcon.mic, size: 15)
                                     .rP4,
-                                Text(
-                                  LocalizationString.audio,
-                                  maxLines: 1,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(fontWeight: FontWeight.w300),
-                                ),
+                                BodyMediumText(LocalizationString.audio,
+                                    maxLines: 1, weight: TextWeight.regular),
                               ],
                             )
                           : type == MessageContentType.contact
@@ -109,14 +76,10 @@ Widget messageTypeShortInfoFromType({
                                     const ThemeIconWidget(ThemeIcon.contacts,
                                             size: 15)
                                         .rP4,
-                                    Text(
+                                    BodyMediumText(
                                       LocalizationString.contact,
                                       maxLines: 1,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                              fontWeight: FontWeight.w300),
+                                      weight: TextWeight.regular,
                                     ),
                                   ],
                                 )
@@ -127,15 +90,10 @@ Widget messageTypeShortInfoFromType({
                                                 ThemeIcon.location,
                                                 size: 15)
                                             .rP4,
-                                        Text(
-                                          LocalizationString.location,
-                                          maxLines: 1,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.w300),
-                                        ),
+                                        BodyMediumText(
+                                            LocalizationString.location,
+                                            maxLines: 1,
+                                            weight: TextWeight.regular),
                                       ],
                                     )
                                   : type == MessageContentType.file
@@ -145,16 +103,10 @@ Widget messageTypeShortInfoFromType({
                                                     ThemeIcon.files,
                                                     size: 15)
                                                 .rP4,
-                                            Text(
-                                              LocalizationString.file,
-                                              maxLines: 1,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium!
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w300),
-                                            ),
+                                            BodyMediumText(
+                                                LocalizationString.file,
+                                                maxLines: 1,
+                                                weight: TextWeight.regular),
                                           ],
                                         )
                                       : type == MessageContentType.profile
@@ -164,16 +116,10 @@ Widget messageTypeShortInfoFromType({
                                                         ThemeIcon.account,
                                                         size: 15)
                                                     .rP4,
-                                                Text(
-                                                  LocalizationString.profile,
-                                                  maxLines: 1,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium!
-                                                      .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.w300),
-                                                ),
+                                                BodyMediumText(
+                                                    LocalizationString.profile,
+                                                    maxLines: 1,
+                                                    weight: TextWeight.regular),
                                               ],
                                             )
                                           : Container();
