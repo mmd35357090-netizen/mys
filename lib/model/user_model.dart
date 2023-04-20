@@ -15,6 +15,7 @@ class UserLiveCallDetail {
 
   factory UserLiveCallDetail.fromJson(dynamic json) {
     UserLiveCallDetail model = UserLiveCallDetail();
+
     model.id = json['id'];
     model.status = json['status'];
     model.startTime = json['start_time'];

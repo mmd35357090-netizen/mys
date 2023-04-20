@@ -22,7 +22,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 4), () async{
+      String? authKey = await SharedPrefs().getAuthorizationKey();
+      print('ramesh splashScreen authkey: $authKey');
+      
       Get.offAll(() => const LoadingScreen());
     });
   }

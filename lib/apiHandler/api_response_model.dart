@@ -9,6 +9,8 @@ import '../model/live_tv_model.dart';
 import '../model/get_relationship_model.dart';
 import '../model/myRelations/my_invitation_model.dart';
 import '../model/myRelations/my_relations_model.dart';
+import '../model/post_gift_model.dart';
+import '../model/post_timeline_gift_response.dart';
 import '../model/tv_show_model.dart';
 import '../model/polls_model.dart';
 
@@ -46,7 +48,9 @@ class ApiResponseModel {
   List<UserModel> liveUsers = [];
   List<GiftCategoryModel> giftCategories = [];
   List<GiftModel> gifts = [];
+  List<PostGiftModel> timelineGift = [];
   List<ReceivedGiftModel> giftReceived = [];
+
 
   List<NotificationModel> notifications = [];
   List<SupportRequestModel> supportMessages = [];
@@ -91,6 +95,7 @@ class ApiResponseModel {
   List<UserModel> matchedUsers = [];
   List<UserModel> likeUsers = [];
   List<UserModel> datingUsers = [];
+  List<UserLiveCallDetail> liveStreamUser = [];
 
   List<RelationshipName> relationshipNames = [];
   List<MyRelationsModel> relationships = [];
@@ -120,6 +125,7 @@ class ApiResponseModel {
   String? paypalClientToken;
   String? transactionId;
   bool isLoginFirstTime = false;
+  PostTimelineGiftResponse? postTimelineGift;
 
   ApiResponseModel();
 
@@ -129,7 +135,8 @@ class ApiResponseModel {
     dynamic data = json['data'];
     model.isInvalidLogin = json['isInvalidLogin'] == null ? false : true;
 
-    // log(json.toString());
+    log(json.toString());
+    // log(json);
     // log(url);
 
     if (model.success) {
@@ -671,7 +678,26 @@ class ApiResponseModel {
             model.likeUsers =
                 List<UserModel>.from(items.map((x) => UserModel.fromJson(x)));
           }
+        } else if(data['liveStreamUser']!=null && url==NetworkConstantsUtil.liveUsers){  // live users
+          final liverStreamUser = data['liveStreamUser'];
+          model.liveStreamUser = List<UserLiveCallDetail>.from(liverStreamUser.map((user){
+            final item = UserLiveCallDetail.fromJson(user);
+            print('liveStreamUser: channelName ${item.channelName}');
+            return item;
+          }));
+        }else if(data['timelineGift']!=null && url==NetworkConstantsUtil.timelineGifts){
+            final timelineGiftData = data['timelineGift'];
+            model.timelineGift = List<PostGiftModel>.from(timelineGiftData.map((value){
+              final postGift = PostGiftModel.fromJson(value);
+              return postGift;
+            }));
+        }else if(data['timeline_gift']!=null && url==NetworkConstantsUtil.postGifts){
+          print('postGifts: $data');
+          model.postTimelineGift  = PostTimelineGiftResponse.fromJson(data);
+          print('postGifts lenght: ${model.postTimelineGift?.timelineGift?.items?.length}');
+
         }
+
       }
     } else {
       if (data == null) {

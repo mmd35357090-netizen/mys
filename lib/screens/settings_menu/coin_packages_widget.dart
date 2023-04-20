@@ -1,6 +1,8 @@
 import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
 
+import 'mercadopago_payment_controller.dart';
+
 class CoinPackagesWidget extends StatefulWidget {
   const CoinPackagesWidget({Key? key}) : super(key: key);
 
@@ -10,6 +12,7 @@ class CoinPackagesWidget extends StatefulWidget {
 
 class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
   final SubscriptionPackageController packageController = Get.find();
+  final MercadappagoPaymentController _paymentController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,7 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
                     package: packageController.packages[index],
                     index: index,
                     buyPackageHandler: () {
+                      // _paymentController.getPayment();
                       buyPackage(packageController.packages[index]);
                     },
                   );

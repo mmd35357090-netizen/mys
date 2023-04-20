@@ -7,6 +7,7 @@ import 'package:http_parser/http_parser.dart';
 
 import '../controllers/dating_controller.dart';
 import '../model/live_tv_model.dart';
+import '../model/post_gift_model.dart';
 import '../model/preference_model.dart';
 
 class ApiController {
@@ -15,13 +16,29 @@ class ApiController {
   Future<ApiResponseModel> login(String email, String password) async {
     var url = NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.login;
     dynamic param = await ApiParamModel().getLoginParam(email, password);
-
     return http
         .post(Uri.parse(url), body: param)
         .then((http.Response response) async {
       final ApiResponseModel parsedResponse =
           await getResponse(response.body, NetworkConstantsUtil.login);
       return parsedResponse;
+    });
+  }
+  // https://development.fwdtechnology.co/media_selling/api/web/v1/chats/live-streaming-username=null&profile_category_type=null&is_following=null
+  // https://development.fwdtechnology.co/media_selling/api/web/v1/chats/live-streaming-user?name=&profile_category_type=&is_following=
+
+  Future<ApiResponseModel> getLiveUser({
+    String? name,
+    String? profileCategoryType,
+    bool? isFollowing}) async{
+    var url = '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.liveUsers}?name=&profile_category_type=&is_following=';
+    print('ramesh live user url: $url');
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    return http.get(Uri.parse(url), headers: {
+    "Authorization": "Bearer ${authKey!}"
+    }).then((response) async{
+      final parseResponse = await getResponse(response.body, NetworkConstantsUtil.liveUsers);
+      return parseResponse;
     });
   }
 
@@ -2581,6 +2598,74 @@ class ApiController {
     });
   }
 
+
+  Future<ApiResponseModel> getPostGifts({required int sendOnType,required int postId}) async{
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.postGifts}';
+
+    url = url.replaceAll('{{send_on_type}}', sendOnType.toString());
+    url = url.replaceAll('{{post_id}}', postId.toString());
+
+    print('getPostGift : $url');
+
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+      await getResponse(response.body, NetworkConstantsUtil.postGifts);
+      return parsedResponse;
+    });
+
+  }
+
+  Future<ApiResponseModel> getTimelineGifts() async{
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.timelineGifts}';
+    print('getTimelineGifts : $url');
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+      await getResponse(response.body, NetworkConstantsUtil.timelineGifts);
+      return parsedResponse;
+    });
+
+  }
+
+
+  Future<ApiResponseModel> sendPostGift(
+      {required PostGiftModel gift,
+        required int? recieverId,
+        required int? postId,
+        required int userId}) async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url = '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.sendPostGifts}';
+    print('sendPostGift url: $url');
+
+    dynamic param = await ApiParamModel().sendPostGiftParam(
+        giftId: gift.id!,
+        receiverId: recieverId,
+        sendOnType: 3,
+        postType: 2,
+        postId: postId);
+
+    print('sendPostGift request : ${param}');
+
+    return await http.post(Uri.parse(url), body: param, headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      print('sendPostGift success: $response');
+      final ApiResponseModel parsedResponse =
+      await getResponse(response.body, NetworkConstantsUtil.sendPostGifts);
+      return parsedResponse;
+    });
+  }
+
   //**************** profile verification ***************//
 
   Future<ApiResponseModel> sendProfileVerificationRequest(
@@ -2876,7 +2961,8 @@ class ApiController {
         return ApiResponseModel.fromJson(
             {"message": data['message'], "isInvalidLogin": true}, url);
       } else {
-        return ApiResponseModel.fromJson(data, url);
+        final response = ApiResponseModel.fromJson(data, url);
+        return response;
       }
     } catch (e) {
       return ApiResponseModel.fromJson({"message": e.toString()}, url);

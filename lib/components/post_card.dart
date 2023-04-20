@@ -1,3 +1,4 @@
+import 'package:foap/components/post_gift_page_view.dart';
 import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
 
@@ -13,7 +14,7 @@ class PostCard extends StatefulWidget {
       required this.model,
       required this.textTapHandler,
       required this.removePostHandler,
-        required this.blockUserHandler})
+      required this.blockUserHandler})
       : super(key: key);
 
   @override
@@ -40,7 +41,7 @@ class PostCardState extends State<PostCard> {
           onDoubleTap: () {
             //   widget.model.isLike = !widget.model.isLike;
             postCardController.likeUnlikePost(
-                post: widget.model, context: context);
+                post: widget.model, context: context);3
             flareControls.play("like");
           },
           onTap: () {
@@ -90,6 +91,20 @@ class PostCardState extends State<PostCard> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          widget.model.isMyPost?TextButton(
+              onPressed: () {
+                showModalBottomSheet<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return FractionallySizedBox(
+                          heightFactor: 0.8,
+                          child: PostGiftPageView(postId: widget.model.id,giftSelectedCompletion: (gift) {
+                            Get.back();
+                          }));
+                    });
+              },
+              child: Text(LocalizationString.viewGift))
+              :Container(),
           const SizedBox(
             height: 10,
           ),
@@ -256,6 +271,35 @@ class PostCardState extends State<PostCard> {
                       toUser: user, post: widget.model);
                 }));
       }),
+      !widget.model.isMyPost
+          ? const SizedBox(
+              width: 10,
+            )
+          : Container(),
+      !widget.model.isMyPost
+          ? ThemeIconWidget(
+              ThemeIcon.gift,
+              color: Theme.of(context).iconTheme.color,
+            ).ripple(() {
+              showModalBottomSheet<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return FractionallySizedBox(
+                        heightFactor: 0.8,
+                        child: PostGiftPageView(giftSelectedCompletion: (gift) {
+                          print('sending postGift: ${widget.model}');
+                          print(widget.model.id); // post id
+                          print(widget.model.user.id); // receiver id
+                          homeController.sendPostGift(
+                              gift,
+                              widget.model.user.id,
+                              widget.model.id,
+                              getIt<UserProfileManager>().user!.id);
+                          Get.back();
+                        }));
+                  });
+            })
+          : Container(),
       const Spacer(),
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -468,7 +512,7 @@ class PostCardState extends State<PostCard> {
     Get.bottomSheet(CommentsScreen(
       isPopup: true,
       model: widget.model,
-      commentPostedCallback: (){
+      commentPostedCallback: () {
         setState(() {
           widget.model.totalComment += 1;
         });

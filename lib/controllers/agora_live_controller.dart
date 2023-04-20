@@ -98,7 +98,6 @@ class AgoraLiveController extends GetxController {
             errorMessage = null;
           }, permissionDenied: () {
             canLive.value = -1;
-
             errorMessage = LocalizationString.pleaseAllowAccessToCameraForLive;
 
             // AppUtil.showToast(
@@ -150,9 +149,7 @@ class AgoraLiveController extends GetxController {
     });
     // }
     liveId = live.liveId;
-
     remoteUserId.value = live.host.id;
-
     getIt<SocketManager>().emit(SocketConstants.joinLive, {
       'userId': getIt<UserProfileManager>().user!.id,
       'liveCallId': liveId,

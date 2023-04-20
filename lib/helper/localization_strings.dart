@@ -718,12 +718,14 @@ class LocalizationString {
   static String your = 'Your'.tr;
   static String recent = 'Recent'.tr;
   static String goLive = 'Go Live'.tr;
+  static String liveUsers = 'Live Users'.tr;
   static String liveNow = 'Now on live'.tr;
   static String reel = 'Reel'.tr;
   static String reels = 'Reels'.tr;
   static String selectMusic = 'Select music'.tr;
   static String originalAudio = 'Original audio'.tr;
   static String use = 'Use'.tr;
+  static String viewGift = 'View Gift'.tr;
 
   static String anyoneCanSeeClub =
       'Anyone can see this club and join the club'.tr;

@@ -1,4 +1,5 @@
 import 'package:foap/helper/common_import.dart';
+import 'package:foap/screens/live_users/live_users_screen.dart';
 import 'package:get/get.dart';
 import '../chat/random_chat/choose_profile_category.dart';
 
@@ -20,7 +21,8 @@ enum QuickLinkType {
   goLive,
   reel,
   podcast,
-  dating
+  dating,
+  liveUsers,
 }
 
 class QuickLink {
@@ -106,6 +108,8 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                       Get.to(() => const PodcastListDashboard());
                     } else if (link.linkType == QuickLinkType.dating) {
                       Get.to(() => const DatingDashboard());
+                    }else if(link.linkType==QuickLinkType.liveUsers){
+                      Get.to(() => const LiveUserScreen());
                     }
                   })
               ]).setPadding(left: 16, right: 16, top: 20),

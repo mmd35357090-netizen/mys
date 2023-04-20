@@ -238,6 +238,24 @@ class ApiParamModel {
     };
   }
 
+  dynamic sendPostGiftParam(
+      {required int? giftId,
+      required int? receiverId,
+      required int? sendOnType,
+      required int? postType,
+      required int? postId}) {
+    //send_on_type : live call =1, profile=2, post=3
+    return {
+      "gift_id":giftId.toString(),
+      "reciever_id":receiverId.toString(),
+      "send_on_type":sendOnType.toString(),
+      "post_type":postType.toString(),
+      "post_id":postId.toString()
+
+    };
+  }
+
+
   dynamic getPollAnswerParam(
       int? pollId, int? pollQuestionId, int? questionOptionId) async {
     return {

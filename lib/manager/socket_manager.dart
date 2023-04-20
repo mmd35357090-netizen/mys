@@ -54,6 +54,7 @@ class SocketManager {
     // if(_socketInstance!.connected == false){
     _socketInstance?.connect();
     // }
+    print('ramesh socket connected');
 
     socketGlobalListeners();
 
@@ -152,7 +153,7 @@ class SocketManager {
 
 //Get This Event After Connection Error To Socket With Error
   dynamic onConnectError(error) {
-    // print("===> ConnectError socket.................... $error");
+    print("===> ConnectError socket.................... $error");
   }
 
   //Get This Event When your call is created
@@ -350,6 +351,7 @@ class SocketManager {
   }
 
   void liveCreatedConfirmation(dynamic response) {
+    print('liveCreatedConfirmation: $response');
     _agoraLiveController.liveCreatedConfirmation(response);
   }
 

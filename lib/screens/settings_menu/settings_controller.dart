@@ -31,6 +31,7 @@ class SettingsController extends GetxController {
     {'language_code': 'ru', 'language_name': 'Russian'},
     {'language_code': 'es', 'language_name': 'Spanish'},
     {'language_code': 'fr', 'language_name': 'French'},
+    {'language_code': 'pt', 'language_name': 'Brazil'},
   ];
 
   setCurrentSelectedLanguage() async {
@@ -39,6 +40,10 @@ class SettingsController extends GetxController {
   }
 
   changeLanguage(Map<String, String> language) async {
+    languagesList.forEach((element) {
+      var locale = Locale(element['language_code']!);
+      print('changeLanguage : ${locale.toString()}');
+    });
     var locale = Locale(language['language_code']!);
     Get.updateLocale(locale);
     currentLanguage.value = language['language_code']!;
@@ -85,6 +90,7 @@ class SettingsController extends GetxController {
         if (setting.value?.latestVersion! !=
             AppConfigConstants.currentVersion) {
           forceUpdate.value = true;
+          forceUpdate.value = false;
         }
 
         // Stripe.publishableKey = setting.value!.stripePublishableKey!;

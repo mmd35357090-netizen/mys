@@ -1,6 +1,7 @@
 import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
 import '../model/polls_model.dart';
+import '../model/post_gift_model.dart';
 import '../screens/podcast/podcast_list_dashboard.dart';
 import '../screens/tvs/tv_dashboard.dart';
 import '../screens/dating/dating_dashboard.dart';
@@ -12,6 +13,7 @@ class HomeController extends GetxController {
   RxList<PollsQuestionModel> polls = <PollsQuestionModel>[].obs;
   RxList<StoryModel> stories = <StoryModel>[].obs;
   RxList<UserModel> liveUsers = <UserModel>[].obs;
+  RxList<GiftModel> timelineGift = <GiftModel>[].obs;
 
   RxList<BannerAd> bannerAds = <BannerAd>[].obs;
 
@@ -75,6 +77,14 @@ class HomeController extends GetxController {
           subHeading: LocalizationString.highlights,
           linkType: QuickLinkType.highlights));
     }
+
+    // if(_settingsController.setting.value!.enableLiveUser){
+    quickLinks.add(QuickLink(
+        icon: 'assets/live.png',
+        heading: LocalizationString.liveUsers,
+        subHeading: LocalizationString.liveUsers,
+        linkType: QuickLinkType.liveUsers));
+    // }
     if (_settingsController.setting.value!.enableLive) {
       quickLinks.add(QuickLink(
           icon: 'assets/live.png',
@@ -210,6 +220,8 @@ class HomeController extends GetxController {
       }
     });
   }
+
+
 
   void getPosts(
       {required bool? isRecent, required VoidCallback callback}) async {
@@ -474,6 +486,17 @@ class HomeController extends GetxController {
 
     return myActiveStories;
   }
+
+  sendPostGift(PostGiftModel gift,int? recieverId,int? postId,int? userId) {
+    // if (getIt<UserProfileManager>().user!.coins > gift.coin!) {
+      ApiController().sendPostGift(gift: gift, recieverId: recieverId, postId: postId, userId: userId!).then((value) {
+        print('sendPostGift profile reFreshing...');
+          getIt<UserProfileManager>().refreshProfile();
+          // Get.snackbar('sendPostGift', 'done');
+      });
+    // } else {}
+  }
+
 
   liveUsersUpdated() {
     getStories();

@@ -1,7 +1,7 @@
 class AppConfigConstants {
   // Name of app
   static String appName = 'Socialified';
-  static String currentVersion = '1.5';
+  static String currentVersion = '3.5'; // 1.5
   static const liveAppLink = "https://www.google.com/";
 
   static String appTagline = 'Share your day activity with friends';
@@ -13,15 +13,20 @@ class AppConfigConstants {
 
 // static const restApiBaseUrl =
   //     'https://fwdtechnology.co/socialified/api/web/v1/';
-  static const restApiBaseUrl =
-      'https://fwdtechnology.co/media_selling/api/web/v1/';
   // static const restApiBaseUrl =
-  //     'https://development.fwdtechnology.co/media_selling/api/web/v1/';
+  //     'https://fwdtechnology.co/media_selling/api/web/v1/';
+
+  static const restApiBaseUrl =
+      'https://development.fwdtechnology.co/media_selling/api/web/v1/';
+
 
   // static const restApiBaseUrl =
   //     'https://fwdtechnology.co/media_selling/api/web/v1/';
   // Socket api url
-  static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
+  // static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
+  static const socketApiBaseUrl = "http://development.fwdtechnology.co:3000/";
+
+
 
   // Socket api url
   static const encryptionKey = "bbC2H19lkVbQDfakxcrtNMQdd0FloLyw";

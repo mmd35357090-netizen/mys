@@ -1,8 +1,11 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:foap/helper/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:foap/screens/live_users/live_users_controller.dart';
+import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
 import 'package:get/get.dart';
 import 'package:giphy_get/l10n.dart';
+import 'components/reply_chat_cells/post_gift_controller.dart';
 import 'controllers/dating_controller.dart';
 import 'controllers/faq_controller.dart';
 import 'package:camera/camera.dart';
@@ -49,7 +52,6 @@ Future<void> main() async {
   // Get.changeThemeMode(ThemeMode.dark);
 
   Get.put(PlayerManager());
-
   Get.put(DashboardController());
   Get.put(SettingsController());
   Get.put(SubscriptionPackageController());
@@ -101,6 +103,10 @@ Future<void> main() async {
   Get.put(DatingController());
   Get.put(RelationshipController());
   Get.put(RelationshipSearchController());
+  Get.put(LiveUserController());
+  Get.put(PostGiftController());
+  Get.put(MercadappagoPaymentController());
+
 
   setupServiceLocator();
   await getIt<UserProfileManager>().refreshProfile();
@@ -171,13 +177,14 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
     // ]);
 
     return OverlaySupport.global(
-        child: FutureBuilder<String>(
-            future: SharedPrefs().getLanguage(),
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        child: FutureBuilder<Locale>(
+            future: SharedPrefs().getLocale(),
+            builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return GetMaterialApp(
                   translations: Languages(),
-                  locale: Locale(snapshot.data!),
+                  locale: snapshot.data!,
+                  // locale: const Locale('pt',/ 'BR'),
                   fallbackLocale: const Locale('en', 'US'),
                   debugShowCheckedModeBanner: false,
                   // navigatorKey: navigationKey,
@@ -201,7 +208,8 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
                     Locale('tr', 'SA'),
                     Locale('ru', 'SA'),
                     Locale('es', 'SA'),
-                    Locale('fr', 'SA')
+                    Locale('fr', 'SA'),
+                    Locale('pt', 'BR')
                   ],
                 );
               } else {
