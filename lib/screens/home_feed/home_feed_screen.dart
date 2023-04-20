@@ -123,16 +123,16 @@ class HomeFeedState extends State<HomeFeedScreen> {
                   ],
                 ),
                 const Spacer(),
-                const ThemeIconWidget(
-                  ThemeIcon.map,
-                  // color: Theme.of(context).primaryColor,
-                  size: 25,
-                ).ripple(() {
-                  Get.to(() => MapsUsersScreen());
-                }),
-                const SizedBox(
-                  width: 20,
-                ),
+                // const ThemeIconWidget(
+                //   ThemeIcon.map,
+                //   // color: Theme.of(context).primaryColor,
+                //   size: 25,
+                // ).ripple(() {
+                //   Get.to(() => MapsUsersScreen());
+                // }),
+                // const SizedBox(
+                //   width: 20,
+                // ),
                 const ThemeIconWidget(
                   ThemeIcon.search,
                   size: 25,

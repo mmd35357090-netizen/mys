@@ -34,8 +34,8 @@ Future<void> main() async {
       debug: true,
       // optional: set to false to disable printing logs to console (default: true)
       ignoreSsl:
-      true // option: set to false to disable working with http links (default: false)
-  );
+          true // option: set to false to disable working with http links (default: false)
+      );
   // await CustomGalleryPermissions.requestPermissionExtend();
 
   final firebaseMessaging = FCM();
@@ -96,17 +96,12 @@ Future<void> main() async {
   Get.put(LiveHistoryController());
   Get.put(RequestVerificationController());
   Get.put(FAQController());
-  Get.put(EventsController());
-  Get.put(PodcastStreamingController());
-  Get.put(ReelsController());
-  Get.put(CreateReelController());
   Get.put(DatingController());
   Get.put(RelationshipController());
   Get.put(RelationshipSearchController());
   Get.put(LiveUserController());
   Get.put(PostGiftController());
   Get.put(MercadappagoPaymentController());
-
 
   setupServiceLocator();
   await getIt<UserProfileManager>().refreshProfile();
@@ -161,7 +156,6 @@ class SocialifiedApp extends StatefulWidget {
 }
 
 class _SocialifiedAppState extends State<SocialifiedApp> {
-
   @override
   void initState() {
     super.initState();

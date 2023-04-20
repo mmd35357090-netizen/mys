@@ -41,7 +41,7 @@ class PostCardState extends State<PostCard> {
           onDoubleTap: () {
             //   widget.model.isLike = !widget.model.isLike;
             postCardController.likeUnlikePost(
-                post: widget.model, context: context);3
+                post: widget.model, context: context);
             flareControls.play("like");
           },
           onTap: () {
@@ -91,20 +91,22 @@ class PostCardState extends State<PostCard> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          widget.model.isMyPost?TextButton(
-              onPressed: () {
-                showModalBottomSheet<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return FractionallySizedBox(
-                          heightFactor: 0.8,
-                          child: PostGiftPageView(postId: widget.model.id,giftSelectedCompletion: (gift) {
-                            Get.back();
-                          }));
-                    });
-              },
-              child: Text(LocalizationString.viewGift))
-              :Container(),
+          widget.model.isMyPost
+              ? TextButton(
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return FractionallySizedBox(
+                              heightFactor: 0.8,
+                              child: PostGiftsReceived(
+                                postId: widget.model.id,
+                              ));
+                        });
+                  },
+                  child: Text(LocalizationString.viewGift))
+              : Container(),
           const SizedBox(
             height: 10,
           ),
@@ -287,9 +289,7 @@ class PostCardState extends State<PostCard> {
                     return FractionallySizedBox(
                         heightFactor: 0.8,
                         child: PostGiftPageView(giftSelectedCompletion: (gift) {
-                          print('sending postGift: ${widget.model}');
-                          print(widget.model.id); // post id
-                          print(widget.model.user.id); // receiver id
+                          // receiver id
                           homeController.sendPostGift(
                               gift,
                               widget.model.user.id,

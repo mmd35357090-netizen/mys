@@ -698,6 +698,7 @@ class LocalizationString {
   static String sendGift = 'Send gift'.tr;
   static String sentAGift = 'Sent a gift'.tr;
   static String coinsEarned = 'Coins earned'.tr;
+  static String giftSent = 'Gift is sent successfully'.tr;
 
   static String giftsReceived = 'Gifts received'.tr;
 
@@ -973,7 +974,8 @@ class LocalizationString {
   static String datingExplore = 'Change your preferences and explore more'.tr;
 
   static String noMatchedProfilesFound = 'No matching profiles found'.tr;
-  static String datingExploreForMatched = 'Explore more dating profiles and get matched'.tr;
+  static String datingExploreForMatched =
+      'Explore more dating profiles and get matched'.tr;
 
   static String noLikeProfilesFound = 'No profiles found'.tr;
   static String noLikeProfiles = 'Explore more dating profiles'.tr;
@@ -1040,7 +1042,6 @@ class LocalizationString {
   static String favourite = 'Favourite'.tr;
   static String subscribed = 'Subscribed'.tr;
 
-
   static String profileCategoryTypeSaved = 'Profile category type is saved'.tr;
   static String installThisCoolApp = 'Install this cool app from'.tr;
   static String accountIsDeleted = 'Account is deleted successfully'.tr;
@@ -1050,7 +1051,6 @@ class LocalizationString {
   static String areYouSureToBlockUser = 'Are you sure to block this user?'.tr;
 
   static String requestPending = 'Request Pending'.tr;
-
 
   // dating
   static String male = 'Male'.tr;
@@ -1065,9 +1065,8 @@ class LocalizationString {
   static String select = 'Select'.tr;
   static String disLike = 'Dislike'.tr;
 
-
-  static String leaveGroupConfirmation = "Are you sure, you want to leave group?".tr;
-  static String deleteGroupConfirmation = "Are you sure, you want to delete group?".tr;
-
-
+  static String leaveGroupConfirmation =
+      "Are you sure, you want to leave group?".tr;
+  static String deleteGroupConfirmation =
+      "Are you sure, you want to delete group?".tr;
 }

@@ -24,20 +24,21 @@ class ApiController {
       return parsedResponse;
     });
   }
+
   // https://development.fwdtechnology.co/media_selling/api/web/v1/chats/live-streaming-username=null&profile_category_type=null&is_following=null
   // https://development.fwdtechnology.co/media_selling/api/web/v1/chats/live-streaming-user?name=&profile_category_type=&is_following=
 
-  Future<ApiResponseModel> getLiveUser({
-    String? name,
-    String? profileCategoryType,
-    bool? isFollowing}) async{
-    var url = '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.liveUsers}?name=&profile_category_type=&is_following=';
+  Future<ApiResponseModel> getLiveUser(
+      {String? name, String? profileCategoryType, bool? isFollowing}) async {
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.liveUsers}?name=&profile_category_type=&is_following=';
     print('ramesh live user url: $url');
     String? authKey = await SharedPrefs().getAuthorizationKey();
     return http.get(Uri.parse(url), headers: {
-    "Authorization": "Bearer ${authKey!}"
-    }).then((response) async{
-      final parseResponse = await getResponse(response.body, NetworkConstantsUtil.liveUsers);
+      "Authorization": "Bearer ${authKey!}"
+    }).then((response) async {
+      final parseResponse =
+          await getResponse(response.body, NetworkConstantsUtil.liveUsers);
       return parseResponse;
     });
   }
@@ -190,7 +191,6 @@ class ApiController {
         '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.profileCategoryTypes}';
 
     String? authKey = await SharedPrefs().getAuthorizationKey();
-
 
     return http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
@@ -2598,8 +2598,8 @@ class ApiController {
     });
   }
 
-
-  Future<ApiResponseModel> getPostGifts({required int sendOnType,required int postId}) async{
+  Future<ApiResponseModel> getPostGifts(
+      {required int sendOnType, required int postId}) async {
     String? authKey = await SharedPrefs().getAuthorizationKey();
 
     var url =
@@ -2610,18 +2610,16 @@ class ApiController {
 
     print('getPostGift : $url');
 
-
     return await http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
     }).then((http.Response response) async {
       final ApiResponseModel parsedResponse =
-      await getResponse(response.body, NetworkConstantsUtil.postGifts);
+          await getResponse(response.body, NetworkConstantsUtil.postGifts);
       return parsedResponse;
     });
-
   }
 
-  Future<ApiResponseModel> getTimelineGifts() async{
+  Future<ApiResponseModel> getTimelineGifts() async {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     var url =
         '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.timelineGifts}';
@@ -2631,37 +2629,33 @@ class ApiController {
       "Authorization": "Bearer ${authKey!}"
     }).then((http.Response response) async {
       final ApiResponseModel parsedResponse =
-      await getResponse(response.body, NetworkConstantsUtil.timelineGifts);
+          await getResponse(response.body, NetworkConstantsUtil.timelineGifts);
       return parsedResponse;
     });
-
   }
-
 
   Future<ApiResponseModel> sendPostGift(
       {required PostGiftModel gift,
-        required int? recieverId,
-        required int? postId,
-        required int userId}) async {
+      required int? receiverId,
+      required int? postId,
+      required int userId}) async {
     String? authKey = await SharedPrefs().getAuthorizationKey();
-    var url = '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.sendPostGifts}';
-    print('sendPostGift url: $url');
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.sendPostGifts}';
 
     dynamic param = await ApiParamModel().sendPostGiftParam(
         giftId: gift.id!,
-        receiverId: recieverId,
+        receiverId: receiverId,
         sendOnType: 3,
         postType: 2,
         postId: postId);
 
-    print('sendPostGift request : ${param}');
-
     return await http.post(Uri.parse(url), body: param, headers: {
       "Authorization": "Bearer ${authKey!}"
     }).then((http.Response response) async {
-      print('sendPostGift success: $response');
       final ApiResponseModel parsedResponse =
-      await getResponse(response.body, NetworkConstantsUtil.sendPostGifts);
+          await getResponse(response.body, NetworkConstantsUtil.sendPostGifts);
+
       return parsedResponse;
     });
   }

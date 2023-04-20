@@ -115,11 +115,7 @@ class OtherUserProfileState extends State<OtherUserProfile> {
                       addHighlightsView(),
                     const SizedBox(height: 20),
                     segmentView(),
-                    Obx(() => _profileController.selectedSegment.value == 1
-                        ? addReelsGrid()
-                        : _profileController.selectedSegment.value == 3
-                            ? addFamilyRelationGrid()
-                            : addPhotoGrid()),
+                    addPhotoGrid(),
                     const SizedBox(height: 50),
                   ],
                 ),
@@ -539,118 +535,6 @@ class OtherUserProfileState extends State<OtherUserProfile> {
                   mainAxisSpacing: 8.0,
                   crossAxisSpacing: 8.0,
                 ).hP16;
-        });
-  }
-
-  addReelsGrid() {
-    return GetBuilder<ProfileController>(
-        init: _profileController,
-        builder: (ctx) {
-          ScrollController scrollController = ScrollController();
-          scrollController.addListener(() {
-            if (scrollController.position.maxScrollExtent ==
-                scrollController.position.pixels) {
-              if (!_profileController.isLoadingReels) {
-                _profileController
-                    .getReels(getIt<UserProfileManager>().user!.id);
-              }
-            }
-          });
-
-          List<PostModel> posts = _profileController.reels;
-
-          return _profileController.isLoadingReels
-              ? const PostBoxShimmer()
-              : MasonryGridView.count(
-                  controller: scrollController,
-                  padding: const EdgeInsets.only(top: 10),
-                  shrinkWrap: true,
-                  crossAxisCount: 3,
-                  itemCount: posts.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) =>
-                      Stack(children: [
-                    AspectRatio(
-                      aspectRatio: 0.7,
-                      child: CachedNetworkImage(
-                        imageUrl: posts[index].gallery.first.thumbnail,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            AppUtil.addProgressIndicator(context, 100),
-                        errorWidget: (context, url, error) => const Icon(
-                          Icons.error,
-                        ),
-                      ).round(10),
-                    ).ripple(() {
-                      Get.to(() => ReelsList(
-                            reels: List.from(posts),
-                            index: index,
-                            userId: getIt<UserProfileManager>().user!.id,
-                            page: _profileController.reelsCurrentPage,
-                          ));
-                    }),
-                    const Positioned(
-                      right: 5,
-                      top: 5,
-                      child: ThemeIconWidget(
-                        ThemeIcon.videoPost,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                    )
-                  ]),
-                  mainAxisSpacing: 8.0,
-                  crossAxisSpacing: 8.0,
-                ).hP16;
-        });
-  }
-
-  addFamilyRelationGrid() {
-    return GetBuilder<RelationshipController>(
-        init: _relationshipController,
-        builder: (ctx) {
-          ScrollController scrollController = ScrollController();
-          scrollController.addListener(() {
-            if (scrollController.position.maxScrollExtent ==
-                scrollController.position.pixels) {
-              _relationshipController.getUsersRelationships(
-                  userId: widget.userId);
-            }
-          });
-
-          List<MyRelationsModel> relationships =
-              _relationshipController.relationships;
-
-          print('relationships ${relationships.length}');
-          return MasonryGridView.count(
-            controller: scrollController,
-            padding: const EdgeInsets.only(top: 10),
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            itemCount: relationships.length,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
-              return RelationshipCard(relationship: relationships[index])
-                  .ripple(() {
-                if (relationships[index].userId ==
-                    getIt<UserProfileManager>().user!.id) {
-                  Get.to(() => const MyProfile(showBack: true))!.then((value) {
-                    _relationshipController.getUsersRelationships(
-                        userId: widget.userId);
-                  });
-                } else {
-                  Get.to(() => OtherUserProfile(
-                          userId: relationships[index].userId!))!
-                      .then((value) {
-                    _relationshipController.getUsersRelationships(
-                        userId: widget.userId);
-                  });
-                }
-              });
-            },
-            mainAxisSpacing: 8.0,
-            crossAxisSpacing: 8.0,
-          ).hP16;
         });
   }
 

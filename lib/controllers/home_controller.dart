@@ -2,9 +2,7 @@ import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
 import '../model/polls_model.dart';
 import '../model/post_gift_model.dart';
-import '../screens/podcast/podcast_list_dashboard.dart';
 import '../screens/tvs/tv_dashboard.dart';
-import '../screens/dating/dating_dashboard.dart';
 
 class HomeController extends GetxController {
   final SettingsController _settingsController = Get.find();
@@ -106,13 +104,7 @@ class HomeController extends GetxController {
           subHeading: LocalizationString.placeForPeopleOfCommonInterest,
           linkType: QuickLinkType.clubs));
     }
-    if (_settingsController.setting.value!.enableEvents) {
-      quickLinks.add(QuickLink(
-          icon: 'assets/events.png',
-          heading: LocalizationString.events,
-          subHeading: '',
-          linkType: QuickLinkType.event));
-    }
+
     if (_settingsController.setting.value!.enableStrangerChat) {
       quickLinks.add(QuickLink(
           icon: 'assets/chat_colored.png',
@@ -128,11 +120,7 @@ class HomeController extends GetxController {
     //       linkType: QuickLinkType.competition));
     // }
     // if (_settingsController.setting.value!.enableReel) {
-    quickLinks.add(QuickLink(
-        icon: 'assets/reel.png',
-        heading: LocalizationString.reel,
-        subHeading: LocalizationString.reel,
-        linkType: QuickLinkType.reel));
+
     // }
     if (_settingsController.setting.value!.enableWatchTv) {
       quickLinks.add(QuickLink(
@@ -140,20 +128,6 @@ class HomeController extends GetxController {
           heading: LocalizationString.tvs,
           subHeading: LocalizationString.tvs,
           linkType: QuickLinkType.tv));
-    }
-    if (_settingsController.setting.value!.enablePodcasts) {
-      quickLinks.add(QuickLink(
-          icon: 'assets/podcast.png',
-          heading: LocalizationString.podcast,
-          subHeading: LocalizationString.podcast,
-          linkType: QuickLinkType.podcast));
-    }
-    if (_settingsController.setting.value!.enableDating) {
-      quickLinks.add(QuickLink(
-          icon: 'assets/dating-app.png',
-          heading: LocalizationString.dating,
-          subHeading: LocalizationString.dating,
-          linkType: QuickLinkType.dating));
     }
   }
 
@@ -220,8 +194,6 @@ class HomeController extends GetxController {
       }
     });
   }
-
-
 
   void getPosts(
       {required bool? isRecent, required VoidCallback callback}) async {
@@ -296,14 +268,15 @@ class HomeController extends GetxController {
     } else if (option == LocalizationString.liveTv) {
       Get.to(() => const TvDashboardScreen());
       // Get.to(() => const LiveTVStreaming());
-    } else if (option == LocalizationString.podcast) {
-      Get.to(() => const PodcastListDashboard());
-    } else if (option == LocalizationString.reel) {
-      Get.to(() => const CreateReelScreen());
-      // Get.to(() => const LiveTVStreaming());
-    } else if (option == LocalizationString.dating) {
-      Get.to(() => const DatingDashboard());
     }
+    // else if (option == LocalizationString.podcast) {
+    //   Get.to(() => const PodcastListDashboard());
+    // } else if (option == LocalizationString.reel) {
+    //   Get.to(() => const CreateReelScreen());
+    //   // Get.to(() => const LiveTVStreaming());
+    // } else if (option == LocalizationString.dating) {
+    //   Get.to(() => const DatingDashboard());
+    // }
   }
 
   setCurrentVisibleVideo(
@@ -487,16 +460,19 @@ class HomeController extends GetxController {
     return myActiveStories;
   }
 
-  sendPostGift(PostGiftModel gift,int? recieverId,int? postId,int? userId) {
-    // if (getIt<UserProfileManager>().user!.coins > gift.coin!) {
-      ApiController().sendPostGift(gift: gift, recieverId: recieverId, postId: postId, userId: userId!).then((value) {
-        print('sendPostGift profile reFreshing...');
-          getIt<UserProfileManager>().refreshProfile();
-          // Get.snackbar('sendPostGift', 'done');
-      });
-    // } else {}
-  }
+  sendPostGift(PostGiftModel gift, int? recieverId, int? postId, int? userId) {
+    ApiController()
+        .sendPostGift(
+            gift: gift, receiverId: recieverId, postId: postId, userId: userId!)
+        .then((value) {
+      getIt<UserProfileManager>().refreshProfile();
 
+      AppUtil.showToast(
+          context: Get.context!,
+          message: LocalizationString.giftSent,
+          isSuccess: true);
+    });
+  }
 
   liveUsersUpdated() {
     getStories();

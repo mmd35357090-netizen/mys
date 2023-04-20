@@ -88,9 +88,7 @@ class MyProfileState extends State<MyProfile> {
                     addHighlightsView(),
                   const SizedBox(height: 40),
                   segmentView(),
-                  Obx(() => _profileController.selectedSegment.value == 1
-                      ? addReelsGrid()
-                      : addPhotoGrid()),
+                  addPhotoGrid(),
                   const SizedBox(height: 50),
                 ],
               ),
@@ -413,66 +411,4 @@ class MyProfileState extends State<MyProfile> {
         });
   }
 
-  addReelsGrid() {
-    return GetBuilder<ProfileController>(
-        init: _profileController,
-        builder: (ctx) {
-          ScrollController scrollController = ScrollController();
-          scrollController.addListener(() {
-            if (scrollController.position.maxScrollExtent ==
-                scrollController.position.pixels) {
-              if (!_profileController.isLoadingReels) {
-                _profileController
-                    .getReels(getIt<UserProfileManager>().user!.id);
-              }
-            }
-          });
-
-          List<PostModel> posts = _profileController.reels;
-
-          return _profileController.isLoadingReels
-              ? const PostBoxShimmer()
-              : MasonryGridView.count(
-                  controller: scrollController,
-                  padding: const EdgeInsets.only(top: 10),
-                  shrinkWrap: true,
-                  crossAxisCount: 3,
-                  itemCount: posts.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) =>
-                      Stack(children: [
-                    AspectRatio(
-                      aspectRatio: 0.7,
-                      child: CachedNetworkImage(
-                        imageUrl: posts[index].gallery.first.thumbnail,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            AppUtil.addProgressIndicator(context, 100),
-                        errorWidget: (context, url, error) => const Icon(
-                          Icons.error,
-                        ),
-                      ).round(10),
-                    ).ripple(() {
-                      Get.to(() => ReelsList(
-                            reels: List.from(posts),
-                            index: index,
-                            userId: getIt<UserProfileManager>().user!.id,
-                            page: _profileController.reelsCurrentPage,
-                          ));
-                    }),
-                    const Positioned(
-                      right: 5,
-                      top: 5,
-                      child: ThemeIconWidget(
-                        ThemeIcon.videoPost,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                    )
-                  ]),
-                  mainAxisSpacing: 8.0,
-                  crossAxisSpacing: 8.0,
-                ).hP16;
-        });
-  }
 }

@@ -137,7 +137,7 @@ class ApiResponseModel {
 
     log(json.toString());
     // log(json);
-    // log(url);
+    log(url);
 
     if (model.success) {
       model.message = json['message'];

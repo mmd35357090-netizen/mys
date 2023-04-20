@@ -13,7 +13,6 @@ class LiveUserScreen extends StatefulWidget {
 }
 
 class _LiveUserScreenState extends State<LiveUserScreen> {
-
   final AgoraLiveController _agoraLiveController = Get.find();
   final LiveUserController _liveUserController = Get.find();
 
@@ -36,6 +35,8 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
           const SizedBox(
             height: 50,
           ),
+          backNavigationBar(
+              context: context, title: LocalizationString.liveUsers),
           divider(context: context).tP8,
           SearchBar(
                   showSearchIcon: true,
@@ -49,20 +50,21 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                   onSearchCompleted: (searchTerm) {})
               .p16,
           Expanded(
-            child: Obx(()=>GridView.builder(
+            child: Obx(
+              () => GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8
-                  ),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8),
                   itemCount: _liveUserController.liveStreamUser.length,
-                  itemBuilder: (context,index){
-                    final streamingUser = _liveUserController.liveStreamUser[index];
+                  itemBuilder: (context, index) {
+                    final streamingUser =
+                        _liveUserController.liveStreamUser[index];
                     final user = UserModel();
                     user.liveCallDetail = streamingUser;
                     user.id = streamingUser.id;
                     return InkWell(
-                      onTap:(){
+                      onTap: () {
                         Live live = Live(
                             channelName: user.liveCallDetail!.channelName,
                             isHosting: false,
@@ -77,34 +79,40 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                         children: [
                           Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)
-                            ),
+                                borderRadius: BorderRadius.circular(10)),
                             child: ClipRRect(
-                              child: Image.asset('assets/images/avatar_3.jpeg',fit:BoxFit.fill,
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                'assets/images/avatar_3.jpeg',
+                                fit: BoxFit.fill,
                                 width: double.infinity,
                               ),
-                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Image.asset('assets/live.png',height: 20,width: 20,).p4,
-                              Image.asset('assets/live.png',height: 20,width: 20,).p4,
+                              Image.asset(
+                                'assets/live.png',
+                                height: 20,
+                                width: 20,
+                              ).p4,
+                              Image.asset(
+                                'assets/live.png',
+                                height: 20,
+                                width: 20,
+                              ).p4,
                               const Text('20k')
                             ],
                           ),
                         ],
                       ),
                     );
-                  }
-              ),
+                  }),
             ),
           ),
         ],
       )),
     );
   }
-
 }
