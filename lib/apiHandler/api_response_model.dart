@@ -27,6 +27,7 @@ class ApiResponseModel {
   CompetitionModel? competition;
   int highlightId = 0;
   int createdPostId = 0;
+  String? totalLiveUsers;
 
   List<CompetitionModel> competitions = [];
   List<PostModel> posts = [];
@@ -96,6 +97,7 @@ class ApiResponseModel {
   List<UserModel> likeUsers = [];
   List<UserModel> datingUsers = [];
   List<UserLiveCallDetail> liveStreamUser = [];
+
 
   List<RelationshipName> relationshipNames = [];
   List<MyRelationsModel> relationships = [];
@@ -680,6 +682,7 @@ class ApiResponseModel {
           }
         } else if(data['liveStreamUser']!=null && url==NetworkConstantsUtil.liveUsers){  // live users
           final liverStreamUser = data['liveStreamUser'];
+          model.totalLiveUsers = data['total_live_users'];
           model.liveStreamUser = List<UserLiveCallDetail>.from(liverStreamUser.map((user){
             final item = UserLiveCallDetail.fromJson(user);
             print('liveStreamUser: channelName ${item.channelName}');

@@ -82,8 +82,8 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                                 borderRadius: BorderRadius.circular(10)),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                'assets/images/avatar_3.jpeg',
+                              child: Image.network(
+                                streamingUser.userdetails![0].picture!,
                                 fit: BoxFit.fill,
                                 width: double.infinity,
                               ),
@@ -96,13 +96,9 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                                 'assets/live.png',
                                 height: 20,
                                 width: 20,
-                              ).p4,
-                              Image.asset(
-                                'assets/live.png',
-                                height: 20,
-                                width: 20,
-                              ).p4,
-                              const Text('20k')
+                              ).p8,
+                              const Icon(Icons.group,size: 20).p4,
+                              Obx(()=>Text(_liveUserController.totalLiveUsers.value))
                             ],
                           ),
                         ],

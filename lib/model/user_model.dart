@@ -1,5 +1,6 @@
 import 'package:foap/helper/common_import.dart';
 import 'package:foap/model/preference_model.dart';
+import 'package:foap/model/user_details.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class UserLiveCallDetail {
@@ -10,6 +11,7 @@ class UserLiveCallDetail {
   int status = 0;
   String token = '';
   String channelName = '';
+  List<Userdetails>? userdetails;
 
   UserLiveCallDetail();
 
@@ -24,6 +26,12 @@ class UserLiveCallDetail {
     model.token = json['token'] ?? '';
     model.channelName = json['channel_name'] ?? '';
 
+    if (json['userdetails'] != null) {
+      model.userdetails = <Userdetails>[];
+      json['userdetails'].forEach((v) {
+        model.userdetails!.add(new Userdetails.fromJson(v));
+      });
+    }
     return model;
   }
 }

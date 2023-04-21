@@ -60,6 +60,7 @@ class NetworkConstantsUtil {
   static String getNotifications = 'notifications';
   static String submitRequest = 'support-requests';
   static String supportRequests = 'support-requests?is_reply=';
+  static String supportRequestView = 'support-requests/id';
   static String notificationSettings = 'users/push-notification-status';
 
   static String currentLiveUsers =

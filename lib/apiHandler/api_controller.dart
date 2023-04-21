@@ -31,9 +31,11 @@ class ApiController {
   Future<ApiResponseModel> getLiveUser(
       {String? name, String? profileCategoryType, bool? isFollowing}) async {
     var url =
-        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.liveUsers}?name=&profile_category_type=&is_following=';
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.liveUsers}?expand=userdetails&name=&profile_category_type=&is_following=';
     print('ramesh live user url: $url');
+
     String? authKey = await SharedPrefs().getAuthorizationKey();
+    print('ramesh auth key: $authKey');
     return http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
     }).then((response) async {
@@ -1357,6 +1359,40 @@ class ApiController {
     });
   }
 
+  Future<ApiResponseModel> getSupportMessages() async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url =
+        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.supportRequests;
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse = await getResponse(
+          response.body, NetworkConstantsUtil.supportRequests);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> getSupportMessageView(int id) async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url =
+        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.supportRequestView;
+
+    url =  url.replaceAll('id', id.toString());
+
+    print('getSupportMessageView  url: $url');
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse = await getResponse(
+          response.body, NetworkConstantsUtil.supportRequestView);
+      return parsedResponse;
+    });
+  }
+
+
+
   Future<ApiResponseModel> updateNotificationSettings({
     required String likesNotificationStatus,
     required String commentNotificationStatus,
@@ -1377,19 +1413,6 @@ class ApiController {
     });
   }
 
-  Future<ApiResponseModel> getSupportMessages() async {
-    String? authKey = await SharedPrefs().getAuthorizationKey();
-    var url =
-        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.supportRequests;
-
-    return await http.get(Uri.parse(url), headers: {
-      "Authorization": "Bearer ${authKey!}"
-    }).then((http.Response response) async {
-      final ApiResponseModel parsedResponse = await getResponse(
-          response.body, NetworkConstantsUtil.supportRequests);
-      return parsedResponse;
-    });
-  }
 
   Future<ApiResponseModel> searchHashtag(
       {required String hashtag, int page = 1}) async {

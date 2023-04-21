@@ -28,8 +28,8 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
                     package: packageController.packages[index],
                     index: index,
                     buyPackageHandler: () {
-                      // _paymentController.getPayment();
-                      buyPackage(packageController.packages[index]);
+                      // _paymentController.makePayment();
+                      // buyPackage(packageController.packages[index]);
                     },
                   );
                 },
