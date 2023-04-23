@@ -1,5 +1,6 @@
 class LanguageStrings {
   static var tr = {
+    "Help": "Help",
     "Back": "Geri",
     "About": "Hakkında",
     "All": "Herşey",
@@ -617,6 +618,9 @@ class LanguageStrings {
     "Choose image": "resim seç"
   };
   static var en = {
+    'Support request has been submitted.':'Support request has been submitted.',
+    'All field are required':'All field are required',
+    "Help": "Help",
     "Back": "Back",
     "About": "About",
     "All": "All",
@@ -1230,6 +1234,7 @@ class LanguageStrings {
     "Choose image": "Choose image"
   };
   static var ar = {
+    "Help": "Help",
     "Back": "ظهر",
     "About": "عن",
     "All": "الجميع",
@@ -1839,6 +1844,7 @@ class LanguageStrings {
     "Choose image": "اختر صورة"
   };
   static var hi = {
+    "Help": "Help",
     "Back": "पीछे",
     "About": "के बारे में",
     "All": "सभी",
@@ -2455,6 +2461,7 @@ class LanguageStrings {
     "Choose image": "छवि चुनें"
   };
   static var ru = {
+    "Help": "Help",
     "Back": "Назад",
     "About": "О",
     "All": "Все",
@@ -3080,6 +3087,7 @@ class LanguageStrings {
     "Choose image": "Выбрать изображение"
   };
   static var es = {
+    "Help": "Help",
     "Back": "atrás",
     "About": "Sobre",
     "All": "Todos",
@@ -3703,6 +3711,7 @@ class LanguageStrings {
     "Choose image": "elegir imagen"
   };
   static var fr = {
+    "Help": "Help",
     "Back": "Retour",
     "About": "À propos de",
     "All": "Tout",
@@ -4257,6 +4266,7 @@ class LanguageStrings {
     "Choose image": "Choisissez l'image"
   };
   static var pt = {
+    "Help": "Help",
     "Back": "Voltar",
     "About": "Sobre",
     "All": "Todos",

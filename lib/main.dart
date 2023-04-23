@@ -2,6 +2,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:foap/helper/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:foap/screens/live_users/live_users_controller.dart';
+import 'package:foap/screens/settings_menu/help_support_contorller.dart';
 import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
 import 'package:get/get.dart';
 import 'package:giphy_get/l10n.dart';
@@ -102,6 +103,7 @@ Future<void> main() async {
   Get.put(LiveUserController());
   Get.put(PostGiftController());
   Get.put(MercadappagoPaymentController());
+  Get.put(HelpSupportController());
 
   setupServiceLocator();
   await getIt<UserProfileManager>().refreshProfile();

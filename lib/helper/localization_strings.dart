@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 
 class LocalizationString {
+  static String supportRequestHasBeenSubmitted = 'Support request has been submitted.'.tr;
+  static String allFieldAreRequied = 'All field are required'.tr;
+  static String help = 'Help'.tr;
   static String back = 'Back'.tr;
   static String about = 'About'.tr;
   static String addSomethingAboutPost = 'Add something about post'.tr;

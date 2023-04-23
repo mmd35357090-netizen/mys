@@ -11,6 +11,7 @@ import '../model/myRelations/my_invitation_model.dart';
 import '../model/myRelations/my_relations_model.dart';
 import '../model/post_gift_model.dart';
 import '../model/post_timeline_gift_response.dart';
+import '../model/support_request_response.dart';
 import '../model/tv_show_model.dart';
 import '../model/polls_model.dart';
 
@@ -28,6 +29,8 @@ class ApiResponseModel {
   int highlightId = 0;
   int createdPostId = 0;
   String? totalLiveUsers;
+
+  SupportRequestsResponse? supportRequestReponse;
 
   List<CompetitionModel> competitions = [];
   List<PostModel> posts = [];
@@ -140,6 +143,7 @@ class ApiResponseModel {
     log(json.toString());
     // log(json);
     log(url);
+
 
     if (model.success) {
       model.message = json['message'];
@@ -456,11 +460,14 @@ class ApiResponseModel {
             }
           }
         } else if (data['supportRequest'] != null) {
+          print('support request message go hrer -->');
           var items = data['supportRequest']['items'];
           if (items != null && items.length > 0) {
             model.supportMessages = List<SupportRequestModel>.from(
                 items.map((x) => SupportRequestModel.fromJson(x)));
           }
+          model.supportRequestReponse = SupportRequestsResponse.fromJson(data);
+
         } else if (data['follower'] != null) {
           if (url == NetworkConstantsUtil.followers) {
             var items = (data['follower']['items'] as List<dynamic>)
@@ -695,11 +702,12 @@ class ApiResponseModel {
               return postGift;
             }));
         }else if(data['timeline_gift']!=null && url==NetworkConstantsUtil.postGifts){
-          print('postGifts: $data');
           model.postTimelineGift  = PostTimelineGiftResponse.fromJson(data);
-          print('postGifts lenght: ${model.postTimelineGift?.timelineGift?.items?.length}');
-
+        }else if(data['supportRequest']!=null || url==NetworkConstantsUtil.supportRequests){
+            model.supportRequestReponse = SupportRequestsResponse.fromJson(data);
         }
+
+
 
       }
     } else {

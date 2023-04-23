@@ -1,6 +1,8 @@
 import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
 
+import 'help_screen.dart';
+
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
@@ -62,6 +64,10 @@ class _SettingsState extends State<Settings> {
                     addTileEvent('assets/faq.png', LocalizationString.faq,
                         LocalizationString.faqMessage, () {
                       Get.to(() => const FaqList());
+                    }, true),
+                    addTileEvent('assets/request.png', LocalizationString.help,
+                        LocalizationString.faqMessage, () {
+                      Get.to(() => const HelpScreen());
                     }, true),
                     if (_settingsController
                         .setting.value!.enableDarkLightModeSwitch)
