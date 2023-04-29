@@ -1,4 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/model/category_model.dart';
+import 'package:foap/screens/add_on/model/podcast_banner_model.dart';
+import 'package:foap/screens/add_on/model/podcast_model.dart';
 import 'package:get/get.dart';
 
 class PodcastStreamingController extends GetxController {

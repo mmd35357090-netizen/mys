@@ -1,5 +1,8 @@
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import '../../components/group_avatars/group_avatar2.dart';
+import '../../components/search_bar.dart';
 
 class SearchClubsListing extends StatefulWidget {
   const SearchClubsListing({Key? key}) : super(key: key);
@@ -9,7 +12,7 @@ class SearchClubsListing extends StatefulWidget {
 }
 
 class SearchClubsListingState extends State<SearchClubsListing> {
-  final SearchClubsController _searchClubsController = Get.find();
+  final SearchClubsController _searchClubsController = SearchClubsController();
 
   @override
   void initState() {
@@ -27,7 +30,7 @@ class SearchClubsListingState extends State<SearchClubsListing> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -48,7 +51,7 @@ class SearchClubsListingState extends State<SearchClubsListing> {
                 child: SearchBar(
                     hintText: LocalizationString.search,
                     showSearchIcon: true,
-                    iconColor: Theme.of(context).primaryColor,
+                    iconColor: AppColorConstants.themeColor,
                     onSearchChanged: (value) {
                       _searchClubsController.searchTextChanged(value);
                     },
@@ -118,7 +121,6 @@ class SearchClubsListingState extends State<SearchClubsListing> {
                                                 },
                                                 deleteCallback: (club) {
                                                   AppUtil.showToast(
-                                                      context: context,
                                                       message:
                                                           LocalizationString
                                                               .clubIsDeleted,
@@ -147,28 +149,5 @@ class SearchClubsListingState extends State<SearchClubsListing> {
         ],
       ),
     );
-  }
-
-  showActionSheet(PostModel post) {
-    showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (context) => ActionSheet1(
-              items: [
-                GenericItem(
-                    id: '1',
-                    title: LocalizationString.share,
-                    icon: ThemeIcon.share),
-                GenericItem(
-                    id: '2',
-                    title: LocalizationString.report,
-                    icon: ThemeIcon.report),
-                GenericItem(
-                    id: '3',
-                    title: LocalizationString.hide,
-                    icon: ThemeIcon.hide),
-              ],
-              itemCallBack: (item) {},
-            ));
   }
 }

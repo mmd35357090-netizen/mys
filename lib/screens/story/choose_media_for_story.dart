@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/story_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../../components/custom_gallery_picker.dart';
 
 class ChooseMediaForStory extends StatefulWidget {
   const ChooseMediaForStory({Key? key}) : super(key: key);
@@ -9,7 +12,7 @@ class ChooseMediaForStory extends StatefulWidget {
 }
 
 class _ChooseMediaForStoryState extends State<ChooseMediaForStory> {
-  final AppStoryController storyController = Get.find();
+  final AppStoryController storyController = AppStoryController();
 
   @override
   void initState() {
@@ -20,7 +23,7 @@ class _ChooseMediaForStoryState extends State<ChooseMediaForStory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -31,7 +34,7 @@ class _ChooseMediaForStoryState extends State<ChooseMediaForStory> {
             children: [
               ThemeIconWidget(
                 ThemeIcon.close,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 27,
               ).ripple(() {
                 Get.back();
@@ -43,14 +46,11 @@ class _ChooseMediaForStoryState extends State<ChooseMediaForStory> {
               //   height: 25,
               // ),
               const Spacer(),
-              Obx(() => Text(
+              Obx(() => Heading4Text(
                     LocalizationString.post,
-                    style: storyController.mediaList.isNotEmpty
-                        ? Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(fontWeight: FontWeight.w900)
-                        : Theme.of(context).textTheme.titleLarge,
+                    weight: storyController.mediaList.isNotEmpty
+                        ? TextWeight.bold
+                        : TextWeight.medium,
                   ).ripple(() {
                     if (storyController.mediaList.isNotEmpty) {
                       storyController.uploadAllMedia(

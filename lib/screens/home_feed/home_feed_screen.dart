@@ -1,7 +1,23 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_polls/flutter_polls.dart';
+
+import '../../components/post_card.dart';
+import '../../controllers/add_post_controller.dart';
+import '../../controllers/agora_live_controller.dart';
+import '../../controllers/home_controller.dart';
+import '../../model/call_model.dart';
+import '../../model/post_model.dart';
+import '../../segmentAndMenu/horizontal_menu.dart';
+import '../dashboard/explore.dart';
+import '../post/select_media.dart';
+import '../post/view_post_insight.dart';
+import '../settings_menu/settings_controller.dart';
+import '../story/choose_media_for_story.dart';
+import '../story/story_updates_bar.dart';
+import '../story/story_viewer.dart';
+import 'map_screen.dart';
 
 class HomeFeedScreen extends StatefulWidget {
   const HomeFeedScreen({Key? key}) : super(key: key);
@@ -29,9 +45,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadData(isRecent: true);
-      // if (_settingsController.setting.value!.enablePolls) {
-      //   _homeController.getPolls();
-      // }
+
       _homeController.loadQuickLinksAccordingToSettings();
     });
 
@@ -84,11 +98,11 @@ class HomeFeedState extends State<HomeFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         floatingActionButton: Container(
           height: 50,
           width: 50,
-          color: Theme.of(context).primaryColor,
+          color: AppColorConstants.themeColor,
           child: const ThemeIconWidget(
             ThemeIcon.edit,
             size: 25,
@@ -114,25 +128,24 @@ class HomeFeedState extends State<HomeFeedScreen> {
               children: [
                 Row(
                   children: [
-                    Text(
+                    Heading3Text(
                       AppConfigConstants.appName,
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          fontWeight: FontWeight.w300,
-                          color: Theme.of(context).primaryColor),
+                      weight: TextWeight.regular,
+                      color: AppColorConstants.themeColor,
                     )
                   ],
                 ),
                 const Spacer(),
-                // const ThemeIconWidget(
-                //   ThemeIcon.map,
-                //   // color: Theme.of(context).primaryColor,
-                //   size: 25,
-                // ).ripple(() {
-                //   Get.to(() => MapsUsersScreen());
-                // }),
-                // const SizedBox(
-                //   width: 20,
-                // ),
+                const ThemeIconWidget(
+                  ThemeIcon.map,
+                  // color: ColorConstants.themeColor,
+                  size: 25,
+                ).ripple(() {
+                  Get.to(() => MapsUsersScreen());
+                }),
+                const SizedBox(
+                  width: 20,
+                ),
                 const ThemeIconWidget(
                   ThemeIcon.search,
                   size: 25,
@@ -143,14 +156,14 @@ class HomeFeedState extends State<HomeFeedScreen> {
                   width: 20,
                 ),
                 Obx(() => Container(
-                      color: Theme.of(context).backgroundColor,
+                      color: AppColorConstants.backgroundColor,
                       height: 25,
                       width: 25,
                       child: ThemeIconWidget(
                         _homeController.openQuickLinks.value == true
                             ? ThemeIcon.close
                             : ThemeIcon.menuIcon,
-                        // color: Theme.of(context).primaryColor,
+                        // color: ColorConstants.themeColor,
                         size: 25,
                       ),
                     ).ripple(() {
@@ -158,9 +171,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
                     })),
               ],
             ).hp(20),
-            const SizedBox(
-              height: 10,
-            ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
             Expanded(
               child: postsView(),
             ),
@@ -172,7 +185,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
   //   return Obx(() => AnimatedContainer(
   //         height: _homeController.openQuickLinks.value == true ? 450 : 0,
   //         width: Get.width,
-  //         color: Theme.of(context).primaryColor,
+  //         color: ColorConstants.themeColor,
   //         duration: const Duration(milliseconds: 500),
   //         child: QuickLinkWidget(callback: () {
   //           _homeController.closeQuickLinks();
@@ -184,7 +197,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
     return Obx(() => _addPostController.isPosting.value
         ? Container(
             height: 55,
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.cardColor,
             child: Row(
               children: [
                 Image.memory(
@@ -196,34 +209,27 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 const SizedBox(
                   width: 10,
                 ),
-                Text(
+                Heading5Text(
                   _addPostController.isErrorInPosting.value
                       ? LocalizationString.postFailed
                       : LocalizationString.posting,
-                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const Spacer(),
                 _addPostController.isErrorInPosting.value
                     ? Row(
                         children: [
-                          Text(
+                          Heading5Text(
                             LocalizationString.discard,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontWeight: FontWeight.w600),
+                            weight: TextWeight.medium,
                           ).ripple(() {
                             _addPostController.discardFailedPost();
                           }),
                           const SizedBox(
                             width: 20,
                           ),
-                          Text(
+                          Heading5Text(
                             LocalizationString.retry,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontWeight: FontWeight.w600),
+                            weight: TextWeight.medium,
                           ).ripple(() {
                             _addPostController.retryPublish(context);
                           }),
@@ -232,7 +238,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                     : Container()
               ],
             ).hP8,
-          ).shadow(context: context, radius: 10).bp(20)
+          ).backgroundCard(radius: 10).bp(20)
         : Container());
   }
 
@@ -274,7 +280,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
   }
 
   postsView() {
-    ThemeData themeData = Theme.of(context);
     return Obx(() {
       return ListView.separated(
               controller: _controller,
@@ -325,7 +330,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
                                           MediaQuery.of(context).size.height *
                                               0.5,
                                       child: emptyPost(
-                                          context: context,
                                           title: LocalizationString.noPostFound,
                                           subTitle: LocalizationString
                                               .followFriendsToSeeUpdates),
@@ -341,6 +345,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
                     textTapHandler: (text) {
                       _homeController.postTextTapHandler(
                           post: model, text: text);
+                    },
+                    viewInsightHandler: () {
+                      Get.to(() => ViewPostInsights(post: model));
                     },
                     // mediaTapHandler: (post) {
                     //   // Get.to(()=> PostMediaFullScreen(post: post));
@@ -359,7 +366,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                   return polls(index);
                 } else {
                   return const SizedBox(
-                    height: 20,
+                    height: 0,
                   );
                 }
               })
@@ -372,14 +379,12 @@ class HomeFeedState extends State<HomeFeedScreen> {
   }
 
   polls(int index) {
-    ThemeData themeData = Theme.of(context);
-
     int postIndex = index > 2 ? index - 3 : 0;
     if (postIndex % pollFrequencyIndex == 0 && postIndex != 0) {
       int pollIndex = (postIndex ~/ pollFrequencyIndex) - 1;
       if (_homeController.polls.length > pollIndex) {
         return Container(
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: FlutterPolls(
             pollId: _homeController.polls[pollIndex].pollId.toString(),
             hasVoted: _homeController.polls[pollIndex].isVote! > 0,
@@ -400,8 +405,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
             pollOptionsSplashColor: Colors.white,
             votedProgressColor: Colors.grey.withOpacity(0.3),
             votedBackgroundColor: Colors.grey.withOpacity(0.2),
-            votesTextStyle: themeData.textTheme.labelLarge,
-            votedPercentageTextStyle: themeData.textTheme.labelLarge?.copyWith(
+            votesTextStyle: TextStyle(fontSize: FontSizes.b2),
+            votedPercentageTextStyle:
+                TextStyle(fontSize: FontSizes.b2).copyWith(
               color: Colors.black,
             ),
             votedCheckmark: const Icon(
@@ -410,12 +416,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
             ),
             pollTitle: Align(
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: BodyLargeText(
                 _homeController.polls[pollIndex].title ?? "",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                weight: TextWeight.medium,
               ),
             ),
             pollOptions: List<PollOption>.from(
@@ -423,13 +426,8 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 (option) {
                   var a = PollOption(
                     id: option.id,
-                    title: Text(
-                      option.title ?? '',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    title: BodyLargeText(option.title ?? '',
+                        weight: TextWeight.medium),
                     votes: option.totalOptionVoteCount ?? 0,
                   );
                   return a;
@@ -455,14 +453,13 @@ class HomeFeedState extends State<HomeFeedScreen> {
         ).round(15).p16;
       } else {
         return const SizedBox(
-          height: 20,
+          height: 0,
         );
       }
     } else {
       return const SizedBox(
-        height: 20,
+        height: 0,
       );
     }
   }
-
 }

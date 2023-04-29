@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../apiHandler/api_controller.dart';
+import '../controllers/post_controller.dart';
+import '../model/post_model.dart';
 
 class PostCardController extends GetxController {
   final PostController postController = Get.find();
@@ -46,7 +50,6 @@ class PostCardController extends GetxController {
 
   void blockUser(
       {required int userId,
-      required BuildContext context,
       required VoidCallback callback}) {
     AppUtil.checkInternet().then((value) async {
       if (value) {
@@ -57,7 +60,6 @@ class PostCardController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: false);
       }
@@ -81,7 +83,6 @@ class PostCardController extends GetxController {
             .then((response) async {});
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: true);
       }

@@ -337,6 +337,8 @@ class LocalizationString {
   static String pleaseEnterRingtoneName = 'Please enter ringtone name'.tr;
 
   static String pleaseEnterValidEmail = 'Please enter valid email address'.tr;
+  static String pleaseEnterValidPhone = 'Please enter valid phone number'.tr;
+
   static String pleaseUploadImage = 'Please upload image'.tr;
   static String pleaseUploadRingtoneImage = 'Please upload ringtone image'.tr;
   static String pleaseUploadRingtone = 'Please upload Ringtone'.tr;
@@ -355,6 +357,7 @@ class LocalizationString {
   static String join = 'Join'.tr;
   static String fee = 'Fee'.tr;
   static String userNameIsUpdated = 'User name is updated'.tr;
+  static String categoryTypeUpdated = 'User profile category type is updated'.tr;
 
   static String transaction = 'Transactions'.tr;
   static String phoneNumber = 'Phone number'.tr;
@@ -608,6 +611,7 @@ class LocalizationString {
   static String yourStory = 'Your Story'.tr;
   static String pleaseEnterTitle = 'Please enter title'.tr;
   static String editProfilePicture = 'Edit photo'.tr;
+  static String editProfileCover = 'Update cover'.tr;
 
   static String sentADrawing = 'Sent a Drawing'.tr;
   static String sentAProfile = 'Sent a Profile'.tr;
@@ -695,6 +699,8 @@ class LocalizationString {
 
   static String totalUserJoined = 'User joined'.tr;
   static String users = 'Users'.tr;
+  static String network = 'Network'.tr;
+
   static String duration = 'Duration'.tr;
   static String messages = 'Messages'.tr;
   static String gifts = 'Gifts'.tr;
@@ -724,8 +730,8 @@ class LocalizationString {
   static String goLive = 'Go Live'.tr;
   static String liveUsers = 'Live Users'.tr;
   static String liveNow = 'Now on live'.tr;
-  static String reel = 'Reel'.tr;
-  static String reels = 'Reels'.tr;
+  static String reel = 'Clip'.tr;
+  static String reels = 'Clips'.tr;
   static String selectMusic = 'Select music'.tr;
   static String originalAudio = 'Original audio'.tr;
   static String use = 'Use'.tr;
@@ -778,6 +784,7 @@ class LocalizationString {
   static String yourFollowersCanViewYourLocation =
       'Your Followers can view your location'.tr;
   static String moreFrom = 'More from'.tr;
+  static String more = 'More'.tr;
 
   static String podcast = 'Podcast'.tr;
   static String showMore = 'Show more'.tr;
@@ -972,6 +979,12 @@ class LocalizationString {
   static String personalDetails = 'Personal details'.tr;
   static String interests = 'Interests'.tr;
   static String professional = 'Professional details'.tr;
+  static String qualification = 'Qualification'.tr;
+  static String occupation = 'Occupation'.tr;
+  static String workExperience = 'Work experience'.tr;
+  static String day = "Day".tr;
+  static String month = "Month".tr;
+  static String year = "Year".tr;
 
   static String noDatingProfilesFound = 'No dating profiles found'.tr;
   static String datingExplore = 'Change your preferences and explore more'.tr;
@@ -1058,8 +1071,10 @@ class LocalizationString {
   // dating
   static String male = 'Male'.tr;
   static String female = 'Female'.tr;
+  static String noSpecified = 'Not specified'.tr;
+
   static String age = 'Age'.tr;
-  static String height = 'Height'.tr;
+  static String height = 'Height (in cm)'.tr;
   static String color = 'Color'.tr;
   static String religion = 'Religion'.tr;
   static String language = 'Language'.tr;
@@ -1072,4 +1087,28 @@ class LocalizationString {
       "Are you sure, you want to leave group?".tr;
   static String deleteGroupConfirmation =
       "Are you sure, you want to delete group?".tr;
+
+
+  static String today = 'Today'.tr;
+  static String thisWeek = 'This week'.tr;
+  static String thisMonth = 'This month'.tr;
+  static String earlier = 'Earlier'.tr;
+  static String filter = 'Filter'.tr;
+  static String insights = 'Insights'.tr;
+  static String overview = 'Overview'.tr;
+  static String viewInsights = 'View Insights'.tr;
+
+  static String accountsReached = 'Accounts reached'.tr;
+  static String accountsEngaged = 'Accounts engaged'.tr;
+  static String reach = 'Reach'.tr;
+  static String nonFollowers = 'Non-Followers'.tr;
+
+  static String views = 'Views'.tr;
+
+  static String postInteractions = 'Post interactions'.tr;
+  static String saved = 'Saved'.tr;
+
+  static String profileActivity = 'Profile activity'.tr;
+  static String profileVisits = 'Profile visits'.tr;
+  static String follows = 'Follows'.tr;
 }

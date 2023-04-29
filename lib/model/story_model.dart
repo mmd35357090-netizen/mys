@@ -1,4 +1,4 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/model/user_model.dart';
 import 'package:foap/util/time_convertor.dart';
 
 class StoryModel {

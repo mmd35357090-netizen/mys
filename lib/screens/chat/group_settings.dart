@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/actionSheets/action_sheet1.dart';
+import '../../model/generic_item.dart';
 
 class GroupSettings extends StatefulWidget {
   const GroupSettings({Key? key}) : super(key: key);
@@ -15,7 +19,7 @@ class _GroupSettingsState extends State<GroupSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -28,7 +32,7 @@ class _GroupSettingsState extends State<GroupSettings> {
             height: 20,
           ),
           Container(
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.cardColor,
             height: 65,
             child: Column(
               // padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -38,7 +42,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                     Container(
                       height: 30,
                       width: 30,
-                      color: Theme.of(context).primaryColor,
+                      color: AppColorConstants.themeColor,
                       child: const ThemeIconWidget(
                         ThemeIcon.send,
                         size: 20,
@@ -47,16 +51,14 @@ class _GroupSettingsState extends State<GroupSettings> {
                     const SizedBox(
                       width: 15,
                     ),
-                    Text(
+                    Heading5Text(
                       LocalizationString.sendMessages,
-                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const Spacer(),
-                    Obx(() => Text(
+                    Obx(() => Heading6Text(
                           _chatDetailController.chatRoom.value!.groupAccess == 1
                               ? LocalizationString.onlyAdmins
                               : LocalizationString.allParticipants,
-                          style: Theme.of(context).textTheme.titleSmall,
                         )),
                     const ThemeIconWidget(
                       ThemeIcon.nextArrow,

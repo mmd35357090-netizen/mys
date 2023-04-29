@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class AvatarView extends StatelessWidget {
   final String? url;
@@ -45,17 +46,12 @@ class AvatarView extends StatelessWidget {
               ),
             ).round(18)
           : Center(
-              child: Text(initials,
-                      style: TextStyle(
-                          fontSize: (size ?? 60) / 2.3,
-                          fontWeight: FontWeight.w600))
-                  .p8,
+              child: BodySmallText(initials, weight: TextWeight.medium).p8,
             ),
     ).borderWithRadius(
-        context: context,
         value: 2,
         radius: 20,
-        color: borderColor ?? Theme.of(context).primaryColor);
+        color: borderColor ?? AppColorConstants.themeColor);
   }
 }
 
@@ -83,12 +79,12 @@ class UserAvatarView extends StatelessWidget {
       child: Stack(
         children: [
           user.liveCallDetail != null && hideLiveIndicator == false
-              ? liveUserWidget(size: size ?? 60, context: context).ripple(() {
+              ? liveUserWidget(size: size ?? 60,).ripple(() {
                   if (onTapHandler != null) {
                     onTapHandler!();
                   }
                 })
-              : userPictureView(size: size ?? 60, context: context),
+              : userPictureView(size: size ?? 60, ),
           (user.liveCallDetail == null || hideLiveIndicator == true) &&
                   hideOnlineIndicator == false
               ? Positioned(
@@ -98,7 +94,7 @@ class UserAvatarView extends StatelessWidget {
                     height: 15,
                     width: 15,
                     color: user.isOnline == true
-                        ? Theme.of(context).primaryColor
+                        ? AppColorConstants.themeColor
                         : Colors.transparent,
                   ).circular)
               : Container(),
@@ -108,7 +104,7 @@ class UserAvatarView extends StatelessWidget {
   }
 
   Widget userPictureView(
-      {required double size, double? radius, required BuildContext context}) {
+      {required double size, double? radius,}) {
     return user.picture != null
         ? CachedNetworkImage(
             imageUrl: user.picture!,
@@ -127,52 +123,38 @@ class UserAvatarView extends StatelessWidget {
                   size: size / 2,
                 )),
           ).borderWithRadius(
-            context: context,
             value: 1,
             radius: size / 3,
-            color: Theme.of(context).primaryColor)
+            color: AppColorConstants.themeColor)
         : SizedBox(
             height: double.infinity,
             width: double.infinity,
             child: Center(
-              child: Text(
+              child: BodySmallText(
                 user.getInitials,
-                style: TextStyle(
-                    fontSize:
-                        user.getInitials.length == 1 ? (size / 2) : (size / 3),
-                    fontWeight: FontWeight.w600),
+                weight: TextWeight.medium,
               ),
             ),
           ).borderWithRadius(
-            context: context,
             value: 1,
             radius: size / 3,
-            color: Theme.of(context).primaryColor);
+            color: AppColorConstants.themeColor);
   }
 
-  Widget liveUserWidget({required double size, required BuildContext context}) {
+  Widget liveUserWidget({required double size, }) {
     return Stack(
       children: [
-        AvatarGlow(
-          endRadius: 60.0,
-          child: Material(
-            // Replace this child with your own
-            elevation: 8.0,
-            // shape: CircleBorder(),
-            child: userPictureView(size: size, radius: 13, context: context),
-          ),
-        ),
+        userPictureView(size: size, radius: 5),
         Positioned(
             right: 0,
             left: 0,
             bottom: 0,
             child: Container(
               height: 18,
-              color: Theme.of(context).primaryColor,
+              color: AppColorConstants.themeColor,
               child: Center(
-                child: Text(
+                child: BodyMediumText(
                   LocalizationString.live,
-                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ).round(5))

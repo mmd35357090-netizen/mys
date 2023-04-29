@@ -1,5 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
 
 class PaymentAndCoins extends StatefulWidget {
   const PaymentAndCoins({Key? key}) : super(key: key);
@@ -10,19 +11,20 @@ class PaymentAndCoins extends StatefulWidget {
 
 class _PaymentAndCoinsState extends State<PaymentAndCoins> {
   final SettingsController settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   int coin = 0;
 
   @override
   void initState() {
     super.initState();
-    coin = getIt<UserProfileManager>().user!.coins ;
+    coin = _userProfileManager.user.value!.coins ;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -72,12 +74,12 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
               height: 75,
               child: Row(children: [
                 Container(
-                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                        color: AppColorConstants.themeColor.withOpacity(0.2),
                         child: Image.asset(
                           icon,
                           height: 20,
                           width: 20,
-                          color: Theme.of(context).primaryColor,
+                          color: AppColorConstants.themeColor,
                         ).p8)
                     .circular,
                 const SizedBox(width: 10),
@@ -86,21 +88,16 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(title,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.w600))
-                      //     .bP4,
-                      // Text(subTitle,
-                      //     style: Theme.of(context).textTheme.bodySmall),
+                      BodyLargeText(title,
+                          weight: TextWeight.medium)
+
                     ],
                   ),
                 ),
                 // const Spacer(),
                 ThemeIconWidget(
                   ThemeIcon.nextArrow,
-                  color: Theme.of(context).iconTheme.color,
+                  color: AppColorConstants.iconColor,
                   size: 15,
                 )
               ]).hP16,

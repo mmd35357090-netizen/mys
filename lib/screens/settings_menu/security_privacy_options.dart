@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_switch/flutter_switch.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
 
 class PrivacyOptions extends StatefulWidget {
   const PrivacyOptions({Key? key}) : super(key: key);
@@ -20,7 +22,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -31,7 +33,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
           divider(context: context).tP8,
           Expanded(
             child: ListView(
-              padding:  EdgeInsets.zero,
+              padding: EdgeInsets.zero,
               children: [
                 Column(
                   children: [
@@ -57,26 +59,23 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
           height: 65,
           child: Row(children: [
             Container(
-                    color: Theme.of(context).primaryColor.withOpacity(0.2),
+                    color: AppColorConstants.themeColor.withOpacity(0.2),
                     child: Image.asset(
                       'assets/dark-mode.png',
                       height: 20,
                       width: 20,
-                      color: Theme.of(context).primaryColor,
+                      color: AppColorConstants.themeColor,
                     ).p8)
                 .circular,
             const SizedBox(width: 10),
             Expanded(
-              child: Text(LocalizationString.shareLocation,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.w600)),
+              child: BodyLargeText(LocalizationString.shareLocation,
+                  weight: TextWeight.medium),
             ),
             // const Spacer(),
             Obx(() => FlutterSwitch(
-                  inactiveColor: Theme.of(context).disabledColor,
-                  activeColor: Theme.of(context).primaryColor,
+                  inactiveColor: AppColorConstants.disabledColor,
+                  activeColor: AppColorConstants.themeColor,
                   width: 50.0,
                   height: 30.0,
                   valueFontSize: 15.0,
@@ -105,15 +104,14 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                 height: 75,
                 child: Row(children: [
                   Container(
-                          color:
-                              Theme.of(context).primaryColor.withOpacity(0.2),
+                          color: AppColorConstants.themeColor.withOpacity(0.2),
                           child: Image.asset(
                             settingsController.bioMetricType.value == 1
                                 ? 'assets/face-id.png'
                                 : 'assets/fingerprint.png',
                             height: 20,
                             width: 20,
-                            color: Theme.of(context).primaryColor,
+                            color: AppColorConstants.themeColor,
                           ).p8)
                       .circular,
                   const SizedBox(width: 10),
@@ -122,22 +120,19 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(LocalizationString.faceIdOrTouchId,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(fontWeight: FontWeight.w600))
+                        BodyLargeText(LocalizationString.faceIdOrTouchId,
+                                weight: TextWeight.medium)
                             .bP4,
-                        Text(
-                            LocalizationString.unlockYourAppUsingBiometricLogin,
-                            style: Theme.of(context).textTheme.bodySmall),
+                        BodySmallText(
+                          LocalizationString.unlockYourAppUsingBiometricLogin,
+                        ),
                       ],
                     ),
                   ),
                   // const Spacer(),
                   FlutterSwitch(
-                    inactiveColor: Theme.of(context).disabledColor,
-                    activeColor: Theme.of(context).primaryColor,
+                    inactiveColor: AppColorConstants.disabledColor,
+                    activeColor: AppColorConstants.themeColor,
                     width: 50.0,
                     height: 30.0,
                     valueFontSize: 15.0,

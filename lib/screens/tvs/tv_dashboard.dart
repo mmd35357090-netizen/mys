@@ -1,4 +1,4 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/tvs/subscribed_tvs.dart';
 import 'package:foap/screens/tvs/tv_list_home.dart';
 import 'package:get/get.dart';
@@ -46,19 +46,19 @@ class TvDashboardScreenState extends State<TvDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: items[_dashboardController.currentIndex.value],
         bottomNavigationBar: SizedBox(
           height: MediaQuery.of(context).viewPadding.bottom > 0 ? 90 : 70.0,
           width: MediaQuery.of(context).size.width,
           child: BottomNavigationBar(
-            backgroundColor: Theme.of(context).backgroundColor,
+            backgroundColor: AppColorConstants.backgroundColor,
             type: BottomNavigationBarType.fixed,
             currentIndex: _dashboardController.currentIndex.value,
             selectedFontSize: 12,
             unselectedFontSize: 12,
             unselectedItemColor: Colors.grey,
-            selectedItemColor: Theme.of(context).primaryColor,
+            selectedItemColor: AppColorConstants.themeColor,
             onTap: (index) => {onTabTapped(index)},
             items: [
               BottomNavigationBarItem(
@@ -66,28 +66,28 @@ class TvDashboardScreenState extends State<TvDashboardScreen> {
                       height: 20,
                       width: 20,
                       color: _dashboardController.currentIndex.value == 0
-                          ? Theme.of(context).primaryColor
-                          : Theme.of(context).disabledColor),
+                          ? AppColorConstants.themeColor
+                          : AppColorConstants.iconColor),
                   label: ''),
               BottomNavigationBarItem(
                   icon: Image.asset('assets/tv/fav.png',
                       height: 20,
                       width: 20,
                       color: _dashboardController.currentIndex.value == 1
-                          ? Theme.of(context).primaryColor
-                          : Theme.of(context).disabledColor),
+                          ? AppColorConstants.themeColor
+                          : AppColorConstants.iconColor),
                   label: ''),
               BottomNavigationBarItem(
                 icon: Image.asset('assets/tv/subscribed.png',
                     height: 20,
                     width: 20,
                     color: _dashboardController.currentIndex.value == 2
-                        ? Theme.of(context).primaryColor
-                        : Theme.of(context).disabledColor),
+                        ? AppColorConstants.themeColor
+                        : AppColorConstants.iconColor),
                 label: '',
               ),
             ],
-          ).shadow(context: context),
+          ),
         )));
   }
 

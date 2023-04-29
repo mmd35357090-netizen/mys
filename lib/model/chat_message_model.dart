@@ -1,7 +1,12 @@
 import 'dart:convert';
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:foap/helper/date_extension.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/string_extension.dart';
+import 'package:foap/model/location.dart';
+import 'package:foap/screens/chat/media.dart';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 
 class ChatContentJson {
   int originalMessageId = 0;
@@ -206,6 +211,8 @@ class ChatMessageModel {
   ChatMessageModel();
 
   factory ChatMessageModel.fromJson(dynamic jsonObj) {
+    final UserProfileManager userProfileManager = Get.find();
+
     Map<dynamic, dynamic> jsonMap;
     if (jsonObj is String) {
       jsonMap = json.decode(jsonObj);
@@ -222,15 +229,16 @@ class ChatMessageModel {
         jsonMap['room'] ?? jsonMap['room_id'] ?? jsonMap['liveCallId'] ?? 0;
     model.liveTvId = jsonMap['liveTvId'] ?? '';
     model.isEncrypted = jsonMap['is_encrypted'] ?? 0;
-    model.chatVersion = jsonMap['chat_version'] ?? 0;
+    model.chatVersion =
+        jsonMap['chat_version'] is String? ? 0 : jsonMap['chat_version'];
     model.messageContent = jsonMap['message'].replaceAll('\\', '');
     model.repliedOnMessageContent = jsonMap['replied_on_message'];
     model.messageType = jsonMap['messageType'] ?? jsonMap['type'];
     model.senderId = jsonMap['created_by'];
     model.createdAt = jsonMap['created_at'];
     model.viewedAt = jsonMap['viewed_at'];
-    model.deleteAfter = jsonMap['deleteAfter'] ??
-        getIt<UserProfileManager>().user!.chatDeleteTime;
+    model.deleteAfter =
+        jsonMap['deleteAfter'] ?? userProfileManager.user.value!.chatDeleteTime;
     model.isDeleted = jsonMap['isDeleted'] == 1;
     model.isStar = jsonMap['isStar'] ?? 0;
     model.opponentId = jsonMap['opponent_id'] ?? 0;
@@ -268,17 +276,6 @@ class ChatMessageModel {
   ChatMedia get mediaContent {
     return ChatMedia.fromJson(json.decode(messageContent.decrypted()));
   }
-
-  // UserModel? get messageSender {
-  //   List<ChatMessageUser> users = chatMessageUser.where((
-  //       element) => element.userId == senderId).toList();
-  //   if (users.isNotEmpty){
-  //     ChatMessageUser user = users.first;
-  //
-  //   }
-  //
-  //   return null;
-  // }
 
   TextContent get textContent {
     if (chatVersion == 0) {
@@ -472,7 +469,9 @@ class ChatMessageModel {
   }
 
   bool get isMineMessage {
-    return senderId == getIt<UserProfileManager>().user!.id;
+    final UserProfileManager userProfileManager = Get.find();
+
+    return senderId == userProfileManager.user.value!.id;
   }
 
   int get chatDay {
@@ -518,7 +517,7 @@ class ChatMessageModel {
     } else if (messageType == 8) {
       return LocalizationString.sentALocation;
     } else if (messageType == 9) {
-      return shortInfoForNotification;
+      return '';
     } else if (messageType == 10) {
       return originalMessage.shortInfoForNotification;
     } else if (messageType == 11) {

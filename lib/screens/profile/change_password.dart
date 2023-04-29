@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/profile_controller.dart';
+import '../../universal_components/rounded_password_field.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
@@ -22,7 +25,7 @@ class ChangePasswordState extends State<ChangePassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -43,18 +46,20 @@ class ChangePasswordState extends State<ChangePassword> {
                     context: context);
               }),
           divider(context: context).vP8,
-          const SizedBox(height: 20,),
+          const SizedBox(
+            height: 20,
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(LocalizationString.oldPwdStr,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w600)),
+              Heading6Text(LocalizationString.oldPwdStr,
+                  weight: TextWeight.medium),
               addTextField(oldPassword, 'old_password').tP8,
-              Text(LocalizationString.newPwdStr,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w600)),
+              Heading6Text(LocalizationString.newPwdStr,
+                  weight: TextWeight.medium),
               addTextField(newPassword, 'new_password').tP8,
-              Text(LocalizationString.confirmPwdStr,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w600))
+              Heading6Text(LocalizationString.confirmPwdStr,
+                      weight: TextWeight.medium)
                   .vP8,
               addTextField(confirmPassword, 'confirm_password'),
             ],
@@ -68,7 +73,7 @@ class ChangePasswordState extends State<ChangePassword> {
     return SizedBox(
       height: 50,
       child: PasswordField(
-        textStyle: Theme.of(context).textTheme.titleSmall,
+        textStyle: TextStyle(fontSize: FontSizes.h6,color: AppColorConstants.grayscale900),
         onChanged: (value) {},
         controller: controller,
         showRevealPasswordIcon: true,
@@ -77,6 +82,4 @@ class ChangePasswordState extends State<ChangePassword> {
       ),
     ).vP8;
   }
-
-
 }

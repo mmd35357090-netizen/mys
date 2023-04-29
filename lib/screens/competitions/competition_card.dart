@@ -1,4 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/competition_imports.dart';
+
+import '../../apiHandler/api_controller.dart';
 
 class CompetitionCard extends StatefulWidget {
   final CompetitionModel model;
@@ -38,7 +41,7 @@ class CompetitionCardState extends State<CompetitionCard> {
                     width: MediaQuery.of(context).size.width,
                     height: 200,
                     placeholder: (context, url) =>
-                        AppUtil.addProgressIndicator(context, 100),
+                        AppUtil.addProgressIndicator(size: 100),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                   ).overlay(Colors.black38).round(20).bP25,
@@ -48,13 +51,8 @@ class CompetitionCardState extends State<CompetitionCard> {
                     left: 16,
                     right: 16,
                     bottom: 80,
-                    child: Text(
-                      model.title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontWeight: FontWeight.w700),
-                    ))
+                    child:
+                        Heading4Text(model.title, weight: TextWeight.semiBold))
               ],
             ),
           ]),
@@ -90,7 +88,7 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
       right: 30,
       child: Container(
         height: 50.0,
-        color: Theme.of(context).backgroundColor,
+        color: AppColorConstants.backgroundColor,
         padding: const EdgeInsets.only(left: 10, right: 10),
         child: Row(
             mainAxisAlignment: model.winnerAnnounced()
@@ -98,17 +96,16 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                 : MainAxisAlignment.spaceBetween,
             children: [
               model.winnerAnnounced()
-                  ? Text('Winner : ',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: Theme.of(context).primaryColor))
-                  : Text(
+                  ? BodyLargeText('Winner : ',
+                      weight: TextWeight.bold,
+                      color: AppColorConstants.themeColor)
+                  : BodyLargeText(
                       model.awardType == 2
                           ? '${LocalizationString.prize} : ${model.totalAwardValue()} ${LocalizationString.coins}'
                           : '${LocalizationString.prize} : \$${model.totalAwardValue()}',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w800)),
+                      weight: TextWeight.bold,
+                      color: AppColorConstants.themeColor,
+                    ),
               model.winnerAnnounced()
                   ? FutureBuilder(
                       builder: (ctx, snapshot) {
@@ -117,43 +114,31 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                           UserModel? user = snapshot.data as UserModel?;
 
                           return user == null
-                              ? Text(LocalizationString.loading)
-                              : Text(
+                              ? BodyLargeText(LocalizationString.loading)
+                              : BodyLargeText(
                                   user.isMe
                                       ? LocalizationString.you
                                       : user.userName,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.w900));
+                                  weight: TextWeight.bold,
+                                  color: AppColorConstants.themeColor);
                         } else {
-                          return Text(LocalizationString.loading,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                      color: Theme.of(context).primaryColor));
+                          return BodyLargeText(LocalizationString.loading,
+                              color: AppColorConstants.themeColor);
                         }
                       },
                       future: getOtherUserDetailApi(
                           model.mainWinnerId().toString()),
                     )
-                  : Text(
+                  : BodyLargeText(
                       model.isPast
                           ? LocalizationString.completed
                           : model.timeLeft,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Theme.of(context).primaryColor)
-                          .copyWith(fontWeight: FontWeight.w700))
+                      weight: TextWeight.bold,
+                      color: AppColorConstants.themeColor)
             ]),
       ).shadowWithBorder(
           shadowOpacity: 0.1,
-          context: context,
-          borderColor: Theme.of(context).primaryColor,
+          borderColor: AppColorConstants.themeColor,
           radius: 15,
           borderWidth: 2),
     );

@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:pin_code_text_field/pin_code_text_field.dart';
+
+import '../../controllers/login_controller.dart';
 
 class VerifyOTPPhoneNumberChange extends StatefulWidget {
   final String token;
@@ -20,7 +23,7 @@ class VerifyOTPPhoneNumberChangeState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -51,13 +54,14 @@ class VerifyOTPPhoneNumberChangeState
           const SizedBox(
             height: 105,
           ),
-          Text(
+          Heading5Text(
             LocalizationString.helpToChangePhoneNumber,
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).primaryColor).copyWith(fontWeight: FontWeight.w900),
+            weight: TextWeight.bold,
+            color: AppColorConstants.themeColor,
             textAlign: TextAlign.center,
           ),
-          Text(LocalizationString.pleaseEnterOtpSentToYourPhone,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor))
+          BodyLargeText(LocalizationString.pleaseEnterOtpSentToYourPhone,
+                  color: AppColorConstants.themeColor)
               .setPadding(top: 43, bottom: 35),
           Obx(() => PinCodeTextField(
                 autofocus: true,
@@ -67,8 +71,9 @@ class VerifyOTPPhoneNumberChangeState
                 highlightColor: Colors.blue,
                 defaultBorderColor: Colors.transparent,
                 hasTextBorderColor: Colors.transparent,
-                pinBoxColor: Theme.of(context).errorColor.withOpacity(0.2),
-                highlightPinBoxColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                pinBoxColor: AppColorConstants.red.withOpacity(0.2),
+                highlightPinBoxColor:
+                    AppColorConstants.themeColor.withOpacity(0.2),
                 // highlightPinBoxColor: Colors.orange,
                 maxLength: loginController.pinLength,
                 hasError: loginController.hasError.value,
@@ -85,7 +90,9 @@ class VerifyOTPPhoneNumberChangeState
                 wrapAlignment: WrapAlignment.spaceAround,
                 pinBoxDecoration:
                     ProvidedPinBoxDecoration.defaultPinBoxDecoration,
-                pinTextStyle: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).primaryColor),
+                pinTextStyle: TextStyle(
+                    fontSize: FontSizes.h6,
+                    color: AppColorConstants.themeColor),
                 pinTextAnimatedSwitcherTransition:
                     ProvidedPinBoxTextAnimation.scalingTransition,
                 pinTextAnimatedSwitcherDuration:
@@ -96,15 +103,17 @@ class VerifyOTPPhoneNumberChangeState
               )),
           Obx(() => Row(
                 children: [
-                  Text(LocalizationString.didntReceivedCode,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor)),
-                  Text(LocalizationString.resendOTP,
-                          style: loginController.canResendOTP.value == false
-                              ? Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w600,color: Theme.of(context).disabledColor)
-                              : Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor,fontWeight: FontWeight.w600))
+                  BodyLargeText(LocalizationString.didntReceivedCode,
+                      color: AppColorConstants.themeColor),
+                  BodyLargeText(LocalizationString.resendOTP,
+                          color: loginController.canResendOTP.value == false
+                              ? AppColorConstants.disabledColor
+                              : AppColorConstants.themeColor,
+                          weight: TextWeight.medium)
                       .ripple(() {
                     if (loginController.canResendOTP.value == true) {
-                      loginController.resendOTP(token: widget.token,context: context);
+                      loginController.resendOTP(
+                          token: widget.token, context: context);
                     }
                   }),
 
@@ -121,12 +130,12 @@ class VerifyOTPPhoneNumberChangeState
                               Widget? child) {
                             final minutes = value.inMinutes;
                             final seconds = value.inSeconds % 60;
-                            return Text(' ($minutes:$seconds)',
+                            return BodyLargeText(' ($minutes:$seconds)',
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor));
+                                color: AppColorConstants.themeColor);
                           })
                       : Container()
-                  // Text(' in (1:20) ', style: Theme.of(context).textTheme.bodyLarge.headingColor),
+                  // Text(' in (1:20) ', style: TextStyle(fontSize: FontSizes.b2).headingColor),
                 ],
               )).setPadding(top: 20, bottom: 25),
           const Spacer(),
@@ -142,15 +151,13 @@ class VerifyOTPPhoneNumberChangeState
   }
 
   addSubmitBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
-        loginController.callVerifyOTPForChangePhone(context: context,
-            otp: controller.text, token: widget.token);
+        loginController.callVerifyOTPForChangePhone(
+            context: context, otp: controller.text, token: widget.token);
       },
       text: LocalizationString.verify,
-      enabledTextStyle: Theme.of(context).textTheme.bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900,color: Colors.white),
-      isEnabled: true,
+
     );
   }
 }

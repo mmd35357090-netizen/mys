@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/user_card.dart';
 
 class UsersList extends StatefulWidget {
   final List<UserModel> usersList;
@@ -22,7 +24,7 @@ class UsersListState extends State<UsersList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       appBar: AppBar(
           backgroundColor: Colors.white,
           centerTitle: true,
@@ -32,12 +34,13 @@ class UsersListState extends State<UsersList> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             InkWell(
                 onTap: () => Get.back(),
-                child:
-                    Icon(Icons.arrow_back_ios, color: Theme.of(context).iconTheme.color)),
+                child: Icon(Icons.arrow_back_ios,
+                    color: AppColorConstants.iconColor)),
             Center(
-                child: Text(
-                  LocalizationString.friendsNearBy,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).primaryColor),
+                child: Heading5Text(
+              LocalizationString.friendsNearBy,
+              color: AppColorConstants.themeColor,
+
             )),
             Container()
           ])),
@@ -51,7 +54,7 @@ class UsersListState extends State<UsersList> {
           return Container(
             height: 0.1,
             width: double.infinity,
-            color: Theme.of(context).dividerColor,
+            color: AppColorConstants.dividerColor,
           ).vP4;
         },
       ).hP16,

@@ -1,4 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/number_extension.dart';
+
+import '../model/hash_tag.dart';
 
 class HashTagTile extends StatelessWidget {
   final Hashtag hashtag;
@@ -16,25 +19,24 @@ class HashTagTile extends StatelessWidget {
       children: [
         Row(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 40,
               width: 40,
               child: Center(
-                  child: Text(
+                  child: Heading3Text(
                 '#',
-                style: Theme.of(context).textTheme.displaySmall,
               )),
-            ).borderWithRadius(context: context, value: 0.5, radius: 20),
+            ).borderWithRadius(value: 0.5, radius: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                Heading5Text(
                   hashtag.name,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium,
                 ).bP4,
-                Text(
+                BodyLargeText(
                   '${hashtag.counter.formatNumber} ${LocalizationString.posts.toLowerCase()}',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  weight: TextWeight.medium,
                 )
               ],
             ).hP16,

@@ -1,7 +1,12 @@
-import 'package:foap/helper/common_import.dart';
 import 'dart:isolate';
 import 'dart:ui';
+
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/number_extension.dart';
 import 'package:path/path.dart' as p;
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class FileChatTile extends StatefulWidget {
   final ChatMessageModel message;
@@ -44,42 +49,33 @@ class _FileChatTileState extends State<FileChatTile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              Heading5Text(
                 LocalizationString.file,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w900),
+                weight: TextWeight.bold,
               ),
               const SizedBox(
                 height: 5,
               ),
               widget.message.media != null
-                  ? Text(
+                  ? BodyLargeText(
                       widget.message.media!.title!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.w700),
-                    )
-                  : Text(
+                  weight: TextWeight.semiBold
+
+              )
+                  : BodyLargeText(
                       widget.message.mediaContent.file!.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.w700),
-                    ),
+                  weight: TextWeight.semiBold
+
+              ),
               const SizedBox(
                 height: 5,
               ),
               widget.message.media != null
-                  ? Text(
+                  ? BodySmallText(
                       widget.message.media!.fileSize!.fileSizeSpecifier,
-                      style: Theme.of(context).textTheme.bodySmall,
                     )
-                  : Text(
+                  : BodySmallText(
                       widget.message.mediaContent.file!.size.fileSizeSpecifier,
-                      style: Theme.of(context).textTheme.bodySmall,
                     ),
             ],
           ),
@@ -103,7 +99,7 @@ class _FileChatTileState extends State<FileChatTile> {
         widget.message.messageStatusType == MessageStatus.sending
             ? Positioned(
                 right: 16,
-                child: Center(child: AppUtil.addProgressIndicator(context, 40)))
+                child: Center(child: AppUtil.addProgressIndicator(size: 40)))
             : Container()
       ],
     ).bP8;

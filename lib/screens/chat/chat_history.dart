@@ -1,5 +1,11 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/search_bar.dart';
+import '../calling/call_history.dart';
+import '../settings_menu/settings_controller.dart';
 
 class ChatHistory extends StatefulWidget {
   const ChatHistory({Key? key}) : super(key: key);
@@ -23,11 +29,11 @@ class _ChatHistoryState extends State<ChatHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       floatingActionButton: Container(
         height: 50,
         width: 50,
-        color: Theme.of(context).primaryColor,
+        color: AppColorConstants.themeColor,
         child: const ThemeIconWidget(
           ThemeIcon.edit,
           size: 25,
@@ -57,7 +63,7 @@ class _ChatHistoryState extends State<ChatHistory> {
           divider(context: context).tP8,
           SearchBar(
                   showSearchIcon: true,
-                  iconColor: Theme.of(context).primaryColor,
+                  iconColor: AppColorConstants.themeColor,
                   onSearchChanged: (value) {
                     _chatController.searchTextChanged(value);
                   },
@@ -88,17 +94,15 @@ class _ChatHistoryState extends State<ChatHistory> {
                             .deleteRoom(_chatController.searchedRooms[index]);
                       },
                       background: Container(
-                        color: Theme.of(context).errorColor,
+                        color: AppColorConstants.red,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(
+                            Heading6Text(
                               LocalizationString.delete,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(fontWeight: FontWeight.w900)
-                                  .copyWith(color: Colors.white70),
+                            weight: TextWeight.bold,
+                              color: AppColorConstants.grayscale700,
+
                             )
                           ],
                         ).hP25,

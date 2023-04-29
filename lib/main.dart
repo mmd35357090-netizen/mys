@@ -1,5 +1,12 @@
+import 'dart:io';
+
+import 'package:auto_orientation/auto_orientation.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:foap/screens/live_users/live_users_controller.dart';
 import 'package:foap/screens/settings_menu/help_support_contorller.dart';
@@ -9,10 +16,41 @@ import 'package:giphy_get/l10n.dart';
 import 'components/reply_chat_cells/post_gift_controller.dart';
 import 'controllers/dating_controller.dart';
 import 'controllers/faq_controller.dart';
+
+import 'package:foap/screens/add_on/controller/reel/create_reel_controller.dart';
+import 'package:foap/screens/add_on/controller/reel/reels_controller.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:foap/screens/login_sign_up/splash_screen.dart';
+import 'package:foap/screens/settings_menu/settings_controller.dart';
+import 'package:foap/util/constant_util.dart';
+import 'package:foap/util/shared_prefs.dart';
+import 'package:get/get.dart';
+import 'package:giphy_get/l10n.dart';
+
 import 'package:camera/camera.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
-import 'controllers/relationship_controller.dart';
-import 'controllers/relationship_search_controller.dart';
+import 'package:overlay_support/overlay_support.dart';
+
+import 'apiHandler/api_controller.dart';
+import 'components/post_card_controller.dart';
+import 'controllers/add_post_controller.dart';
+import 'controllers/agora_call_controller.dart';
+import 'controllers/agora_live_controller.dart';
+import 'controllers/chat_and_call/chat_detail_controller.dart';
+import 'controllers/chat_and_call/chat_history_controller.dart';
+import 'controllers/chat_and_call/chat_room_detail_controller.dart';
+import 'controllers/chat_and_call/select_user_group_chat_controller.dart';
+import 'controllers/home_controller.dart';
+import 'controllers/live_tv_streaming_controller.dart';
+import 'controllers/login_controller.dart';
+import 'controllers/podcast_streaming_controller.dart';
+import 'controllers/post_controller.dart';
+import 'controllers/profile_controller.dart';
+import 'controllers/subscription_packages_controller.dart';
+import 'helper/languages.dart';
+import 'manager/db_manager.dart';
+import 'manager/notification_manager.dart';
+import 'manager/player_manager.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -40,7 +78,9 @@ Future<void> main() async {
   // await CustomGalleryPermissions.requestPermissionExtend();
 
   final firebaseMessaging = FCM();
-  firebaseMessaging.setNotifications();
+  await firebaseMessaging.setNotifications();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   String? token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
   if (token != null) {
     SharedPrefs().setVoipToken(token);
@@ -53,7 +93,14 @@ Future<void> main() async {
   // Get.changeThemeMode(ThemeMode.dark);
 
   Get.put(PlayerManager());
+
+  isDarkMode = await SharedPrefs().isDarkMode();
+  Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
+
+
   Get.put(DashboardController());
+  Get.put(UserProfileManager());
+  Get.put(PlayerManager());
   Get.put(SettingsController());
   Get.put(SubscriptionPackageController());
   Get.put(AgoraCallController());
@@ -63,34 +110,10 @@ Future<void> main() async {
   Get.put(PostController());
   Get.put(PostCardController());
   Get.put(AddPostController());
-  Get.put(AppStoryController());
-  Get.put(ExploreController());
-  Get.put(HighlightsController());
   Get.put(ChatDetailController());
   Get.put(ProfileController());
-  Get.put(NotificationSettingController());
-  Get.put(CompetitionController());
   Get.put(ChatHistoryController());
-  Get.put(BlockedUsersController());
-  Get.put(MediaListViewerController());
-  Get.put(SelectMediaController());
   Get.put(ChatRoomDetailController());
-  Get.put(LiveJoinedUserController());
-  Get.put(SinglePostDetailController());
-  Get.put(CallHistoryController());
-  Get.put(VideoPostTileController());
-  Get.put(ContactsController());
-  Get.put(SelectUserForChatController());
-  Get.put(SelectUserForGroupChatController());
-  Get.put(EnterGroupInfoController());
-  Get.put(ClubsController());
-  Get.put(ClubDetailController());
-  Get.put(CreateClubController());
-  Get.put(NotificationController());
-  Get.put(UserNetworkController());
-  Get.put(RandomLivesController());
-  Get.put(RandomChatAndCallController());
-  Get.put(SearchClubsController());
   Get.put(TvStreamingController());
   Get.put(MapScreenController());
   Get.put(GiftController());
@@ -104,27 +127,27 @@ Future<void> main() async {
   Get.put(PostGiftController());
   Get.put(MercadappagoPaymentController());
   Get.put(HelpSupportController());
+  Get.put(PodcastStreamingController());
+  Get.put(ReelsController());
+  Get.put(CreateReelController());
+  Get.put(SelectUserForGroupChatController());
 
   setupServiceLocator();
-  await getIt<UserProfileManager>().refreshProfile();
+  final UserProfileManager userProfileManager = Get.find();
+
+  await userProfileManager.refreshProfile();
 
   final SettingsController settingsController = Get.find();
   await settingsController.getSettings();
 
-  getIt<NotificationManager>().initialize();
+  NotificationManager().initialize();
 
-  // AppConfigConstants.selectedLanguage = await SharedPrefs().getLanguageCode();
-
-  // getIt<DBManager>().clearOldStories();
   await getIt<DBManager>().createDatabase();
 
-  if (getIt<UserProfileManager>().isLogin == true) {
+  if (userProfileManager.isLogin == true) {
     ApiController().updateTokens();
   }
 
-  // if (Platform.isAndroid) {
-  //   InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-  // }
   AwesomeNotifications().initialize(
       'resource://drawable/ic_launcher',
       [
@@ -143,7 +166,7 @@ Future<void> main() async {
       ],
       channelGroups: [
         NotificationChannelGroup(
-            channelGroupkey: 'calls', channelGroupName: 'Calls'),
+            channelGroupKey: 'calls', channelGroupName: 'Calls'),
       ],
       debug: true);
 
@@ -168,10 +191,6 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setPreferredOrientations([
-    //   DeviceOrientation.portraitUp,
-    // ]);
-
     return OverlaySupport.global(
         child: FutureBuilder<Locale>(
             future: SharedPrefs().getLocale(),
@@ -186,8 +205,8 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
                   // navigatorKey: navigationKey,
                   home: const SplashScreen(),
                   builder: EasyLoading.init(),
-                  theme: AppTheme.lightTheme,
-                  darkTheme: AppTheme.darkTheme,
+                  // theme: AppTheme.lightTheme,
+                  // darkTheme: AppTheme.darkTheme,
                   themeMode: ThemeMode.dark,
                   // localizationsDelegates: context.localizationDelegates,
                   localizationsDelegates: [
@@ -213,4 +232,13 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
               }
             }));
   }
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  // await Firebase.initializeApp();
+
+  NotificationManager().parseNotificationMessage(message);
 }

@@ -1,5 +1,15 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
+import 'dart:io';
+import 'dart:async';
+import 'package:foap/manager/db_manager.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/components/custom_gallery_picker.dart';
+import 'package:foap/model/story_model.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:foap/screens/chat/media.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AppStoryController extends GetxController {
   RxList<Media> mediaList = <Media>[].obs;
@@ -40,15 +50,14 @@ class AppStoryController extends GetxController {
 
   void uploadAllMedia(
       {required List<Media> items, required BuildContext context}) async {
-    var responses = await Future.wait(
-            [for (Media media in items) uploadMedia(media, context)])
-        .whenComplete(() {});
+    var responses =
+        await Future.wait([for (Media media in items) uploadMedia(media)])
+            .whenComplete(() {});
 
-    publishAction(galleryItems: responses, context: context);
+    publishAction(galleryItems: responses);
   }
 
-  Future<Map<String, String>> uploadMedia(
-      Media media, BuildContext context) async {
+  Future<Map<String, String>> uploadMedia(Media media) async {
     Map<String, String> gallery = {};
 
     await AppUtil.checkInternet().then((value) async {
@@ -110,17 +119,15 @@ class AppStoryController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: LocalizationString.noInternet, isSuccess: false);
       }
     });
     return gallery;
   }
 
-  void publishAction(
-      {required List<Map<String, String>> galleryItems,
-      required BuildContext context}) {
+  void publishAction({
+    required List<Map<String, String>> galleryItems,
+  }) {
     AppUtil.checkInternet().then((value) async {
       EasyLoading.dismiss();
 
@@ -134,9 +141,7 @@ class AppStoryController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: LocalizationString.noInternet, isSuccess: false);
       }
     });
   }

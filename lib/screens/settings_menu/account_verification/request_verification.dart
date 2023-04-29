@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../components/actionSheets/action_sheet1.dart';
+import '../../../controllers/request_verification_controller.dart';
+import '../../../model/generic_item.dart';
+import '../../../universal_components/rounded_input_field.dart';
 
 class RequestVerification extends StatefulWidget {
   const RequestVerification({Key? key}) : super(key: key);
@@ -10,7 +17,9 @@ class RequestVerification extends StatefulWidget {
 
 class _RequestVerificationState extends State<RequestVerification> {
   final RequestVerificationController _requestVerificationController =
-      Get.find();
+      RequestVerificationController();
+  final UserProfileManager _userProfileManager = Get.find();
+
   final picker = ImagePicker();
 
   @override
@@ -21,7 +30,7 @@ class _RequestVerificationState extends State<RequestVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: SizedBox(
         height: Get.height,
         child: Column(
@@ -41,11 +50,12 @@ class _RequestVerificationState extends State<RequestVerification> {
                             .verificationRequests));
                   }
                 }),
+
             divider(context: context).tP8,
             const SizedBox(
               height: 20,
             ),
-            getIt<UserProfileManager>().user!.isVerified
+            _userProfileManager.user.value!.isVerified
                 ? alreadyVerifiedView()
                 : requestVerification(),
           ],
@@ -62,13 +72,8 @@ class _RequestVerificationState extends State<RequestVerification> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                LocalizationString.verified.toUpperCase(),
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall!
-                    .copyWith(fontWeight: FontWeight.w800),
-              ),
+              Heading4Text(LocalizationString.verified.toUpperCase(),
+                  weight: TextWeight.bold),
               const SizedBox(
                 width: 5,
               ),
@@ -84,7 +89,7 @@ class _RequestVerificationState extends State<RequestVerification> {
           ),
           Text(
             LocalizationString.youAreVerifiedNow,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: TextStyle(fontSize: FontSizes.b2),
             textAlign: TextAlign.center,
           ),
           const SizedBox(
@@ -93,16 +98,14 @@ class _RequestVerificationState extends State<RequestVerification> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              BodyMediumText(
                 LocalizationString.profileIsVerifiedOn,
-                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
-              Text(
+              BodyMediumText(
                 _requestVerificationController.verifiedOn,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: Theme.of(context).primaryColor),
+                weight: TextWeight.bold,
+                color: AppColorConstants.themeColor,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -122,19 +125,15 @@ class _RequestVerificationState extends State<RequestVerification> {
         SingleChildScrollView(
           child: Column(
             children: [
-              Text(
+              Heading3Text(
                 LocalizationString.applyVerification,
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+                weight: TextWeight.semiBold,
               ),
               const SizedBox(
                 height: 10,
               ),
-              Text(
+              BodyLargeText(
                 LocalizationString.verifiedAccountSubtitle,
-                style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(
@@ -146,20 +145,15 @@ class _RequestVerificationState extends State<RequestVerification> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        LocalizationString.messageToReviewer,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w700),
-                      ),
+                      BodyLargeText(LocalizationString.messageToReviewer,
+                          weight: TextWeight.semiBold),
                       const SizedBox(
                         height: 10,
                       ),
                       Obx(() => InputField(
                             controller:
                                 _requestVerificationController.messageTf.value,
-                            backgroundColor: Theme.of(context).cardColor,
+                            backgroundColor: AppColorConstants.cardColor,
                             cornerRadius: 10,
                             maxLines: 5,
                           )),
@@ -168,20 +162,15 @@ class _RequestVerificationState extends State<RequestVerification> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Text(
-                    LocalizationString.documentType,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w700),
-                  ),
+                  BodyLargeText(LocalizationString.documentType,
+                      weight: TextWeight.semiBold),
                   const SizedBox(
                     height: 10,
                   ),
                   Obx(() => DropDownField(
                         controller:
                             _requestVerificationController.documentType.value,
-                        backgroundColor: Theme.of(context).cardColor,
+                        backgroundColor: AppColorConstants.cardColor,
                         onTap: () {
                           chooseDocumentType();
                         },
@@ -192,7 +181,7 @@ class _RequestVerificationState extends State<RequestVerification> {
                   SizedBox(
                     width: Get.width - 32,
                     height: 40,
-                    child: FilledButtonType1(
+                    child: AppThemeButton(
                         text: LocalizationString.chooseImage,
                         onPress: () {
                           chooseImage();
@@ -201,13 +190,8 @@ class _RequestVerificationState extends State<RequestVerification> {
                   const SizedBox(
                     height: 15,
                   ),
-                  Text(
-                    LocalizationString.uploadFrontAndBack,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall!
-                        .copyWith(fontWeight: FontWeight.w400),
-                  ),
+                  BodySmallText(LocalizationString.uploadFrontAndBack,
+                      weight: TextWeight.medium),
                   const SizedBox(
                     height: 15,
                   ),
@@ -237,7 +221,7 @@ class _RequestVerificationState extends State<RequestVerification> {
                                   right: 5,
                                   top: 5,
                                   child: Container(
-                                    color: Theme.of(context).primaryColor,
+                                    color: AppColorConstants.themeColor,
                                     child:
                                         const ThemeIconWidget(ThemeIcon.delete)
                                             .p4,
@@ -271,7 +255,7 @@ class _RequestVerificationState extends State<RequestVerification> {
             child: SizedBox(
               width: Get.width - 32,
               height: 40,
-              child: FilledButtonType1(
+              child: AppThemeButton(
                   text: LocalizationString.submit,
                   onPress: () {
                     submitRequest();
@@ -288,7 +272,6 @@ class _RequestVerificationState extends State<RequestVerification> {
   chooseImage() {
     if (_requestVerificationController.selectedImages.length == 2) {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.youCanUploadMaximumTwoImages,
           isSuccess: false);
       return;

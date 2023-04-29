@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/string_extension.dart';
 
 class ChatGroupActionCell extends StatelessWidget {
   final ChatMessageModel message;
@@ -37,10 +39,9 @@ class ChatGroupActionCell extends StatelessWidget {
     }
 
     return Container(
-            color: Theme.of(context).primaryColor.lighten(0.2),
-            child: Text(
+            color: AppColorConstants.themeColor.lighten(0.2),
+            child: BodyLargeText(
               actionMessageString,
-              style: Theme.of(context).textTheme.bodyLarge,
             ).setPadding(left: 8, right: 8, top: 4, bottom: 4))
         .round(10);
   }

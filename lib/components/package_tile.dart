@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../controllers/subscription_packages_controller.dart';
+import '../model/package_model.dart';
 
 class PackageTile extends StatelessWidget {
   final PackageModel package;
@@ -21,36 +24,26 @@ class PackageTile extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              package.name,
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).primaryColor),
-            ),
+            Heading6Text(package.name,
+                weight: TextWeight.semiBold, color: AppColorConstants.themeColor),
             const SizedBox(
               height: 5,
             ),
-            Text(
+            BodySmallText(
               '${package.coin} ${LocalizationString.coins}',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w600),
+              weight: TextWeight.medium,
             ),
           ],
         ),
         const Spacer(),
-        Text(
+        BodyLargeText(
           '${LocalizationString.buyIn} \$${package.price}',
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(fontWeight: FontWeight.w700),
+          weight: TextWeight.semiBold,
         )
         // SizedBox(
         //   height: 40,
         //   width: 110,
-        //   child: BorderButtonType1(
+        //   child: AppThemeBorderButton(
         //     text:,
         //     onPress: () {
         //

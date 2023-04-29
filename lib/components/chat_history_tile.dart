@@ -1,5 +1,5 @@
-import 'package:foap/helper/common_import.dart';
-
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 class ChatHistoryTile extends StatelessWidget {
   final ChatRoomModel model;
 
@@ -19,7 +19,7 @@ class ChatHistoryTile extends StatelessWidget {
                 children: [
                   model.isGroupChat
                       ? Container(
-                          color: Theme.of(context).primaryColor,
+                          color: AppColorConstants.themeColor,
                           height: 45,
                           width: 45,
                           child:
@@ -51,29 +51,24 @@ class ChatHistoryTile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const Spacer(),
-                        Text(
+                        BodyLargeText(
                           model.isGroupChat
                               ? model.name!
                               : model.opponent.userDetail.userName,
                           maxLines: 1,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.w600),
+                          weight:TextWeight.medium,
                         ),
                         const SizedBox(
                           height: 8,
                         ),
                         model.whoIsTyping.isNotEmpty
-                            ? Text(
+                            ? BodyMediumText(
                                 '${model.whoIsTyping.join(',')} ${LocalizationString.typing}',
-                                style: Theme.of(context).textTheme.bodyMedium,
                               )
                             : model.lastMessage == null
                                 ? Container()
                                 : messageTypeShortInfo(
                                     message: model.lastMessage!,
-                                    context: context,
                                   ),
                         const Spacer(),
                       ],
@@ -92,25 +87,21 @@ class ChatHistoryTile extends StatelessWidget {
                     ? Container(
                         height: 25,
                         width: 25,
-                        color: Theme.of(context).primaryColor,
+                        color: AppColorConstants.themeColor,
                         child: Center(
-                          child: Text(
+                          child: BodyLargeText(
                             '${model.unreadMessages}',
-                            style:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                    ),
+                            weight: TextWeight.bold,
                           ),
                         ),
                       ).circular.bP8
                     : Container(),
                 model.lastMessage == null
                     ? Container()
-                    : Text(
+                    : BodyMediumText(
                         model.lastMessage!.messageTime,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: Theme.of(context).primaryColor),
+                        weight: TextWeight.bold,
+                        color: AppColorConstants.themeColor,
                       ),
               ],
             ),

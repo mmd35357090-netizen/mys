@@ -1,10 +1,19 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/manager/socket_manager.dart';
+import 'package:foap/model/category_model.dart';
+import 'package:foap/model/live_tv_model.dart';
+import 'package:foap/model/tv_banner_model.dart';
+import 'package:foap/screens/settings_menu/packages_screen.dart';
+import 'package:foap/util/constant_util.dart';
 import 'package:get/get.dart';
 
-import 'package:foap/model/live_tv_model.dart';
+import '../model/chat_message_model.dart';
 import '../model/tv_show_model.dart';
 
 class TvStreamingController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxInt currentPage = 0.obs;
   RxMap<String, List<ChatMessageModel>> messagesMap =
       <String, List<ChatMessageModel>>{}.obs;
@@ -193,7 +202,7 @@ class TvStreamingController extends GetxController {
 
   subscribeTv(TvModel tvModel, Function(bool) completionCallBack) {
     getTvChannelById(tvModel.id, () {
-      if (getIt<UserProfileManager>().user!.coins >=
+      if (_userProfileManager.user.value!.coins >=
           tvChannelDetail.value!.coinsNeededToUnlock) {
         ApiController().subscribeTv(tvModel: tvModel).then((response) {
           completionCallBack(response.success);
@@ -214,7 +223,7 @@ class TvStreamingController extends GetxController {
     var liveTvId = 'tv_$id';
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'liveTvId': liveTvId,
     };
 
@@ -278,13 +287,13 @@ class TvStreamingController extends GetxController {
     String encrtyptedMessage = messageText; //.encrypted();
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'liveTvId': liveTvId,
       'local_message_id': localMessageId,
       'messageType': messageTypeId(MessageContentType.text),
       'message': encrtyptedMessage,
-      'picture': getIt<UserProfileManager>().user!.picture,
-      'username': getIt<UserProfileManager>().user!.userName,
+      'picture': _userProfileManager.user.value!.picture,
+      'username': _userProfileManager.user.value!.userName,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -295,7 +304,7 @@ class TvStreamingController extends GetxController {
     localMessageModel.localMessageId = localMessageId;
     localMessageModel.roomId = id;
     localMessageModel.userName = LocalizationString.you;
-    localMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    localMessageModel.senderId = _userProfileManager.user.value!.id;
     localMessageModel.messageType = messageTypeId(MessageContentType.text);
     localMessageModel.messageContent = messageText;
 

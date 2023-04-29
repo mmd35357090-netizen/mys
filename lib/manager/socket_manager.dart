@@ -1,11 +1,29 @@
 //Initialize Socket Connection
+import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
-import 'package:socket_io_client/socket_io_client.dart' as io;
-import 'package:foap/helper/common_import.dart';
-import 'dart:convert';
-import 'package:get/get.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/controllers/agora_call_controller.dart';
+import 'package:foap/controllers/agora_live_controller.dart';
+import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
+import 'package:foap/controllers/chat_and_call/chat_history_controller.dart';
+import 'package:foap/controllers/home_controller.dart';
+import 'package:foap/controllers/live_tv_streaming_controller.dart';
+import 'package:foap/controllers/voip_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/socket_constants.dart';
+import 'package:foap/helper/string_extension.dart';
+import 'package:foap/manager/db_manager.dart';
+import 'package:foap/manager/socket_manager.dart';
+import 'package:foap/model/chat_message_model.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:foap/util/constant_util.dart';
+import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
+
+export 'package:foap/helper/socket_constants.dart';
 
 class CachedRequest {
   String event;
@@ -16,7 +34,6 @@ class CachedRequest {
 
 class SocketManager {
   io.Socket? _socketInstance;
-  BuildContext? buildContext;
   String? channelName;
   String? channelToken;
   List<CachedRequest> cachedRequests = [];
@@ -28,6 +45,7 @@ class SocketManager {
   final AgoraLiveController _agoraLiveController = Get.find();
   final HomeController _homeController = Get.find();
   final TvStreamingController _liveTvStreamingController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   StreamSubscription<FGBGType>? subscription;
 
@@ -38,7 +56,6 @@ class SocketManager {
 
 //Initialize Socket Connection
   dynamic connect() {
-    // buildContext = context;
     if (_socketInstance != null) return;
     _socketInstance = io.io(
       ApiConstants.socketUrl,
@@ -135,8 +152,8 @@ class SocketManager {
 //Get This Event After Successful Connection To Socket
   dynamic onConnect(_) {
     emit(SocketConstants.login, {
-      'userId': getIt<UserProfileManager>().user!.id,
-      'username': getIt<UserProfileManager>().user!.userName
+      'userId': _userProfileManager.user.value!.id,
+      'username': _userProfileManager.user.value!.userName
     });
 
     for (CachedRequest request in cachedRequests) {
@@ -184,6 +201,15 @@ class SocketManager {
 
   void onReceiveMessage(dynamic response) async {
     ChatMessageModel message = ChatMessageModel.fromJson(response);
+    int senderId = response['userId'];
+    String senderName = response['username'];
+    UserModel user = UserModel();
+    user.id = senderId;
+    user.userName = senderName;
+
+    message.sender = user;
+
+    // ChatMessageModel message = ChatMessageModel.fromJson(response);
 
     await getIt<DBManager>().newMessageReceived(message);
     // await _chatDetailController.newMessageReceived(message);
@@ -240,7 +266,7 @@ class SocketManager {
 
   addedInRoom(dynamic response) {
     int userIdActionedBy = response['userIdActiondBy'];
-    if (userIdActionedBy != getIt<UserProfileManager>().user!.id) {
+    if (userIdActionedBy != _userProfileManager.user.value!.id) {
       response['action'] =
           1; // 1 for added, 2 for removed , 3 for made admin , 4 for removed from admin, 5 left , 6 removed from group
       Map<String, dynamic> chatMessage = {};

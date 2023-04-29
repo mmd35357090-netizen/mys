@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import '../../components/user_card.dart';
 
 class GroupChatRoomDetail extends StatefulWidget {
   final ChatRoomModel chatRoom;
@@ -18,7 +20,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -29,18 +31,15 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               children: [
                 ThemeIconWidget(
                   ThemeIcon.backArrow,
-                  color: Theme.of(context).iconTheme.color,
+                  color: AppColorConstants.iconColor,
                   size: 20,
                 ).p8.ripple(() {
                   Get.back();
                 }),
-                Text(
+                Heading5Text(
                   LocalizationString.contactInfo,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(fontWeight: FontWeight.w900)
-                      .copyWith(color: Theme.of(context).primaryColor),
+                  weight: TextWeight.bold,
+                  color: AppColorConstants.themeColor,
                 ),
                 const SizedBox(
                   width: 20,
@@ -84,14 +83,14 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
       children: [
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: const ThemeIconWidget(
                       ThemeIcon.gallery,
                       color: Colors.white,
@@ -100,18 +99,13 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    LocalizationString.media,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.w600),
-                  ),
+                  Heading5Text(LocalizationString.media,
+                      weight: TextWeight.medium),
                 ],
               ),
               ThemeIconWidget(
                 ThemeIcon.nextArrow,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 15,
               )
             ],
@@ -124,14 +118,14 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
         divider(context: context),
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: const ThemeIconWidget(
                       ThemeIcon.wallpaper,
                       color: Colors.white,
@@ -140,18 +134,13 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    LocalizationString.wallpaper,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.w600),
-                  ),
+                  Heading5Text(LocalizationString.wallpaper,
+                      weight: TextWeight.medium),
                 ],
               ),
               ThemeIconWidget(
                 ThemeIcon.nextArrow,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 15,
               )
             ],
@@ -162,7 +151,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               ));
         }),
       ],
-    ).round(10).shadow(context: context, shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
   }
 
   Widget extraOptionsWidget() {
@@ -170,17 +159,12 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
       children: [
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                LocalizationString.exportChat,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
-              )
+              Heading5Text(LocalizationString.exportChat,
+                  weight: TextWeight.medium)
             ],
           ).hP8,
         ).ripple(() {
@@ -189,27 +173,23 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
         divider(context: context),
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(
+            child: Heading5Text(
               LocalizationString.deleteChat,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontWeight: FontWeight.w600)
-                  .copyWith(color: Theme.of(context).errorColor),
+              weight: TextWeight.medium,
+              color: AppColorConstants.red,
             ).hP8,
           ),
         ).ripple(() {
           chatRoomDetailController.deleteRoomChat(widget.chatRoom);
           AppUtil.showToast(
-              context: context,
               message: LocalizationString.chatDeleted,
               isSuccess: true);
         })
       ],
-    ).round(10).shadow(context: context, shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
   }
 
   Widget callWidgets() {
@@ -226,16 +206,11 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               const SizedBox(
                 height: 5,
               ),
-              Text(
-                LocalizationString.audio,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
-              ),
+              BodyMediumText(LocalizationString.audio,
+                  weight: TextWeight.medium),
             ],
           ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
-        ).round(10).shadow(context: context, shadowOpacity: 0.1).ripple(() {
+        ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
           audioCall();
         }),
         const SizedBox(
@@ -251,16 +226,14 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               const SizedBox(
                 height: 5,
               ),
-              Text(
+              BodyMediumText(
                 LocalizationString.video,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium
+
               ),
             ],
           ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
-        ).round(10).shadow(context: context, shadowOpacity: 0.1).ripple(() {
+        ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
           videoCall();
         }),
       ],
@@ -280,13 +253,8 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
         const SizedBox(
           height: 10,
         ),
-        Text(
-          widget.chatRoom.opponent.userDetail.userName,
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall!
-              .copyWith(fontWeight: FontWeight.w900),
-        )
+        Heading6Text(widget.chatRoom.opponent.userDetail.userName,
+            weight: TextWeight.bold)
       ],
     );
   }
@@ -298,7 +266,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               children: [
                 ListTile(
                     title: Center(
-                        child: Text(LocalizationString.exportChatWithMedia)),
+                        child: BodyLargeText(LocalizationString.exportChatWithMedia)),
                     onTap: () async {
                       Get.back();
                       exportChatWithMedia();
@@ -306,14 +274,14 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                 divider(context: context),
                 ListTile(
                     title: Center(
-                        child: Text(LocalizationString.exportChatWithoutMedia)),
+                        child: BodyLargeText(LocalizationString.exportChatWithoutMedia)),
                     onTap: () async {
                       Get.back();
                       exportChatWithoutMedia();
                     }),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -323,30 +291,29 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        Heading5Text(
           '${widget.chatRoom.roomMembers.length} ${LocalizationString.participants}',
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium!
-              .copyWith(fontWeight: FontWeight.w600),
+
         ),
         const SizedBox(
           height: 20,
         ),
         Container(
           height: widget.chatRoom.roomMembers.length * 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: ListView.separated(
               padding: EdgeInsets.zero,
               itemCount: widget.chatRoom.roomMembers.length,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (ctx, index) {
-                return UserTile(profile: widget.chatRoom.roomMembers[index].userDetail).hP8;
+                return UserTile(
+                        profile: widget.chatRoom.roomMembers[index].userDetail)
+                    .hP8;
               },
               separatorBuilder: (ctx, index) {
                 return divider(context: context).vP4;
               }).vP8,
-        ).round(10).shadow(context: context, shadowOpacity: 0.1),
+        ).round(10).backgroundCard(shadowOpacity: 0.1),
       ],
     ).hP16;
   }

@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/call_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class CallHistoryTile extends StatelessWidget {
   final CallHistoryModel model;
@@ -17,12 +18,9 @@ class CallHistoryTile extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            BodyLargeText(
               model.opponent.userName,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w600),
+              weight:TextWeight.medium,
             ),
             const SizedBox(
               height: 5,
@@ -38,18 +36,15 @@ class CallHistoryTile extends StatelessWidget {
                 const SizedBox(
                   width: 5,
                 ),
-                Text(
+                BodyMediumText(
                   model.isMissedCall
                       ? LocalizationString.missed
                       : model.isOutgoing
                           ? LocalizationString.outgoing
                           : LocalizationString.incoming,
-                  style: model.isMissedCall
-                      ? Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(color: Theme.of(context).errorColor)
-                      : Theme.of(context).textTheme.bodyMedium,
+                  color: model.isMissedCall
+                      ? AppColorConstants.red
+                      : AppColorConstants.grayscale900,
                 ),
               ],
             )
@@ -59,9 +54,8 @@ class CallHistoryTile extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
+            BodySmallText(
               model.timeOfCall,
-              style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(
               height: 5,
@@ -75,12 +69,9 @@ class CallHistoryTile extends StatelessWidget {
                 const SizedBox(
                   width: 5,
                 ),
-                Text(
+                BodySmallText(
                   model.duration,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w600),
+                  weight:TextWeight.medium,
                 ),
               ],
             )

@@ -1,5 +1,12 @@
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import '../../components/actionSheets/action_sheet1.dart';
+import '../../components/group_avatars/group_avatar2.dart';
+import '../../model/category_model.dart';
+import '../../model/generic_item.dart';
+import '../../model/post_model.dart';
+import '../../segmentAndMenu/horizontal_menu.dart';
 
 class CategoryClubsListing extends StatefulWidget {
   final CategoryModel category;
@@ -12,7 +19,7 @@ class CategoryClubsListing extends StatefulWidget {
 }
 
 class CategoryClubsListingState extends State<CategoryClubsListing> {
-  final ClubsController _clubsController = Get.find();
+  final ClubsController _clubsController = ClubsController();
 
   @override
   void initState() {
@@ -36,7 +43,7 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -113,7 +120,6 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
                                                 },
                                                 deleteCallback: (club) {
                                                   AppUtil.showToast(
-                                                      context: context,
                                                       message:
                                                           LocalizationString
                                                               .clubIsDeleted,

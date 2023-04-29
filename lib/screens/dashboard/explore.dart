@@ -1,5 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/dashboard/posts.dart';
 import 'package:get/get.dart';
+import '../../components/hashtag_tile.dart';
+import '../../components/search_bar.dart';
+import '../../components/user_card.dart';
+import '../../controllers/explore_controller.dart';
+import '../../controllers/post_controller.dart';
+import '../../segmentAndMenu/horizontal_menu.dart';
 
 class Explore extends StatefulWidget {
   const Explore({Key? key}) : super(key: key);
@@ -9,7 +17,7 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
-  final ExploreController exploreController = Get.find();
+  final ExploreController exploreController = ExploreController();
   final PostController postController = Get.find();
 
   @override
@@ -38,7 +46,7 @@ class _ExploreState extends State<Explore> {
       top: false,
       bottom: false,
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: KeyboardDismissOnTap(
             child: Column(
           children: [
@@ -59,7 +67,7 @@ class _ExploreState extends State<Explore> {
                 Expanded(
                   child: SearchBar(
                       showSearchIcon: true,
-                      iconColor: Theme.of(context).primaryColor,
+                      iconColor: AppColorConstants.themeColor,
                       onSearchChanged: (value) {
                         exploreController.searchTextChanged(value);
                       },
@@ -77,10 +85,10 @@ class _ExploreState extends State<Explore> {
                           Container(
                             height: 50,
                             width: 50,
-                            color: Theme.of(context).primaryColor,
+                            color: AppColorConstants.themeColor,
                             child: ThemeIconWidget(
                               ThemeIcon.close,
-                              color: Theme.of(context).backgroundColor,
+                              color: AppColorConstants.backgroundColor,
                               size: 25,
                             ),
                           ).round(20).ripple(() {
@@ -100,7 +108,8 @@ class _ExploreState extends State<Explore> {
                             children: [
                               segmentView(),
                               divider(context: context, height: 0.2),
-                              searchedResult(segment: exploreController.selectedSegment),
+                              searchedResult(
+                                  segment: exploreController.selectedSegment),
                             ],
                           ),
                         )
@@ -147,13 +156,8 @@ class _ExploreState extends State<Explore> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Text(
-                      LocalizationString.suggestedUsers,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontWeight: FontWeight.w900),
-                    ),
+                    Heading3Text(LocalizationString.suggestedUsers,
+                        weight: TextWeight.bold),
                     const SizedBox(
                       height: 10,
                     ),
@@ -240,7 +244,6 @@ class _ExploreState extends State<Explore> {
             : SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: emptyUser(
-                    context: context,
                     title: LocalizationString.noUserFound,
                     subTitle: ''),
               );
@@ -279,8 +282,7 @@ class _ExploreState extends State<Explore> {
             : SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: emptyData(
-                    title: LocalizationString.noHashtagFound,
-                    subTitle: ''),
+                    title: LocalizationString.noHashtagFound, subTitle: ''),
               );
   }
 
@@ -317,12 +319,18 @@ class _ExploreState extends State<Explore> {
               child: postController.isLoadingPosts
                   ? const PostBoxShimmer()
                   : postController.posts.isNotEmpty
-                      ? MasonryGridView.count(
+                      ? GridView.builder(
                           controller: scrollController,
-                          padding: const EdgeInsets.only(top: 20),
-                          shrinkWrap: true,
-                          crossAxisCount: 3,
                           itemCount: postController.posts.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          // You won't see infinite size error
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 4.0,
+                                  mainAxisSpacing: 4.0,
+                                  mainAxisExtent: 100),
                           itemBuilder: (BuildContext context, int index) =>
                               postController.posts[index].gallery.first
                                           .isVideoPost ==
@@ -339,7 +347,7 @@ class _ExploreState extends State<Explore> {
                                             fit: BoxFit.cover,
                                             placeholder: (context, url) =>
                                                 AppUtil.addProgressIndicator(
-                                                    context, 100),
+                                                    size: 100),
                                             errorWidget:
                                                 (context, url, error) =>
                                                     const Icon(
@@ -376,7 +384,7 @@ class _ExploreState extends State<Explore> {
                                             fit: BoxFit.cover,
                                             placeholder: (context, url) =>
                                                 AppUtil.addProgressIndicator(
-                                                    context, 100),
+                                                    size:100),
                                             errorWidget:
                                                 (context, url, error) =>
                                                     const Icon(Icons.error),
@@ -393,13 +401,10 @@ class _ExploreState extends State<Explore> {
                                                 postController.totalPages,
                                           ));
                                     }),
-                          mainAxisSpacing: 4.0,
-                          crossAxisSpacing: 4.0,
                         ).hP16
                       : SizedBox(
                           height: MediaQuery.of(context).size.height * 0.5,
                           child: emptyPost(
-                              context: context,
                               title: LocalizationString.noPostFound,
                               subTitle: ''),
                         ));

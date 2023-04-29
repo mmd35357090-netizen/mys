@@ -1,4 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../../model/generic_item.dart';
 
 class ActionSheet1 extends StatelessWidget {
   final List<GenericItem> items;
@@ -12,7 +14,7 @@ class ActionSheet1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: items.length * 60,
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor.darken(),
       child: Column(
         children: [
           for (int i = 0; i < items.length; i++)
@@ -21,16 +23,14 @@ class ActionSheet1 extends StatelessWidget {
                 items[i].icon != null
                     ? ThemeIconWidget(
                         items[i].icon!,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                       )
                     : Container(),
                 const SizedBox(width: 20),
-                Text(
+                Heading6Text(
                   items[i].title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium,
+
                 )
               ],
             ).p16.ripple(() {

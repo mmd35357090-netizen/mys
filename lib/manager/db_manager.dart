@@ -1,12 +1,22 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
-import 'package:foap/helper/common_import.dart';
-import 'package:path/path.dart' as p;
-import 'dart:developer';
+
+import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
+import 'package:foap/controllers/chat_and_call/chat_history_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/manager/file_manager.dart';
+import 'package:foap/model/chat_message_model.dart';
+import 'package:foap/model/chat_room_model.dart';
+import 'package:foap/model/story_model.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as p;
+import 'package:sqflite/sqflite.dart';
 
 class DBManager {
   final ChatDetailController _chatDetailController = Get.find();
   final ChatHistoryController _chatHistoryController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   late Database database;
   var random = math.Random.secure();
@@ -102,10 +112,17 @@ class DBManager {
   newMessageReceived(ChatMessageModel message) async {
     ChatRoomModel? existingRoom =
         await getIt<DBManager>().getRoomById(message.roomId);
+    print('newMessageReceived');
+    print('existingRoom = $existingRoom');
+
     if (existingRoom == null) {
       // save room in database
 
+      print('getting chat room detail');
       _chatDetailController.getRoomDetail(message.roomId, (chatroom) async {
+        print('saving room');
+        print('chatroom = ${chatroom.roomMembers.length}');
+
         await getIt<DBManager>().saveRooms([chatroom]);
         await getIt<DBManager>().saveMessage(chatMessages: [message]);
       });
@@ -124,7 +141,7 @@ class DBManager {
       ChatRoomModel? room = await getRoomById(chatRoom.id);
       if (room == null) {
         batch.rawInsert(
-            'INSERT INTO ChatRooms(id, title, status,type,is_chat_user_online,created_by,created_at,updated_at,imageUrl,description,chat_access_group) VALUES(${chatRoom.id},"${chatRoom.name}", ${chatRoom.status},${chatRoom.type}, ${chatRoom.isOnline},${chatRoom.createdBy},${chatRoom.createdAt},${chatRoom.createdAt},"${chatRoom.image}","${chatRoom.description}",${chatRoom.groupAccess})');
+            'INSERT INTO ChatRooms(id, title, status,type,is_chat_user_online,created_by,created_at,updated_at,imageUrl,description,chat_access_group) VALUES(${chatRoom.id},"${chatRoom.name}", ${chatRoom.status},${chatRoom.type}, ${chatRoom.isOnline == true ? 1 :0},${chatRoom.createdBy},${chatRoom.createdAt},${chatRoom.createdAt},"${chatRoom.image}","${chatRoom.description}",${chatRoom.groupAccess})');
 
         for (ChatRoomMember member in chatRoom.roomMembers) {
           batch.rawDelete(
@@ -148,7 +165,6 @@ class DBManager {
               chatMessages: [chatRoom.lastMessage!], currentBatch: batch);
         }
       } else {
-        print('1');
         updateRoom(chatRoom);
       }
     }
@@ -161,13 +177,12 @@ class DBManager {
     int? updateAt = chatRoom.updatedAt ?? DateTime.now().millisecondsSinceEpoch;
     var batch = database.batch();
 
-    print('updateAt $updateAt');
     // await database.transaction((txn) async {
     batch.rawUpdate('UPDATE ChatRooms '
         'SET title = "${chatRoom.name}",'
         'status = ${chatRoom.status},'
         'type = ${chatRoom.type},'
-        'is_chat_user_online = ${chatRoom.isOnline},'
+        'is_chat_user_online = ${chatRoom.isOnline == true ? 1 :0},'
         'updated_at = $updateAt,'
         'imageUrl = "${chatRoom.image}",'
         'description = "${chatRoom.description}",'
@@ -261,8 +276,6 @@ class DBManager {
 
     List<Map> list = await txn
         .rawQuery('SELECT * FROM ChatRoomMembers WHERE room_id = $roomId');
-
-    print('list ${list.length}');
 
     for (var user in list) {
       List<Map> userData = await txn
@@ -368,9 +381,13 @@ class DBManager {
           'SELECT * FROM UsersCache WHERE id = ${roomJson["created_by"]}');
 
       Map<String, dynamic> updatedRoomJson =
-          Map<String, dynamic>.from(roomJson);
+      Map<String, dynamic>.from(roomJson);
 
-      updatedRoomJson['createdByUser'] = userData.first;
+      if (userData.isNotEmpty) {
+        updatedRoomJson['createdByUser'] = userData.first;
+      } else {
+        updatedRoomJson['createdByUser'] = {'id': roomJson["created_by"]};
+      }
       chatRoom = ChatRoomModel.fromJson(updatedRoomJson);
       chatRoom.roomMembers = await fetchAllMembersInRoom(chatRoom.id, txn);
     }
@@ -434,7 +451,7 @@ class DBManager {
       }
 
       saveUserInCache(
-          user: chatMessage.sender ?? getIt<UserProfileManager>().user!,
+          user: chatMessage.sender ?? _userProfileManager.user.value!,
           batch: batch);
 
       // if (chatMessage.id != 0) {
@@ -497,7 +514,7 @@ class DBManager {
           }
 
           if (timeDifference <
-              getIt<UserProfileManager>().user!.chatDeleteTime) {
+              _userProfileManager.user.value!.chatDeleteTime) {
             messages.add(message);
           } else {
             messagesToDelete.add(message);

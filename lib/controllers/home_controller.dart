@@ -1,11 +1,35 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
+import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
+import 'package:foap/screens/add_on/ui/reel/create_reel_video.dart';
 import 'package:get/get.dart';
 import '../model/polls_model.dart';
 import '../model/post_gift_model.dart';
 import '../screens/tvs/tv_dashboard.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../screens/add_on/model/polls_model.dart';
+import '../model/post_model.dart';
+import '../screens/settings_menu/settings_controller.dart';
+import '../screens/tvs/tv_dashboard.dart';
+import 'dart:async';
+import 'package:foap/manager/db_manager.dart';
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/model/story_model.dart';
+import 'package:foap/model/post_gallery.dart';
+import 'package:foap/model/post_search_query.dart';
+import 'package:foap/screens/dashboard/posts.dart';
+import 'package:foap/screens/highlights/choose_stories.dart';
+import 'package:foap/screens/profile/other_user_profile.dart';
+import 'package:foap/screens/story/choose_media_for_story.dart';
+import 'package:foap/screens/home_feed/quick_links.dart';
+import 'package:foap/screens/live/random_live_listing.dart';
+import 'package:foap/screens/live/checking_feasibility.dart';
+import 'package:foap/screens/competitions/competitions_screen.dart';
+
 
 class HomeController extends GetxController {
   final SettingsController _settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   RxList<PostModel> posts = <PostModel>[].obs;
   RxList<PollsQuestionModel> polls = <PollsQuestionModel>[].obs;
@@ -250,7 +274,7 @@ class HomeController extends GetxController {
     }
   }
 
-  contentOptionSelected(String option, BuildContext context) {
+  contentOptionSelected(String option) {
     if (option == LocalizationString.story) {
       Get.to(() => const ChooseMediaForStory());
     } else if (option == LocalizationString.post) {
@@ -268,6 +292,19 @@ class HomeController extends GetxController {
     } else if (option == LocalizationString.liveTv) {
       Get.to(() => const TvDashboardScreen());
       // Get.to(() => const LiveTVStreaming());
+
+    } else if (option == LocalizationString.podcast) {
+      Get.to(() => const PodcastListDashboard());
+    } else if (option == LocalizationString.reel) {
+      Get.to(() => const CreateReelScreen());
+      // Get.to(() => const LiveTVStreaming());
+    } else if (option == LocalizationString.dating) {
+      // check if user has already setup his profile
+
+      if (_userProfileManager.user.value!.canUseDating) {
+        Get.to(() => const DatingDashboard());
+      }
+
     }
     // else if (option == LocalizationString.podcast) {
     //   Get.to(() => const PodcastListDashboard());
@@ -304,25 +341,22 @@ class HomeController extends GetxController {
     }
   }
 
-  void reportPost(int postId, BuildContext context) {
+  void reportPost(int postId) {
     AppUtil.checkInternet().then((value) async {
       if (value) {
         ApiController().reportPost(postId).then((response) async {
           if (response.success == true) {
             AppUtil.showToast(
-                context: context,
                 message: LocalizationString.postReportedSuccessfully,
                 isSuccess: true);
           } else {
             AppUtil.showToast(
-                context: context,
                 message: LocalizationString.errorMessage,
                 isSuccess: true);
           }
         });
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: true);
       }
@@ -394,9 +428,9 @@ class HomeController extends GetxController {
         StoryModel story = StoryModel(
             id: 1,
             name: '',
-            userName: getIt<UserProfileManager>().user!.userName,
+            userName: _userProfileManager.user.value!.userName,
             email: '',
-            image: getIt<UserProfileManager>().user!.picture,
+            image: _userProfileManager.user.value!.picture,
             media: responses[0] as List<StoryMediaModel>);
 
         stories.add(story);

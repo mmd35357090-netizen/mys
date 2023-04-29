@@ -1,5 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import '../../components/actionSheets/action_sheet1.dart';
+import '../../model/generic_item.dart';
+import '../profile/other_user_profile.dart';
+import '../settings_menu/settings_controller.dart';
 
 class ChatRoomDetail extends StatefulWidget {
   final ChatRoomModel chatRoom;
@@ -28,7 +33,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -39,30 +44,26 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               children: [
                 ThemeIconWidget(
                   ThemeIcon.backArrow,
-                  color: Theme.of(context).iconTheme.color,
+                  color: AppColorConstants.iconColor,
                   size: 20,
                 ).p8.ripple(() {
                   Get.back();
                 }),
                 Obx(() => _chatDetailController.chatRoom.value == null
                     ? Container()
-                    : Text(
+                    : Heading5Text(
                         _chatDetailController.chatRoom.value!.isGroupChat
                             ? _chatDetailController.chatRoom.value!.name!
                             : _chatDetailController
                                 .chatRoom.value!.opponent.userDetail.userName,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(fontWeight: FontWeight.w600),
-                      )),
+                        weight: TextWeight.medium)),
                 Obx(() => _chatDetailController.chatRoom.value?.amIGroupAdmin ==
                             true &&
                         _chatDetailController.chatRoom.value?.isGroupChat ==
                             true
                     ? ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 20,
                       ).ripple(() {
                         Get.to(() => UpdateGroupInfo(
@@ -164,16 +165,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
 
   Widget descriptionWidget() {
     return Container(
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor,
       width: double.infinity,
-      child: Text(
+      child: Heading6Text(
         _chatDetailController.chatRoom.value!.description!,
-        style: Theme.of(context)
-            .textTheme
-            .titleSmall!
-            .copyWith(fontWeight: FontWeight.w300),
+          weight: TextWeight.regular
       ).p16,
-    ).round(10).shadow(context: context, shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
   }
 
   Widget groupSettingWidget() {
@@ -181,14 +179,14 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
       children: [
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: const ThemeIconWidget(
                       ThemeIcon.setting,
                       color: Colors.white,
@@ -197,18 +195,15 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Text(
+                  Heading6Text(
                     LocalizationString.groupSettings,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(fontWeight: FontWeight.w300),
+                      weight: TextWeight.regular
                   ),
                 ],
               ),
               ThemeIconWidget(
                 ThemeIcon.nextArrow,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 15,
               )
             ],
@@ -217,7 +212,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Get.to(() => const GroupSettings());
         }),
       ],
-    ).round(10).shadow(context: context, shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
   }
 
   Widget commonOptionsWidget() {
@@ -225,14 +220,14 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
       children: [
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: const ThemeIconWidget(
                       ThemeIcon.gallery,
                       color: Colors.white,
@@ -241,18 +236,15 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Text(
+                  Heading6Text(
                     LocalizationString.media,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(fontWeight: FontWeight.w300),
+                      weight: TextWeight.regular
                   ),
                 ],
               ),
               ThemeIconWidget(
                 ThemeIcon.nextArrow,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 15,
               )
             ],
@@ -265,14 +257,14 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         divider(context: context),
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
                     child: const ThemeIconWidget(
                       ThemeIcon.wallpaper,
                       color: Colors.white,
@@ -281,18 +273,15 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Text(
+                  Heading6Text(
                     LocalizationString.wallpaper,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(fontWeight: FontWeight.w300),
+                      weight: TextWeight.regular
                   ),
                 ],
               ),
               ThemeIconWidget(
                 ThemeIcon.nextArrow,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
                 size: 15,
               )
             ],
@@ -307,14 +296,14 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 _settingsController.setting.value!.enableStarMessage
             ? Obx(() => Container(
                   height: 50,
-                  color: Theme.of(context).cardColor,
+                  color: AppColorConstants.cardColor,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
                           Container(
-                            color: Theme.of(context).primaryColor,
+                            color: AppColorConstants.themeColor,
                             child: const ThemeIconWidget(
                               ThemeIcon.filledStar,
                               color: Colors.white,
@@ -323,27 +312,20 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                           const SizedBox(
                             width: 10,
                           ),
-                          Text(
+                          Heading6Text(
                             LocalizationString.starredMessages,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(fontWeight: FontWeight.w300),
+                              weight: TextWeight.regular
                           ),
                         ],
                       ),
                       Row(
                         children: [
-                          Text(
-                            '(${_chatRoomDetailController.starredMessages.length})',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(fontWeight: FontWeight.w600),
-                          ),
+                          BodyLargeText(
+                              '(${_chatRoomDetailController.starredMessages.length})',
+                              weight: TextWeight.medium),
                           ThemeIconWidget(
                             ThemeIcon.nextArrow,
-                            color: Theme.of(context).iconTheme.color,
+                            color: AppColorConstants.iconColor,
                             size: 15,
                           )
                         ],
@@ -357,7 +339,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 }))
             : Container(),
       ],
-    ).round(10).shadow(context: context, shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard(shadowOpacity: 0.1).hP16;
   }
 
   Widget extraOptionsWidget() {
@@ -365,16 +347,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
       children: [
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              Heading6Text(
                 LocalizationString.exportChat,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontWeight: FontWeight.w300),
+                  weight: TextWeight.regular
               )
             ],
           ).hP8,
@@ -384,28 +363,22 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         divider(context: context),
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(
-              LocalizationString.deleteChat,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontWeight: FontWeight.w600)
-                  .copyWith(color: Theme.of(context).errorColor),
-            ).hP8,
+            child: Heading5Text(LocalizationString.deleteChat,
+                    weight: TextWeight.medium, color: AppColorConstants.red)
+                .hP8,
           ),
         ).ripple(() {
           _chatRoomDetailController.deleteRoomChat(widget.chatRoom);
           _chatDetailController.deleteChat(widget.chatRoom.id);
           AppUtil.showToast(
-              context: context,
               message: LocalizationString.chatDeleted,
               isSuccess: true);
         })
       ],
-    ).round(10).shadow(context: context, shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard(shadowOpacity: 0.1).hP16;
   }
 
   Widget exitAndDeleteGroup() {
@@ -414,23 +387,20 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         divider(context: context),
         Container(
           height: 50,
-          color: Theme.of(context).cardColor,
+          color: AppColorConstants.cardColor,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(
+            child: Heading5Text(
               widget.chatRoom.amIMember
                   ? LocalizationString.leaveGroup
                   : LocalizationString.deleteGroup,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontWeight: FontWeight.w600)
-                  .copyWith(color: Theme.of(context).errorColor),
+    weight: TextWeight.medium,
+    color: AppColorConstants.red
+
             ).hP8,
           ),
         ).ripple(() {
           if (widget.chatRoom.amIMember) {
-            print('test 1');
 
             // AppUtil.showConfirmationAlert(
             //     title: LocalizationString.leaveGroup,
@@ -453,7 +423,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Get.back();
         }),
       ],
-    ).round(10).shadow(context: context, shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
   }
 
   Widget callWidgets() {
@@ -471,16 +441,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 const SizedBox(
                   height: 5,
                 ),
-                Text(
+                BodyMediumText(
                   LocalizationString.audio,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontWeight: FontWeight.w600),
+                    weight: TextWeight.medium
                 ),
               ],
             ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
-          ).round(10).shadow(context: context, shadowOpacity: 0.1).ripple(() {
+          ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
             audioCall();
           }).rp(20),
         if (_settingsController.setting.value!.enableVideoCalling)
@@ -494,16 +461,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 const SizedBox(
                   height: 5,
                 ),
-                Text(
+                BodyMediumText(
                   LocalizationString.video,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontWeight: FontWeight.w600),
+                    weight: TextWeight.medium
                 ),
               ],
             ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
-          ).round(10).shadow(context: context, shadowOpacity: 0.1).ripple(() {
+          ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
             videoCall();
           }),
       ],
@@ -523,12 +487,9 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
+              Heading6Text(
                 _chatDetailController.chatRoom.value!.name!,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontWeight: FontWeight.w900),
+                  weight: TextWeight.bold
               )
             ],
           ));
@@ -549,13 +510,10 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
+              Heading6Text(
                 _chatDetailController
                     .chatRoom.value!.opponent.userDetail.userName,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontWeight: FontWeight.w900),
+                  weight: TextWeight.bold
               )
             ],
           ));
@@ -568,7 +526,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               children: [
                 ListTile(
                     title: Center(
-                        child: Text(LocalizationString.exportChatWithMedia)),
+                        child: BodyLargeText(LocalizationString.exportChatWithMedia)),
                     onTap: () async {
                       Get.back();
                       exportChatWithMedia();
@@ -576,14 +534,14 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 divider(context: context),
                 ListTile(
                     title: Center(
-                        child: Text(LocalizationString.exportChatWithoutMedia)),
+                        child: BodyLargeText(LocalizationString.exportChatWithoutMedia)),
                     onTap: () async {
                       Get.back();
                       exportChatWithoutMedia();
                     }),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -595,12 +553,9 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              Heading5Text(
                 '${_chatDetailController.chatRoom.value!.roomMembers.length} ${LocalizationString.participants}',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w900),
+                  weight: TextWeight.bold
               ),
               const SizedBox(
                 height: 20,
@@ -612,7 +567,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                                 ? 1
                                 : 0)) *
                         60,
-                color: Theme.of(context).cardColor,
+                color: AppColorConstants.cardColor,
                 child: ListView.separated(
                     padding: EdgeInsets.zero,
                     itemCount: _chatDetailController
@@ -629,7 +584,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                             Container(
                               height: 40,
                               width: 40,
-                              color: Theme.of(context).primaryColor.lighten(),
+                              color: AppColorConstants.themeColor.lighten(),
                               child: const ThemeIconWidget(
                                 ThemeIcon.plus,
                                 size: 25,
@@ -638,12 +593,9 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                             const SizedBox(
                               width: 15,
                             ),
-                            Text(
+                            Heading6Text(
                               LocalizationString.addParticipants,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(fontWeight: FontWeight.w600),
+                                weight: TextWeight.medium
                             )
                           ],
                         ).hP8.ripple(() {
@@ -681,20 +633,16 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              Heading6Text(
                                 member.userDetail.isMe
                                     ? LocalizationString.you
                                     : member.userDetail.userName,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(fontWeight: FontWeight.w300),
+                                  weight: TextWeight.regular
                               ).bP4,
                               member.userDetail.country != null
-                                  ? Text(
+                                  ? BodyLargeText(
                                       '${member.userDetail.city!}, ${member.userDetail.country!}',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
+
                                     )
                                   : Container()
                             ],
@@ -702,12 +650,9 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
 
                           const Spacer(),
                           member.isAdmin == 1
-                              ? Text(
+                              ? Heading6Text(
                                   LocalizationString.admin,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(fontWeight: FontWeight.w600),
+                              weight: TextWeight.medium
                                 ).bP4
                               : Container()
                           // const Spacer(),
@@ -721,7 +666,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                     separatorBuilder: (ctx, index) {
                       return divider(context: context).vp(10);
                     }).vP8,
-              ).round(10).shadow(context: context, shadowOpacity: 0.1),
+              ).round(10).backgroundCard(shadowOpacity: 0.1),
             ],
           ).hP16);
   }

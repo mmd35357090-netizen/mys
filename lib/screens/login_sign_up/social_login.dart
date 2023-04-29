@@ -1,8 +1,20 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/login_sign_up/phone_login.dart';
 import 'package:foap/screens/login_sign_up/set_user_name.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:foap/helper/imports/login_signup_imports.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../manager/location_manager.dart';
+import '../../manager/socket_manager.dart';
+import '../../util/shared_prefs.dart';
+import '../dashboard/dashboard_screen.dart';
+import '../settings_menu/settings_controller.dart';
 
 /// Returns the sha256 hash of [input] in hex notation.
 String sha256ofString(String input) {
@@ -12,7 +24,9 @@ String sha256ofString(String input) {
 }
 
 class SocialLogin extends StatefulWidget {
-  const SocialLogin({Key? key}) : super(key: key);
+  final bool hidePhoneLogin;
+
+  const SocialLogin({Key? key, required this.hidePhoneLogin}) : super(key: key);
 
   @override
   State<SocialLogin> createState() => _SocialLoginState();
@@ -21,6 +35,7 @@ class SocialLogin extends StatefulWidget {
 class _SocialLoginState extends State<SocialLogin> {
   // final FirebaseAuth _auth = FirebaseAuth.instance;
   final SettingsController _settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: <String>[
@@ -44,42 +59,71 @@ class _SocialLoginState extends State<SocialLogin> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(
-            height: 55,
-            width: 55,
+        widget.hidePhoneLogin == false
+            ? Container(
+                height: 40,
+                width: 40,
+                color: AppColorConstants.themeColor.withOpacity(0.2),
+                child: Center(
+                    child: Image.asset(
+                  'assets/phone.png',
+                  height: 20,
+                  width: 20,
+                  color: Colors.white,
+                ))).circular.ripple(() {
+                Get.offAll(() => const PhoneLoginScreen());
+              })
+            : Container(
+                height: 40,
+                width: 40,
+                color: AppColorConstants.themeColor.withOpacity(0.2),
+                child: Center(
+                    child: Image.asset(
+                  'assets/email.png',
+                  height: 20,
+                  width: 20,
+                  color: Colors.white,
+                ))).circular.ripple(() {
+                Get.offAll(() => const LoginScreen());
+              }),
+        Container(
+            height: 40,
+            width: 40,
+            color: AppColorConstants.themeColor.withOpacity(0.2),
             child: Center(
                 child: Image.asset(
-              'assets/gmailicon.png',
-              height: 26,
-              width: 26,
-            ))).ripple(() {
+              'assets/google.png',
+              height: 20,
+              width: 20,
+            ))).circular.ripple(() {
           signInWithGoogle();
         }),
         Platform.isIOS
-            ? SizedBox(
-                height: 55,
-                width: 55,
+            ? Container(
+                height: 40,
+                width: 40,
+                color: AppColorConstants.themeColor.withOpacity(0.2),
                 child: Center(
                     child: Image.asset(
                   'assets/apple.png',
-                  height: 26,
-                  width: 26,
-                  color: Theme.of(context).primaryColor,
-                ))).ripple(() {
+                  height: 20,
+                  width: 20,
+                ))).circular.ripple(() {
                 //signInWithGoogle();
                 _handleAppleSignIn();
                 // Get.to(() => const InstagramView());
               })
             : Container(),
-        SizedBox(
-            height: 55,
-            width: 55,
+        Container(
+            height: 40,
+            width: 40,
+            color: AppColorConstants.themeColor.withOpacity(0.2),
             child: Center(
                 child: Image.asset(
               'assets/facebook.png',
-              height: 26,
-              width: 26,
-            ))).ripple(() {
+              height: 20,
+              width: 20,
+            ))).circular.ripple(() {
           fbSignInAction();
         }),
       ],
@@ -91,9 +135,7 @@ class _SocialLoginState extends State<SocialLogin> {
       await _googleSignIn.signIn();
     } catch (error) {
       AppUtil.showToast(
-          context: context,
-          message: LocalizationString.errorMessage,
-          isSuccess: false);
+          message: LocalizationString.errorMessage, isSuccess: false);
     }
   }
 
@@ -118,8 +160,7 @@ class _SocialLoginState extends State<SocialLogin> {
           if (value) {
             // EasyLoading.show(status: LocalizationString.loading);
 
-            socialLogin(
-                'fb', socialId, name, email!);
+            socialLogin('fb', socialId, name, email!);
 
             // ApiController()
             //     .socialLogin(name, 'fb', socialId, email!)
@@ -127,7 +168,7 @@ class _SocialLoginState extends State<SocialLogin> {
             //   EasyLoading.dismiss();
             //   if (response.success) {
             //     SharedPrefs().setUserLoggedIn(true);
-            //     getIt<UserProfileManager>().refreshProfile();
+            //     _userProfileManager.refreshProfile();
             //     SharedPrefs().setAuthorizationKey(response.authKey!);
             //
             //     // ask for location
@@ -144,24 +185,18 @@ class _SocialLoginState extends State<SocialLogin> {
             // });
           } else {
             AppUtil.showToast(
-                context: context,
-                message: LocalizationString.noInternet,
-                isSuccess: false);
+                message: LocalizationString.noInternet, isSuccess: false);
           }
         });
 
         break;
       case FacebookLoginStatus.cancel:
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.cancelledByUser,
-            isSuccess: false);
+            message: LocalizationString.cancelledByUser, isSuccess: false);
         break;
       case FacebookLoginStatus.error:
         AppUtil.showToast(
-            context: context,
-            message: result.error!.localizedDescription!,
-            isSuccess: false);
+            message: result.error!.localizedDescription!, isSuccess: false);
         break;
     }
   }
@@ -177,11 +212,11 @@ class _SocialLoginState extends State<SocialLogin> {
           if (response.success) {
             SharedPrefs().setUserLoggedIn(true);
             await SharedPrefs().setAuthorizationKey(response.authKey!);
-            await getIt<UserProfileManager>().refreshProfile();
+            await _userProfileManager.refreshProfile();
             await _settingsController.getSettings();
 
-            if (getIt<UserProfileManager>().user != null) {
-              if (response.isLoginFirstTime) {
+            if (_userProfileManager.user.value != null) {
+              if (_userProfileManager.user.value!.userName.isEmpty) {
                 isLoginFirstTime = true;
                 Get.offAll(() => const SetUserName());
               } else {
@@ -193,15 +228,12 @@ class _SocialLoginState extends State<SocialLogin> {
               getIt<SocketManager>().connect();
             }
           } else {
-            AppUtil.showToast(
-                context: context, message: response.message, isSuccess: false);
+            AppUtil.showToast(message: response.message, isSuccess: false);
           }
         });
       } else {
         AppUtil.showToast(
-            context: context,
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: LocalizationString.noInternet, isSuccess: false);
       }
     });
   }
@@ -224,37 +256,11 @@ class _SocialLoginState extends State<SocialLogin> {
     if (appleCredential.userIdentifier != null) {
       AppUtil.checkInternet().then((value) {
         if (value) {
-          // EasyLoading.show(status: LocalizationString.loading);
-          socialLogin(
-              'apple', appleCredential.userIdentifier!, '', appleCredential.email ?? '');
-
-          // ApiController()
-          //     .socialLogin('', 'apple', appleCredential.userIdentifier!,
-          //         appleCredential.email ?? '')
-          //     .then((response) async {
-          //   EasyLoading.dismiss();
-          //   if (response.success) {
-          //     SharedPrefs().setUserLoggedIn(true);
-          //     getIt<UserProfileManager>().refreshProfile();
-          //     SharedPrefs().setAuthorizationKey(response.authKey!);
-          //
-          //     // ask for location
-          //     getIt<LocationManager>().postLocation();
-          //
-          //     Get.offAll(() => const DashboardScreen());
-          //     getIt<SocketManager>().connect();
-          //   } else {
-          //     AppUtil.showToast(
-          //         context: context,
-          //         message: response.message,
-          //         isSuccess: false);
-          //   }
-          // });
+          socialLogin('apple', appleCredential.userIdentifier!, '',
+              appleCredential.email ?? '');
         } else {
           AppUtil.showToast(
-              context: context,
-              message: LocalizationString.noInternet,
-              isSuccess: false);
+              message: LocalizationString.noInternet, isSuccess: false);
         }
       });
     }

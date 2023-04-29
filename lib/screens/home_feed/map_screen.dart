@@ -1,6 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as google_map;
 import 'package:get/get.dart';
+
+import '../../controllers/map_screen_controller.dart';
 
 // ignore: must_be_immutable
 class MapsUsersScreen extends StatefulWidget {
@@ -14,7 +16,7 @@ class MapsUsersScreen extends StatefulWidget {
 
 class _MapsUsersScreenState extends State<MapsUsersScreen> {
   late google_map.GoogleMapController mapController;
-  final MapScreenController _mapScreenController = Get.find();
+  final MapScreenController _mapScreenController = MapScreenController();
   google_map.CameraPosition? kGooglePlex;
 
   @override
@@ -32,7 +34,7 @@ class _MapsUsersScreenState extends State<MapsUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Stack(
           children: [
             Obx(() {
@@ -123,7 +125,7 @@ class _MapsUsersScreenState extends State<MapsUsersScreen> {
   //               size: 170,
   //               borderSize: 20,
   //               addBorder: true,
-  //               borderColor: Theme.of(context).primaryColor)
+  //               borderColor: ColorConstants.themeColor)
   //           .then((value) {
   //         getMarkers(userModel, value);
   //       });

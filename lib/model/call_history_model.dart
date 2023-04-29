@@ -1,6 +1,7 @@
-import 'package:foap/helper/common_import.dart';
 import 'package:foap/helper/date_extension.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 
 class CallHistoryModel {
   int id;
@@ -38,7 +39,9 @@ class CallHistoryModel {
       );
 
   UserModel get opponent {
-    if (callerDetail.id == getIt<UserProfileManager>().user!.id) {
+    final UserProfileManager userProfileManager = Get.find();
+
+    if (callerDetail.id == userProfileManager.user.value!.id) {
       return receiverDetail;
     }
     return callerDetail;
@@ -49,7 +52,9 @@ class CallHistoryModel {
   }
 
   bool get isOutgoing {
-    return callerDetail.id == getIt<UserProfileManager>().user!.id;
+    final UserProfileManager userProfileManager = Get.find();
+
+    return callerDetail.id == userProfileManager.user.value!.id;
   }
 
   String get timeOfCall {
@@ -61,10 +66,10 @@ class CallHistoryModel {
       return formattedTime;
     }
 
-    int callStartDay = int.parse(DateFormat('d').format(callStartTime)) ;
-    int today =int.parse(DateFormat('d').format(DateTime.now()));
+    int callStartDay = int.parse(DateFormat('d').format(callStartTime));
+    int today = int.parse(DateFormat('d').format(DateTime.now()));
 
-    if ( callStartDay - today == 1 || callStartDay - today == -1) {
+    if (callStartDay - today == 1 || callStartDay - today == -1) {
       return LocalizationString.yesterday;
     } else if (DateTime.now().difference(callStartTime).inDays < 7) {
       return DateFormat('EEEE').format(callStartTime);
@@ -87,5 +92,4 @@ class CallHistoryModel {
     if (time.length <= 1) return "0$time";
     return time;
   }
-
 }

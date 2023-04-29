@@ -1,6 +1,9 @@
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:foap/helper/common_import.dart';
 import 'dart:math' as math;
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:pinch_zoom/pinch_zoom.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:get/get.dart';
 
 extension RoundedHelper on Widget {
   ClipRRect round(double value) => ClipRRect(
@@ -195,52 +198,37 @@ extension SideCornerRadius on Widget {
 }
 
 extension ShadowView on Widget {
-  Container shadow(
-          {required BuildContext context,
-          double? radius = 10,
-          Color? fillColor,
-          double? shadowOpacity}) =>
-      Container(
-        decoration: BoxDecoration(
-          color: fillColor ?? Theme.of(context).cardColor,
-          borderRadius: BorderRadius.all(Radius.circular(radius!)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              offset: const Offset(1, 1),
-              blurRadius: radius,
-              color: Theme.of(context)
-                  .shadowColor
-                  .withOpacity(shadowOpacity ?? 0.15),
-            ),
-          ],
+  Card backgroundCard(
+          {double? radius = 10, Color? fillColor, double? shadowOpacity}) =>
+      Card(
+        elevation: 1,
+        color: fillColor ?? AppColorConstants.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radius!),
+          //set border radius more than 50% of height and width to make circle
         ),
+        // decoration: BoxDecoration(
+        //   color: fillColor ?? AppColorConstants.cardColor,
+        //   borderRadius: BorderRadius.all(Radius.circular(radius!)),
+        //   // boxShadow: <BoxShadow>[
+        //   //   BoxShadow(
+        //   //     offset: const Offset(1, 1),
+        //   //     blurRadius: radius,
+        //   //     color: AppColorConstants.shadowColor
+        //   //         .withOpacity(shadowOpacity ?? 0.15),
+        //   //   ),
+        //   // ],
+        // ),
         child: this,
       );
 
-  Container shadowWithoutRadius(
-          {required BuildContext context, Color? foregroundColor}) =>
-      Container(
-          decoration: BoxDecoration(
-            color: foregroundColor ??
-                Theme.of(context).backgroundColor.lighten(0.02),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                offset: const Offset(4, 4),
-                blurRadius: 10,
-                color: Theme.of(context).disabledColor.withOpacity(.2),
-              ),
-              BoxShadow(
-                offset: const Offset(-3, 0),
-                blurRadius: 15,
-                color: Theme.of(context).disabledColor.withOpacity(.1),
-              )
-            ],
-          ),
-          child: this);
+  Card backgroundCardWithoutRadius({Color? foregroundColor}) => Card(
+      elevation: 1,
+      color: foregroundColor ?? AppColorConstants.cardColor,
+      child: this);
 
   Container shadowWithBorder(
-          {required BuildContext context,
-          double? radius = 15,
+          {double? radius = 15,
           Color? fillColor,
           Color? borderColor,
           double? borderWidth = 0.5,
@@ -249,7 +237,7 @@ extension ShadowView on Widget {
           decoration: BoxDecoration(
             border: Border.all(
                 width: borderWidth ?? 0.5,
-                color: borderColor ?? Theme.of(context).primaryColor),
+                color: borderColor ?? AppColorConstants.themeColor),
             color: fillColor,
             borderRadius: BorderRadius.all(Radius.circular(radius!)),
             boxShadow: <BoxShadow>[
@@ -258,8 +246,7 @@ extension ShadowView on Widget {
                 blurRadius: radius,
                 color: fillColor != null
                     ? fillColor.withOpacity(.2)
-                    : Theme.of(context)
-                        .disabledColor
+                    : AppColorConstants.disabledColor
                         .withOpacity(shadowOpacity ?? 0.25),
               ),
               BoxShadow(
@@ -267,8 +254,7 @@ extension ShadowView on Widget {
                 blurRadius: radius,
                 color: fillColor != null
                     ? fillColor.withOpacity(.2)
-                    : Theme.of(context)
-                        .disabledColor
+                    : AppColorConstants.disabledColor
                         .withOpacity(shadowOpacity ?? 0.25),
               )
             ],
@@ -291,21 +277,16 @@ extension FixedWidthBox on Widget {
 }
 
 extension BorderView on Widget {
-  Container border(
-          {required BuildContext context,
-          required double value,
-          Color? color}) =>
-      Container(
+  Container border({required double value, Color? color}) => Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: AppColorConstants.backgroundColor,
           border: Border.all(
-              width: value, color: color ?? Theme.of(context).disabledColor),
+              width: value, color: color ?? AppColorConstants.disabledColor),
         ),
         child: this,
       );
 
   Widget borderWithRadius({
-    required BuildContext context,
     required double value,
     required double radius,
     Color? color,
@@ -313,17 +294,17 @@ extension BorderView on Widget {
       Container(
           decoration: BoxDecoration(
             border: Border.all(
-                width: value, color: color ?? Theme.of(context).dividerColor),
+                width: value, color: color ?? AppColorConstants.dividerColor),
             borderRadius: BorderRadius.all(Radius.circular(radius)),
           ),
           child: round(radius - 1));
 }
 
 extension ShimmerView on Widget {
-  Shimmer addShimmer(BuildContext context) => Shimmer.fromColors(
+  Shimmer addShimmer() => Shimmer.fromColors(
         enabled: true,
-        baseColor: Theme.of(context).highlightColor.withOpacity(0.1),
-        highlightColor: Theme.of(context).highlightColor.withOpacity(0.2),
+        baseColor: Theme.of(Get.context!).highlightColor.withOpacity(0.1),
+        highlightColor: Theme.of(Get.context!).highlightColor.withOpacity(0.2),
         child: this,
       );
 }

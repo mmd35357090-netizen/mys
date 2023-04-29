@@ -1,7 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/tvs/tv_channel_detail.dart';
 import 'package:get/get.dart';
 import 'package:foap/model/live_tv_model.dart';
+
+import '../../controllers/live_tv_streaming_controller.dart';
 
 
 class FavTvList extends StatefulWidget {
@@ -31,7 +33,7 @@ class _FavTvListState extends State<FavTvList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
@@ -41,7 +43,7 @@ class _FavTvListState extends State<FavTvList> {
                   sliver: SliverPadding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     sliver: SliverAppBar(
-                      backgroundColor: Theme.of(context).backgroundColor,
+                      backgroundColor: AppColorConstants.backgroundColor,
                       expandedHeight: 100.0,
                       floating: true,
                       pinned: true,
@@ -49,7 +51,7 @@ class _FavTvListState extends State<FavTvList> {
                       leading: ThemeIconWidget(
                         ThemeIcon.backArrow,
                         size: 18,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                       ).ripple(() {
                         Get.back();
                       }),
@@ -64,16 +66,14 @@ class _FavTvListState extends State<FavTvList> {
                                 color: Colors.white,
                               ),
                               const SizedBox(width: 10),
-                              Text(
+                              Heading4Text(
                                 LocalizationString.favourite,
-                                textScaleFactor: 1,
-                                style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ],
                           ),
                           background: Container(
                             height: 170,
-                            color: Theme.of(context).primaryColor,
+                            color: AppColorConstants.themeColor,
                           ).overlay(Colors.black26)),
                     ),
                   )),

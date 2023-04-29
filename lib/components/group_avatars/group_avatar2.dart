@@ -8,6 +8,9 @@ import 'package:foap/helper/number_extension.dart';
 import '../../universal_components/app_buttons.dart';
 import 'package:get/get.dart';
 
+import '../../util/app_config_constants.dart';
+import '../custom_texts.dart';
+
 class ClubCard extends StatelessWidget {
   final ClubModel club;
   final VoidCallback joinBtnClicked;
@@ -26,7 +29,7 @@ class ClubCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 270,
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -41,12 +44,9 @@ class ClubCard extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          Text(
+          Heading4Text(
             club.name!,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(fontWeight: FontWeight.w900),
+            weight: TextWeight.bold,
           ).p8,
           const SizedBox(
             height: 5,
@@ -54,16 +54,15 @@ class ClubCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              BodyLargeText(
                 '${club.totalMembers!.formatNumber} ${LocalizationString.clubMembers}',
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const Spacer(),
               if (!club.createdByUser!.isMe)
                 SizedBox(
                     height: 40,
                     width: 120,
-                    child: FilledButtonType1(
+                    child: AppThemeButton(
                         text: club.isJoined == true
                             ? LocalizationString.leaveClub
                             : club.isRequested == true
@@ -81,7 +80,7 @@ class ClubCard extends StatelessWidget {
               // SizedBox(
               //     height: 40,
               //     width: 120,
-              //     child: FilledButtonType1(
+              //     child: AppThemeButton(
               //         text: LocalizationString.preview,
               //         onPress: () {
               //           previewBtnClicked();
@@ -113,7 +112,7 @@ class ClubInvitationCard extends StatelessWidget {
     return Container(
       // width: 250,
       height: 300,
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -131,29 +130,25 @@ class ClubInvitationCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              Heading4Text(
                 invitation.club!.name!,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(fontWeight: FontWeight.w900),
+                  weight: TextWeight.bold
               ).vP8,
-              Text(
+              BodyLargeText(
                 '${invitation.club!.totalMembers!.formatNumber} ${LocalizationString.clubMembers}',
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               SizedBox(
                   height: 40,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      FilledButtonType1(
+                      AppThemeButton(
                           width: Get.width * 0.4,
                           text: LocalizationString.accept,
                           onPress: () {
                             acceptBtnClicked();
                           }),
-                      BorderButtonType1(
+                      AppThemeBorderButton(
                           width: Get.width * 0.4,
                           text: LocalizationString.decline,
                           onPress: () {

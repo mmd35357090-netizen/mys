@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:foap/components/gallery_picker/src/presentation/pages/gallery_media_picker_controller.dart';
 import 'package:foap/components/gallery_picker/src/presentation/widgets/select_album_path/dropdown.dart';
 import 'package:foap/components/gallery_picker/src/presentation/widgets/select_album_path/overlay_drop_down.dart';
-import 'package:foap/helper/common_import.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter/material.dart';
+
+import '../../../custom_camera/constants/constants.dart';
 
 class GalleryFunctions {
   static FeatureController<T> showDropDown<T>({
@@ -42,7 +46,7 @@ class GalleryFunctions {
                   animationController: animationController,
                   builder: builder),
             ));
-    Overlay.of(context)!.insert(entry);
+    Overlay.of(context).insert(entry);
     animationController.animateTo(1);
     return FeatureController(
       completer,

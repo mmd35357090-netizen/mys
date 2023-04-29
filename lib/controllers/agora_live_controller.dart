@@ -1,11 +1,31 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/controllers/subscription_packages_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/live_imports.dart';
+import 'package:foap/helper/string_extension.dart';
 import 'package:get/get.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:wakelock/wakelock.dart';
+
+import '../apiHandler/api_controller.dart';
+import '../helper/permission_utils.dart';
+import '../manager/socket_manager.dart';
+import '../model/call_model.dart';
+import '../model/chat_message_model.dart';
+import '../model/gift_model.dart';
+import '../model/package_model.dart';
+import '../screens/settings_menu/settings_controller.dart';
+import '../util/ad_helper.dart';
+import '../util/constant_util.dart';
 
 class AgoraLiveController extends GetxController {
   final SubscriptionPackageController packageController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   Rx<TextEditingController> messageTf = TextEditingController().obs;
   RxList<ChatMessageModel> messages = <ChatMessageModel>[].obs;
@@ -38,7 +58,7 @@ class AgoraLiveController extends GetxController {
 
   DateTime? liveStartTime;
   DateTime? liveEndTime;
-  SettingsController _settingsController = Get.find();
+  final SettingsController _settingsController = Get.find();
 
   String get liveTime {
     int totalSeconds = liveEndTime!.difference(liveStartTime!).inSeconds;
@@ -99,19 +119,9 @@ class AgoraLiveController extends GetxController {
           }, permissionDenied: () {
             canLive.value = -1;
             errorMessage = LocalizationString.pleaseAllowAccessToCameraForLive;
-
-            // AppUtil.showToast(
-            //     context: context,
-            //     message: LocalizationString.pleaseAllowAccessToCameraForLive,
-            //     isSuccess: false);
           }, permissionNotAskAgain: () {
             canLive.value = -1;
             errorMessage = LocalizationString.pleaseAllowAccessToCameraForLive;
-
-            // AppUtil.showToast(
-            //     context: context,
-            //     message: LocalizationString.pleaseAllowAccessToCameraForLive,
-            //     isSuccess: false);
           });
         } else {
           canLive.value = value == true ? 1 : -1;
@@ -131,7 +141,7 @@ class AgoraLiveController extends GetxController {
   Future<void> initializeLive() async {
     localLiveId = randomId();
     getIt<SocketManager>().emit(SocketConstants.goLive, {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'localCallId': localLiveId,
     });
   }
@@ -151,11 +161,11 @@ class AgoraLiveController extends GetxController {
     liveId = live.liveId;
     remoteUserId.value = live.host.id;
     getIt<SocketManager>().emit(SocketConstants.joinLive, {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'liveCallId': liveId,
     });
     sendTextMessage('Joined');
-    currentJoinedUsers.add(getIt<UserProfileManager>().user!);
+    currentJoinedUsers.add(_userProfileManager.user.value!);
     _joinLive(live: live);
   }
 
@@ -186,7 +196,7 @@ class AgoraLiveController extends GetxController {
           ? await _engine.setClientRole(ClientRole.Broadcaster)
           : await _engine.setClientRole(ClientRole.Audience);
       await _engine.joinChannel(live.token, live.channelName, null,
-          getIt<UserProfileManager>().user!.id);
+          _userProfileManager.user.value!.id);
 
       liveStartTime = DateTime.now();
 
@@ -198,7 +208,8 @@ class AgoraLiveController extends GetxController {
 
   //Initialize Agora RTC Engine
   Future<void> _initAgoraRtcEngine() async {
-    _engine = await RtcEngine.create(_settingsController.setting.value!.agoraApiKey!);
+    _engine =
+        await RtcEngine.create(_settingsController.setting.value!.agoraApiKey!);
     await _engine.enableVideo();
   }
 
@@ -231,7 +242,7 @@ class AgoraLiveController extends GetxController {
       joinChannelSuccess: (channel, uid, elapsed) {
         final info = 'onJoinChannel: $channel, uid: $uid';
         infoStrings.add(info);
-        // joinedUsers.add(getIt<UserProfileManager>().user!);
+        // joinedUsers.add(_userProfileManager.user.value!);
       },
       leaveChannel: (stats) {
         infoStrings.add('onLeaveChannel');
@@ -289,7 +300,7 @@ class AgoraLiveController extends GetxController {
       getIt<SocketManager>().emit(
           SocketConstants.endLive,
           ({
-            'userId': getIt<UserProfileManager>().user!.id,
+            'userId': _userProfileManager.user.value!.id,
             'liveCallId': liveId
           }));
       liveEndTime = DateTime.now();
@@ -301,7 +312,7 @@ class AgoraLiveController extends GetxController {
       getIt<SocketManager>().emit(
           SocketConstants.leaveLive,
           ({
-            'userId': getIt<UserProfileManager>().user!.id,
+            'userId': _userProfileManager.user.value!.id,
             'liveCallId': liveId
           }));
       clear();
@@ -321,13 +332,13 @@ class AgoraLiveController extends GetxController {
     String localMessageId = randomId();
     String encrtyptedMessage = messageText.encrypted();
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'liveCallId': liveId,
       'messageType': messageTypeId(MessageContentType.text),
       'message': encrtyptedMessage,
       'localMessageId': localMessageId,
-      'picture': getIt<UserProfileManager>().user!.picture,
-      'username': getIt<UserProfileManager>().user!.userName,
+      'picture': _userProfileManager.user.value!.picture,
+      'username': _userProfileManager.user.value!.userName,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -339,8 +350,8 @@ class AgoraLiveController extends GetxController {
     localMessageModel.roomId = liveId;
     // localMessageModel.messageTime = LocalizationString.justNow;
     localMessageModel.userName = LocalizationString.you;
-    // localMessageModel.userPicture = getIt<UserProfileManager>().user!.picture;
-    localMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    // localMessageModel.userPicture = _userProfileManager.user.value!.picture;
+    localMessageModel.senderId = _userProfileManager.user.value!.id;
     localMessageModel.messageType = messageTypeId(MessageContentType.text);
     localMessageModel.messageContent = messageText;
 
@@ -359,13 +370,13 @@ class AgoraLiveController extends GetxController {
     String encrtyptedMessage = json.encode(content).encrypted();
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'liveCallId': liveId,
       'messageType': messageTypeId(MessageContentType.gift),
       'message': encrtyptedMessage,
       'localMessageId': localMessageId,
-      'picture': getIt<UserProfileManager>().user!.picture,
-      'username': getIt<UserProfileManager>().user!.userName,
+      'picture': _userProfileManager.user.value!.picture,
+      'username': _userProfileManager.user.value!.userName,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -377,8 +388,8 @@ class AgoraLiveController extends GetxController {
     localMessageModel.roomId = liveId;
     // localMessageModel.messageTime = LocalizationString.justNow;
     localMessageModel.userName = LocalizationString.you;
-    // localMessageModel.userPicture = getIt<UserProfileManager>().user!.picture;
-    localMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    // localMessageModel.userPicture = _userProfileManager.user.value!.picture;
+    localMessageModel.senderId = _userProfileManager.user.value!.id;
     localMessageModel.messageType = messageTypeId(MessageContentType.gift);
     localMessageModel.messageContent = json.encode(content);
 
@@ -391,7 +402,7 @@ class AgoraLiveController extends GetxController {
   }
 
   sendGift(GiftModel gift, BuildContext context) {
-    if (getIt<UserProfileManager>().user!.coins > gift.coins) {
+    if (_userProfileManager.user.value!.coins > gift.coins) {
       sendingGift.value = gift;
       ApiController()
           .sendGift(gift: gift, liveId: liveId, userId: host!.id, postId: null)
@@ -404,7 +415,7 @@ class AgoraLiveController extends GetxController {
         sendGiftMessage(gift.logo, gift.coins);
 
         // refresh profile to get updated wallet info
-        getIt<UserProfileManager>().refreshProfile();
+        _userProfileManager.refreshProfile();
       });
     } else {
       List<PackageModel> availablePackages = packageController.packages
@@ -421,7 +432,6 @@ class AgoraLiveController extends GetxController {
           title: 'Demo app',
           subTitle:
               'This is demo app so you can not make payment to test it, but still you will get some coins',
-          cxt: context,
           okHandler: () {
             packageController.subscribeToDummyPackage(context, randomId());
           });
@@ -445,13 +455,11 @@ class AgoraLiveController extends GetxController {
             autoConsume: packageController.kAutoConsume || Platform.isIOS);
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noProductAvailable,
             isSuccess: false);
       }
     } else {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.storeIsNotAvailable,
           isSuccess: false);
     }
@@ -521,7 +529,7 @@ class AgoraLiveController extends GetxController {
     String agoraToken = data['token'];
     String channelName = data['channelName'];
 
-    host = getIt<UserProfileManager>().user!;
+    host = _userProfileManager.user.value!;
     Live live = Live(
         channelName: channelName,
         isHosting: true,

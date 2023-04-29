@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:rate_my_app/rate_my_app.dart';
+
+import '../../components/hashtag_tile.dart';
+import '../../components/user_card.dart';
+import '../../controllers/add_post_controller.dart';
+import '../chat/media.dart';
 
 class AddPostScreen extends StatefulWidget {
   final List<Media> items;
@@ -58,7 +65,7 @@ class AddPostState extends State<AddPostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: GetBuilder<AddPostController>(
           init: addPostController,
           builder: (ctx) {
@@ -78,16 +85,13 @@ class AddPostState extends State<AddPostScreen> {
                               child:
                                   const ThemeIconWidget(ThemeIcon.backArrow)),
                           const Spacer(),
-                          Text(
+                          Heading5Text(
                             widget.competitionId == null
                                 ? LocalizationString.share
                                 : LocalizationString.submit,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w600),
+                            weight: TextWeight.medium,
+            color: AppColorConstants.themeColor
+                            ,
                           ).ripple(() {
                             addPostController.uploadAllPostFiles(
                                 context: context,
@@ -120,7 +124,7 @@ class AddPostState extends State<AddPostScreen> {
                                 child: Container(
                                   // height: 500,
                                   width: double.infinity,
-                                  color: Theme.of(context)
+                                  color: AppColorConstants
                                       .disabledColor
                                       .withOpacity(0.1),
                                   child: addPostController
@@ -144,7 +148,7 @@ class AddPostState extends State<AddPostScreen> {
                           Container(
                             height: MediaQuery.of(context).size.height,
                             width: MediaQuery.of(context).size.width,
-                            color: Theme.of(context)
+                            color: AppColorConstants
                                 .backgroundColor
                                 .withOpacity(0.2),
                             child: mediaListView(isLarge: true),
@@ -202,7 +206,7 @@ class AddPostState extends State<AddPostScreen> {
                   child: Container(
                           height: 30,
                           width: 30,
-                          color: Theme.of(context).backgroundColor,
+                          color: AppColorConstants.backgroundColor,
                           child: const ThemeIconWidget(ThemeIcon.multiplePosts))
                       .circular,
                 )
@@ -225,7 +229,7 @@ class AddPostState extends State<AddPostScreen> {
           child: TextField(
             controller: descriptionText,
             textAlign: TextAlign.left,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: TextStyle(fontSize: FontSizes.h5,color: AppColorConstants.grayscale900),
             maxLines: 5,
             onChanged: (text) {
               addPostController.textChanged(
@@ -235,14 +239,12 @@ class AddPostState extends State<AddPostScreen> {
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.only(left: 10, right: 10),
                 counterText: "",
-                labelStyle: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).primaryColor),
-                hintStyle: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: Theme.of(context).primaryColor),
+                labelStyle: TextStyle(
+                    fontSize: FontSizes.b2,
+                    color: AppColorConstants.themeColor),
+                hintStyle: TextStyle(
+                    fontSize: FontSizes.h5,
+                    color: AppColorConstants.themeColor),
                 hintText: LocalizationString.addSomethingAboutPost),
           ),
           onFocusChange: (hasFocus) {

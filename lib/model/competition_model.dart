@@ -1,5 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:collection/collection.dart';
+import 'package:foap/model/post_model.dart';
 
 class CompetitionPositionModel {
   int id = 0;

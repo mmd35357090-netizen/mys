@@ -1,5 +1,11 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import '../../components/package_tile.dart';
+import '../../controllers/subscription_packages_controller.dart';
+import '../../model/package_model.dart';
+import '../../util/constant_util.dart';
 
 import 'mercadopago_payment_controller.dart';
 
@@ -17,7 +23,7 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).backgroundColor,
+      color: AppColorConstants.backgroundColor,
       child: GetBuilder<SubscriptionPackageController>(
           init: packageController,
           builder: (ctx) {
@@ -47,7 +53,6 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
           title: 'Demo app',
           subTitle:
               'This is demo app so you can not make payment to test it, but still you will get some coins',
-          cxt: context,
           okHandler: () {
             packageController.subscribeToDummyPackage(context, randomId());
           });
@@ -72,13 +77,11 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
             autoConsume: packageController.kAutoConsume || Platform.isIOS);
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noProductAvailable,
             isSuccess: false);
       }
     } else {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.storeIsNotAvailable,
           isSuccess: false);
     }

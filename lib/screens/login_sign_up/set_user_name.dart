@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/profile_controller.dart';
+import '../../universal_components/rounded_input_field.dart';
 
 class SetUserName extends StatefulWidget {
   const SetUserName({Key? key}) : super(key: key);
@@ -11,34 +14,28 @@ class SetUserName extends StatefulWidget {
 class _SetUserNameState extends State<SetUserName> {
   TextEditingController userName = TextEditingController();
   final ProfileController profileController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
     super.initState();
-    userName.text = getIt<UserProfileManager>().user!.userName;
+    userName.text = _userProfileManager.user.value!.userName ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(LocalizationString.setUserName,
-              style: Theme.of(context)
-                  .textTheme
-                  .displayMedium!
-                  .copyWith(fontWeight: FontWeight.w600)),
+          Heading3Text(LocalizationString.setUserName,
+             weight: TextWeight.medium,),
           const SizedBox(
             height: 20,
           ),
-          Text(LocalizationString.setUserNameSubHeading,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w600)),
+          BodyLargeText(LocalizationString.setUserNameSubHeading,
+              textAlign: TextAlign.center, weight: TextWeight.medium),
           const SizedBox(
             height: 50,
           ),
@@ -47,7 +44,6 @@ class _SetUserNameState extends State<SetUserName> {
               InputField(
                 controller: userName,
                 showDivider: true,
-                textStyle: Theme.of(context).textTheme.titleMedium,
                 onChanged: (value) {
                   if (value.length > 3) {
                     profileController.verifyUsername(userName: value);
@@ -63,12 +59,12 @@ class _SetUserNameState extends State<SetUserName> {
                       Obx(() => profileController.userNameCheckStatus.value == 1
                           ? ThemeIconWidget(
                               ThemeIcon.checkMark,
-                              color: Theme.of(context).primaryColor,
+                              color: AppColorConstants.themeColor,
                             )
                           : profileController.userNameCheckStatus.value == 0
                               ? ThemeIconWidget(
                                   ThemeIcon.close,
-                                  color: Theme.of(context).errorColor,
+                                  color: AppColorConstants.red,
                                 )
                               : Container()),
                 ),
@@ -78,7 +74,7 @@ class _SetUserNameState extends State<SetUserName> {
           const SizedBox(
             height: 50,
           ),
-          FilledButtonType1(
+          AppThemeButton(
               text: LocalizationString.submit,
               onPress: () {
                 profileController.updateUserName(

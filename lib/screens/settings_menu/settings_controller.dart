@@ -1,18 +1,31 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter/services.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/util/constant_util.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
-import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:rate_my_app/rate_my_app.dart';
+
+import '../../apiHandler/api_controller.dart';
+import '../../manager/location_manager.dart';
+import '../../util/shared_prefs.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
+
+import '../dashboard/loading.dart';
 
 class SettingsController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   Rx<SettingModel?> setting = Rx<SettingModel?>(null);
   RxString currentLanguage = 'en'.obs;
 
   RxBool bioMetricAuthStatus = false.obs;
-  RxBool isDarkMode = false.obs;
+  RxBool darkMode = false.obs;
   RxBool shareLocation = false.obs;
 
   RxInt redeemCoins = 0.obs;
   RxBool forceUpdate = false.obs;
+  RxBool? appearanceChanged = false.obs;
 
   var localAuth = LocalAuthentication();
   RxInt bioMetricType = 0.obs;
@@ -58,17 +71,24 @@ class SettingsController extends GetxController {
   loadSettings() async {
     bool isDarkTheme = await SharedPrefs().isDarkMode();
     bioMetricAuthStatus.value = await SharedPrefs().getBioMetricAuthStatus();
-    shareLocation.value = getIt<UserProfileManager>().user!.latitude != null;
+    shareLocation.value =
+        _userProfileManager.user.value!.latitude != null;
 
     setDarkMode(isDarkTheme);
     checkBiometric();
   }
 
-  setDarkMode(bool status) {
-    isDarkMode.value = status;
-    isDarkMode.refresh();
-    SharedPrefs().setDarkMode(status);
+  setDarkMode(bool status) async{
+    darkMode.value = status;
+    darkMode.refresh();
+    isDarkMode = status;
+    await SharedPrefs().setDarkMode(status);
     Get.changeThemeMode(status ? ThemeMode.dark : ThemeMode.light);
+  }
+
+  appearanceModeChanged(bool status) async {
+    await setDarkMode(status);
+    appearanceChanged?.value = !appearanceChanged!.value;
   }
 
   shareLocationToggle(bool status) {
@@ -142,11 +162,9 @@ class SettingsController extends GetxController {
   deleteAccount() {
     ApiController().deleteAccountApi().then((response) {
       if (response.success) {
-        getIt<UserProfileManager>().logout();
+        _userProfileManager.logout();
         AppUtil.showToast(
-            context: Get.context!,
-            message: LocalizationString.accountIsDeleted,
-            isSuccess: true);
+            message: LocalizationString.accountIsDeleted, isSuccess: true);
       }
     });
   }

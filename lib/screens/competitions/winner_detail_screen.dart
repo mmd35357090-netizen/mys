@@ -1,5 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../model/post_model.dart';
+import '../home_feed/comments_screen.dart';
+import '../home_feed/enlarge_image_view.dart';
+import '../profile/other_user_profile.dart';
 
 class WinnerDetailScreen extends StatefulWidget {
   final PostModel winnerPost;
@@ -23,17 +28,14 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.white,
           centerTitle: true,
           elevation: 0.0,
-          title: Text(
+          title: Heading5Text(
             LocalizationString.winner,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(color: Theme.of(context).primaryColor),
+            color: AppColorConstants.themeColor,
           ),
           leading: InkWell(
               onTap: () => Get.back(),
@@ -46,23 +48,18 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
             addUserInfo(),
             Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
-                child: Text(model.title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(color: Theme.of(context).backgroundColor))),
+                child: BodyLargeText(model.title,
+                    color: AppColorConstants.backgroundColor)),
             Padding(
                 padding: const EdgeInsets.only(
                     left: 10, right: 10, top: 5, bottom: 15),
-                child: Text(model.tags.join(' '),
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).backgroundColor,
-                        fontWeight: FontWeight.w600))),
+                child: BodyLargeText(
+                  model.tags.join(' '),
+                  weight: TextWeight.medium,
+                  color: AppColorConstants.backgroundColor,
+                )),
             InkWell(
                 onTap: () async {
-                  // File path =
-                  //     await AppUtil.findPath(model.gallery.first.filePath);
-
                   Get.to(() => EnlargeImageViewScreen(
                       model: model,
                       handler: () {
@@ -76,7 +73,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                       fit: BoxFit.fill,
                       width: MediaQuery.of(context).size.width,
                       placeholder: (context, url) =>
-                          AppUtil.addProgressIndicator(context, 100),
+                          AppUtil.addProgressIndicator(size:100),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     ))),
@@ -92,18 +89,14 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                               onTap: () => likeUnlikeApiCall(),
                               child: Icon(
                                   model.isLike ? Icons.star : Icons.star_border,
-                                  color: Theme.of(context).primaryColor,
+                                  color: AppColorConstants.themeColor,
                                   size: 25)),
                           model.totalLike > 0
-                              ? Text(
+                              ? BodyLargeText(
                                   '${model.totalLike} ${LocalizationString.likes}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: Theme.of(context)
-                                              .backgroundColor))
+                                  weight: TextWeight.medium,
+                                  color: AppColorConstants.backgroundColor,
+                                )
                               : Container(),
                         ]),
                     Column(
@@ -112,19 +105,15 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                           InkWell(
                               onTap: () => openComments(),
                               child: Icon(Icons.comment_outlined,
-                                  color: Theme.of(context).primaryColor)),
+                                  color: AppColorConstants.themeColor)),
                           InkWell(
                             onTap: () => openComments(),
                             child: model.totalComment > 0
-                                ? Text(
+                                ? BodyLargeText(
                                     '${model.totalComment} ${LocalizationString.comments}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: Theme.of(context)
-                                                .backgroundColor))
+                                    weight: TextWeight.medium,
+                                    color: AppColorConstants.backgroundColor,
+                                  )
                                 : Container(),
                           )
                         ])
@@ -145,7 +134,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
               width: 90,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(45),
-                  border: Border.all(color: Theme.of(context).primaryColor)),
+                  border: Border.all(color: AppColorConstants.themeColor)),
               child: model.user.picture != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(45),
@@ -153,18 +142,14 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                         imageUrl: model.user.picture!,
                         fit: BoxFit.fill,
                         placeholder: (context, url) =>
-                            AppUtil.addProgressIndicator(context, 100),
+                            AppUtil.addProgressIndicator(size:100),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                       ))
                   : Icon(Icons.person, color: Colors.grey.shade600, size: 40),
             ),
             const SizedBox(width: 5),
-            Text(model.user.userName,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: Theme.of(context).primaryColor)),
+            Heading5Text(model.user.userName, color: AppColorConstants.themeColor),
           ]),
         ));
   }
@@ -182,7 +167,6 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
             .then((response) async {});
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: false);
       }
@@ -201,7 +185,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
   }
 
   void openProfile() async {
-    var _ = await Get.to(() => OtherUserProfile(userId: model.user.id));
+    Get.to(() => OtherUserProfile(userId: model.user.id));
 
     setState(() {});
   }

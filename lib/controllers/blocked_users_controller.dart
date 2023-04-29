@@ -1,5 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../apiHandler/api_controller.dart';
 
 class BlockedUsersController extends GetxController {
   RxList<UserModel> usersList = <UserModel>[].obs;

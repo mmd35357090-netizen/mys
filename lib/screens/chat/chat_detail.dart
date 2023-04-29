@@ -1,6 +1,19 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:flutter_contacts/contact.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
 import 'package:get/get.dart';
+import 'package:map_launcher/map_launcher.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import '../competitions/video_player_screen.dart';
+import '../post/single_post_detail.dart';
+import '../profile/other_user_profile.dart';
+import '../settings_menu/settings_controller.dart';
 
 class ChatDetail extends StatefulWidget {
   final ChatRoomModel chatRoom;
@@ -62,7 +75,7 @@ class _ChatDetailState extends State<ChatDetail> {
       bottom: false,
       top: false,
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -87,19 +100,13 @@ class _ChatDetailState extends State<ChatDetail> {
                           return SizedBox(
                             height: 0,
                             child: Center(
-                              child: Text(
-                                _chatDetailController
-                                    .smartReplySuggestions[index],
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(fontWeight: FontWeight.w600),
-                              ).hP8,
+                              child: Heading5Text(
+                                      _chatDetailController
+                                          .smartReplySuggestions[index],
+                                      weight: TextWeight.medium)
+                                  .hP8,
                             ),
-                          )
-                              .borderWithRadius(
-                                  context: context, value: 1, radius: 10)
-                              .ripple(() {
+                          ).borderWithRadius(value: 1, radius: 10).ripple(() {
                             _chatDetailController.sendTextMessage(
                                 messageText: _chatDetailController
                                     .smartReplySuggestions[index],
@@ -119,10 +126,6 @@ class _ChatDetailState extends State<ChatDetail> {
               );
             }),
             Obx(() {
-              print(_chatDetailController.chatRoom.value?.name);
-              print(_chatDetailController.chatRoom.value?.roomMembers
-                  .map((e) => e.userDetail.userName));
-
               return _chatDetailController.chatRoom.value?.amIMember == true
                   ? _chatDetailController.actionMode.value ==
                               ChatMessageActionMode.none ||
@@ -149,7 +152,7 @@ class _ChatDetailState extends State<ChatDetail> {
           children: [
             ThemeIconWidget(
               ThemeIcon.backArrow,
-              color: Theme.of(context).iconTheme.color,
+              color: AppColorConstants.iconColor,
               size: 20,
             ).p8.ripple(() {
               Timer(const Duration(milliseconds: 500), () {
@@ -163,7 +166,7 @@ class _ChatDetailState extends State<ChatDetail> {
                       if (_settingsController.setting.value!.enableAudioCalling)
                         ThemeIconWidget(
                           ThemeIcon.mobile,
-                          color: Theme.of(context).iconTheme.color,
+                          color: AppColorConstants.iconColor,
                           size: 25,
                         ).p4.ripple(() {
                           audioCall();
@@ -171,7 +174,7 @@ class _ChatDetailState extends State<ChatDetail> {
                       if (_settingsController.setting.value!.enableVideoCalling)
                         ThemeIconWidget(
                           ThemeIcon.videoCamera,
-                          color: Theme.of(context).iconTheme.color,
+                          color: AppColorConstants.iconColor,
                           size: 25,
                         ).p4.ripple(() {
                           videoCall();
@@ -200,19 +203,19 @@ class _ChatDetailState extends State<ChatDetail> {
                             children: [
                               Row(
                                 children: [
-                                  Text(
-                                    _chatDetailController
-                                                .chatRoom.value!.isGroupChat ==
-                                            true
-                                        ? _chatDetailController
-                                            .chatRoom.value!.name!
-                                        : _chatDetailController.chatRoom.value!
-                                            .opponent.userDetail.userName,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(fontWeight: FontWeight.w900),
-                                  ),
+                                  BodyLargeText(
+                                      _chatDetailController.chatRoom.value!
+                                                  .isGroupChat ==
+                                              true
+                                          ? _chatDetailController
+                                              .chatRoom.value!.name!
+                                          : _chatDetailController
+                                              .chatRoom
+                                              .value!
+                                              .opponent
+                                              .userDetail
+                                              .userName,
+                                      weight: TextWeight.bold),
                                   const SizedBox(width: 5),
                                   _chatDetailController
                                               .chatRoom.value!.isGroupChat ==
@@ -227,8 +230,8 @@ class _ChatDetailState extends State<ChatDetail> {
                                                       .userDetail
                                                       .isOnline ==
                                                   true
-                                              ? Theme.of(context).primaryColor
-                                              : Theme.of(context).disabledColor,
+                                              ? AppColorConstants.themeColor
+                                              : AppColorConstants.disabledColor,
                                         ).circular
                                       : Container(),
                                 ],
@@ -244,13 +247,10 @@ class _ChatDetailState extends State<ChatDetail> {
                                                   .userDetail
                                                   .userName] ==
                                           true
-                                      ? Text(
+                                      ? BodyMediumText(
                                           LocalizationString.typing,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
                                         )
-                                      : Text(
+                                      : BodyMediumText(
                                           _chatDetailController
                                                       .chatRoom
                                                       .value!
@@ -262,36 +262,28 @@ class _ChatDetailState extends State<ChatDetail> {
                                               : _chatDetailController.opponent
                                                       .value?.lastSeenAtTime ??
                                                   '',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.w500),
-                                        )
+                                          weight: TextWeight.medium)
                                   : SizedBox(
                                       width: MediaQuery.of(context).size.width -
                                           120,
-                                      child: Text(
-                                          _chatDetailController
-                                                  .whoIsTyping.isNotEmpty
-                                              ? '${_chatDetailController.whoIsTyping.join(',')} ${LocalizationString.typing}'
-                                              : _chatDetailController
-                                                  .chatRoom.value!.roomMembers
-                                                  .map((e) {
-                                                    if (e.userDetail.isMe) {
-                                                      return LocalizationString
-                                                          .you;
-                                                    }
-                                                    return e
-                                                        .userDetail.userName;
-                                                  })
-                                                  .toList()
-                                                  .join(','),
-                                          maxLines: 1,
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
+                                      child: BodyMediumText(
+                                        _chatDetailController
+                                                .whoIsTyping.isNotEmpty
+                                            ? '${_chatDetailController.whoIsTyping.join(',')} ${LocalizationString.typing}'
+                                            : _chatDetailController
+                                                .chatRoom.value!.roomMembers
+                                                .map((e) {
+                                                  if (e.userDetail.isMe) {
+                                                    return LocalizationString
+                                                        .you;
+                                                  }
+                                                  return e.userDetail.userName;
+                                                })
+                                                .toList()
+                                                .join(','),
+                                        maxLines: 1,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                             ],
                           );
@@ -314,7 +306,7 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget selectedMessageView() {
     return Obx(() => Container(
-          color: Theme.of(context).backgroundColor.darken(0.02),
+          color: AppColorConstants.backgroundColor.darken(0.02),
           height: 70,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -327,7 +319,7 @@ class _ChatDetailState extends State<ChatDetail> {
                             ChatMessageActionMode.delete
                         ? ThemeIcon.delete
                         : ThemeIcon.send,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
               ).ripple(() {
                 if (_chatDetailController.actionMode.value ==
                     ChatMessageActionMode.forward) {
@@ -336,16 +328,11 @@ class _ChatDetailState extends State<ChatDetail> {
                   deleteMessageActionPopup();
                 }
               }),
-              Text(
-                  '${_chatDetailController.selectedMessages.length} ${LocalizationString.selected.toLowerCase()}',
-                  style: Theme.of(context).textTheme.bodyLarge),
-              Text(
-                LocalizationString.cancel,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontWeight: FontWeight.w900),
-              ).ripple(() {
+              BodyLargeText(
+                '${_chatDetailController.selectedMessages.length} ${LocalizationString.selected.toLowerCase()}',
+              ),
+              BodyLargeText(LocalizationString.cancel, weight: TextWeight.bold)
+                  .ripple(() {
                 _chatDetailController.setToActionMode(
                     mode: ChatMessageActionMode.none);
               })
@@ -364,24 +351,22 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget replyTextMessageView(ChatMessageModel message) {
     return Container(
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor,
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                BodyLargeText(
                   message.isMineMessage
                       ? LocalizationString.you
                       : message.sender!.userName,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium,
+                  color: AppColorConstants.themeColor,
                 ).bP4,
-                Text(
+                BodyLargeText(
                   message.textMessage,
-                  style: Theme.of(context).textTheme.bodyLarge,
                 )
               ],
             ),
@@ -390,7 +375,7 @@ class _ChatDetailState extends State<ChatDetail> {
           ThemeIconWidget(
             ThemeIcon.closeCircle,
             size: 28,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
           ).ripple(() {
             _chatDetailController.setReplyMessage(message: null);
           })
@@ -401,24 +386,22 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget replyMediaMessageView(ChatMessageModel message) {
     return Container(
-      color: Theme.of(context).cardColor,
+      color: AppColorConstants.cardColor,
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                BodyLargeText(
                   message.isMineMessage
                       ? LocalizationString.you
                       : message.sender!.userName,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium,
+                  color: AppColorConstants.themeColor,
                 ).bP4,
                 messageTypeShortInfo(
                   message: message,
-                  context: context,
                 ),
               ],
             ),
@@ -428,7 +411,7 @@ class _ChatDetailState extends State<ChatDetail> {
           ThemeIconWidget(
             ThemeIcon.closeCircle,
             size: 28,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
           ).ripple(() {
             _chatDetailController.setToActionMode(
                 mode: ChatMessageActionMode.none);
@@ -445,7 +428,7 @@ class _ChatDetailState extends State<ChatDetail> {
             ? replyMessageView()
             : Container(),
         Container(
-          color: Theme.of(context).backgroundColor.darken(0.02),
+          color: AppColorConstants.backgroundColor.darken(0.02),
           height: 70,
           child: Column(
             children: [
@@ -465,8 +448,10 @@ class _ChatDetailState extends State<ChatDetail> {
                                   controller:
                                       _chatDetailController.messageTf.value,
                                   textAlign: TextAlign.start,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
+                                  style: TextStyle(
+                                      fontSize: FontSizes.h5,
+                                      fontWeight: TextWeight.regular,
+                                      color: AppColorConstants.grayscale900),
                                   maxLines: 50,
                                   onChanged: (text) {
                                     _chatDetailController.messageChanges();
@@ -477,18 +462,14 @@ class _ChatDetailState extends State<ChatDetail> {
                                       border: InputBorder.none,
                                       contentPadding: const EdgeInsets.only(
                                           left: 10, right: 10, top: 5),
-                                      labelStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .primaryColor),
-                                      hintStyle: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .primaryColor),
+                                      labelStyle: TextStyle(
+                                          fontSize: FontSizes.b2,
+                                          fontWeight: TextWeight.medium,
+                                          color: AppColorConstants.themeColor),
+                                      hintStyle: TextStyle(
+                                          fontSize: FontSizes.h6,
+                                          fontWeight: TextWeight.regular,
+                                          color: AppColorConstants.themeColor),
                                       hintText: LocalizationString
                                           .pleaseEnterMessage),
                                 )),
@@ -500,24 +481,20 @@ class _ChatDetailState extends State<ChatDetail> {
                         Obx(() {
                           return _chatDetailController
                                   .messageTf.value.text.isNotEmpty
-                              ? Text(
+                              ? Heading5Text(
                                   LocalizationString.send,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.w900),
+                                  weight: TextWeight.bold,
+                                  color: AppColorConstants.themeColor,
                                 ).ripple(() {
                                   sendMessage();
                                 })
                               : Container(
                                   height: 30,
                                   width: 30,
-                                  color: Theme.of(context).primaryColor,
+                                  color: AppColorConstants.themeColor,
                                   child: ThemeIconWidget(
                                     ThemeIcon.plus,
-                                    color: Theme.of(context).iconTheme.color,
+                                    color: AppColorConstants.iconColor,
                                   ),
                                 ).circular.ripple(() {
                                   openMediaSharingOptionView();
@@ -542,12 +519,11 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget cantChatView() {
     return Container(
-      color: Theme.of(context).backgroundColor.darken(0.02),
+      color: AppColorConstants.backgroundColor.darken(0.02),
       height: 70,
       child: Center(
-        child: Text(
+        child: BodyLargeText(
           LocalizationString.onlyAdminCanSendMessage,
-          style: Theme.of(context).textTheme.bodyLarge,
         ),
       ),
     );
@@ -630,7 +606,7 @@ class _ChatDetailState extends State<ChatDetail> {
       blurSize: 5.0,
       menuItemExtent: 45,
       menuBoxDecoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: AppColorConstants.backgroundColor,
           borderRadius: const BorderRadius.all(Radius.circular(15.0))),
       duration: const Duration(milliseconds: 100),
       animateMenuItems: false,
@@ -644,10 +620,9 @@ class _ChatDetailState extends State<ChatDetail> {
       menuItems: [
         if (message.copyContent != null)
           FocusedMenuItem(
-              backgroundColor: Theme.of(context).backgroundColor,
-              title: Text(
+              backgroundColor: AppColorConstants.backgroundColor,
+              title: BodyLargeText(
                 LocalizationString.copy,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               trailingIcon: const Icon(Icons.file_copy, size: 18),
               onPressed: () async {
@@ -656,10 +631,9 @@ class _ChatDetailState extends State<ChatDetail> {
         if (_chatDetailController.chatRoom.value?.canIChat == true &&
             _settingsController.setting.value!.enableReplyInChat)
           FocusedMenuItem(
-              backgroundColor: Theme.of(context).backgroundColor,
-              title: Text(
+              backgroundColor: AppColorConstants.backgroundColor,
+              title: BodyLargeText(
                 LocalizationString.reply,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               trailingIcon: const Icon(Icons.reply, size: 18),
               onPressed: () {
@@ -667,10 +641,9 @@ class _ChatDetailState extends State<ChatDetail> {
               }),
         if (_settingsController.setting.value!.enableForwardingInChat)
           FocusedMenuItem(
-              backgroundColor: Theme.of(context).backgroundColor,
-              title: Text(
+              backgroundColor: AppColorConstants.backgroundColor,
+              title: BodyLargeText(
                 LocalizationString.fwd,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               trailingIcon: const Icon(
                 Icons.send,
@@ -682,10 +655,9 @@ class _ChatDetailState extends State<ChatDetail> {
                     mode: ChatMessageActionMode.forward);
               }),
         FocusedMenuItem(
-            backgroundColor: Theme.of(context).backgroundColor,
-            title: Text(
+            backgroundColor: AppColorConstants.backgroundColor,
+            title: BodyLargeText(
               LocalizationString.delete,
-              style: Theme.of(context).textTheme.bodyLarge,
             ),
             trailingIcon: const Icon(Icons.delete_outline, size: 18),
             onPressed: () {
@@ -696,19 +668,18 @@ class _ChatDetailState extends State<ChatDetail> {
             }),
         if (_settingsController.setting.value!.enableStarMessage)
           FocusedMenuItem(
-              backgroundColor: Theme.of(context).backgroundColor,
-              title: Text(
+              backgroundColor: AppColorConstants.backgroundColor,
+              title: BodyLargeText(
                 message.isStar == 1
                     ? LocalizationString.unStar
                     : LocalizationString.star,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               trailingIcon: Icon(
                 Icons.star,
                 size: 18,
                 color: message.isStar == 1
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).iconTheme.color,
+                    ? AppColorConstants.themeColor
+                    : AppColorConstants.iconColor,
               ),
               onPressed: () {
                 if (message.isStar == 1) {
@@ -742,10 +713,10 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget dateSeparatorWidget(ChatMessageModel chatMessage) {
     return Container(
-      color: Theme.of(context).primaryColor.lighten(0.2).withOpacity(0.5),
+      color: AppColorConstants.themeColor.lighten(0.2).withOpacity(0.5),
       width: 120,
       child: Center(
-        child: Text(chatMessage.date)
+        child: BodySmallText(chatMessage.date)
             .setPadding(left: 8, right: 8, top: 4, bottom: 4),
       ),
     ).round(15).bP25;
@@ -792,7 +763,7 @@ class _ChatDetailState extends State<ChatDetail> {
         final availableMaps = await MapLauncher.installedMaps;
 
         showModalBottomSheet(
-          context: context,
+          context: Get.context!,
           builder: (BuildContext context) {
             return SafeArea(
               child: SingleChildScrollView(
@@ -804,9 +775,8 @@ class _ChatDetailState extends State<ChatDetail> {
                           coords: coords,
                           title: title,
                         ),
-                        title: Text(
+                        title: Heading5Text(
                           '${LocalizationString.openIn} ${map.mapName}',
-                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         leading: SvgPicture.asset(
                           map.icon,
@@ -839,28 +809,24 @@ class _ChatDetailState extends State<ChatDetail> {
               children: [
                 ListTile(
                     title: Center(
-                        child: Text(
-                      contact.displayName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.w900),
-                    )),
+                        child: Heading5Text(contact.displayName,
+                            weight: TextWeight.bold)),
                     onTap: () async {}),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.saveContact)),
+                    title: Center(
+                        child: BodyLargeText(LocalizationString.saveContact)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.addNewContact(contact);
                       AppUtil.showToast(
-                          context: context,
                           message: LocalizationString.contactSaved,
                           isSuccess: false);
                     }),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title:
+                        Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -939,7 +905,8 @@ class _ChatDetailState extends State<ChatDetail> {
               children: [
                 ListTile(
                     title: Center(
-                        child: Text(LocalizationString.deleteMessageForMe)),
+                        child: BodyLargeText(
+                            LocalizationString.deleteMessageForMe)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.deleteMessage(deleteScope: 1);
@@ -950,8 +917,8 @@ class _ChatDetailState extends State<ChatDetail> {
                         _chatDetailController.chatRoom.value?.canIChat == true
                     ? ListTile(
                         title: Center(
-                            child:
-                                Text(LocalizationString.deleteMessageForAll)),
+                            child: BodyLargeText(
+                                LocalizationString.deleteMessageForAll)),
                         onTap: () async {
                           Get.back();
                           _chatDetailController.deleteMessage(deleteScope: 2);
@@ -960,7 +927,8 @@ class _ChatDetailState extends State<ChatDetail> {
                     : Container(),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title:
+                        Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () => Get.back()),
               ],
             ));

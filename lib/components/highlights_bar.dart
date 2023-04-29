@@ -1,4 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../model/highlights.dart';
 
 class HighlightsBar extends StatelessWidget {
   final List<HighlightsModel> highlights;
@@ -32,15 +34,12 @@ class HighlightsBar extends StatelessWidget {
                       child: ThemeIconWidget(
                         ThemeIcon.plus,
                         size: 25,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                       ),
-                    ).borderWithRadius(context: context, value: 2, radius: 20),
+                    ).borderWithRadius( value: 2, radius: 20),
                     const Spacer(),
-                    Text(LocalizationString.add,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(fontWeight: FontWeight.w600)),
+                    BodySmallText(LocalizationString.add,
+                        weight:TextWeight.medium),
                   ],
                 ).ripple(() {
                   addHighlightCallback();
@@ -62,12 +61,9 @@ class HighlightsBar extends StatelessWidget {
                       }),
                     ),
                     const Spacer(),
-                    Text(
+                    BodySmallText(
                       highlights[index - 1].name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontWeight: FontWeight.w600),
+                      weight:TextWeight.medium,
                       maxLines: 1,
                       textAlign: TextAlign.center,
                     ).hP4

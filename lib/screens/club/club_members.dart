@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/user_card.dart';
+import '../profile/other_user_profile.dart';
 
 class ClubMembers extends StatefulWidget {
   final ClubModel club;
@@ -11,7 +15,7 @@ class ClubMembers extends StatefulWidget {
 }
 
 class ClubMembersState extends State<ClubMembers> {
-  final ClubsController _clubsController = Get.find();
+  final ClubsController _clubsController = ClubsController();
 
   @override
   void initState() {
@@ -38,7 +42,7 @@ class ClubMembersState extends State<ClubMembers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(

@@ -1,8 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../manager/socket_manager.dart';
 
 class EnterGroupInfoController extends GetxController {
   final ChatHistoryController _chatHistoryController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxString groupImagePath = ''.obs;
 
   groupImageSelected(String imagePath) {
@@ -34,7 +39,6 @@ class EnterGroupInfoController extends GetxController {
               users: users);
         } else {
           AppUtil.showToast(
-              context: Get.context!,
               message: response.message,
               isSuccess: false);
         }
@@ -94,7 +98,7 @@ class EnterGroupInfoController extends GetxController {
         // });
       } else {
         AppUtil.showToast(
-            context: context, message: response.message, isSuccess: false);
+             message: response.message, isSuccess: false);
       }
     });
   }
@@ -109,7 +113,7 @@ class EnterGroupInfoController extends GetxController {
         .then((response) {
       String allUsersIds = users.map((e) => e.id.toString()).join(',');
       allUsersIds =
-          '${getIt<UserProfileManager>().user!.id.toString()},$allUsersIds';
+          '${_userProfileManager.user.value!.id.toString()},$allUsersIds';
 
       getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom,
           {'userId': allUsersIds, 'room': response.roomId});

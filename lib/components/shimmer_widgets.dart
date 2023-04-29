@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/add_on/ui/dating/dating_card.dart';
 import 'package:get/get.dart';
 
 class HomeScreenShimmer extends StatelessWidget {
@@ -45,22 +46,17 @@ class ClubsCategoriesScreenShimmer extends StatelessWidget {
                     Container(
                       height: Get.height,
                       width: Get.width,
-                      color: Theme.of(context).cardColor,
+                      color: AppColorConstants.cardColor,
                     ),
                     Positioned(
                         bottom: 5,
                         left: 5,
                         right: 5,
-                        child: Text(
-                          'Sports',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(fontWeight: FontWeight.w700),
-                        ))
+                        child: BodyMediumText('Sports',
+                            weight: TextWeight.semiBold))
                   ],
                 ),
-              ).round(5).addShimmer(context);
+              ).round(5).addShimmer();
             },
             separatorBuilder: (BuildContext ctx, int index) {
               return const SizedBox(
@@ -83,7 +79,7 @@ class ClubsScreenShimmer extends StatelessWidget {
           return Container(
             // width: 250,
             height: 320,
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.cardColor,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -91,18 +87,15 @@ class ClubsScreenShimmer extends StatelessWidget {
                   child: Container(
                     width: Get.width,
                     height: double.infinity,
-                    color: Theme.of(context).cardColor,
+                    color: AppColorConstants.cardColor,
                   ),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
-                Text(
+                Heading6Text(
                   'Club name',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(fontWeight: FontWeight.w600),
+                  weight: TextWeight.medium,
                 ).p8,
                 const SizedBox(
                   height: 20,
@@ -110,22 +103,20 @@ class ClubsScreenShimmer extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    BodyLargeText(
                       '250k ${LocalizationString.clubMembers}',
-                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const Spacer(),
                     SizedBox(
                         height: 40,
                         width: 120,
-                        child: FilledButtonType1(
-                            text: LocalizationString.join,
-                            onPress: () {}))
+                        child: AppThemeButton(
+                            text: LocalizationString.join, onPress: () {}))
                   ],
                 ).setPadding(left: 12, right: 12, bottom: 20)
               ],
             ),
-          ).round(15).addShimmer(context);
+          ).round(15).addShimmer();
         },
         separatorBuilder: (BuildContext ctx, int index) {
           return const SizedBox(
@@ -148,24 +139,19 @@ class EventCategoriesScreenShimmer extends StatelessWidget {
           return Row(
             children: [
               Container(
-                color: Theme.of(context).cardColor,
+                color: AppColorConstants.cardColor,
                 height: 30,
                 width: 30,
               ).circular,
               const SizedBox(
                 width: 10,
               ),
-              Text(
-                LocalizationString.loading,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
-              )
+              BodyMediumText(LocalizationString.loading,
+                  weight: TextWeight.semiBold)
             ],
           )
               .setPadding(left: 8, right: 8, top: 4, bottom: 4)
-              .borderWithRadius(context: context, value: 1, radius: 20);
+              .borderWithRadius( value: 1, radius: 20);
         },
         separatorBuilder: (BuildContext ctx, int index) {
           return const SizedBox(
@@ -195,7 +181,7 @@ class EventsScreenShimmer extends StatelessWidget {
                 return Container(
                   // width: 250,
                   height: 320,
-                  color: Theme.of(context).cardColor,
+                  color: AppColorConstants.cardColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -203,18 +189,15 @@ class EventsScreenShimmer extends StatelessWidget {
                         child: Container(
                           width: Get.width,
                           height: double.infinity,
-                          color: Theme.of(context).cardColor,
+                          color: AppColorConstants.cardColor,
                         ),
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      Text(
+                      Heading6Text(
                         'Club name',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(fontWeight: FontWeight.w600),
+                        weight: TextWeight.medium,
                       ).p8,
                       const SizedBox(
                         height: 20,
@@ -222,22 +205,21 @@ class EventsScreenShimmer extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          BodyLargeText(
                             '250k ${LocalizationString.clubMembers}',
-                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                           const Spacer(),
                           SizedBox(
                               height: 40,
                               width: 120,
-                              child: FilledButtonType1(
+                              child: AppThemeButton(
                                   text: LocalizationString.join,
                                   onPress: () {}))
                         ],
                       ).setPadding(left: 12, right: 12, bottom: 20)
                     ],
                   ),
-                ).round(15).addShimmer(context);
+                ).round(15).addShimmer();
               },
               separatorBuilder: (BuildContext ctx, int index) {
                 return const SizedBox(
@@ -263,17 +245,14 @@ class PostCardShimmer extends StatelessWidget {
                   height: 30,
                   width: 30,
                   child: Image.asset('assets/account.png'))
-              .addShimmer(context),
+              .addShimmer(),
           const SizedBox(width: 5),
           Expanded(
-              child: Text(
+              child: BodyLargeText(
             'Adam',
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(color: Theme.of(context).primaryColor)
-                .copyWith(fontWeight: FontWeight.w900),
-          ).addShimmer(context)),
+            weight: TextWeight.bold,
+            color: AppColorConstants.themeColor,
+          ).addShimmer()),
         ],
       ),
       const SizedBox(
@@ -285,53 +264,43 @@ class PostCardShimmer extends StatelessWidget {
         child: Image.asset(
           'assets/tutorial1.jpg',
           fit: BoxFit.cover,
-        ).addShimmer(context),
+        ).addShimmer(),
       ).round(20),
       Row(mainAxisAlignment: MainAxisAlignment.start, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           ThemeIconWidget(
             ThemeIcon.message,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
           ),
           const SizedBox(
             width: 5,
           ),
-          Text('10k',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(color: Theme.of(context).primaryColor)
-                      .copyWith(fontWeight: FontWeight.w900))
-              .ripple(() {})
+          BodyLargeText(
+            '10k',
+            weight: TextWeight.bold,
+            color: AppColorConstants.themeColor,
+          ).ripple(() {})
         ]),
         const SizedBox(
           width: 10,
         ),
-        ThemeIconWidget(ThemeIcon.favFilled,
-            color: Theme.of(context).errorColor),
+        ThemeIconWidget(ThemeIcon.favFilled, color: AppColorConstants.red),
         const SizedBox(
           width: 5,
         ),
-        Text('205k',
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w900)),
-      ]).vP16.addShimmer(context),
+        BodyLargeText('205k', weight: TextWeight.bold),
+      ]).vP16.addShimmer(),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          const BodyLargeText(
               'Lorem ipsum dolor sit amet. Et ipsa libero est dolor facilis qui distinctio neque. Sed dolorum accusamus qui tempora doloremque et suscipit quidem et voluptate'),
           const SizedBox(
             height: 10,
           ),
-          Text('10 min ago',
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontWeight: FontWeight.w600,
-                  )),
+          BodyMediumText('10 min ago', weight: TextWeight.medium),
         ],
-      ).addShimmer(context)
+      ).addShimmer()
     ]);
   }
 }
@@ -353,14 +322,14 @@ class StoryAndHighlightsShimmer extends StatelessWidget {
                 Container(
                   height: 60,
                   width: 60,
-                  color: Theme.of(context).backgroundColor,
+                  color: AppColorConstants.backgroundColor,
                 ).round(10),
                 const SizedBox(
                   height: 5,
                 ),
-                const Text('Adam')
+                const BodyLargeText('Adam')
               ],
-            ).addShimmer(context);
+            ).addShimmer();
           },
           separatorBuilder: (BuildContext ctx, int index) {
             return const SizedBox(width: 10);
@@ -387,39 +356,33 @@ class ShimmerUsers extends StatelessWidget {
                 Container(
                   height: 50,
                   width: 50,
-                  color: Theme.of(context).primaryColor,
-                ).round(10).addShimmer(context),
+                  color: AppColorConstants.themeColor,
+                ).round(10).addShimmer(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    Heading5Text(
                       'Adam',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.w600),
+                      weight: TextWeight.medium,
                     ).bP4,
-                    Text(
+                    const BodyLargeText(
                       'Canada',
-                      style: Theme.of(context).textTheme.bodyLarge,
                     )
                   ],
-                ).lP16.addShimmer(context),
+                ).lP16.addShimmer(),
               ],
             ),
             SizedBox(
               height: 35,
               width: 110,
-              child: BorderButtonType1(
-                  // backgroundColor: Theme.of(context).cardColor,
+              child: AppThemeBorderButton(
+                  // backgroundColor: ColorConstants.cardColor,
                   text: LocalizationString.follow,
                   // cornerRadius: 10,
-                  textStyle: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.w600),
+                  textStyle: TextStyle(
+                      fontSize: FontSizes.b2, fontWeight: TextWeight.medium),
                   onPress: () {}),
-            ).addShimmer(context)
+            ).addShimmer()
           ],
         );
       },
@@ -442,33 +405,28 @@ class ShimmerHashtag extends StatelessWidget {
         itemBuilder: (ctx, index) {
           return Row(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 40,
                 width: 40,
                 child: Center(
-                    child: Text(
+                    child: Heading3Text(
                   '#',
-                  style: Theme.of(context).textTheme.displaySmall,
                 )),
               )
-                  .borderWithRadius(context: context, value: 0.5, radius: 20)
-                  .addShimmer(context),
+                  .borderWithRadius( value: 0.5, radius: 20)
+                  .addShimmer(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  Heading5Text(
                     '#fun',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.w600),
+                    weight: TextWeight.medium,
                   ).bP4,
-                  Text(
+                  const       BodyLargeText(
                     '210k posts',
-                    style: Theme.of(context).textTheme.bodyLarge,
                   )
                 ],
-              ).hP16.addShimmer(context),
+              ).hP16.addShimmer(),
             ],
           ).vP16;
         });
@@ -480,19 +438,22 @@ class PostBoxShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MasonryGridView.count(
-      padding: const EdgeInsets.only(top: 10),
-      shrinkWrap: true,
-      crossAxisCount: 3,
+    return GridView.builder(
       itemCount: 50,
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      // You won't see infinite size error
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 4.0,
+          mainAxisSpacing: 4.0,
+          mainAxisExtent: 100),
       itemBuilder: (BuildContext context, int index) => AspectRatio(
         aspectRatio: 1,
         child: Container(
-          color: Theme.of(context).errorColor,
-        ).round(10).addShimmer(context),
+          color: AppColorConstants.red,
+        ).round(10).addShimmer(),
       ),
-      mainAxisSpacing: 4.0,
-      crossAxisSpacing: 4.0,
     ).hP16;
   }
 }
@@ -514,8 +475,8 @@ class StoriesShimmerWidget extends StatelessWidget {
           return Container(
             height: double.infinity,
             width: double.infinity,
-            color: Theme.of(context).backgroundColor,
-          ).round(10).addShimmer(context);
+            color: AppColorConstants.backgroundColor,
+          ).round(10).addShimmer();
         }).hP16;
   }
 }
@@ -541,18 +502,13 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      'National music festival',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall!
-                          .copyWith(fontWeight: FontWeight.w700),
-                    ),
+                    child: Heading6Text('National music festival',
+                        weight: TextWeight.semiBold),
                   ),
                   Container(
                     height: 50,
                     width: 50,
-                    color: Theme.of(context).cardColor,
+                    color: AppColorConstants.cardColor,
                   ).round(10)
                 ],
               ).p16,
@@ -563,9 +519,8 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      BodyMediumText(
                         LocalizationString.date,
-                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(
                         height: 5,
@@ -573,18 +528,12 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                       Container(
                         height: 2,
                         width: 30,
-                        color: Theme.of(context).primaryColor,
+                        color: AppColorConstants.themeColor,
                       ),
                       const SizedBox(
                         height: 5,
                       ),
-                      Text(
-                        '10-Nov-2022',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w700),
-                      )
+                      BodyLargeText('10-Nov-2022', weight: TextWeight.semiBold)
                     ],
                   ),
                   const SizedBox(
@@ -593,9 +542,8 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      BodyMediumText(
                         LocalizationString.time,
-                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(
                         height: 5,
@@ -603,38 +551,122 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                       Container(
                         height: 2,
                         width: 30,
-                        color: Theme.of(context).primaryColor,
+                        color: AppColorConstants.themeColor,
                       ),
                       const SizedBox(
                         height: 5,
                       ),
-                      Text(
-                        '10:00 AM',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w700),
-                      )
+                      BodyLargeText('10:00 AM', weight: TextWeight.semiBold)
                     ],
                   ),
                   const Spacer(),
                   Container(
-                    color: Theme.of(context).backgroundColor,
-                    child: Text(
+                    color: AppColorConstants.backgroundColor,
+                    child: const BodyMediumText(
                       'VIP',
-                      style: Theme.of(context).textTheme.bodyMedium,
                     ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
                   ).round(10)
                 ],
               ).p16
             ],
-          ).addShimmer(context);
+          ).addShimmer();
         },
         separatorBuilder: (BuildContext ctx, int index) {
           return const SizedBox(
             height: 20,
           );
         });
+  }
+}
+
+class CardsStackShimmerWidget extends StatefulWidget {
+  const CardsStackShimmerWidget({Key? key}) : super(key: key);
+
+  @override
+  State<CardsStackShimmerWidget> createState() =>
+      _CardsStackShimmerWidgetState();
+}
+
+class _CardsStackShimmerWidgetState extends State<CardsStackShimmerWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height - 270,
+          width: MediaQuery.of(context).size.width - 40,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/avatar_1.jpg',
+                  fit: BoxFit.cover,
+                ).round(10),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  height: 80,
+                  width: MediaQuery.of(context).size.width - 40,
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    shadows: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Heading3Text(
+                        'David',
+                        color: AppColorConstants.grayscale900,
+                      ),
+                      Heading5Text(
+                        '101 Km',
+                        color: AppColorConstants.grayscale500,
+                      ),
+                    ],
+                  ).setPadding(left: 20),
+                ),
+              ),
+            ],
+          ),
+        ).round(10),
+        Positioned(
+          bottom: 10,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ActionButtonWidget(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(width: 20),
+              ActionButtonWidget(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.favorite,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).addShimmer();
   }
 }
 
@@ -654,11 +686,11 @@ class ShimmerMatchedList extends StatelessWidget {
             mainAxisExtent: 210),
         itemBuilder: (ctx, index) {
           return Container(
-                  color: Theme.of(context).cardColor,
+                  color: AppColorConstants.cardColor,
                   height: 210,
                   width: (MediaQuery.of(context).size.width - 75) / 2)
               .round(10);
-        }).addShimmer(context);
+        }).addShimmer();
   }
 }
 
@@ -674,8 +706,8 @@ class ShimmerLikeList extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return Container(
             height: 80,
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.cardColor,
           ).round(10).setPadding(bottom: 15, left: 15, right: 15);
-        }).addShimmer(context);
+        }).addShimmer();
   }
 }

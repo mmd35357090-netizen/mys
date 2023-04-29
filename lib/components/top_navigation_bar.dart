@@ -1,7 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/add_on/ui/add_relationship/accept_reject_invitation.dart';
 import 'package:get/get.dart';
-
-import '../screens/settings_menu/add_relationship/accept_reject_invitation.dart';
 
 Widget backNavigationBar(
     {required BuildContext context, required String title}) {
@@ -11,16 +10,13 @@ Widget backNavigationBar(
       ThemeIconWidget(
         ThemeIcon.backArrow,
         size: 18,
-        color: Theme.of(context).iconTheme.color,
+        color: AppColorConstants.iconColor,
       ).ripple(() {
         Get.back();
       }),
-      Text(
+      BodyLargeText(
         title.tr,
-        style: Theme.of(context)
-            .textTheme
-            .bodyLarge!
-            .copyWith(fontWeight: FontWeight.w600),
+          weight: TextWeight.medium
       ),
       const SizedBox(
         width: 20,
@@ -42,14 +38,14 @@ Widget backNavigationBarWithIcon(
           ThemeIconWidget(
             ThemeIcon.backArrow,
             size: 18,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
           ).ripple(() {
             Get.back();
           }),
           ThemeIconWidget(
             icon,
             size: 20,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
           ).ripple(() {
             iconBtnClicked();
           }),
@@ -59,12 +55,9 @@ Widget backNavigationBarWithIcon(
         left: 0,
         right: 0,
         child: Center(
-          child: Text(
+          child: BodyLargeText(
             title.tr,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w600),
+              weight: TextWeight.medium
           ),
         ),
       ),
@@ -86,7 +79,7 @@ Widget backNavigationBarWithIconBadge(
           ThemeIconWidget(
             ThemeIcon.backArrow,
             size: 18,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
           ).ripple(() {
             Get.back();
           }),
@@ -97,7 +90,7 @@ Widget backNavigationBarWithIconBadge(
          ThemeIconWidget(
               ThemeIcon.setting,
               size: 25,
-              color: Theme.of(context).iconTheme.color,
+              color: AppColorConstants.iconColor,
             ).rP8.ripple(() {
            iconBtnClicked();
             }),)),
@@ -106,7 +99,7 @@ Widget backNavigationBarWithIconBadge(
            ThemeIconWidget(
              icon,
              size: 30,
-             color: Theme.of(context).iconTheme.color,
+             color: AppColorConstants.iconColor,
            ).ripple(() {
              Get.to(() => const AcceptRejectInvitation());
            }),
@@ -134,12 +127,9 @@ Widget backNavigationBarWithIconBadge(
         left: 0,
         right: 0,
         child: Center(
-          child: Text(
+          child: BodyLargeText(
             title.tr,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w600),
+              weight: TextWeight.medium
           ),
         ),
       ),
@@ -160,17 +150,14 @@ Widget profileScreensNavigationBar(
           ThemeIconWidget(
             ThemeIcon.backArrow,
             size: 18,
-            color: Theme.of(context).iconTheme.color,
+            color: AppColorConstants.iconColor,
           ).ripple(() {
             Get.back();
           }),
           if (rightBtnTitle != null)
-            Text(
+            BodyLargeText(
               rightBtnTitle.tr,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w600),
+                weight: TextWeight.medium
             ).ripple(() {
               completion();
             }),
@@ -180,12 +167,9 @@ Widget profileScreensNavigationBar(
         left: 0,
         right: 0,
         child: Center(
-          child: Text(
+          child: BodyLargeText(
             title.tr,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w600),
+              weight: TextWeight.medium
           ),
         ),
       )
@@ -204,16 +188,13 @@ Widget titleNavigationBarWithIcon(
       const SizedBox(
         width: 25,
       ),
-      Text(
+      BodyLargeText(
         title.tr,
-        style: Theme.of(context)
-            .textTheme
-            .bodyLarge!
-            .copyWith(fontWeight: FontWeight.w600),
+          weight: TextWeight.medium
       ),
       ThemeIconWidget(
         icon,
-        color: Theme.of(context).iconTheme.color,
+        color: AppColorConstants.iconColor,
         size: 25,
       ).ripple(() {
         completion();
@@ -226,11 +207,8 @@ Widget titleNavigationBar({
   required BuildContext context,
   required String title,
 }) {
-  return Text(
+  return BodyLargeText(
     title.tr,
-    style: Theme.of(context)
-        .textTheme
-        .bodyLarge!
-        .copyWith(fontWeight: FontWeight.w600),
+      weight: TextWeight.medium
   ).setPadding(left: 16, right: 16, top: 8, bottom: 16);
 }

@@ -1,5 +1,11 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+
+import '../../util/constant_util.dart';
 
 class VoiceRecord extends StatefulWidget {
   final Function(Media) recordingCallback;
@@ -44,7 +50,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
         const Spacer(),
         Container(
           height: 200,
-          color: Theme.of(context).backgroundColor,
+          color: AppColorConstants.backgroundColor,
           child: AudioWaveforms(
             size: const Size(double.infinity, 200.0),
             recorderController: recorderController,
@@ -61,11 +67,11 @@ class _VoiceRecordState extends State<VoiceRecord> {
               Container(
                 height: 50,
                 width: 50,
-                color: Theme.of(context).backgroundColor,
+                color: AppColorConstants.backgroundColor,
                 child: Center(
                   child: ThemeIconWidget(
                     isRecorded == true ? ThemeIcon.send : ThemeIcon.stop,
-                    color: Theme.of(context).iconTheme.color,
+                    color: AppColorConstants.iconColor,
                     size: 25,
                   ),
                 ),
@@ -85,11 +91,11 @@ class _VoiceRecordState extends State<VoiceRecord> {
               Container(
                 height: 50,
                 width: 50,
-                color: Theme.of(context).backgroundColor,
+                color: AppColorConstants.backgroundColor,
                 child: Center(
                   child: ThemeIconWidget(
                     ThemeIcon.close,
-                    color: Theme.of(context).iconTheme.color,
+                    color: AppColorConstants.iconColor,
                     size: 25,
                   ),
                 ),

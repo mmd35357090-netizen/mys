@@ -1,12 +1,20 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:pin_code_text_field/pin_code_text_field.dart';
+
+import '../../controllers/login_controller.dart';
 
 class VerifyOTPScreen extends StatefulWidget {
   final bool isVerifyingEmail;
+  final bool isVerifyingPhone;
+
   final String token;
 
   const VerifyOTPScreen(
-      {Key? key, required this.isVerifyingEmail, required this.token})
+      {Key? key,
+      required this.isVerifyingEmail,
+      required this.isVerifyingPhone,
+      required this.token})
       : super(key: key);
 
   @override
@@ -20,7 +28,7 @@ class VerifyOTPScreenState extends State<VerifyOTPScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -38,26 +46,23 @@ class VerifyOTPScreenState extends State<VerifyOTPScreen> {
           const SizedBox(
             height: 105,
           ),
-          Text(
+          Heading4Text(
             LocalizationString.helpToGetAccount,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: Theme.of(context).primaryColor)
-                .copyWith(fontWeight: FontWeight.w900),
+            weight: TextWeight.bold,
+            color: AppColorConstants.themeColor,
             textAlign: TextAlign.start,
           ),
-          Text(LocalizationString.pleaseEnterOneTimePassword,
-                  style: Theme.of(context).textTheme.bodyLarge)
-              .setPadding(top: 43, bottom: 35),
+          BodyLargeText(
+            LocalizationString.pleaseEnterOneTimePassword,
+          ).setPadding(top: 43, bottom: 35),
           Obx(() => PinCodeTextField(
                 autofocus: true,
                 controller: controller,
                 highlightColor: Colors.blue,
                 defaultBorderColor: Colors.transparent,
                 hasTextBorderColor: Colors.transparent,
-                pinBoxColor: Theme.of(context).primaryColor.withOpacity(0.5),
-                highlightPinBoxColor: Theme.of(context).primaryColor,
+                pinBoxColor: AppColorConstants.themeColor.withOpacity(0.5),
+                highlightPinBoxColor: AppColorConstants.themeColor,
                 // highlightPinBoxColor: Colors.orange,
                 maxLength: loginController.pinLength,
                 hasError: loginController.hasError.value,
@@ -73,10 +78,8 @@ class VerifyOTPScreenState extends State<VerifyOTPScreen> {
                 wrapAlignment: WrapAlignment.spaceAround,
                 pinBoxDecoration:
                     ProvidedPinBoxDecoration.defaultPinBoxDecoration,
-                pinTextStyle: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(fontWeight: FontWeight.w600),
+                pinTextStyle: TextStyle(
+                    fontSize: FontSizes.h3, fontWeight: TextWeight.medium),
                 pinTextAnimatedSwitcherTransition:
                     ProvidedPinBoxTextAnimation.scalingTransition,
                 pinTextAnimatedSwitcherDuration:
@@ -87,19 +90,16 @@ class VerifyOTPScreenState extends State<VerifyOTPScreen> {
               )),
           Obx(() => Row(
                 children: [
-                  Text(LocalizationString.didntReceivedCode,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge),
-                  Text(LocalizationString.resendOTP,
-                          style: loginController.canResendOTP.value == false
-                              ? Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).disabledColor)
-                              : Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.w600))
-                      .ripple(() {
+                  BodyLargeText(
+                    LocalizationString.didntReceivedCode,
+                  ),
+                  BodyLargeText(
+                    LocalizationString.resendOTP,
+                    weight: TextWeight.medium,
+                    color: loginController.canResendOTP.value == false
+                        ? AppColorConstants.disabledColor
+                        : AppColorConstants.themeColor,
+                  ).ripple(() {
                     if (loginController.canResendOTP.value == true) {
                       loginController.resendOTP(
                           token: widget.token, context: context);
@@ -119,13 +119,9 @@ class VerifyOTPScreenState extends State<VerifyOTPScreen> {
                               Widget? child) {
                             final minutes = value.inMinutes;
                             final seconds = value.inSeconds % 60;
-                            return Text(' ($minutes:$seconds)',
+                            return BodyLargeText(' ($minutes:$seconds)',
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context).primaryColor));
+                                color: AppColorConstants.themeColor);
                           })
                       : Container()
                 ],
@@ -143,20 +139,16 @@ class VerifyOTPScreenState extends State<VerifyOTPScreen> {
   }
 
   addSubmitBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
         loginController.callVerifyOTP(
-            isVerifyingEmail: widget.isVerifyingEmail,
-            otp: controller.text,
-            token: widget.token,
-            context: context);
+          isVerifyingPhone: widget.isVerifyingPhone,
+          isVerifyingEmail: widget.isVerifyingEmail,
+          otp: controller.text,
+          token: widget.token,
+        );
       },
       text: LocalizationString.verify,
-      enabledTextStyle: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-      isEnabled: true,
     );
   }
 }

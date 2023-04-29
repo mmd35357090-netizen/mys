@@ -1,4 +1,4 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class ProfilePictureWithName extends StatelessWidget {
   final UserModel user;
@@ -22,21 +22,17 @@ class ProfilePictureWithName extends StatelessWidget {
                             imageUrl: user.picture!,
                             fit: BoxFit.cover,
                             placeholder: (context, url) =>
-                                AppUtil.addProgressIndicator(context,50),
+                                AppUtil.addProgressIndicator(size: 50),
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
                           ))
-                      : Icon(Icons.person,
-                          color: Theme.of(context).primaryColor))
-              .borderWithRadius(context: context,
-              value: 2, radius: 30, color: Theme.of(context).primaryColor),
+                      : Icon(Icons.person, color: AppColorConstants.themeColor))
+              .borderWithRadius(
+                  value: 2, radius: 30, color: AppColorConstants.themeColor),
         ),
-        Text(
+        BodyMediumText(
           user.userName,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium!
-              .copyWith(color: Theme.of(context).primaryColor),
+          color: AppColorConstants.themeColor,
         ).vP8
       ],
     );

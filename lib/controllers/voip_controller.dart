@@ -1,9 +1,12 @@
+import 'package:flutter_callkit_incoming/entities/call_event.dart' as call_event;
 import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
-import 'package:flutter_callkit_incoming/entities/call_event.dart' as callEvent;
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
-import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart' as callkit;
+import 'package:foap/controllers/agora_call_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/call_model.dart';
+import 'package:get/get.dart';
+
 
 class CallData {
   String uuid;
@@ -40,6 +43,7 @@ class CallData {
 
 class VoipController {
   final AgoraCallController agoraCallController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   endCall(Call call) {
     // var params = <String, dynamic>{'id': call.uuid};
@@ -50,12 +54,12 @@ class VoipController {
   listenerSetup() {
     callkit.FlutterCallkitIncoming.onEvent.listen((event) {
       switch (event!.event) {
-        case callEvent.Event.ACTION_CALL_INCOMING:
+        case call_event.Event.ACTION_CALL_INCOMING:
           //getIt<SocketManager>().connect();
           break;
-        case callEvent.Event.ACTION_CALL_START:
+        case call_event.Event.ACTION_CALL_START:
           break;
-        case callEvent.Event.ACTION_CALL_ACCEPT:
+        case call_event.Event.ACTION_CALL_ACCEPT:
           CallData callData = CallData.fromJson(event.body);
 
           UserModel opponent = UserModel();
@@ -73,7 +77,7 @@ class VoipController {
               opponent: opponent);
           agoraCallController.acceptCall(call: call);
           break;
-        case callEvent.Event.ACTION_CALL_DECLINE:
+        case call_event.Event.ACTION_CALL_DECLINE:
           Call call = Call(
               uuid: event.body['id'],
               channelName: '',
@@ -85,7 +89,7 @@ class VoipController {
           //endCall(call);
           agoraCallController.declineCall(call: call);
           break;
-        case callEvent.Event.ACTION_CALL_ENDED:
+        case call_event.Event.ACTION_CALL_ENDED:
           // print('call ended == ${event.body}');
           // CallData callData = CallData.fromJson(event.body);
           Call call = Call(
@@ -100,10 +104,10 @@ class VoipController {
           callkit.FlutterCallkitIncoming.endCall(event.body['id']);
           agoraCallController.endCall(call);
           break;
-        case callEvent.Event.ACTION_CALL_TIMEOUT:
+        case call_event.Event.ACTION_CALL_TIMEOUT:
           CallData callData = CallData.fromJson(event.body);
-          if (callData.callerId != getIt<UserProfileManager>().user?.id &&
-              getIt<UserProfileManager>().user?.id != null) {
+          if (callData.callerId != _userProfileManager.user.value?.id &&
+              _userProfileManager.user.value?.id != null) {
             Call call = Call(
                 uuid: callData.uuid,
                 channelName: callData.channelName,
@@ -118,24 +122,24 @@ class VoipController {
           }
 
           break;
-        case callEvent.Event.ACTION_CALL_CALLBACK:
+        case call_event.Event.ACTION_CALL_CALLBACK:
           break;
-        case callEvent.Event.ACTION_CALL_TOGGLE_HOLD:
+        case call_event.Event.ACTION_CALL_TOGGLE_HOLD:
           // TODO: only iOS
           break;
-        case callEvent.Event.ACTION_CALL_TOGGLE_MUTE:
+        case call_event.Event.ACTION_CALL_TOGGLE_MUTE:
           // TODO: only iOS
           break;
-        case callEvent.Event.ACTION_CALL_TOGGLE_DMTF:
+        case call_event.Event.ACTION_CALL_TOGGLE_DMTF:
           // TODO: only iOS
           break;
-        case callEvent.Event.ACTION_CALL_TOGGLE_GROUP:
+        case call_event.Event.ACTION_CALL_TOGGLE_GROUP:
           // TODO: only iOS
           break;
-        case callEvent.Event.ACTION_CALL_TOGGLE_AUDIO_SESSION:
+        case call_event.Event.ACTION_CALL_TOGGLE_AUDIO_SESSION:
           // TODO: only iOS
           break;
-        case callEvent.Event.ACTION_DID_UPDATE_DEVICE_PUSH_TOKEN_VOIP:
+        case call_event.Event.ACTION_DID_UPDATE_DEVICE_PUSH_TOKEN_VOIP:
           // TODO: only iOS
           break;
         default:
@@ -152,8 +156,8 @@ class VoipController {
     //   'type': call.callType == 1 ? 0 : 1,
     //   'extra': <String, dynamic>{
     //     'id': call.callId,
-    //     'callerId': getIt<UserProfileManager>().user!.id,
-    //     'callerImage': getIt<UserProfileManager>().user!.picture,
+    //     'callerId': _userProfileManager.user.value!.id,
+    //     'callerImage': _userProfileManager.user.value!.picture,
     //     'channelName': call.channelName,
     //     'token': call.token
     //   },
@@ -166,8 +170,8 @@ class VoipController {
         type: call.callType == 1 ? 0 : 1,
         extra: <String, dynamic>{
           'id': call.callId,
-          'callerId': getIt<UserProfileManager>().user!.id,
-          'callerImage': getIt<UserProfileManager>().user!.picture,
+          'callerId': _userProfileManager.user.value!.id,
+          'callerImage': _userProfileManager.user.value!.picture,
           'channelName': call.channelName,
           'token': call.token
         },
@@ -184,8 +188,8 @@ class VoipController {
     //   'type': call.callType == 1 ? 0 : 1,
     //   'extra': <String, dynamic>{
     //     'id': call.callId,
-    //     'callerId': getIt<UserProfileManager>().user!.id,
-    //     'callerImage': getIt<UserProfileManager>().user!.picture,
+    //     'callerId': _userProfileManager.user.value!.id,
+    //     'callerImage': _userProfileManager.user.value!.picture,
     //     'channelName': call.channelName,
     //     'token': call.token
     //   },
@@ -198,8 +202,8 @@ class VoipController {
         type: call.callType == 1 ? 0 : 1,
         extra: <String, dynamic>{
           'id': call.callId,
-          'callerId': getIt<UserProfileManager>().user!.id,
-          'callerImage': getIt<UserProfileManager>().user!.picture,
+          'callerId': _userProfileManager.user.value!.id,
+          'callerImage': _userProfileManager.user.value!.picture,
           'channelName': call.channelName,
           'token': call.token
         },

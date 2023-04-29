@@ -1,9 +1,30 @@
+import 'dart:async';
 import 'dart:convert';
-import 'package:foap/helper/common_import.dart';
+import 'dart:io';
+import 'package:flutter_contacts/contact.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/string_extension.dart';
 import 'package:get/get.dart';
+import 'package:google_mlkit_smart_reply/google_mlkit_smart_reply.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:profanity_filter/profanity_filter.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../components/notification_banner.dart';
+import '../../helper/permission_utils.dart';
+import '../../manager/socket_manager.dart';
+import '../../model/call_model.dart';
+import '../../model/gallery_media.dart';
+import '../../model/location.dart';
+import '../../model/post_model.dart';
+import '../../util/constant_util.dart';
+import '../../util/shared_prefs.dart';
+import '../agora_call_controller.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ChatDetailController extends GetxController {
   final AgoraCallController agoraCallController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   Rx<TextEditingController> messageTf = TextEditingController().obs;
 
@@ -98,10 +119,10 @@ class ChatDetailController extends GetxController {
   getChatRoomWithUser(
       {required int userId, required Function(ChatRoomModel) callback}) {
     createChatRoom(userId, (roomId) async {
-      ApiController().getChatRoomDetail(roomId).then((response) {
+      ApiController().getChatRoomDetail(roomId).then((response) async{
         if (response.room != null) {
+          await getIt<DBManager>().saveRooms([response.room!]);
           callback(response.room!);
-          getIt<DBManager>().saveRooms([response.room!]);
         }
       });
     });
@@ -161,7 +182,6 @@ class ChatDetailController extends GetxController {
           if (response.messages.isNotEmpty) {
             // for (ChatMessageModel message in response.messages) {
             //   print('saving ${message.id}');
-            print('3');
 
             await getIt<DBManager>()
                 .saveMessage(chatMessages: response.messages);
@@ -204,7 +224,7 @@ class ChatDetailController extends GetxController {
   createChatRoom(int userId, Function(int) callback) {
     ApiController().createChatRoom(userId).then((response) {
       getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom, {
-        'userId': '${getIt<UserProfileManager>().user!.id},$userId'.toString(),
+        'userId': '${_userProfileManager.user.value!.id},$userId'.toString(),
         'room': response.roomId
       });
 
@@ -315,7 +335,7 @@ class ChatDetailController extends GetxController {
     };
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'localMessageId': localMessageId,
       'is_encrypted': AppConfigConstants.enableEncryption,
       'messageType': messageTypeId(MessageContentType.post),
@@ -323,20 +343,20 @@ class ChatDetailController extends GetxController {
       'chat_version': AppConfigConstants.chatVersion,
       'replied_on_message': null,
       'room': room.id,
-      'created_by': getIt<UserProfileManager>().user!.id,
+      'created_by': _userProfileManager.user.value!.id,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
     ChatMessageModel currentMessageModel = ChatMessageModel();
     currentMessageModel.localMessageId = localMessageId;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
     currentMessageModel.roomId = room.id;
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(MessageContentType.post);
     // currentMessageModel.messageContent = json.encode(content).replaceAll('\\', '');
     currentMessageModel.messageContent = json.encode(content).encrypted();
@@ -346,8 +366,6 @@ class ChatDetailController extends GetxController {
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
     // save message to database
-    print('4');
-
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
     // send message to socket server
 
@@ -368,7 +386,6 @@ class ChatDetailController extends GetxController {
     bool hasProfanity = filter.hasProfanity(messageText);
     if (hasProfanity) {
       AppUtil.showToast(
-          context: Get.context!,
           message: LocalizationString.notAllowedMessage,
           isSuccess: true);
       return false;
@@ -387,7 +404,7 @@ class ChatDetailController extends GetxController {
     if (encryptedTextMessage.removeAllWhitespace.trim().isNotEmpty) {
       String localMessageId = randomId();
       var message = {
-        'userId': getIt<UserProfileManager>().user!.id,
+        'userId': _userProfileManager.user.value!.id,
         'localMessageId': localMessageId,
         'is_encrypted': AppConfigConstants.enableEncryption,
         'messageType': messageTypeId(mode == ChatMessageActionMode.reply
@@ -397,7 +414,7 @@ class ChatDetailController extends GetxController {
         'replied_on_message': repliedOnMessage,
         'chat_version': AppConfigConstants.chatVersion,
         'room': room.id,
-        'created_by': getIt<UserProfileManager>().user!.id,
+        'created_by': _userProfileManager.user.value!.id,
         'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
       };
 
@@ -410,12 +427,12 @@ class ChatDetailController extends GetxController {
       currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
       currentMessageModel.localMessageId = localMessageId;
-      currentMessageModel.sender = getIt<UserProfileManager>().user!;
+      currentMessageModel.sender = _userProfileManager.user.value!;
 
       currentMessageModel.roomId = room.id;
 
       currentMessageModel.userName = LocalizationString.you;
-      currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+      currentMessageModel.senderId = _userProfileManager.user.value!.id;
       currentMessageModel.messageType = messageTypeId(
           mode == ChatMessageActionMode.reply
               ? MessageContentType.reply
@@ -428,8 +445,6 @@ class ChatDetailController extends GetxController {
 
       addNewMessage(message: currentMessageModel, roomId: room.id);
       // save message to database
-      print('5');
-
       getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
 
       setReplyMessage(message: null);
@@ -458,7 +473,7 @@ class ChatDetailController extends GetxController {
     };
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'localMessageId': localMessageId,
       'is_encrypted': AppConfigConstants.enableEncryption,
       'messageType': messageTypeId(mode == ChatMessageActionMode.reply
@@ -468,7 +483,7 @@ class ChatDetailController extends GetxController {
       'chat_version': AppConfigConstants.chatVersion,
       'replied_on_message': repliedOnMessage,
       'room': room.id,
-      'created_by': getIt<UserProfileManager>().user!.id,
+      'created_by': _userProfileManager.user.value!.id,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -479,12 +494,12 @@ class ChatDetailController extends GetxController {
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
     currentMessageModel.localMessageId = localMessageId;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -497,8 +512,6 @@ class ChatDetailController extends GetxController {
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
     // save message to database
-    print('6');
-
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
 
     setReplyMessage(message: null);
@@ -526,7 +539,7 @@ class ChatDetailController extends GetxController {
     };
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'localMessageId': localMessageId,
       'is_encrypted': AppConfigConstants.enableEncryption,
       'messageType': messageTypeId(mode == ChatMessageActionMode.reply
@@ -536,7 +549,7 @@ class ChatDetailController extends GetxController {
       'chat_version': AppConfigConstants.chatVersion,
       'replied_on_message': repliedOnMessage,
       'room': room.id,
-      'created_by': getIt<UserProfileManager>().user!.id,
+      'created_by': _userProfileManager.user.value!.id,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -544,12 +557,12 @@ class ChatDetailController extends GetxController {
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
     currentMessageModel.localMessageId = localMessageId;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -563,8 +576,6 @@ class ChatDetailController extends GetxController {
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
     // save message to database
-    print('7');
-
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
     // send message to socket server
 
@@ -598,7 +609,7 @@ class ChatDetailController extends GetxController {
     };
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'localMessageId': localMessageId,
       'is_encrypted': AppConfigConstants.enableEncryption,
       'chat_version': AppConfigConstants.chatVersion,
@@ -608,7 +619,7 @@ class ChatDetailController extends GetxController {
       'message': json.encode(content).encrypted(),
       'replied_on_message': repliedOnMessage,
       'room': room.id,
-      'created_by': getIt<UserProfileManager>().user!.id,
+      'created_by': _userProfileManager.user.value!.id,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -619,12 +630,12 @@ class ChatDetailController extends GetxController {
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
     currentMessageModel.localMessageId = localMessageId;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -637,7 +648,6 @@ class ChatDetailController extends GetxController {
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
     // save message to database
-    print('8');
 
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
 
@@ -661,11 +671,11 @@ class ChatDetailController extends GetxController {
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
     currentMessageModel.localMessageId = localMessageId;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(MessageContentType.forward);
     currentMessageModel.messageContent =
         json.encode(originalContent).encrypted();
@@ -673,19 +683,18 @@ class ChatDetailController extends GetxController {
         (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'localMessageId': localMessageId,
       'is_encrypted': AppConfigConstants.enableEncryption,
       'chat_version': AppConfigConstants.chatVersion,
       'messageType': messageTypeId(MessageContentType.forward),
       'message': json.encode(originalContent).encrypted(),
       'room': room.id,
-      'created_by': getIt<UserProfileManager>().user!.id,
+      'created_by': _userProfileManager.user.value!.id,
       'created_at': currentMessageModel.createdAt,
     };
 
     status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
-    print('9');
 
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
     // setReplyMessage(message: null);
@@ -714,14 +723,14 @@ class ChatDetailController extends GetxController {
     ChatMessageModel currentMessageModel = ChatMessageModel();
 
     currentMessageModel.localMessageId = localMessageId;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.roomId = room.id;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -732,8 +741,6 @@ class ChatDetailController extends GetxController {
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
-    print('10');
-
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
 
     update();
@@ -751,7 +758,7 @@ class ChatDetailController extends GetxController {
           };
 
           var message = {
-            'userId': getIt<UserProfileManager>().user!.id,
+            'userId': _userProfileManager.user.value!.id,
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
@@ -761,7 +768,7 @@ class ChatDetailController extends GetxController {
             'message': json.encode(content).encrypted(),
             'replied_on_message': repliedOnMessage,
             'room': room.id,
-            'created_by': getIt<UserProfileManager>().user!.id,
+            'created_by': _userProfileManager.user.value!.id,
             'created_at': currentMessageModel.createdAt,
           };
 
@@ -808,11 +815,11 @@ class ChatDetailController extends GetxController {
     currentMessageModel.roomId = room.id;
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
 
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -824,7 +831,6 @@ class ChatDetailController extends GetxController {
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
-    print('11');
 
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
 
@@ -845,7 +851,7 @@ class ChatDetailController extends GetxController {
           };
 
           var message = {
-            'userId': getIt<UserProfileManager>().user!.id,
+            'userId': _userProfileManager.user.value!.id,
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
@@ -854,7 +860,7 @@ class ChatDetailController extends GetxController {
                 : MessageContentType.video),
             'message': json.encode(content).encrypted(),
             'room': room.id,
-            'created_by': getIt<UserProfileManager>().user!.id,
+            'created_by': _userProfileManager.user.value!.id,
             'created_at': currentMessageModel.createdAt,
           };
 
@@ -902,11 +908,11 @@ class ChatDetailController extends GetxController {
     currentMessageModel.roomId = room.id;
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
 
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -918,7 +924,6 @@ class ChatDetailController extends GetxController {
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
-    print('12');
 
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
     update();
@@ -936,7 +941,7 @@ class ChatDetailController extends GetxController {
           };
 
           var message = {
-            'userId': getIt<UserProfileManager>().user!.id,
+            'userId': _userProfileManager.user.value!.id,
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
@@ -945,7 +950,7 @@ class ChatDetailController extends GetxController {
                 : MessageContentType.audio),
             'message': json.encode(content).encrypted(),
             'room': room.id,
-            'created_by': getIt<UserProfileManager>().user!.id,
+            'created_by': _userProfileManager.user.value!.id,
             'created_at': currentMessageModel.createdAt,
             'replied_on_message': repliedOnMessage,
           };
@@ -991,12 +996,12 @@ class ChatDetailController extends GetxController {
     currentMessageModel.roomId = room.id;
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -1011,7 +1016,7 @@ class ChatDetailController extends GetxController {
     update();
 
     var message = {
-      'userId': getIt<UserProfileManager>().user!.id,
+      'userId': _userProfileManager.user.value!.id,
       'localMessageId': localMessageId,
       'is_encrypted': AppConfigConstants.enableEncryption,
       'chat_version': AppConfigConstants.chatVersion,
@@ -1021,14 +1026,13 @@ class ChatDetailController extends GetxController {
       'message': json.encode(content).encrypted(),
       'replied_on_message': repliedOnMessage,
       'room': room.id,
-      'created_by': getIt<UserProfileManager>().user!.id,
+      'created_by': _userProfileManager.user.value!.id,
       'created_at': currentMessageModel.createdAt,
     };
 
     status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
 
     // save message to database
-    print('13');
 
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
     setReplyMessage(message: null);
@@ -1056,12 +1060,12 @@ class ChatDetailController extends GetxController {
     //   currentMessageModel.localMessageId = localMessageId;
     //   currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     //   currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
-    //   currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    //   currentMessageModel.sender = _userProfileManager.user.value!;
     //
     //   currentMessageModel.roomId = room.id;
     //   // currentMessageModel.messageTime = LocalizationString.justNow;
     //   currentMessageModel.userName = LocalizationString.you;
-    //   currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    //   currentMessageModel.senderId = _userProfileManager.user.value!.id;
     //   currentMessageModel.messageType = messageTypeId(MessageContentType.reply);
     //   currentMessageModel.repliedOnMessageContent = repliedOnMessage;
     //
@@ -1073,7 +1077,7 @@ class ChatDetailController extends GetxController {
     //   replyMessage.id = 0;
     //   replyMessage.roomId = room.id;
     //   replyMessage.localMessageId = localMessageId;
-    //   replyMessage.senderId = getIt<UserProfileManager>().user!.id;
+    //   replyMessage.senderId = _userProfileManager.user.value!.id;
     //   replyMessage.messageType = messageTypeId(MessageContentType.file);
     //   replyMessage.media = media;
     //   replyMessage.messageContent = ''.encrypted();
@@ -1094,11 +1098,11 @@ class ChatDetailController extends GetxController {
     currentMessageModel.roomId = room.id;
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
-    currentMessageModel.sender = getIt<UserProfileManager>().user!;
+    currentMessageModel.sender = _userProfileManager.user.value!;
 
     // currentMessageModel.messageTime = LocalizationString.justNow;
     currentMessageModel.userName = LocalizationString.you;
-    currentMessageModel.senderId = getIt<UserProfileManager>().user!.id;
+    currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
             ? MessageContentType.reply
@@ -1110,8 +1114,6 @@ class ChatDetailController extends GetxController {
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
     addNewMessage(message: currentMessageModel, roomId: room.id);
-    print('14');
-
     getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
     // }
 
@@ -1137,7 +1139,7 @@ class ChatDetailController extends GetxController {
           };
 
           var message = {
-            'userId': getIt<UserProfileManager>().user!.id,
+            'userId': _userProfileManager.user.value!.id,
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
@@ -1147,7 +1149,7 @@ class ChatDetailController extends GetxController {
             'message': json.encode(content).encrypted(),
             'replied_on_message': repliedOnMessage,
             'room': room.id,
-            'created_by': getIt<UserProfileManager>().user!.id,
+            'created_by': _userProfileManager.user.value!.id,
             'created_at': currentMessageModel.createdAt,
           };
 
@@ -1324,7 +1326,6 @@ class ChatDetailController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: Get.context!,
             message: LocalizationString.noInternet,
             isSuccess: false);
       }
@@ -1351,7 +1352,7 @@ class ChatDetailController extends GetxController {
         // print('element.chatMessageUser ${element.chatMessageUser.length}');
         // ChatMessageUser user = element.chatMessageUser
         //     .where((element) =>
-        //         element.userId == getIt<UserProfileManager>().user!.id)
+        //         element.userId == _userProfileManager.user.value!.id)
         //     .first;
         // //TODO : check deleted message status
         // user.status == 4;
@@ -1559,12 +1560,10 @@ class ChatDetailController extends GetxController {
       agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          context: Get.context!,
           message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          context: Get.context!,
           message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
           isSuccess: false);
     });
@@ -1585,12 +1584,10 @@ class ChatDetailController extends GetxController {
       agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          context: Get.context!,
           message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          context: Get.context!,
           message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
           isSuccess: false);
     });

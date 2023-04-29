@@ -1,5 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/notification_tile.dart';
+import '../../controllers/notifications_controller.dart';
+import '../../model/notification_modal.dart';
+import '../competitions/competition_detail_screen.dart';
+import '../home_feed/comments_screen.dart';
+import '../post/single_post_detail.dart';
+import '../profile/other_user_profile.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -9,7 +17,8 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final NotificationController _notificationController = Get.find();
+  final NotificationController _notificationController =
+      NotificationController();
 
   @override
   void initState() {
@@ -20,7 +29,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -72,28 +81,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   handleNotificationTap(NotificationModel notification) {
-    if (notification.type == 1) {
-      int userId = notification.referenceId;
+    if (notification.type == NotificationType.follow) {
+      int userId = notification.actionBy!.id;
       Get.to(() => OtherUserProfile(userId: userId));
-    } else if (notification.type == 2) {
-      int postId = notification.referenceId;
+    } else if (notification.type == NotificationType.comment) {
+      int postId = notification.post!.id;
       Get.to(() => CommentsScreen(
             postId: postId,
             handler: () {},
             commentPostedCallback: () {},
           ));
-    } else if (notification.type == 3) {
-      Get.to(() => SinglePostDetail(postId: notification.referenceId));
-    } else if (notification.type == 4) {
-      int competitionId = notification.referenceId;
+    } else if (notification.type == NotificationType.like) {
+      Get.to(() => SinglePostDetail(postId: notification.post!.id));
+    } else if (notification.type == NotificationType.competitionAdded) {
+      int competitionId = notification.competition!.id;
       Get.to(() => CompetitionDetailScreen(
             competitionId: competitionId,
             refreshPreviousScreen: () {},
           ));
-    } else if (notification.type == 7) {
-      Get.to(() => SinglePostDetail(
-            postId: notification.referenceId,
-          ));
     }
+    // else if (notification.type == 7) {
+    //   Get.to(() => SinglePostDetail(
+    //         postId: notification.post!.id,
+    //       ));
+    // }
   }
 }

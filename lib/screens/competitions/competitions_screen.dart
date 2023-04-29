@@ -1,6 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/competition_imports.dart';
 import 'package:get/get.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CompetitionsScreen extends StatefulWidget {
   const CompetitionsScreen({Key? key}) : super(key: key);
@@ -16,13 +16,20 @@ class CompetitionsState extends State<CompetitionsScreen> {
     LocalizationString.winners,
   ];
 
-  final CompetitionController competitionController = Get.find();
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final CompetitionController competitionController = CompetitionController();
 
   @override
   void initState() {
     competitionController.getCompetitions(() {});
+
+    ScrollController scrollController = ScrollController();
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.position.pixels) {
+        competitionController.getCompetitions(() {});
+      }
+    });
+
     super.initState();
   }
 
@@ -38,7 +45,7 @@ class CompetitionsState extends State<CompetitionsScreen> {
       length: competitionsArr.length,
       initialIndex: 0,
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: <Widget>[
           const SizedBox(
             height: 50,
@@ -49,15 +56,16 @@ class CompetitionsState extends State<CompetitionsScreen> {
           ),
           divider(context: context).vP8,
           TabBar(
-            labelColor: Theme.of(context).primaryColor,
-            unselectedLabelColor: Theme.of(context).disabledColor,
-            indicatorColor: Theme.of(context).primaryColor,
+            labelColor: AppColorConstants.themeColor,
+            unselectedLabelColor: AppColorConstants.grayscale900,
+            indicatorColor: AppColorConstants.themeColor,
             indicatorWeight: 2,
-            unselectedLabelStyle: Theme.of(context).textTheme.bodyLarge,
-            labelStyle: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w900),
+            unselectedLabelStyle: TextStyle(
+            fontSize: FontSizes.b2),
+            labelStyle: TextStyle(
+                fontSize: FontSizes.b2,
+                fontWeight: TextWeight.bold,
+                ),
             tabs: List.generate(competitionsArr.length, (int index) {
               return Visibility(
                 visible: true,
@@ -113,18 +121,6 @@ class CompetitionsState extends State<CompetitionsScreen> {
           height: 20,
         );
       },
-    ).addPullToRefresh(
-        refreshController: _refreshController,
-        onRefresh: () {
-          competitionController.getCompetitions(() {
-            _refreshController.refreshCompleted();
-          });
-        },
-        onLoading: () {
-          competitionController.getCompetitions(() {
-            _refreshController.loadComplete();
-          });
-        },
-        enablePullUp: true);
+    );
   }
 }

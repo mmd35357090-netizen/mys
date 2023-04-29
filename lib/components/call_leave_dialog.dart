@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 class LeaveDialog extends StatefulWidget {
@@ -47,18 +47,16 @@ class _LeaveDialogState extends State<LeaveDialog> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
+                  BodyLargeText(
                     widget.title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!.copyWith(color:Theme.of(context).primaryColor),
+                    color:AppColorConstants.themeColor,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(
                     height: 30,
                   ),
                   Container(
-                      color: Theme.of(context).primaryColor,
+                      color: AppColorConstants.themeColor,
 
                       child: Text(
                         widget.yesText,
@@ -72,7 +70,7 @@ class _LeaveDialogState extends State<LeaveDialog> {
                     height: 20,
                   ),
                   Container(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColorConstants.themeColor,
 
                     child: Text(widget.noText),
                   ).ripple((){

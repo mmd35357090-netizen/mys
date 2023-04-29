@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/competition_imports.dart';
 import 'package:get/get.dart';
+
+import '../settings_menu/settings_controller.dart';
+import '../settings_menu/web_view_screen.dart';
 
 class CompetitionDetailScreen extends StatefulWidget {
   final int competitionId;
@@ -17,8 +21,9 @@ class CompetitionDetailScreen extends StatefulWidget {
 }
 
 class CompetitionDetailState extends State<CompetitionDetailScreen> {
-  final CompetitionController competitionController = Get.find();
-  SettingsController settingsController = Get.find();
+  final CompetitionController competitionController = CompetitionController();
+  final SettingsController settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -36,7 +41,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -54,13 +59,9 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                     Get.back();
                   }),
                   const Spacer(),
-                  Text(
-                    LocalizationString.disclaimer,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w600),
-                  ).ripple(() {
+                  BodyLargeText(LocalizationString.disclaimer,
+                          weight: TextWeight.medium)
+                      .ripple(() {
                     Get.to(() => WebViewScreen(
                         header: LocalizationString.disclaimer,
                         url: settingsController.setting.value!.disclaimerUrl!));
@@ -71,12 +72,9 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                 left: 0,
                 right: 0,
                 child: Center(
-                  child: Text(
+                  child: BodyLargeText(
                     LocalizationString.competition,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w900),
+                      weight: TextWeight.bold
                   ),
                 ),
               ),
@@ -106,7 +104,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                                       height: 270,
                                       placeholder: (context, url) =>
                                           AppUtil.addProgressIndicator(
-                                              context, 100),
+                                              size:100),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
                                     ),
@@ -119,23 +117,16 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                            competitionController
-                                                .competition.value!.title,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                    fontWeight: FontWeight.w900,
-                                                    color: Theme.of(context)
-                                                        .primaryColor))
-                                        .bP8,
-                                    Text(
+                                    Heading5Text(
+                                      competitionController
+                                          .competition.value!.title,
+                                      weight: TextWeight.bold,
+                                      color: AppColorConstants.themeColor,
+                                    ).bP8,
+                                    Heading5Text(
                                         competitionController
                                             .competition.value!.description,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium),
+                                        ),
                                   ],
                                 ).p16,
                                 const SizedBox(
@@ -162,12 +153,9 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       model.exampleImages.isNotEmpty
-          ? Text(
+          ? Heading4Text(
               LocalizationString.exampleVideos,
-              style: Theme.of(context)
-                  .textTheme
-                  .displaySmall!
-                  .copyWith(fontWeight: FontWeight.w900),
+          weight: TextWeight.bold
             ).hP16
           : Container(),
       const SizedBox(height: 65)
@@ -179,22 +167,22 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       model.exampleImages.isNotEmpty
-          ? Text(LocalizationString.examplePhotos,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall!
-                  .copyWith(fontWeight: FontWeight.w600))
+          ? Heading3Text(LocalizationString.examplePhotos,
+              weight: TextWeight.medium,)
           : Container(),
       const SizedBox(
         height: 20,
       ),
-      MasonryGridView.count(
-        padding: EdgeInsets.zero,
-        shrinkWrap: true,
-        crossAxisCount: 2,
-
+      GridView.builder(
         itemCount: model.exampleImages.length,
         physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        // You won't see infinite size error
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 4.0,
+            mainAxisSpacing: 4.0,
+            mainAxisExtent: 100),
         itemBuilder: (BuildContext context, int index) => InkWell(
             onTap: () async {
               // File path = await AppUtil.findPath(model.exampleImages[index]);
@@ -206,12 +194,11 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
               imageUrl: model.exampleImages[index],
               fit: BoxFit.cover,
               placeholder: (context, url) =>
-                  AppUtil.addProgressIndicator(context, 100),
+                  AppUtil.addProgressIndicator(size:100),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ).round(10)),
         // staggeredTileBuilder: (int index) => new StaggeredTile.count(1, 1),
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
+
       ),
       const SizedBox(height: 65)
     ]);
@@ -242,7 +229,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
     String title;
     var loggedInUserPost = model.posts
         .where((element) =>
-            element.user.id == getIt<UserProfileManager>().user!.id)
+            element.user.id == _userProfileManager.user.value!.id)
         .toList();
     if (model.isJoined == 1) {
       title = loggedInUserPost.isNotEmpty
@@ -274,13 +261,10 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
           child: Container(
             width: MediaQuery.of(context).size.width,
             height: 95,
-            color: Theme.of(context).primaryColor,
+            color: AppColorConstants.themeColor,
             child: Center(
-              child: Text(title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(fontWeight: FontWeight.w900)),
+              child: Heading6Text(title,
+                  ),
             ),
           )),
     );

@@ -1,9 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChooseClubCoverPhoto extends StatefulWidget {
   final ClubModel club;
-  // final Function(ClubModel?) submittedCallback;
 
   const ChooseClubCoverPhoto(
       {Key? key, required this.club})
@@ -14,15 +15,15 @@ class ChooseClubCoverPhoto extends StatefulWidget {
 }
 
 class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
-  final CreateClubController _createClubsController = Get.find();
-  final ClubDetailController _clubDetailController = Get.find();
+  final CreateClubController _createClubsController = CreateClubController();
+  final ClubDetailController _clubDetailController = ClubDetailController();
 
   final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,23 +41,19 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              Heading4Text(
                 LocalizationString.addClubPhoto,
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+                weight: TextWeight.semiBold,
               ),
-              Text(
+              BodyMediumText(
                 LocalizationString.addClubPhotoSubHeading,
-                style: Theme.of(context).textTheme.titleSmall,
+                color: AppColorConstants.grayscale500,
               ),
               const SizedBox(
                 height: 20,
               ),
-              Text(
+              Heading6Text(
                 LocalizationString.coverPhoto,
-                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ).hP16,
@@ -73,7 +70,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
                                   size: 100,
                                 ).round(5),
                               ).borderWithRadius(
-                                context: context, value: 2, radius: 10)
+                                value: 2, radius: 10)
                             : CachedNetworkImage(
                                 imageUrl: widget.club.image!,
                                 fit: BoxFit.cover,
@@ -86,23 +83,22 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
                         bottom: 10,
                         right: 10,
                         child: Container(
-                          color: Theme.of(context).cardColor,
+                          color: AppColorConstants.cardColor,
                           child: Row(
                             children: [
                               ThemeIconWidget(
                                 ThemeIcon.edit,
                                 size: 20,
-                                color: Theme.of(context).iconTheme.color,
+                                color: AppColorConstants.iconColor,
                               ),
-                              Text(
+                              BodyLargeText(
                                 LocalizationString.edit,
-                                style: Theme.of(context).textTheme.bodyLarge,
                               )
                             ],
                           )
                               .setPadding(left: 8, right: 8, top: 4, bottom: 4)
                               .borderWithRadius(
-                                  context: context, value: 2, radius: 5),
+                                  value: 2, radius: 5),
                         ).ripple(() {
                           picker
                               .pickImage(source: ImageSource.gallery)
@@ -117,7 +113,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
                 ),
               )).p16,
           const Spacer(),
-          FilledButtonType1(
+          AppThemeButton(
               text: widget.club.id == null
                   ? LocalizationString.createClub
                   : LocalizationString.update,
@@ -139,13 +135,11 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
   createBtnClicked() {
     if (_createClubsController.imageFile.value == null) {
       AppUtil.showToast(
-          context: context,
           message: LocalizationString.pleaseEnterSelectCubImage,
           isSuccess: false);
       return;
     }
     _createClubsController.createClub(widget.club, context, () {
-      // widget.submittedCallback(null);
     });
   }
 

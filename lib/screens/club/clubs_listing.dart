@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:foap/helper/extension.dart';
 import 'package:foap/screens/club/search_club.dart';
 import 'package:get/get.dart';
+
 import '../../components/actionSheets/action_sheet1.dart';
 import '../../components/group_avatars/group_avatar1.dart';
 import '../../components/group_avatars/group_avatar2.dart';
@@ -10,15 +13,12 @@ import '../../helper/common_components.dart';
 import '../../helper/localization_strings.dart';
 import '../../model/category_model.dart';
 import '../../model/club_invitation.dart';
-import 'package:flutter/material.dart';
-import 'package:foap/helper/extension.dart';
-
 import '../../model/club_model.dart';
 import '../../model/generic_item.dart';
 import '../../model/post_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
-import '../../theme/icon_enum.dart';
 import '../../theme/theme_icon.dart';
+import '../../util/app_config_constants.dart';
 import '../../util/app_util.dart';
 import 'categories_list.dart';
 import 'category_club_listing.dart';
@@ -32,7 +32,7 @@ class ClubsListing extends StatefulWidget {
 }
 
 class ClubsListingState extends State<ClubsListing> {
-  final ClubsController _clubsController = Get.find();
+  final ClubsController _clubsController = ClubsController();
   final ScrollController _controller = ScrollController();
 
   @override
@@ -76,17 +76,17 @@ class ClubsListingState extends State<ClubsListing> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       floatingActionButton: Container(
         height: 50,
         width: 50,
-        color: Theme.of(context).primaryColor,
+        color: AppColorConstants.themeColor,
         child: const ThemeIconWidget(
           ThemeIcon.plus,
           size: 25,
         ),
       ).circular.ripple(() {
-        Get.to(() => const CategoriesList());
+        Get.to(() =>  CategoriesList(clubsController: _clubsController));
       }),
       body: Column(
         children: [
@@ -203,7 +203,6 @@ class ClubsListingState extends State<ClubsListing> {
                             deleteCallback: (club) {
                               _clubsController.clubDeleted(club);
                               AppUtil.showToast(
-                                  context: context,
                                   message: LocalizationString.clubIsDeleted,
                                   isSuccess: true);
                             },
@@ -248,7 +247,6 @@ class ClubsListingState extends State<ClubsListing> {
                             deleteCallback: (club) {
                               _clubsController.clubDeleted(club);
                               AppUtil.showToast(
-                                  context: context,
                                   message: LocalizationString.clubIsDeleted,
                                   isSuccess: true);
                             },

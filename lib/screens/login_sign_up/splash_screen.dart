@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:local_auth/local_auth.dart';
+
+import '../dashboard/loading.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -33,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Stack(
           children: [
             CarouselSlider(
@@ -70,16 +74,14 @@ class _SplashScreenState extends State<SplashScreen> {
                     0.9,
                   ],
                   colors: [
-                    Theme.of(context).backgroundColor.withOpacity(0.9),
-                    Theme.of(context)
-                        .backgroundColor
+                    AppColorConstants.backgroundColor.withOpacity(0.9),
+                    AppColorConstants.backgroundColor
                         .lighten()
                         .withOpacity(0.9),
-                    Theme.of(context)
-                        .backgroundColor
+                    AppColorConstants.backgroundColor
                         .lighten()
                         .withOpacity(0.5),
-                    Theme.of(context).primaryColor.withOpacity(0.5),
+                    AppColorConstants.themeColor.withOpacity(0.5),
                   ],
                 ),
               ),
@@ -97,16 +99,12 @@ class _SplashScreenState extends State<SplashScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Text(
+                  BodyLargeText(
                     AppConfigConstants.appName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .displayLarge!
-                        .copyWith(fontWeight: FontWeight.w600),
+                      weight: TextWeight.medium
                   ),
-                  Text(
+                  Heading6Text(
                     AppConfigConstants.appTagline.tr,
-                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ],
               ).bp(200),

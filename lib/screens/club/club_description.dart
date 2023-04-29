@@ -1,5 +1,5 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:get/get.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import '../../universal_components/rounded_input_field.dart';
 
 class ClubDescription extends StatefulWidget {
   const ClubDescription({Key? key}) : super(key: key);
@@ -12,7 +12,7 @@ class ClubDescriptionState extends State<ClubDescription> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       // appBar: CustomNavigationBar(
       //   child: appBar(),
       // ),
@@ -33,16 +33,12 @@ class ClubDescriptionState extends State<ClubDescription> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              Heading4Text(
                 'Add a Description',
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+                  weight: TextWeight.semiBold
               ),
-              Text(
+              const Heading6Text(
                 'Describe your group so people know what is about',
-                style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(
                 height: 10,
@@ -56,7 +52,7 @@ class ClubDescriptionState extends State<ClubDescription> {
             ],
           ).hP16,
           const Spacer(),
-          FilledButtonType1(
+          AppThemeButton(
               text: LocalizationString.done,
               onPress: () {
                 // Get.to(() => const InviteUsersToClub());

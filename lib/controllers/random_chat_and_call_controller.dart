@@ -1,6 +1,10 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:get/get.dart';
+import 'dart:async';
 
+import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/chat/chat_detail.dart';
+import 'package:get/get.dart';
 class RandomChatAndCallController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();
 

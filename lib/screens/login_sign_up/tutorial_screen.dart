@@ -1,4 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/login_sign_up/signup_screen.dart';
 import 'package:get/get.dart';
 
 class TutorialScreen extends StatefulWidget {
@@ -17,12 +19,7 @@ class TutorialScreenState extends State<TutorialScreen> {
     "assets/tutorial4.jpg",
   ];
 
-  List<String> headings = [
-    "Post",
-    "Chat",
-    "Calls",
-    "Live"
-  ];
+  List<String> headings = ["Post", "Chat", "Calls", "Live"];
 
   List<String> subHeadings = [
     "Join us and share you life experience, Post picture and videos",
@@ -34,9 +31,9 @@ class TutorialScreenState extends State<TutorialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         // appBar: AppBar(
-        //     backgroundColor: Theme.of(context).backgroundColor,
+        //     backgroundColor: ColorConstants.backgroundColor,
         //     centerTitle: true,
         //     elevation: 0.0,
         //     title: Image.asset(
@@ -74,27 +71,25 @@ class TutorialScreenState extends State<TutorialScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _current == index
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).dividerColor,
+                      ? AppColorConstants.themeColor
+                      : AppColorConstants.dividerColor,
                 ),
               );
             }).toList(),
           ),
-          Text(headings[_current],
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(color: Theme.of(context).primaryColor)
-                      .copyWith(fontWeight: FontWeight.w900))
-              .setPadding(left: 50, right: 50),
+          Heading5Text(
+            headings[_current],
+            textAlign: TextAlign.center,
+            weight: TextWeight.bold,
+            color: AppColorConstants.themeColor,
+          ).setPadding(left: 50, right: 50),
           const SizedBox(
             height: 16,
           ),
-          Text(subHeadings[_current],
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge)
-              .setPadding(left: 25, right: 25),
+          BodyLargeText(
+            subHeadings[_current],
+            textAlign: TextAlign.center,
+          ).setPadding(left: 25, right: 25),
           const SizedBox(
             height: 52,
           ),
@@ -120,16 +115,12 @@ class TutorialScreenState extends State<TutorialScreen> {
   }
 
   addActionBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
         Get.to(() => const SignUpScreen());
       },
       text: LocalizationString.signUp,
-      enabledTextStyle: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-      isEnabled: true,
+
     ).hP25;
   }
 }

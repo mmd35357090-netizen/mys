@@ -1,10 +1,9 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/screens/profile/pref/add_interests.dart';
-import 'package:foap/screens/profile/pref/add_personal_info.dart';
-import 'package:foap/screens/profile/pref/add_profesional_details.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/profile_imports.dart';
+import 'package:foap/screens/add_on/ui/dating/profile/add_interests.dart';
+import 'package:foap/screens/login_sign_up/set_profile_category_type.dart';
 import 'package:get/get.dart';
-
-import '../login_sign_up/set_profile_category_type.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UpdateProfile extends StatefulWidget {
   const UpdateProfile({Key? key}) : super(key: key);
@@ -17,6 +16,7 @@ class UpdateProfileState extends State<UpdateProfile> {
   bool isLoading = true;
   final picker = ImagePicker();
   final ProfileController profileController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -26,22 +26,22 @@ class UpdateProfileState extends State<UpdateProfile> {
 
   reloadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      profileController.setUser(getIt<UserProfileManager>().user!);
+      profileController.setUser(_userProfileManager.user.value!);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(
-              context: context, title: LocalizationString.editProfile),
-          divider(context: context).vP8,
+          // const SizedBox(
+          //   height: 50,
+          // ),
+          // backNavigationBar(
+          //     context: context, title: LocalizationString.editProfile),
+          // divider(context: context).vP8,
           addProfileView(),
           Expanded(
             child: SingleChildScrollView(
@@ -50,18 +50,14 @@ class UpdateProfileState extends State<UpdateProfile> {
                 children: [
                   Row(
                     children: [
-                      Text(
+                      BodyLargeText(
                         LocalizationString.userName,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
+                        weight: TextWeight.medium,
                       ),
                       const Spacer(),
                       Obx(() => profileController.user.value != null
-                          ? Text(
+                          ? BodyMediumText(
                               profileController.user.value!.userName,
-                              style: Theme.of(context).textTheme.bodyMedium,
                             )
                           : Container()),
                       const SizedBox(
@@ -69,7 +65,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                       ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const ChangeUserName())!.then((value) {
@@ -81,18 +77,14 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
+                      BodyLargeText(
                         LocalizationString.category,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
+                        weight: TextWeight.medium,
                       ),
                       const Spacer(),
                       Obx(() => profileController.user.value != null
-                          ? Text(
+                          ? BodyMediumText(
                               profileController.user.value!.category,
-                              style: Theme.of(context).textTheme.bodyMedium,
                             )
                           : Container()),
                       const SizedBox(
@@ -100,7 +92,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                       ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const SetProfileCategoryType(
@@ -115,24 +107,20 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
+                      BodyLargeText(
                         LocalizationString.password,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
+                        weight: TextWeight.medium,
                       ),
                       const Spacer(),
-                      Text(
+                      const BodyMediumText(
                         '********',
-                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(
                         width: 20,
                       ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const ChangePassword());
@@ -142,17 +130,14 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
+                      BodyLargeText(
                         LocalizationString.phoneNumber,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                        weight: TextWeight.medium,
                       ),
                       const Spacer(),
                       Obx(() => profileController.user.value != null
-                          ? Text(
+                          ? BodyMediumText(
                               profileController.user.value!.phone ?? '',
-                              style: Theme.of(context).textTheme.bodyMedium,
                             )
                           : Container()),
                       const SizedBox(
@@ -160,7 +145,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                       ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const ChangePhoneNumber())!.then((value) {
@@ -172,17 +157,12 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.paymentDetail,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
+                      BodyLargeText(LocalizationString.paymentDetail,
+                          weight: TextWeight.medium),
                       const Spacer(),
                       Obx(() => profileController.user.value != null
-                          ? Text(
+                          ? BodyMediumText(
                               profileController.user.value!.paypalId ?? '',
-                              style: Theme.of(context).textTheme.bodyMedium,
                             )
                           : Container()),
                       const SizedBox(
@@ -190,7 +170,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                       ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const ChangePaypalId())!.then((value) {
@@ -202,23 +182,18 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.location,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
+                      BodyLargeText(LocalizationString.location,
+                          weight: TextWeight.medium),
                       const Spacer(),
-                      Obx(() => Text(
+                      Obx(() => BodyMediumText(
                             '${profileController.user.value?.country ?? ''} ${profileController.user.value?.city ?? ''}',
-                            style: Theme.of(context).textTheme.bodyMedium,
                           )),
                       const SizedBox(
                         width: 20,
                       ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const ChangeLocation())!.then((value) {
@@ -228,21 +203,36 @@ class UpdateProfileState extends State<UpdateProfile> {
                     ],
                   ),
                   divider(context: context).vP16,
+                  // Row(
+                  //   children: [
+                  //     BodyLargeText(LocalizationString.currentLocation,
+                  //         weight: TextWeight.medium),
+                  //     const Spacer(),
+                  //     ThemeIconWidget(
+                  //       ThemeIcon.edit,
+                  //       color: AppColorConstants.iconColor,
+                  //       size: 15,
+                  //     ).ripple(() {
+                  //       Get.to(() => const SetLocation(isFromSignup: false))!
+                  //           .then((value) {
+                  //         reloadData();
+                  //       });
+                  //     })
+                  //   ],
+                  // ),
+                  // divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.currentLocation,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
+                      BodyLargeText(LocalizationString.name,
+                          weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const SetLocation())!.then((value) {
+                        Get.to(() => const AddName(isFromSignup: false))!
+                            .then((value) {
                           reloadData();
                         });
                       })
@@ -251,19 +241,16 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.name,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
+                      BodyLargeText(LocalizationString.dob,
+                          weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const AddName())!.then((value) {
+                        Get.to(() => const SetDateOfBirth(isFromSignup: false))!
+                            .then((value) {
                           reloadData();
                         });
                       })
@@ -272,19 +259,16 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.dob,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
+                      BodyLargeText(LocalizationString.gender,
+                          weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const SetDateOfBirth())!.then((value) {
+                        Get.to(() => const SetYourGender(isFromSignup: false))!
+                            .then((value) {
                           reloadData();
                         });
                       })
@@ -293,19 +277,17 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.gender,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      BodyLargeText(LocalizationString.personalDetails,
+                          weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const SetYourGender())!.then((value) {
+                        Get.to(() =>
+                                const AddPersonalInfo(isFromSignup: false))!
+                            .then((value) {
                           reloadData();
                         });
                       })
@@ -314,19 +296,18 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.personalDetails,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      BodyLargeText(LocalizationString.interests,
+                          weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const AddPersonalInfo())!.then((value) {
+                        Get.to(() => const AddInterests(
+                                  isFromSignup: false,
+                                ))!
+                            .then((value) {
                           reloadData();
                         });
                       })
@@ -335,40 +316,17 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider(context: context).vP16,
                   Row(
                     children: [
-                      Text(
-                        LocalizationString.interests,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      BodyLargeText(LocalizationString.professional,
+                          weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
                         ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
+                        color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const AddInterests())!.then((value) {
-                          reloadData();
-                        });
-                      })
-                    ],
-                  ),
-                  divider(context: context).vP16,
-                  Row(
-                    children: [
-                      Text(
-                        LocalizationString.professional,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Spacer(),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: Theme.of(context).iconTheme.color,
-                        size: 15,
-                      ).ripple(() {
-                        Get.to(() => const AddProfessionalDetails())!.then((value) {
+                        Get.to(() => const AddProfessionalDetails(
+                                isFromSignup: false))!
+                            .then((value) {
                           reloadData();
                         });
                       })
@@ -379,37 +337,6 @@ class UpdateProfileState extends State<UpdateProfile> {
               ).hP16,
             ),
           ),
-          // Row(
-          //   children: [
-          //     Container(
-          //       color: AppTheme.themeColor.withOpacity(0.1),
-          //       height: 43,
-          //       width: 43,
-          //       child:
-          //           ThemeIconWidget(ThemeIcon.lock, color: AppTheme.themeColor),
-          //     ).circular,
-          //     const SizedBox(
-          //       width: 15,
-          //     ),
-          //     Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         Text(LocalizationString.faceIdTouchId,
-          //                 style: Theme.of(context).textTheme.titleMedium.primaryColor.bold)
-          //             .bP4,
-          //         Text(LocalizationString.manageDeviceSecurity,
-          //             style: Theme.of(context).textTheme.bodyLarge),
-          //       ],
-          //     ),
-          //     const Spacer(),
-          //     Obx(() => Switch(
-          //         value:
-          //             profileController.user.value.isBioMetricLoginEnabled == 1,
-          //         onChanged: (value) {
-          //           profileController.updateBioMetricSetting(value);
-          //         }))
-          //   ],
-          // ).hP16
         ],
       ),
     );
@@ -420,106 +347,140 @@ class UpdateProfileState extends State<UpdateProfile> {
         init: profileController,
         builder: (ctx) {
           return SizedBox(
-            height: 210,
+            height: 270,
             child: profileController.user.value != null
-                ? Column(children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    UserAvatarView(
-                            user: profileController.user.value!,
-                            size: 65,
-                            onTapHandler: () {})
-                        .ripple(() {
-                      openImagePickingPopup();
-                    }),
-                    Text(
-                      LocalizationString.editProfilePicture,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ).vP4.ripple(() {
-                      openImagePickingPopup();
-                    }),
-                    Text(
-                      profileController.user.value!.userName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.w600),
-                    ).setPadding(bottom: 4),
-                    profileController.user.value?.email != null
-                        ? Text(
-                            '${profileController.user.value!.email}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                    color: Theme.of(context).backgroundColor),
-                          )
-                        : Container(),
-                    profileController.user.value?.country != null
-                        ? Text(
-                            '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                    color: Theme.of(context).backgroundColor),
-                          ).vP4
-                        : Container(),
-                  ]).p8
+                ? Stack(
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            child:
+                                profileController.user.value!.coverImage != null
+                                    ? CachedNetworkImage(
+                                            width: Get.width,
+                                            height: 250,
+                                            fit: BoxFit.cover,
+                                            imageUrl: profileController
+                                                .user.value!.coverImage!)
+                                        .overlay(Colors.black26)
+                                        .bottomRounded(20)
+                                    : Container(
+                                        width: Get.width,
+                                        height: 250,
+                                        color: AppColorConstants.themeColor
+                                            .withOpacity(0.2),
+                                      ).bottomRounded(20),
+                          ),
+                          Positioned(
+                              bottom: 10,
+                              right: 16,
+                              child: Container(
+                                color: AppColorConstants.cardColor,
+                                child: BodyLargeText(LocalizationString.editProfileCover).setPadding(
+                                    left: 10, right: 10, top: 8, bottom: 8),
+                              ).circular.ripple(() {
+                                openImagePickingPopup(isCoverImage: true);
+                              }))
+                        ],
+                      ),
+                      Column(children: [
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        UserAvatarView(
+                                user: profileController.user.value!,
+                                size: 65,
+                                onTapHandler: () {})
+                            .ripple(() {
+                          openImagePickingPopup(isCoverImage: false);
+                        }),
+                        BodyMediumText(
+                          LocalizationString.editProfilePicture,
+                        ).vP4.ripple(() {
+                          openImagePickingPopup(isCoverImage: false);
+                        }),
+                        Heading5Text(
+                          profileController.user.value!.userName,
+                          weight: TextWeight.medium,
+                        ).setPadding(bottom: 4),
+                        profileController.user.value?.email != null
+                            ? BodyMediumText(
+                                '${profileController.user.value!.email}',
+                                color: AppColorConstants.grayscale500,
+                              )
+                            : Container(),
+                        profileController.user.value?.country != null
+                            ? BodyMediumText(
+                                '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
+                                color: AppColorConstants.grayscale500,
+                              ).vP4
+                            : Container(),
+                      ]).p8,
+                      Positioned(
+                          top: 50,
+                          left: 0,
+                          right: 0,
+                          child: backNavigationBar(context: context, title: ''))
+                    ],
+                  )
                 : Container(),
           );
         });
   }
 
-  void openImagePickingPopup() {
+  void openImagePickingPopup({required bool isCoverImage}) {
     showModalBottomSheet(
         context: context,
-        builder: (context) => Wrap(
-              children: [
-                Padding(
-                    padding: const EdgeInsets.only(
-                        left: 20, right: 20, top: 20, bottom: 25),
-                    child: Text(LocalizationString.addPhoto,
-                        style: Theme.of(context).textTheme.bodyLarge)),
-                ListTile(
-                    leading: Icon(Icons.camera_alt_outlined,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.takePhoto),
-                    onTap: () {
-                      Get.back();
-                      picker
-                          .pickImage(source: ImageSource.camera)
-                          .then((pickedFile) {
-                        if (pickedFile != null) {
-                          profileController.editProfileImageAction(
-                              pickedFile, context);
-                        } else {}
-                      });
-                    }),
-                divider(context: context),
-                ListTile(
-                    leading: Icon(Icons.wallpaper_outlined,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.chooseFromGallery),
-                    onTap: () async {
-                      Get.back();
-                      picker
-                          .pickImage(source: ImageSource.gallery)
-                          .then((pickedFile) {
-                        if (pickedFile != null) {
-                          profileController.editProfileImageAction(
-                              pickedFile, context);
-                        } else {}
-                      });
-                    }),
-                divider(context: context),
-                ListTile(
-                    leading: Icon(Icons.close,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.cancel),
-                    onTap: () => Get.back()),
-              ],
-            ));
+        builder: (context) => Container(
+          color: AppColorConstants.cardColor,
+          child: Wrap(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 20, right: 20, top: 20, bottom: 25),
+                      child:Heading5Text(
+                        LocalizationString.addPhoto,
+                        weight: TextWeight.bold,
+                      )),
+                  ListTile(
+                      leading: Icon(Icons.camera_alt_outlined,
+                          color: AppColorConstants.iconColor),
+                      title: BodyLargeText(LocalizationString.takePhoto),
+                      onTap: () {
+                        Get.back();
+                        picker
+                            .pickImage(source: ImageSource.camera)
+                            .then((pickedFile) {
+                          if (pickedFile != null) {
+                            profileController.editProfileImageAction(
+                                pickedFile, isCoverImage);
+                          } else {}
+                        });
+                      }),
+                  divider(context: context),
+                  ListTile(
+                      leading: Icon(Icons.wallpaper_outlined,
+                          color: AppColorConstants.iconColor),
+                      title: BodyLargeText(LocalizationString.chooseFromGallery),
+                      onTap: () async {
+                        Get.back();
+                        picker
+                            .pickImage(source: ImageSource.gallery)
+                            .then((pickedFile) {
+                          if (pickedFile != null) {
+                            profileController.editProfileImageAction(
+                                pickedFile, isCoverImage);
+                          } else {}
+                        });
+                      }),
+                  divider(context: context),
+                  ListTile(
+                      leading:
+                          Icon(Icons.close, color: AppColorConstants.iconColor),
+                      title: BodyLargeText(LocalizationString.cancel),
+                      onTap: () => Get.back()),
+                ],
+              ),
+        ));
   }
 }

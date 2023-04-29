@@ -1,5 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/live_imports.dart';
 
 class RandomLiveListing extends StatefulWidget {
   const RandomLiveListing({Key? key}) : super(key: key);
@@ -9,11 +10,10 @@ class RandomLiveListing extends StatefulWidget {
 }
 
 class _RandomLiveListingState extends State<RandomLiveListing> {
-  final RandomLivesController _randomLivesController = Get.find();
+  final RandomLivesController _randomLivesController = RandomLivesController();
 
   @override
   void initState() {
-    // TODO: implement initState
     _randomLivesController.getAllRandomLives();
     super.initState();
   }
@@ -28,7 +28,7 @@ class _RandomLiveListingState extends State<RandomLiveListing> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -58,6 +58,7 @@ class _RandomLiveListingState extends State<RandomLiveListing> {
             children: [
               CachedNetworkImage(
                 imageUrl: liveUser.picture!,
+            
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: double.infinity,
@@ -66,17 +67,16 @@ class _RandomLiveListingState extends State<RandomLiveListing> {
                   left: 8,
                   top: 8,
                   child: Row(
-                    children: [
-                      const ThemeIconWidget(
+                    children: const [
+                      ThemeIconWidget(
                         ThemeIcon.eye,
                         size: 12,
                       ),
-                      const SizedBox(
+                      SizedBox(
                         width: 5,
                       ),
-                      Text(
+                      BodySmallText(
                         '5.5k',
-                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   )),
@@ -95,25 +95,21 @@ class _RandomLiveListingState extends State<RandomLiveListing> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        BodyLargeText(
                           'Adam',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.w600),
+                          weight: TextWeight.medium,
                         ),
                         Row(
-                          children: [
-                            const ThemeIconWidget(
+                          children: const [
+                            ThemeIconWidget(
                               ThemeIcon.diamond,
                               size: 10,
                             ),
-                            const SizedBox(
+                            SizedBox(
                               width: 5,
                             ),
-                            Text(
+                            BodySmallText(
                               '5.5k',
-                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         )

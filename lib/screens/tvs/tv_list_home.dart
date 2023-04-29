@@ -1,10 +1,10 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/screens/tvs/tv_list_by_category.dart';
-import 'package:foap/screens/tvs/tv_channel_detail.dart';
-import 'package:foap/screens/tvs/tv_show_detail.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
-import 'live_tv_player.dart';
+import '../../model/category_model.dart';
+import '../../model/tv_banner_model.dart';
 import 'package:foap/model/live_tv_model.dart';
+import 'package:foap/helper/imports/tv_imports.dart';
 
 class TvListHome extends StatefulWidget {
   const TvListHome({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _TvListHomeState extends State<TvListHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -129,7 +129,7 @@ class _TvListHomeState extends State<TvListHome> {
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: (Theme.of(context).brightness == Brightness.dark
-                                ? Theme.of(context).primaryColor
+                                ? AppColorConstants.themeColor
                                 : Colors.grey)
                             .withOpacity(_current == entry.key ? 0.9 : 0.4)),
                   ).ripple(() {
@@ -152,7 +152,7 @@ class _TvListHomeState extends State<TvListHome> {
                 fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width,
                 height: 200,
-              ).shadow(context: context).p16.ripple(() {
+              ).backgroundCard().p16.ripple(() {
                 Get.to(() => LiveTvPlayer(
                       tvModel: tv,
                     ));
@@ -187,12 +187,9 @@ class _TvListHomeState extends State<TvListHome> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         children: [
-          Text(
+          Heading6Text(
             model.name,
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall!
-                .copyWith(fontWeight: FontWeight.w500),
+              weight: TextWeight.medium
           ).setPadding(top: 20, bottom: 8, left: 16, right: 0),
           const Spacer(),
           const ThemeIconWidget(

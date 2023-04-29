@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class DeletedMessageChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -10,9 +11,7 @@ class DeletedMessageChatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       LocalizationString.thisMessageIsDeleted,
-      style: Theme.of(context)
-          .textTheme
-          .bodyLarge!
+      style: TextStyle(fontSize: FontSizes.b2)
           .copyWith(decoration: TextDecoration.underline),
     );
   }

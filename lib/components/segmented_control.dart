@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class SegmentedControl extends StatefulWidget {
   final List<String>? segments;
@@ -34,9 +34,9 @@ class SegmentedControlState extends State<SegmentedControl> {
     value = widget.value;
     return CupertinoSegmentedControl<int>(
       padding: EdgeInsets.zero,
-      selectedColor: Theme.of(context).primaryColor,
-      unselectedColor: Theme.of(context).backgroundColor,
-      borderColor: Theme.of(context).disabledColor,
+      selectedColor: AppColorConstants.themeColor,
+      unselectedColor: AppColorConstants.backgroundColor,
+      borderColor: AppColorConstants.disabledColor,
       children: addSegmentedChips(segments!),
       groupValue: value,
       onValueChanged: (value) {
@@ -51,12 +51,9 @@ class SegmentedControlState extends State<SegmentedControl> {
       hashmap[i] = SizedBox(
           width: (MediaQuery.of(context).size.width - 40) / segments.length,
           height: 36,
-          child: Text(
+          child: BodySmallText(
             segments[i],
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall!
-                .copyWith(fontWeight: FontWeight.w300),
+              weight: TextWeight.regular
           ).alignCenter);
     }
     return hashmap;

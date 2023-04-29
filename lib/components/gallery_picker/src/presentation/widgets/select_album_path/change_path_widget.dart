@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:foap/components/gallery_picker/src/presentation/pages/gallery_media_picker_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class ChangePathWidget extends StatefulWidget {
@@ -78,10 +78,8 @@ class ChangePathWidgetState extends State<ChangePathWidget> {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
+                child: BodyLargeText(
                   item.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
             ),

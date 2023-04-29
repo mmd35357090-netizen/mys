@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:foap/helper/extension.dart';
 
-class FilledButtonType1 extends StatelessWidget {
+import '../components/custom_texts.dart';
+import '../util/app_config_constants.dart';
+
+class AppThemeButton extends StatelessWidget {
   final String? text;
   final double? height;
   final double? width;
   final double? cornerRadius;
-  final bool? isEnabled;
   final Widget? leading;
   final Widget? trailing;
   final Color? enabledBackgroundColor;
   final Color? disabledBackgroundColor;
 
-  final TextStyle? enabledTextStyle;
-  final TextStyle? disabledTextStyle;
-
   final VoidCallback? onPress;
 
-  const FilledButtonType1({
+  const AppThemeButton({
     Key? key,
     required this.text,
     required this.onPress,
@@ -28,9 +27,6 @@ class FilledButtonType1 extends StatelessWidget {
     this.trailing,
     this.enabledBackgroundColor,
     this.disabledBackgroundColor,
-    this.enabledTextStyle,
-    this.disabledTextStyle,
-    this.isEnabled,
   }) : super(key: key);
 
   @override
@@ -38,10 +34,7 @@ class FilledButtonType1 extends StatelessWidget {
     return Container(
       width: width,
       height: height ?? 50,
-      color: isEnabled == false
-          ? disabledBackgroundColor ??
-              Theme.of(context).disabledColor.withOpacity(0.2)
-          : enabledBackgroundColor ?? Theme.of(context).primaryColor,
+      color: AppColorConstants.themeColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -49,29 +42,22 @@ class FilledButtonType1 extends StatelessWidget {
           Center(
             child: Text(
               text!,
-              style: isEnabled == true
-                  ? enabledTextStyle ??
-                      Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.w600)
-                  : disabledTextStyle ??
-                      Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: FontSizes.b2,
+                  fontWeight: TextWeight.medium,
+                  color: AppColorConstants.grayscale900),
             ).hP8,
           ),
           trailing != null ? trailing!.hP4 : Container()
         ],
       ),
     ).round(cornerRadius ?? 15).ripple(() {
-      isEnabled == false ? null : onPress!();
+      onPress!();
     });
   }
 }
 
-class BorderButtonType1 extends StatelessWidget {
+class AppThemeBorderButton extends StatelessWidget {
   final String? text;
   final VoidCallback? onPress;
   final Color? borderColor;
@@ -81,7 +67,7 @@ class BorderButtonType1 extends StatelessWidget {
   final TextStyle? textStyle;
   final double? width;
 
-  const BorderButtonType1(
+  const AppThemeBorderButton(
       {Key? key,
       required this.text,
       required this.onPress,
@@ -96,25 +82,24 @@ class BorderButtonType1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width ,
+      width: width,
       height: height ?? 50,
       color: backgroundColor,
       child: Center(
         child: Text(
           text!,
           style: textStyle ??
-              Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w600),
+              TextStyle(
+                  fontSize: FontSizes.b2,
+                  fontWeight: TextWeight.medium,
+                  color: AppColorConstants.grayscale900),
         ).hP8,
       ),
     )
         .borderWithRadius(
-            context: context,
             value: 1,
             radius: cornerRadius ?? 15,
-            color: borderColor ?? Theme.of(context).dividerColor)
+            color: borderColor ?? AppColorConstants.dividerColor)
         .ripple(onPress!);
   }
 }

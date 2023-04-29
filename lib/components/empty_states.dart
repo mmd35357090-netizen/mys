@@ -1,69 +1,77 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:get/get.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:lottie/lottie.dart';
 
 Widget noUserFound(BuildContext context) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Image.asset(
-        'assets/nouser.png',
+      Lottie.asset(
+        'assets/lottie/no_record.json',
         height: 200,
-        width: 200,
+        // width: 200,
       ),
       const SizedBox(
         height: 20,
       ),
-      Text(
+      Heading5Text(
         LocalizationString.noUserFound,
-        style: Theme.of(context).textTheme.titleLarge!
-            .copyWith(fontWeight: FontWeight.w600),
+        weight: TextWeight.medium,
       )
     ],
   );
 }
 
-Widget emptyPost({required String title, required String subTitle, required BuildContext context}) {
+Widget emptyPost(
+    {required String title,
+    required String subTitle,
+    }) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Image.asset('assets/nopost.png', height: 150,),
+      Lottie.asset(
+        'assets/lottie/no_record.json',
+        height: 200,
+        // width: 200,
+      ),
       const SizedBox(
         height: 20,
       ),
-      Text(
+      Heading6Text(
         title,
-        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w900),
+        weight: TextWeight.medium,
       ),
       const SizedBox(
         height: 10,
       ),
-      Text(
+      BodyLargeText(
         subTitle,
-        style: Theme.of(context).textTheme.bodyLarge,
       ),
     ],
   );
 }
 
-Widget emptyUser({required String title, required String subTitle, required BuildContext context}) {
+Widget emptyUser(
+    {required String title,
+    required String subTitle,
+    }) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Image.asset('assets/nouser.png', height: 150,),
+      Lottie.asset(
+        'assets/lottie/no_record.json',
+        height: 200,
+        // width: 200,
+      ),
       const SizedBox(
         height: 20,
       ),
-      Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w900),
-      ),
+      Heading6Text(title, weight: TextWeight.medium),
       const SizedBox(
         height: 10,
       ),
-      Text(
+      BodyLargeText(
         subTitle,
-        style: Theme.of(context).textTheme.bodyLarge,
       ),
     ],
   );
@@ -73,22 +81,21 @@ Widget emptyData({required String title, required String subTitle}) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Image.asset('assets/nodata.png', height: 150,),
+      Lottie.asset(
+        'assets/lottie/no_record.json',
+        height: 200,
+        // width: 200,
+      ),
       const SizedBox(
         height: 20,
       ),
-      Text(
-        title,
-        style: Theme.of(Get.context!).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w900),
-      ),
+      Heading6Text(title, weight: TextWeight.medium),
       const SizedBox(
         height: 10,
       ),
-      Text(
+      BodyLargeText(
         subTitle,
-        style: Theme.of(Get.context!).textTheme.bodyLarge,
       ),
     ],
   );
 }
-

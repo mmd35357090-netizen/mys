@@ -1,5 +1,5 @@
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
 
 class ContactsController extends GetxController {
   RxList<Contact> contacts = <Contact>[].obs;

@@ -1,9 +1,14 @@
+import 'package:foap/helper/imports/club_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
 
-import '../../model/club_invitation.dart';
+import '../../apiHandler/api_controller.dart';
+import '../../model/category_model.dart';
+
 
 class ClubsController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxList<ClubModel> clubs = <ClubModel>[].obs;
   RxList<CategoryModel> categories = <CategoryModel>[].obs;
   RxList<ClubMemberModel> members = <ClubMemberModel>[].obs;
@@ -23,7 +28,7 @@ class ClubsController extends GetxController {
   bool canLoadMoreMembers = true;
   bool isLoadingMembers = false;
 
-  RxInt segmentIndex = (-1).obs;
+  RxInt segmentIndex = (0).obs;
 
   clear() {
     isLoadingClubs.value = false;
@@ -52,11 +57,11 @@ class ClubsController extends GetxController {
   }
 
   selectedSegmentIndex({required int index, required bool forceRefresh}) {
+
     if (isLoadingClubs.value == true) {
       return;
     }
     update();
-
     if (index == 0 && (segmentIndex.value != index || forceRefresh == true)) {
       clear();
       getClubs(isStartOver: true);
@@ -67,7 +72,7 @@ class ClubsController extends GetxController {
     } else if (index == 2 &&
         (segmentIndex.value != index || forceRefresh == true)) {
       clear();
-      getClubs(userId: getIt<UserProfileManager>().user!.id, isStartOver: true);
+      getClubs(userId: _userProfileManager.user.value!.id, isStartOver: true);
     } else if (index == 3 &&
         (segmentIndex.value != index || forceRefresh == true)) {
       getClubInvitations();
@@ -82,6 +87,7 @@ class ClubsController extends GetxController {
       int? userId,
       int? isJoined,
       required bool isStartOver}) {
+
     if (canLoadMoreClubs) {
       if (isStartOver == true) {
         isLoadingClubs.value = true;
@@ -94,16 +100,17 @@ class ClubsController extends GetxController {
               isJoined: isJoined,
               page: clubsPage)
           .then((response) {
+
         clubs.addAll(response.clubs);
         clubs.value = clubs.toSet().toList();
         isLoadingClubs.value = false;
 
         if (response.clubs.length == response.metaData?.perPage) {
           canLoadMoreClubs = true;
-          clubsPage += 1;
         } else {
           canLoadMoreClubs = false;
         }
+        clubsPage += 1;
         update();
       });
     }

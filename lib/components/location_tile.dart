@@ -1,4 +1,6 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../model/location.dart';
 
 class LocationTile extends StatelessWidget {
   final LocationModel location;
@@ -22,19 +24,15 @@ class LocationTile extends StatelessWidget {
               child: ThemeIconWidget(
                 ThemeIcon.addressPin,
                 size: 20,
-                color: Theme.of(context).iconTheme.color,
+                color: AppColorConstants.iconColor,
               ),
-            ).borderWithRadius(context: context, value: 0.5, radius: 20),
+            ).borderWithRadius( value: 0.5, radius: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  location.name,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
-                ).bP4,
-                Text(
+                Heading5Text(location.name, weight: TextWeight.medium).bP4,
+                const BodyLargeText(
                   '1.50k posts',
-                  style: Theme.of(context).textTheme.bodyLarge,
                 )
               ],
             ).hP16,

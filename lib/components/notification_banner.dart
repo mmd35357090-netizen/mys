@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:overlay_support/overlay_support.dart';
+
+import '../apiHandler/api_controller.dart';
+import '../manager/db_manager.dart';
+import '../model/chat_message_model.dart';
+import '../model/chat_room_model.dart';
+import '../screens/chat/chat_detail.dart';
 
 showNewMessageBanner(ChatMessageModel message, int roomId) async {
   ChatRoomModel? room = await getIt<DBManager>().getRoomById(roomId);
@@ -19,7 +26,7 @@ showNotification(ChatMessageModel message, ChatRoomModel room) {
     return Container(
       color: Colors.transparent,
       child: Container(
-        color: Theme.of(context).cardColor.lighten(),
+        color: AppColorConstants.cardColor.lighten(),
         child: ListTile(
           leading: AvatarView(
             size: 40,
@@ -30,16 +37,16 @@ showNotification(ChatMessageModel message, ChatRoomModel room) {
                 ? room.name
                 : room.memberById(message.senderId).userDetail.userName,
           ),
-          title: Text(
+          title: Heading5Text(
             room.isGroupChat == true
                 ? '(${room.name}) ${room.memberById(message.senderId).userDetail.userName}'
                 : room.memberById(message.senderId).userDetail.userName,
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontWeight: FontWeight.w900,
-                color: Theme.of(context).primaryColor),
+            weight: TextWeight.bold,
+            color: AppColorConstants.themeColor,
           ),
-          subtitle: Text(message.shortInfoForNotification,
-              style: Theme.of(context).textTheme.titleSmall),
+          subtitle: Heading6Text(
+            message.shortInfoForNotification,
+          ),
         ).setPadding(top: 60, left: 16, right: 16).ripple(() {
           OverlaySupportEntry.of(context)!.dismiss();
 
@@ -47,7 +54,7 @@ showNotification(ChatMessageModel message, ChatRoomModel room) {
                 chatRoom: room,
               ));
         }),
-      ).shadow(context: context).round(15),
+      ).backgroundCard().round(15),
     );
   }, duration: const Duration(milliseconds: 4000));
 }

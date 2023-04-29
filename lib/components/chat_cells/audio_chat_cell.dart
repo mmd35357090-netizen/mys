@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../manager/player_manager.dart';
 
 class AudioChatTile extends StatefulWidget {
   final ChatMessageModel message;
@@ -78,9 +82,9 @@ class AudioProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() => ProgressBar(
-          thumbColor: Theme.of(context).primaryColor.darken(),
-          progressBarColor: Theme.of(context).primaryColor,
-          baseBarColor: Theme.of(context).backgroundColor.lighten(),
+          thumbColor: AppColorConstants.themeColor.darken(),
+          progressBarColor: AppColorConstants.themeColor,
+          baseBarColor: AppColorConstants.backgroundColor.lighten(),
           thumbRadius: 8,
           barHeight: 2,
           progress: _playerManager.progress.value?.current ??
@@ -89,10 +93,9 @@ class AudioProgressBar extends StatelessWidget {
           total: _playerManager.progress.value?.total ??
               const Duration(seconds: 0),
           timeLabelPadding: 5,
-          timeLabelTextStyle: Theme.of(context)
-              .textTheme
-              .bodySmall!
-              .copyWith(fontWeight: FontWeight.w900),
+          timeLabelTextStyle: TextStyle(
+              fontSize: FontSizes.b4, fontWeight: TextWeight.bold)
+
           // onSeek: pageManager.seek,
         ));
   }

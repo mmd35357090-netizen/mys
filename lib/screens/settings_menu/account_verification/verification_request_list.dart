@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
+
+import '../../../controllers/request_verification_controller.dart';
+import '../../add_on/model/verification_request_model.dart';
 
 class RequestVerificationList extends StatefulWidget {
   final List<VerificationRequest> requests;
@@ -14,7 +18,7 @@ class RequestVerificationList extends StatefulWidget {
 
 class _RequestVerificationListState extends State<RequestVerificationList> {
   final RequestVerificationController _requestVerificationController =
-      Get.find();
+      RequestVerificationController();
 
   @override
   void initState() {
@@ -24,7 +28,7 @@ class _RequestVerificationListState extends State<RequestVerificationList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
             const SizedBox(
@@ -49,7 +53,7 @@ class _RequestVerificationListState extends State<RequestVerificationList> {
                           return Container(
                             height: 80,
                             width: 80,
-                            color: Theme.of(context).cardColor,
+                            color: AppColorConstants.cardColor,
                             child: Row(
                               children: [
                                 Expanded(
@@ -60,22 +64,14 @@ class _RequestVerificationListState extends State<RequestVerificationList> {
                                         children: [
                                           ThemeIconWidget(
                                             ThemeIcon.calendar,
-                                            color:
-                                                Theme.of(context).primaryColor,
+                                            color: AppColorConstants.themeColor,
                                             size: 15,
                                           ),
                                           const SizedBox(
                                             width: 5,
                                           ),
-                                          Text(
-                                            request.sentOn,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                          )
+                                          BodySmallText(request.sentOn,
+                                              weight: TextWeight.medium)
                                         ],
                                       ),
                                       const SizedBox(
@@ -83,19 +79,13 @@ class _RequestVerificationListState extends State<RequestVerificationList> {
                                       ),
                                       Row(
                                         children: [
-                                          Text(
-                                            '${LocalizationString.status} :',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.w800),
-                                          ),
+                                          BodySmallText(
+                                              '${LocalizationString.status} :',
+                                              weight: TextWeight.semiBold),
                                           const SizedBox(
                                             width: 5,
                                           ),
-                                          Text(
+                                          BodySmallText(
                                             request.isProcessing
                                                 ? LocalizationString
                                                     .inProcessing
@@ -107,17 +97,14 @@ class _RequestVerificationListState extends State<RequestVerificationList> {
                                                             .rejected
                                                         : LocalizationString
                                                             .approved,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                    color: request.isProcessing
-                                                        ? Colors.yellow
-                                                        : request.isRejected ||
-                                                                request
-                                                                    .isCancelled
-                                                            ? Colors.red
-                                                            : Colors.green),
+
+                                            color: request.isProcessing
+                                                ? Colors.yellow
+                                                : request.isRejected ||
+                                                request
+                                                    .isCancelled
+                                                ? Colors.red
+                                                : Colors.green,
                                           )
                                         ],
                                       )
@@ -127,7 +114,7 @@ class _RequestVerificationListState extends State<RequestVerificationList> {
                                 if (request.isProcessing)
                                   Container(
                                     width: 80,
-                                    color: Theme.of(context).primaryColor,
+                                    color: AppColorConstants.themeColor,
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -137,11 +124,9 @@ class _RequestVerificationListState extends State<RequestVerificationList> {
                                         const SizedBox(
                                           height: 5,
                                         ),
-                                        Text(
+                                        BodyMediumText(
                                           LocalizationString.cancel,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
+
                                         )
                                       ],
                                     ),

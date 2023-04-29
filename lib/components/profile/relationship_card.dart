@@ -1,12 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/helper/extension.dart';
-import 'package:foap/manager/service_locator.dart';
-import 'package:get/get.dart';
-import '../../controllers/relationship_controller.dart';
-import '../../helper/localization_strings.dart';
-import '../../model/myRelations/my_relations_model.dart';
-import '../avatar_view.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
+import '../../screens/add_on/controller/relationship/relationship_controller.dart';
+import '../../screens/add_on/model/my_relations_model.dart';
 
 class RelationshipCard extends StatelessWidget {
   final MyRelationsModel relationship;
@@ -15,7 +10,8 @@ class RelationshipCard extends StatelessWidget {
       : super(key: key);
 
   String getRelationFromId(int id) {
-    final RelationshipController relationshipController = Get.find();
+    final RelationshipController relationshipController =
+        RelationshipController();
 
     List outputList = relationshipController.relationshipNames
         .where((o) => o.id == id)
@@ -26,8 +22,8 @@ class RelationshipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).cardColor,
-      margin: const EdgeInsets.all(6),
+      color: AppColorConstants.cardColor,
+      margin: const EdgeInsets.all(10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
@@ -36,29 +32,21 @@ class RelationshipCard extends StatelessWidget {
         children: [
           AvatarView(
             url: relationship.user?.picture ?? '',
-            size: 70,
+            size: 50,
             name: relationship.user?.userName,
           ),
-          Text(
+          Heading6Text(
             relationship.user?.userName ?? '',
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall!
-                .copyWith(fontWeight: FontWeight.w300),
+            weight: TextWeight.regular,
           ).setPadding(top: 15, bottom: 2),
-          Text(
-            getRelationFromId(relationship.relationShipId ?? 0),
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.w600),
-          ),
+          if (relationship.relationShipId != 0)
+            BodyLargeText(getRelationFromId(relationship.relationShipId ?? 0),
+                weight: TextWeight.medium),
           if (relationship.status != 4)
-            Text(
+            BodyMediumText(
               LocalizationString.requestPending,
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).primaryColor),
+              weight: TextWeight.semiBold,
+              color: AppColorConstants.themeColor,
             ),
         ],
       ).vP16,

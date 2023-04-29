@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/user_model.dart';
 import 'package:intl/intl.dart';
 
 class LiveModel {

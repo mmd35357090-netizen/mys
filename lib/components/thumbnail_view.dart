@@ -1,5 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import '../model/story_model.dart';
+import 'package:path_provider/path_provider.dart';
 
 class MediaThumbnailView extends StatefulWidget {
   final StoryMediaModel media;
@@ -63,10 +68,9 @@ class _MediaThumbnailViewState extends State<MediaThumbnailView> {
                     },
                   ))
         .borderWithRadius(
-            context: context,
             value: 2,
             radius: 20,
-            color: widget.borderColor ?? Theme.of(context).primaryColor);
+            color: widget.borderColor ?? AppColorConstants.themeColor);
   }
 }
 

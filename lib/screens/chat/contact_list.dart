@@ -1,6 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_contacts/contact.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/components/contact_tile.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/chat_and_call/conatcts_controller.dart';
 
 class ContactList extends StatefulWidget {
   final Function(List<Contact>) selectedContactsHandler;
@@ -13,7 +16,7 @@ class ContactList extends StatefulWidget {
 }
 
 class _ContactListState extends State<ContactList> {
-  final ContactsController contactsController = Get.find();
+  final ContactsController contactsController = ContactsController();
 
   @override
   void initState() {
@@ -25,7 +28,7 @@ class _ContactListState extends State<ContactList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -42,12 +45,10 @@ class _ContactListState extends State<ContactList> {
                   ).ripple(() {
                     Navigator.of(context).pop();
                   }),
-                  Text(
+                  Heading5Text(
                     LocalizationString.send,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.w600),
+                    weight: TextWeight.medium,
+
                   ).ripple(() {
                     Navigator.of(context).pop();
                     widget.selectedContactsHandler(
@@ -60,12 +61,9 @@ class _ContactListState extends State<ContactList> {
                 right: 0,
                 child: Column(
                   children: [
-                    Obx(() => Text(
+                    Obx(() => Heading6Text(
                           '${LocalizationString.shareContacts} ${contactsController.selectedContacts.length}/${contactsController.contacts.length}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(fontWeight: FontWeight.w600),
+                      weight: TextWeight.medium,
                         ))
                   ],
                 ),

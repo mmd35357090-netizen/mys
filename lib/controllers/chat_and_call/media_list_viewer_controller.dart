@@ -1,5 +1,6 @@
-import 'package:foap/helper/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+
 
 class MediaListViewerController extends GetxController {
   int currentIndex = 0;

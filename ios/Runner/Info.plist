@@ -46,7 +46,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>phozio</string>
+				<string>giveriver</string>
 			</array>
 		</dict>
 	</array>

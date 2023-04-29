@@ -1,5 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/string_extension.dart';
 import 'package:link_preview_generator/link_preview_generator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TextChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -34,7 +38,9 @@ class TextChatTile extends StatelessWidget {
                   }
                 },
                 text: messageString,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: TextStyle(
+                    fontSize: FontSizes.b2,
+                    color: AppColorConstants.grayscale900),
               )
             ],
           )
@@ -47,7 +53,7 @@ class TextChatTile extends StatelessWidget {
               }
             },
             text: messageString,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: TextStyle(fontSize: FontSizes.b2,color: AppColorConstants.grayscale900),
           );
   }
 }

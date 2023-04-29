@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class StickerChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -21,7 +22,7 @@ class StickerChatTile extends StatelessWidget {
             httpHeaders: const {'accept': 'image/*'},
             fit: BoxFit.contain,
             placeholder: (context, url) =>
-                AppUtil.addProgressIndicator(context,100),
+                AppUtil.addProgressIndicator(size:100),
             errorWidget: (context, url, error) => const Icon(Icons.error),
           ).setPadding(
               left: message.isMineMessage ? 0 : 20,

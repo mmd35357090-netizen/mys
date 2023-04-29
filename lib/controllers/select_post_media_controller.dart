@@ -1,6 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/screens/chat/media.dart';
 import 'package:get/get.dart';
-
 class SelectPostMediaController extends GetxController {
   RxList<Media> selectedMediaList = <Media>[].obs;
   RxBool allowMultipleSelection = false.obs;

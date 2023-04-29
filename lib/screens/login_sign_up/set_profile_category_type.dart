@@ -1,7 +1,9 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/profile/set_profile_category_controller.dart';
+import '../../controllers/profile_controller.dart';
+import '../../model/category_model.dart';
 
 class SetProfileCategoryType extends StatefulWidget {
   final bool isFromSignup;
@@ -17,6 +19,7 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
   final SetProfileCategoryController _setProfileCategoryController =
       SetProfileCategoryController();
   final ProfileController profileController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -25,14 +28,14 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setProfileCategoryController.getProfileTypeCategories();
       _setProfileCategoryController.setProfileCategoryType(
-          getIt<UserProfileManager>().user!.profileCategoryTypeId);
+          _userProfileManager.user.value!.profileCategoryTypeId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -52,20 +55,17 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
               ],
             ),
           if (widget.isFromSignup == true)
-            Text(LocalizationString.setProfileCategoryType,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(fontWeight: FontWeight.w600)),
+            Heading3Text(
+              LocalizationString.setProfileCategoryType,
+            ),
           const SizedBox(
             height: 20,
           ),
-          Text(LocalizationString.setProfileCategoryTypeSubHeading,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w600)),
+          BodySmallText(
+            LocalizationString.setProfileCategoryTypeSubHeading,
+            textAlign: TextAlign.center,
+            weight: TextWeight.medium,
+          ).hP16,
           const SizedBox(
             height: 20,
           ),
@@ -80,10 +80,11 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          category.name,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
+                        Text(category.name,
+                            style: TextStyle(
+                                fontSize: FontSizes.b2,
+                                color: AppColorConstants.grayscale900,
+                                fontWeight: TextWeight.semiBold)),
                         Obx(() => ThemeIconWidget(
                               _setProfileCategoryController
                                           .profileCategoryType.value ==
@@ -93,8 +94,8 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
                               color: _setProfileCategoryController
                                           .profileCategoryType.value ==
                                       category.id
-                                  ? Theme.of(context).primaryColor
-                                  : Theme.of(context).iconTheme.color,
+                                  ? AppColorConstants.themeColor
+                                  : AppColorConstants.iconColor,
                             )),
                       ],
                     ).ripple(() {
@@ -105,7 +106,7 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
                   separatorBuilder: (ctx, index) {
                     return const SizedBox(height: 20);
                   }))),
-          FilledButtonType1(
+          AppThemeButton(
               text: LocalizationString.submit,
               onPress: () {
                 profileController.updateProfileCategoryType(

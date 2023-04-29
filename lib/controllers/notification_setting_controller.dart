@@ -1,7 +1,10 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/apiHandler/api_controller.dart';
 
 class NotificationSettingController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxInt likesNotificationStatus = 0.obs;
   RxInt commentNotificationStatus = 0.obs;
   RxInt turnOfAll = 0.obs;
@@ -10,9 +13,9 @@ class NotificationSettingController extends GetxController {
 
   initialize() {
     likesNotificationStatus.value =
-        getIt<UserProfileManager>().user!.likePushNotificationStatus;
+        _userProfileManager.user.value!.likePushNotificationStatus;
     commentNotificationStatus.value =
-        getIt<UserProfileManager>().user!.commentPushNotificationStatus;
+        _userProfileManager.user.value!.commentPushNotificationStatus;
     update();
   }
 
@@ -51,14 +54,14 @@ class NotificationSettingController extends GetxController {
             .then((response) {
           EasyLoading.dismiss();
           if (response.success == true) {
-            getIt<UserProfileManager>().refreshProfile();
-            AppUtil.showToast(context:context, message: response.message, isSuccess: true);
+            _userProfileManager.refreshProfile();
+            AppUtil.showToast( message: response.message, isSuccess: true);
           } else {
-            AppUtil.showToast(context:context,message: response.message, isSuccess: false);
+            AppUtil.showToast(message: response.message, isSuccess: false);
           }
         });
       } else {
-        AppUtil.showToast(context:context,
+        AppUtil.showToast(
             message: LocalizationString.noInternet, isSuccess: false);
       }
     });

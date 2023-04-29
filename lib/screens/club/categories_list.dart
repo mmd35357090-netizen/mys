@@ -1,20 +1,25 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
+import '../../components/group_avatars/group_avatar1.dart';
+import '../../model/category_model.dart';
+
 class CategoriesList extends StatefulWidget {
-  const CategoriesList({Key? key}) : super(key: key);
+  final ClubsController clubsController;
+
+  const CategoriesList({Key? key, required this.clubsController})
+      : super(key: key);
 
   @override
   State<CategoriesList> createState() => _CategoriesListState();
 }
 
 class _CategoriesListState extends State<CategoriesList> {
-  final ClubsController _clubsController = Get.find();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -27,10 +32,10 @@ class _CategoriesListState extends State<CategoriesList> {
           divider(context: context).tP8,
           Expanded(
               child: GetBuilder<ClubsController>(
-                  init: _clubsController,
+                  init: widget.clubsController,
                   builder: (ctx) {
                     return GridView.builder(
-                        itemCount: _clubsController.categories.length,
+                        itemCount: widget.clubsController.categories.length,
                         padding: const EdgeInsets.only(
                             top: 20, left: 16, right: 16, bottom: 50),
                         gridDelegate:
@@ -41,14 +46,13 @@ class _CategoriesListState extends State<CategoriesList> {
                                 childAspectRatio: 1),
                         itemBuilder: (ctx, index) {
                           CategoryModel category =
-                              _clubsController.categories[index];
+                              widget.clubsController.categories[index];
                           return CategoryAvatarType1(category: category)
                               .ripple(() {
                             ClubModel club = ClubModel();
                             club.categoryId = category.id;
                             Get.to(() => CreateClub(
                                   club: club,
-
                                 ));
                           });
                         });

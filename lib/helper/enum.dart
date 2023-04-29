@@ -108,3 +108,14 @@ enum PodcastBannerType { host, show }
 enum RelationsRevealSetting { none, followers, all }
 
 enum GenderType { male, female, other }
+
+enum NotificationType {
+  like,
+  comment,
+  follow,
+  gift,
+  clubInvitation,
+  competitionAdded,
+  relationInvite,
+  none
+}

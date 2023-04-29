@@ -1,7 +1,13 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
+import '../apiHandler/api_controller.dart';
+import '../model/comment_model.dart';
+import '../model/hash_tag.dart';
+
 class CommentsController extends GetxController {
+  final UserProfileManager _userProfileManager = Get.find();
+
   RxInt isEditing = 0.obs;
   RxString currentHashtag = ''.obs;
   RxString currentUserTag = ''.obs;
@@ -47,7 +53,6 @@ class CommentsController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            context: context,
             message: LocalizationString.noInternet,
             isSuccess: true);
       }
@@ -56,7 +61,7 @@ class CommentsController extends GetxController {
 
   void postCommentsApiCall({required String comment, required int postId, required VoidCallback commentPosted}) {
     CommentModel newMessage =
-        CommentModel.fromNewMessage(comment, getIt<UserProfileManager>().user!);
+        CommentModel.fromNewMessage(comment, _userProfileManager.user.value!);
     newMessage.commentTime = LocalizationString.justNow;
     comments.add(newMessage);
     update();

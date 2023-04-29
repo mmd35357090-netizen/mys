@@ -1,8 +1,13 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/screens/tvs/tv_show_detail.dart';
+import 'package:auto_orientation/auto_orientation.dart';
+import 'package:flutter/services.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/tv_imports.dart';
+import 'package:foap/model/live_tv_model.dart';
 import 'package:get/get.dart';
 import 'package:readmore/readmore.dart' as read_more;
-import 'package:foap/model/live_tv_model.dart';
+
+import '../../components/live_tv_player.dart';
+import '../../components/media_card.dart';
 
 class TVChannelDetail extends StatefulWidget {
   final TvModel tvModel;
@@ -51,7 +56,7 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
         AutoOrientation.landscapeAutoMode();
       }
       return Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor,
+          backgroundColor: AppColorConstants.backgroundColor,
           body: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,17 +67,11 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                   ThemeIconWidget(
                     ThemeIcon.backArrow,
                     size: 18,
-                    color: Theme.of(context).iconTheme.color,
+                    color: AppColorConstants.iconColor,
                   ).ripple(() {
                     Get.back();
                   }),
-                  Text(
-                    widget.tvModel.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w600),
-                  ),
+                  BodyLargeText(widget.tvModel.name, weight: TextWeight.medium),
                   Obx(() => ThemeIconWidget(
                         _tvStreamingController.currentViewingTv.value?.isFav ==
                                 1
@@ -83,10 +82,10 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                     .currentViewingTv.value?.isFav ==
                                 1
                             ? Colors.red
-                            : Theme.of(context).iconTheme.color,
+                            : AppColorConstants.iconColor,
                       ).ripple(() {
-                        _tvStreamingController.favUnfavTv(_tvStreamingController
-                            .currentViewingTv.value!);
+                        _tvStreamingController.favUnfavTv(
+                            _tvStreamingController.currentViewingTv.value!);
                       })),
                 ],
               ).setPadding(left: 16, right: 16, top: 50, bottom: 16),
@@ -120,10 +119,10 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(widget.tvModel.name,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold))
-                                      .bP4,
+                                  Heading6Text(
+                                    widget.tvModel.name,
+                                    weight: TextWeight.bold,
+                                  ).bP25,
                                   read_more.ReadMoreText(
                                       widget.tvModel.description,
                                       trimLines: 2,
@@ -133,19 +132,26 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                           LocalizationString.showMore,
                                       trimExpandedText:
                                           '    ${LocalizationString.showLess}',
-                                      moreStyle: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                      lessStyle: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold)),
-                                  Text('${LocalizationString.moreFrom} ${widget.tvModel.name}',
-                                          style: TextStyle(
-                                              fontFamily: AppTheme.fontName,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20))
+
+                                      style: TextStyle(
+                                          fontSize: FontSizes.b2,
+                                          fontWeight: TextWeight.regular,
+                                          color:
+                                          AppColorConstants.grayscale900),
+                                      moreStyle: TextStyle(
+                                          fontSize: FontSizes.b2,
+                                          fontWeight: TextWeight.bold,
+                                          color:
+                                              AppColorConstants.grayscale900),
+                                      lessStyle: TextStyle(
+                                          fontSize: FontSizes.b2,
+                                          fontWeight: TextWeight.bold,
+                                          color:
+                                              AppColorConstants.grayscale900)),
+                                  Heading5Text(
+                                          '${LocalizationString.moreFrom} ${widget.tvModel.name}',
+                                          weight: TextWeight.bold,
+                                          color: AppColorConstants.themeColor)
                                       .setPadding(top: 15)
                                 ]).setPadding(left: 15, right: 15, top: 15),
                           ]),

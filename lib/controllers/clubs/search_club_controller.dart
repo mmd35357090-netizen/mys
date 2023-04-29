@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
+
+import '../../apiHandler/api_controller.dart';
 
 class SearchClubsController extends GetxController {
   RxList<ClubModel> clubs = <ClubModel>[].obs;

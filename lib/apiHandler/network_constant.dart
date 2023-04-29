@@ -7,6 +7,8 @@ class NetworkConstantsUtil {
 
   // *************** Login and profile *************//
   static String login = 'users/login';
+  static String loginWithPhone = 'users/login-with-phonenumber';
+
   static String socialLogin = 'users/login-social';
   static String forgotPassword = 'users/forgot-password-request';
   static String resetPassword = 'users/set-new-password';
@@ -18,17 +20,20 @@ class NetworkConstantsUtil {
   static String updatedDeviceToken = 'users/update-token';
   static String register = 'users/register';
   static String checkUserName = 'users/check-username';
-  static String otherUser = 'users/{{id}}?expand=isFollowing,isFollower,totalFollowing,totalFollower,totalPost,totalWinnerPost,userLiveDetail,giftSummary,userSetting';
+  static String otherUser =
+      'users/{{id}}?expand=isFollowing,isFollower,totalFollowing,totalFollower,totalPost,totalWinnerPost,userLiveDetail,giftSummary,userSetting';
 
   static String getMyProfile =
       'users/profile?expand=totalFollowing,totalFollower,totalActivePost,userLiveDetail,giftSummary,userSetting';
   static String updateUserProfile = 'users/profile-update';
   static String updateProfileImage = 'users/update-profile-image';
+  static String updateProfileCoverImage = 'users/update-profile-cover-image';
   static String updatePassword = 'users/update-password';
   static String updatePhone = 'users/update-mobile';
   static String updateLocation = 'users/update-location';
   static String deleteAccount = 'users/delete-account';
   static String profileCategoryTypes = 'profile-category-types';
+  static String userView = 'users/view-counter';
 
   //*********** User *************//
   static String getSuggestedUsers =
@@ -56,8 +61,8 @@ class NetworkConstantsUtil {
 
   static String searchHashtag = 'posts/hash-counter-list?hashtag=';
   static String getCountries = 'countries';
-
-  static String getNotifications = 'notifications';
+  static String getNotifications =
+      'notifications?expand=createdByUser,refrenceDetails';
   static String submitRequest = 'support-requests';
   static String supportRequests = 'support-requests?is_reply=';
   static String supportRequestView = 'support-requests/id';
@@ -102,6 +107,7 @@ class NetworkConstantsUtil {
   static String addComment = 'posts/add-comment';
   static String reportPost = 'posts/report-post';
   static String deletePost = 'posts/{{id}}';
+  static String postInsight = 'posts/insight?post_id=';
 
   //********************* competition ***********//
   static String getCompetitions =
@@ -109,7 +115,6 @@ class NetworkConstantsUtil {
   static String joinCompetition = 'competitions/join';
   static String getCompetitionDetail =
       'competitions/{{id}}?expand=post,post.user,competitionPosition.post.user,winnerPost';
-
 
   //******************** reel ******************//
   static String reelAudioCategories = 'categories/reel-audio';
@@ -167,12 +172,12 @@ class NetworkConstantsUtil {
   //*********** Relations ***********//
   static String relationshipNames = 'relations';
   static String myRelations = 'relations/my-relation?expand=user,realationShip';
-  static String myInvitations = 'relations/my-invitation?expand=relationShip, createdBy';
+  static String myInvitations =
+      'relations/my-invitation?expand=relationShip, createdBy';
   static String postInviteUnInvite = 'relations/invite';
   static String putAcceptRejectInvite = 'relations/update-invitation';
   static String postRelationshipSetting = 'users/add-setting';
   static String getRelationbyUser = 'relations/user-relation';
-
 
   //static String getHosts = 'podcasts?expand=currentViewer';
   //static String getPodcastShows = 'podcast-shows?expand=podcastShow';
@@ -194,6 +199,9 @@ class NetworkConstantsUtil {
   static String updateClub = 'clubs/';
   static String deleteClub = 'clubs/';
   static String searchClubs = 'clubs?expand=createdByUser,totalJoinedUser';
+  static String topClubs =
+      'clubs/top-club?expand=createdByUser,totalJoinedUser&type=1';
+
   static String joinClub = 'clubs/join';
   static String leaveClub = 'clubs/left';
   static String removeUserFromClub = 'clubs/remove';
@@ -225,7 +233,8 @@ class NetworkConstantsUtil {
   static String giftTicket = 'events/gift-ticket';
 
   //***********random live and chat***********//
-  static String randomLives = 'chats/live-user?expand=userLiveDetail';
+  static String randomLives =
+      'chats/live-streaming-user?name=&profile_category_type=&is_following=';
   static String randomOnlineUser = 'chats/online-user?profile_category_type=';
   static String liveUsers = 'chats/live-streaming-user';
 

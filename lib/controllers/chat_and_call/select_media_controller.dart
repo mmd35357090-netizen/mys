@@ -1,4 +1,4 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:get/get.dart';
 
 class SelectMediaController extends GetxController {

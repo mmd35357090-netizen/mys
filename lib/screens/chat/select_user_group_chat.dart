@@ -1,5 +1,8 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import '../../components/search_bar.dart';
+import '../../components/user_card.dart';
 
 class SelectUserForGroupChat extends StatefulWidget {
   final ChatRoomModel? group;
@@ -26,7 +29,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -46,22 +49,18 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Text(
-                      widget.group == null
-                          ? LocalizationString.next
-                          : LocalizationString.invite,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall!
-                          .copyWith(fontWeight: FontWeight.w600),
-                    ).ripple(() {
+                    Heading6Text(
+                            widget.group == null
+                                ? LocalizationString.next
+                                : LocalizationString.invite,
+                            weight: TextWeight.medium)
+                        .ripple(() {
                       if (widget.group == null) {
                         if (selectUserForGroupChatController
                             .selectedFriends.isNotEmpty) {
                           Get.to(() => const EnterGroupInfo());
                         } else {
                           AppUtil.showToast(
-                              context: context,
                               message: LocalizationString.pleaseSelectUsers,
                               isSuccess: false);
                         }
@@ -80,24 +79,16 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        widget.group == null
-                            ? LocalizationString.createGroup
-                            : LocalizationString.addParticipants,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
+                      BodyLargeText(
+                          widget.group == null
+                              ? LocalizationString.createGroup
+                              : LocalizationString.addParticipants,
+                          weight: TextWeight.medium),
                       Obx(() => selectUserForGroupChatController
                               .selectedFriends.isNotEmpty
-                          ? Text(
+                          ? BodyLargeText(
                               '${selectUserForGroupChatController.selectedFriends.length} ${LocalizationString.friendsSelected}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(fontWeight: FontWeight.w900),
-                            )
+                              weight: TextWeight.bold)
                           : Container())
                     ],
                   ),
@@ -132,10 +123,8 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                                   const SizedBox(
                                     height: 5,
                                   ),
-                                  Text(
+                                  BodyLargeText(
                                     usersList[index].userName,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
                                   )
                                 ],
                               ),
@@ -145,7 +134,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                                 child: Container(
                                     height: 25,
                                     width: 25,
-                                    color: Theme.of(context).cardColor,
+                                    color: AppColorConstants.cardColor,
                                     child: const ThemeIconWidget(
                                       ThemeIcon.close,
                                       size: 20,
@@ -168,7 +157,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
           ),
           SearchBar(
                   showSearchIcon: true,
-                  iconColor: Theme.of(context).primaryColor,
+                  iconColor: AppColorConstants.themeColor,
                   onSearchChanged: (value) {
                     selectUserForGroupChatController.searchTextChanged(value);
                   },

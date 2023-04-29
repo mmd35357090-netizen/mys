@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:foap/components/gallery_picker/src/presentation/pages/gallery_media_picker_controller.dart';
 import 'package:foap/components/gallery_picker/src/presentation/widgets/select_album_path/change_path_widget.dart';
 import 'package:foap/components/gallery_picker/src/presentation/widgets/select_album_path/dropdown.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class SelectedPathDropdownButton extends StatelessWidget {
@@ -124,13 +124,12 @@ class SelectedPathDropdownButton extends StatelessWidget {
             /// current album name
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.28,
-              child: Text(
+              child: Heading6Text(
                 provider.currentAlbum!.name,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall,
+                // overflow: TextOverflow.ellipsis,
+                // style: TextStyle(fontSize: FontSizes.h6),
               ),
             ),
-            // const Spacer(),
 
             /// animated arrow icon
             Padding(

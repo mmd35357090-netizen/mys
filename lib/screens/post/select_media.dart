@@ -1,5 +1,14 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dots_indicator/dots_indicator.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../components/custom_gallery_picker.dart';
+import '../../components/video_widget.dart';
+import '../../controllers/select_post_media_controller.dart';
+import '../chat/media.dart';
+import '../settings_menu/settings_controller.dart';
+import 'add_post_screen.dart';
 
 class SelectMedia extends StatefulWidget {
   final int? competitionId;
@@ -16,6 +25,8 @@ class SelectMedia extends StatefulWidget {
 class _SelectMediaState extends State<SelectMedia> {
   final SelectPostMediaController _selectPostMediaController =
       SelectPostMediaController();
+  final SettingsController _settingsController = Get.find();
+
   late PostMediaType mediaType;
 
   @override
@@ -25,19 +36,29 @@ class _SelectMediaState extends State<SelectMedia> {
     });
     mediaType = widget.mediaType ?? PostMediaType.all;
 
+    if (_settingsController.setting.value!.enableImagePost &&
+        _settingsController.setting.value!.enableVideoPost) {
+      mediaType = widget.mediaType ?? PostMediaType.all;
+    }
+    else if (_settingsController.setting.value!.enableImagePost) {
+      mediaType = widget.mediaType ?? PostMediaType.photo;
+    }
+    else if (_settingsController.setting.value!.enableVideoPost) {
+      mediaType = widget.mediaType ?? PostMediaType.video;
+    }
+
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
@@ -48,7 +69,7 @@ class _SelectMediaState extends State<SelectMedia> {
             children: [
               ThemeIconWidget(
                 ThemeIcon.close,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 size: 27,
               ).ripple(() {
                 Get.back();
@@ -62,7 +83,7 @@ class _SelectMediaState extends State<SelectMedia> {
               const Spacer(),
               ThemeIconWidget(
                 ThemeIcon.nextArrow,
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 size: 27,
               ).ripple(() {
                 if (_selectPostMediaController.selectedMediaList.isNotEmpty) {
@@ -120,7 +141,7 @@ class _SelectMediaState extends State<SelectMedia> {
                                   .currentIndex.value
                                   .toDouble(),
                               decorator: DotsDecorator(
-                                  activeColor: Theme.of(context).primaryColor),
+                                  activeColor: AppColorConstants.themeColor),
                             )))
                     : Container();
               })

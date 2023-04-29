@@ -1,4 +1,5 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class ContactChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -13,22 +14,16 @@ class ContactChatTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              Heading5Text(
                 LocalizationString.contact,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w900),
-              ),
-              Text(
+                  weight: TextWeight.bold),
+              BodyLargeText(
                 message.mediaContent.contact!.displayName,
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
-              Text(
+              BodyLargeText(
                 message.mediaContent.contact!.phones
                     .map((e) => e.number)
                     .toString(),
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
           ),
@@ -36,7 +31,7 @@ class ContactChatTile extends StatelessWidget {
         ThemeIconWidget(
           ThemeIcon.nextArrow,
           size: 15,
-          color: Theme.of(context).iconTheme.color,
+          color: AppColorConstants.iconColor,
         )
       ],
     ).bP8;

@@ -1,5 +1,12 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/model/preference_model.dart';
+import 'dart:async';
+
+import 'package:foap/controllers/voip_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/user_profile_manager.dart';
+import 'package:foap/manager/db_manager.dart';
+import 'package:foap/manager/file_manager.dart';
+import 'package:foap/manager/location_manager.dart';
+import 'package:foap/manager/socket_manager.dart';
 import 'package:get_it/get_it.dart';
 
 GetIt getIt = GetIt.instance;
@@ -11,7 +18,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<FileManager>(() => FileManager());
   getIt.registerLazySingleton<VoipController>(() => VoipController());
   // getIt.registerLazySingleton<GalleryLoader>(() => GalleryLoader());
-  getIt.registerLazySingleton<NotificationManager>(() => NotificationManager());
+  // getIt.registerLazySingleton<NotificationManager>(() => NotificationManager());
   getIt.registerLazySingleton<LocationManager>(() => LocationManager());
 
 }

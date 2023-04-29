@@ -2,15 +2,19 @@
 // Use of this source code is governed by an Apache license that can be found
 // in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/semantics.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:path/path.dart' as path;
+import 'package:video_player/video_player.dart';
 
 import '../constants/constants.dart';
 import '../constants/enums.dart';
 import '../constants/styles.dart';
 import '../constants/type_defs.dart';
 import '../internals/methods.dart';
+import '../widgets/camera_picker.dart';
 import '../widgets/camera_picker_viewer.dart';
 
 class CameraPickerViewerState extends State<CameraPickerViewer> {
@@ -203,7 +207,7 @@ class CameraPickerViewerState extends State<CameraPickerViewer> {
             child: ThemeIconWidget(
               ThemeIcon.backArrow,
               size: 30,
-              color: Theme.of(context).iconTheme.color,
+              color: AppColorConstants.iconColor,
             ),
           ),
         ),
@@ -249,8 +253,8 @@ class CameraPickerViewerState extends State<CameraPickerViewer> {
       children: [
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.45,
-          child: BorderButtonType1(
-              backgroundColor: Theme.of(context).backgroundColor,
+          child: AppThemeBorderButton(
+              backgroundColor: AppColorConstants.backgroundColor,
               text: LocalizationString.back,
               onPress: () {
                 if (previewFile.existsSync()) {
@@ -259,11 +263,9 @@ class CameraPickerViewerState extends State<CameraPickerViewer> {
                 Navigator.of(context).pop();
               }),
         ),
-
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.45,
-          child: FilledButtonType1(
-            isEnabled: true,
+          child: AppThemeButton(
             text: Constants.textDelegate.confirm,
             onPress: createAssetEntityAndPop,
           ),
