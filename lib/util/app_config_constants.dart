@@ -3,8 +3,8 @@ import 'constant_util.dart';
 
 class AppConfigConstants {
   // Name of app
-  static String appName = 'Genuine';
-  static String currentVersion = '1';
+  static String appName = 'Socialified';
+  static String currentVersion = '1.7';
   static const liveAppLink = 'https://www.google.com/';
 
   static String appTagline = 'Share your day activity with friends';
@@ -14,12 +14,15 @@ class AppConfigConstants {
   // static const agoraApiKey = '52aa6d82f3f14aa3bd36b7a0fb6648f4';
 
   static const restApiBaseUrl =
-      'https://pori45225.com/api/web/v1/';
+      'https://development.fwdtechnology.co/media_selling/api/web/v1/';
+
 
   // static const restApiBaseUrl =
   //     'https://fwdtechnology.co/media_selling/api/web/v1/';
   // Socket api url
-  static const socketApiBaseUrl = 'http://pori45225.com:4000/';
+  // static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
+  static const socketApiBaseUrl = "http://development.fwdtechnology.co:3000/";
+
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';

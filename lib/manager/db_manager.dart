@@ -141,7 +141,7 @@ class DBManager {
       ChatRoomModel? room = await getRoomById(chatRoom.id);
       if (room == null) {
         batch.rawInsert(
-            'INSERT INTO ChatRooms(id, title, status,type,is_chat_user_online,created_by,created_at,updated_at,imageUrl,description,chat_access_group) VALUES(${chatRoom.id},"${chatRoom.name}", ${chatRoom.status},${chatRoom.type}, ${chatRoom.isOnline},${chatRoom.createdBy},${chatRoom.createdAt},${chatRoom.createdAt},"${chatRoom.image}","${chatRoom.description}",${chatRoom.groupAccess})');
+            'INSERT INTO ChatRooms(id, title, status,type,is_chat_user_online,created_by,created_at,updated_at,imageUrl,description,chat_access_group) VALUES(${chatRoom.id},"${chatRoom.name}", ${chatRoom.status},${chatRoom.type}, ${chatRoom.isOnline == true ? 1 :0},${chatRoom.createdBy},${chatRoom.createdAt},${chatRoom.createdAt},"${chatRoom.image}","${chatRoom.description}",${chatRoom.groupAccess})');
 
         for (ChatRoomMember member in chatRoom.roomMembers) {
           batch.rawDelete(
@@ -182,7 +182,7 @@ class DBManager {
         'SET title = "${chatRoom.name}",'
         'status = ${chatRoom.status},'
         'type = ${chatRoom.type},'
-        'is_chat_user_online = ${chatRoom.isOnline},'
+        'is_chat_user_online = ${chatRoom.isOnline == true ? 1 :0},'
         'updated_at = $updateAt,'
         'imageUrl = "${chatRoom.image}",'
         'description = "${chatRoom.description}",'

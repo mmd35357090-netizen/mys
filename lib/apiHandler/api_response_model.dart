@@ -182,7 +182,7 @@ class ApiResponseModel {
           model.verificationRequests = List<VerificationRequest>.from(
               items.map((x) => VerificationRequest.fromJson(x)));
 
-          model.metaData = APIMetaData.fromJson(data['verification']['_meta']);
+          // model.metaData = APIMetaData.fromJson(data['verification']['_meta']);
         } else if (data['results'] != null) {
           var items = data['results'];
           if (items != null && items.length > 0) {

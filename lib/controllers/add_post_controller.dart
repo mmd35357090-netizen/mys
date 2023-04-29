@@ -304,7 +304,7 @@ class AddPostController extends GetxController {
           await file.delete();
 
           gallery = {
-            'filename': imagePath,
+            'video': imagePath,
             'video_thumb': videoThumbnailPath ?? '',
             'type': competitionId == null ? '1' : '2',
             'media_type': media.mediaType == GalleryMediaType.photo ? '1' : '2',
