@@ -461,6 +461,7 @@ class LocalizationString {
 
   static String supportRequests = "Support requests".tr;
   static String createSupportRequest = "Create support requests".tr;
+  static String fillForm = "Please fill all the fields".tr;
 
   static String findFriends = "Find Friends".tr;
   static String find = "Find".tr;

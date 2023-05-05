@@ -253,7 +253,7 @@ class OtherUserProfileState extends State<OtherUserProfile> {
                 height: 225,
                 fit: BoxFit.cover,
                 imageUrl: _profileController.user.value!.coverImage!)
-            .overlay(Colors.black26)
+            // .overlay(Colors.black26)
             .bottomRounded(20)
         : SizedBox(
             width: Get.width,

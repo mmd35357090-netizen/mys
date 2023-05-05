@@ -71,14 +71,13 @@ class SettingsController extends GetxController {
   loadSettings() async {
     bool isDarkTheme = await SharedPrefs().isDarkMode();
     bioMetricAuthStatus.value = await SharedPrefs().getBioMetricAuthStatus();
-    shareLocation.value =
-        _userProfileManager.user.value!.latitude != null;
+    shareLocation.value = _userProfileManager.user.value!.latitude != null;
 
     setDarkMode(isDarkTheme);
     checkBiometric();
   }
 
-  setDarkMode(bool status) async{
+  setDarkMode(bool status) async {
     darkMode.value = status;
     darkMode.refresh();
     isDarkMode = status;

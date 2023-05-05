@@ -1,8 +1,10 @@
-import 'dart:convert';
-
-import 'package:foap/helper/common_import.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/number_extension.dart';
 import 'package:get/get.dart';
-
+import '../../components/search_bar.dart';
+import '../../controllers/agora_live_controller.dart';
+import '../../model/call_model.dart';
 import 'live_users_controller.dart';
 
 class LiveUserScreen extends StatefulWidget {
@@ -28,7 +30,7 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: KeyboardDismissOnTap(
           child: Column(
         children: [
@@ -38,17 +40,20 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
           backNavigationBar(
               context: context, title: LocalizationString.liveUsers),
           divider(context: context).tP8,
-          SearchBar(
-                  showSearchIcon: true,
-                  iconColor: Theme.of(context).primaryColor,
-                  onSearchChanged: (value) {
-                    // _chatController.searchTextChanged(value);
-                  },
-                  onSearchStarted: () {
-                    //controller.startSearch();
-                  },
-                  onSearchCompleted: (searchTerm) {})
-              .p16,
+          const SizedBox(
+            height: 20,
+          ),
+          // SearchBar(
+          //         showSearchIcon: true,
+          //         iconColor: Theme.of(context).primaryColor,
+          //         onSearchChanged: (value) {
+          //           // _chatController.searchTextChanged(value);
+          //         },
+          //         onSearchStarted: () {
+          //           //controller.startSearch();
+          //         },
+          //         onSearchCompleted: (searchTerm) {})
+          //     .p16,
           Expanded(
             child: Obx(
               () => GridView.builder(
@@ -57,20 +62,19 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                       mainAxisSpacing: 8,
                       crossAxisSpacing: 8),
                   itemCount: _liveUserController.liveStreamUser.length,
+                  padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
-                    final streamingUser =
+                    final liveStreaming =
                         _liveUserController.liveStreamUser[index];
-                    final user = UserModel();
-                    user.liveCallDetail = streamingUser;
-                    user.id = streamingUser.id;
+
                     return InkWell(
                       onTap: () {
                         Live live = Live(
-                            channelName: user.liveCallDetail!.channelName,
+                            channelName: liveStreaming.channelName,
                             isHosting: false,
-                            host: user,
-                            token: user.liveCallDetail!.token,
-                            liveId: user.liveCallDetail!.id);
+                            host: liveStreaming.host!.first,
+                            token: liveStreaming.token,
+                            liveId: liveStreaming.id);
                         _agoraLiveController.joinAsAudience(
                           live: live,
                         );
@@ -81,25 +85,30 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                streamingUser.userdetails![0].picture!,
-                                fit: BoxFit.fill,
-                                width: double.infinity,
-                              ),
-                            ),
+                                borderRadius: BorderRadius.circular(10),
+                                child: UserAvatarView(
+                                  size: double.infinity,
+                                  user: liveStreaming.host![0],
+                                  hideBorder: true,
+                                )),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                'assets/live.png',
-                                height: 20,
-                                width: 20,
-                              ).p8,
-                              const Icon(Icons.group,size: 20).p4,
-                              Obx(()=>Text(_liveUserController.totalLiveUsers.value))
-                            ],
+                          Positioned(
+                            top: 15,
+                            right: 10,
+                            child: Container(
+                              width: 70,
+                              height: 30,
+                              color:
+                                  AppColorConstants.themeColor.withOpacity(0.4),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const ThemeIconWidget(ThemeIcon.group).p4,
+                                  Obx(() => BodyLargeText(_liveUserController
+                                      .totalLiveUsers.value.formatNumber))
+                                ],
+                              ),
+                            ).round(20),
                           ),
                         ],
                       ),

@@ -1,10 +1,5 @@
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/model/preference_model.dart';
-import 'package:foap/model/user_details.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:timeago/timeago.dart' as timeago;
-
 import 'chat_room_model.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +11,7 @@ class UserLiveCallDetail {
   int status = 0;
   String token = '';
   String channelName = '';
-  List<Userdetails>? userdetails;
+  List<UserModel>? host;
 
   UserLiveCallDetail();
 
@@ -32,9 +27,9 @@ class UserLiveCallDetail {
     model.channelName = json['channel_name'] ?? '';
 
     if (json['userdetails'] != null) {
-      model.userdetails = <Userdetails>[];
+      model.host = <UserModel>[];
       json['userdetails'].forEach((v) {
-        model.userdetails!.add(new Userdetails.fromJson(v));
+        model.host!.add(UserModel.fromJson(v));
       });
     }
     return model;

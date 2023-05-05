@@ -1,9 +1,11 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+
+import '../../apiHandler/api_controller.dart';
 
 class LiveUserController extends GetxController {
   RxList<UserLiveCallDetail> liveStreamUser = <UserLiveCallDetail>[].obs;
-  RxString totalLiveUsers = "0".obs;
+  RxInt totalLiveUsers = 0.obs;
 
   // fetch live users
   void getLiveUsers() async {
@@ -11,12 +13,9 @@ class LiveUserController extends GetxController {
       if (value) {
         EasyLoading.show(status: LocalizationString.loading);
         ApiController().getLiveUser().then((response) {
-          print('getLiveUsers : ${response.toString()}');
-          print('getliveUsers total live users count: ${response.totalLiveUsers}');
-          // print('getliveUsers userDetails: ${response.liveStreamUser[0].userdetails?[0].name}');
-          liveStreamUser.value.clear();
+          liveStreamUser.clear();
           totalLiveUsers.value = response.totalLiveUsers!;
-          liveStreamUser.addAll(response.liveStreamUser);
+          liveStreamUser.addAll(response.liveStreamingUser);
           EasyLoading.dismiss();
         });
       }

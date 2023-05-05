@@ -1,10 +1,7 @@
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/live_users/live_users_screen.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
-import 'package:foap/screens/add_on/ui/event/events_dashboard.dart';
-import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
-import 'package:foap/screens/add_on/ui/reel/create_reel_video.dart';
+
 import 'package:get/get.dart';
 import '../../controllers/home_controller.dart';
 import '../chat/random_chat/choose_profile_category.dart';

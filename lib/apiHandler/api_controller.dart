@@ -5,10 +5,9 @@ import 'dart:typed_data';
 import 'package:foap/screens/add_on/model/preference_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import '../controllers/dating_controller.dart';
 import '../model/live_tv_model.dart';
 import '../model/post_gift_model.dart';
-import '../model/preference_model.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 import 'package:latlng/latlng.dart';
 import '../screens/add_on/controller/dating/dating_controller.dart';
@@ -656,6 +655,7 @@ class ApiController {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     url = url.replaceFirst('{{id}}', userId.toString());
 
+    print('url $url');
     return http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
     }).then((http.Response response) async {

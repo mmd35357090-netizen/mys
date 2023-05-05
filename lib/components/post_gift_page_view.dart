@@ -1,17 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:foap/components/reply_chat_cells/post_gift_controller.dart';
-import 'package:foap/helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
-
-import '../controllers/gift_controller.dart';
-import '../model/gift_model.dart';
 import '../model/post_gift_model.dart';
 import '../screens/settings_menu/coin_packages_widget.dart';
-import '../theme/icon_enum.dart';
-import '../theme/theme_icon.dart';
 
 class PostGiftPageView extends StatefulWidget {
   final Function(PostGiftModel) giftSelectedCompletion;
@@ -26,6 +17,7 @@ class PostGiftPageView extends StatefulWidget {
 }
 
 class _PostGiftPageViewState extends State<PostGiftPageView> {
+  final UserProfileManager _userProfileManager = Get.find();
   int currentView = 0;
   List<Widget> pages = [];
 
@@ -45,47 +37,42 @@ class _PostGiftPageViewState extends State<PostGiftPageView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).primaryColor.darken(0.48),
+      color: AppColorConstants.themeColor.darken(0.48),
       child: Column(
         children: [
           Container(
             height: 60,
-            color: Theme.of(context).primaryColor.darken(0.48),
+            color: AppColorConstants.themeColor.darken(0.48),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    BodyLargeText(
                       '${LocalizationString.availableCoins} : ',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w500, color: Colors.white),
+                      color: Colors.white,
                     ),
                     ThemeIconWidget(
                       ThemeIcon.diamond,
                       size: 20,
-                      color: Theme.of(context).primaryColor,
+                      color: AppColorConstants.themeColor,
                     ),
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(getIt<UserProfileManager>().user!.coins.toString(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Colors.white)),
+                    BodyLargeText(
+                      _userProfileManager.user.value!.coins.toString(),
+                      color: Colors.white,
+                    )
                   ],
                 ),
                 currentView == 0
                     ? Container(
-                            color: Theme.of(context).primaryColor,
-                            child: Text(
+                            color: AppColorConstants.themeColor,
+                            child: BodyLargeText(
                               LocalizationString.coins,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(fontWeight: FontWeight.w700),
+                              weight: TextWeight.semiBold,
                             ).setPadding(
                                 left: 10, right: 10, top: 5, bottom: 5))
                         .round(20)
@@ -150,7 +137,7 @@ class _GiftsListingState extends State<GiftsListing> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).backgroundColor.darken(),
+      color: AppColorConstants.backgroundColor.darken(),
       child: Obx(() {
         return ListView.separated(
             padding:
@@ -180,18 +167,16 @@ class _GiftsListingState extends State<GiftsListing> {
         ThemeIconWidget(
           ThemeIcon.diamond,
           size: 25,
-          color: Theme.of(context).iconTheme.color,
+          color: AppColorConstants.iconColor,
         ),
         const SizedBox(
           width: 2,
         ),
-        Text(
+        Heading6Text(
           gift.coin.toString(),
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(fontWeight: FontWeight.w700),
+          weight: TextWeight.semiBold,
         ),
+
         const SizedBox(
           width: 25,
         ),
@@ -200,13 +185,12 @@ class _GiftsListingState extends State<GiftsListing> {
             children: [
               // const Spacer(),
               Container(
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 child: Center(
-                  child: Text(
+                  child: Heading6Text(
                     gift.name.toString(),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontWeight: FontWeight.w700, color: Colors.white),
+                    weight: TextWeight.semiBold,
+                    color: Colors.white,
                   ).setPadding(top: 5, bottom: 5, left: 10, right: 10),
                 ),
               ).round(40),
@@ -247,18 +231,16 @@ class _PostGiftsReceivedState extends State<PostGiftsReceived> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).backgroundColor.darken(),
+      color: AppColorConstants.backgroundColor.darken(),
       child: Column(
         children: [
           const SizedBox(
             height: 20,
           ),
-          Text(
+          Heading6Text(
             LocalizationString.giftsReceived,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(fontWeight: FontWeight.w700),
+            weight: TextWeight.semiBold,
+            color: Colors.white,
           ),
           const SizedBox(
             height: 20,
@@ -295,17 +277,15 @@ class _PostGiftsReceivedState extends State<PostGiftsReceived> {
         ThemeIconWidget(
           ThemeIcon.diamond,
           size: 25,
-          color: Theme.of(context).iconTheme.color,
+          color: AppColorConstants.iconColor,
         ),
         const SizedBox(
           width: 2,
         ),
-        Text(
+        Heading6Text(
           gift.coin.toString(),
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(fontWeight: FontWeight.w700),
+          weight: TextWeight.semiBold,
+          color: Colors.white,
         ),
         const SizedBox(
           width: 25,
@@ -315,13 +295,12 @@ class _PostGiftsReceivedState extends State<PostGiftsReceived> {
             children: [
               // const Spacer(),
               Container(
-                color: Theme.of(context).primaryColor,
+                color: AppColorConstants.themeColor,
                 child: Center(
-                  child: Text(
+                  child: Heading6Text(
                     gift.name.toString(),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontWeight: FontWeight.w700, color: Colors.white),
+                    weight: TextWeight.semiBold,
+                    color: Colors.white,
                   ).setPadding(top: 5, bottom: 5, left: 10, right: 10),
                 ),
               ).round(40),

@@ -61,6 +61,7 @@ class UserAvatarView extends StatelessWidget {
   final VoidCallback? onTapHandler;
   final bool hideLiveIndicator;
   final bool hideOnlineIndicator;
+  final bool hideBorder;
 
   const UserAvatarView(
       {Key? key,
@@ -68,7 +69,8 @@ class UserAvatarView extends StatelessWidget {
       this.size = 60,
       this.onTapHandler,
       this.hideLiveIndicator = false,
-      this.hideOnlineIndicator = false})
+      this.hideOnlineIndicator = false,
+      this.hideBorder = false})
       : super(key: key);
 
   @override
@@ -79,12 +81,16 @@ class UserAvatarView extends StatelessWidget {
       child: Stack(
         children: [
           user.liveCallDetail != null && hideLiveIndicator == false
-              ? liveUserWidget(size: size ?? 60,).ripple(() {
+              ? liveUserWidget(
+                  size: size ?? 60,
+                ).ripple(() {
                   if (onTapHandler != null) {
                     onTapHandler!();
                   }
                 })
-              : userPictureView(size: size ?? 60, ),
+              : userPictureView(
+                  size: size ?? 60,
+                ),
           (user.liveCallDetail == null || hideLiveIndicator == true) &&
                   hideOnlineIndicator == false
               ? Positioned(
@@ -103,8 +109,10 @@ class UserAvatarView extends StatelessWidget {
     );
   }
 
-  Widget userPictureView(
-      {required double size, double? radius,}) {
+  Widget userPictureView({
+    required double size,
+    double? radius,
+  }) {
     return user.picture != null
         ? CachedNetworkImage(
             imageUrl: user.picture!,
@@ -123,7 +131,7 @@ class UserAvatarView extends StatelessWidget {
                   size: size / 2,
                 )),
           ).borderWithRadius(
-            value: 1,
+            value: hideBorder ? 0 : 1,
             radius: size / 3,
             color: AppColorConstants.themeColor)
         : SizedBox(
@@ -136,12 +144,14 @@ class UserAvatarView extends StatelessWidget {
               ),
             ),
           ).borderWithRadius(
-            value: 1,
+            value: hideBorder ? 0 : 1,
             radius: size / 3,
             color: AppColorConstants.themeColor);
   }
 
-  Widget liveUserWidget({required double size, }) {
+  Widget liveUserWidget({
+    required double size,
+  }) {
     return Stack(
       children: [
         userPictureView(size: size, radius: 5),

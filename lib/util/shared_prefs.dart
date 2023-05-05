@@ -1,8 +1,6 @@
 import 'dart:ui';
-
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class SharedPrefs {
   //Set/Get UserLoggedIn Status

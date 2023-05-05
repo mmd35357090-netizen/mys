@@ -77,6 +77,8 @@ class _CustomGalleryPickerState extends State<CustomGalleryPicker> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => GalleryMediaPicker(
+          appBarColor: AppColorConstants.cardColor,
+          albumBackGroundColor: AppColorConstants.cardColor,
           childAspectRatio: 1,
           crossAxisCount: 3,
           thumbnailQuality: 150,
@@ -114,9 +116,9 @@ class _CustomGalleryPickerState extends State<CustomGalleryPicker> {
                                       true
                                   ? AppColorConstants.themeColor
                                   : Colors.transparent,
-                              child: const ThemeIconWidget(
+                              child: ThemeIconWidget(
                                 ThemeIcon.selectionType,
-                                color: Colors.white,
+                                color: AppColorConstants.iconColor,
                                 size: 18,
                               ),
                             ).circular.ripple(() {
@@ -126,9 +128,9 @@ class _CustomGalleryPickerState extends State<CustomGalleryPicker> {
                       const SizedBox(
                         width: 20,
                       ),
-                      const ThemeIconWidget(
+                      ThemeIconWidget(
                         ThemeIcon.camera,
-                        color: Colors.white,
+                        color: AppColorConstants.iconColor,
                         size: 18,
                       ).circular.ripple(() {
                         handleCameraPress();

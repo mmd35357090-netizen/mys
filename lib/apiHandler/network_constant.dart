@@ -246,7 +246,8 @@ class NetworkConstantsUtil {
   static String giftsReceived =
       'gifts/recieved-gift?expand=giftDetail,senderDetail&send_on_type={{send_on_type}}&live_call_id={{live_call_id}}&post_id={{post_id}}';
   static String timelineGifts = 'gifts/timeline-gift';
-  static String postGifts = 'gifts/timeline-gift-recieved?expand=senderDetail,giftTimelineDetail&send_on_type={{send_on_type}}&post_id={{post_id}}';
+  static String postGifts =
+      'gifts/timeline-gift-recieved?expand=senderDetail,giftTimelineDetail&send_on_type={{send_on_type}}&post_id={{post_id}}';
   static String sendPostGifts = 'gifts/send-timeline-gift';
 
   // url : {{host}}/gifts/timeline-gift-recieved?expand=senderDetail,giftTimelineDetail&send_on_type=3&post_id=12

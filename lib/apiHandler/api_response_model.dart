@@ -1,22 +1,10 @@
 import 'dart:developer';
-import 'package:foap/helper/common_import.dart';
-import 'package:foap/model/preference_model.dart';
-import 'package:get/get.dart';
-import '../model/club_invitation.dart';
-import '../model/club_join_request.dart';
-import '../model/faq_model.dart';
-import '../model/live_tv_model.dart';
-import '../model/get_relationship_model.dart';
-import '../model/myRelations/my_invitation_model.dart';
-import '../model/myRelations/my_relations_model.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import '../model/post_gift_model.dart';
 import '../model/post_timeline_gift_response.dart';
 import '../model/support_request_response.dart';
-import '../model/tv_show_model.dart';
-import '../model/polls_model.dart';
 
 import 'package:foap/helper/imports/api_imports.dart';
-import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
 import 'package:foap/screens/add_on/model/podcast_model.dart';
 import 'package:foap/screens/add_on/model/preference_model.dart';
@@ -36,7 +24,7 @@ class ApiResponseModel {
   CompetitionModel? competition;
   int highlightId = 0;
   int createdPostId = 0;
-  String? totalLiveUsers;
+  int? totalLiveUsers;
 
   SupportRequestsResponse? supportRequestReponse;
 
@@ -64,7 +52,6 @@ class ApiResponseModel {
   List<GiftModel> gifts = [];
   List<PostGiftModel> timelineGift = [];
   List<ReceivedGiftModel> giftReceived = [];
-
 
   List<NotificationModel> notifications = [];
   List<SupportRequestModel> supportMessages = [];
@@ -109,8 +96,7 @@ class ApiResponseModel {
   List<UserModel> matchedUsers = [];
   List<UserModel> likeUsers = [];
   List<UserModel> datingUsers = [];
-  List<UserLiveCallDetail> liveStreamUser = [];
-
+  List<UserLiveCallDetail> liveStreamingUser = [];
 
   List<RelationshipName> relationshipNames = [];
   List<MyRelationsModel> relationships = [];
@@ -144,7 +130,6 @@ class ApiResponseModel {
 
   // bool isLoginFirstTime = false;
 
-
   ApiResponseModel();
 
   factory ApiResponseModel.fromJson(dynamic json, String url) {
@@ -157,7 +142,6 @@ class ApiResponseModel {
 
     // log(json);
     log(url);
-
 
     // log(url);
 
@@ -483,7 +467,6 @@ class ApiResponseModel {
                 items.map((x) => SupportRequestModel.fromJson(x)));
           }
           model.supportRequestReponse = SupportRequestsResponse.fromJson(data);
-
         } else if (data['follower'] != null) {
           if (url == NetworkConstantsUtil.followers) {
             var items = (data['follower']['items'] as List<dynamic>)
@@ -705,28 +688,32 @@ class ApiResponseModel {
             model.likeUsers =
                 List<UserModel>.from(items.map((x) => UserModel.fromJson(x)));
           }
-        } else if(data['liveStreamUser']!=null && url==NetworkConstantsUtil.liveUsers){  // live users
+        } else if (data['liveStreamUser'] != null &&
+            url == NetworkConstantsUtil.liveUsers) {
+          // live users
+
           final liverStreamUser = data['liveStreamUser'];
-          model.totalLiveUsers = data['total_live_users'];
-          model.liveStreamUser = List<UserLiveCallDetail>.from(liverStreamUser.map((user){
+          model.totalLiveUsers = int.parse(data['total_live_users'] ?? '0');
+          model.liveStreamingUser =
+              List<UserLiveCallDetail>.from(liverStreamUser.map((user) {
             final item = UserLiveCallDetail.fromJson(user);
-            print('liveStreamUser: channelName ${item.channelName}');
             return item;
           }));
-        }else if(data['timelineGift']!=null && url==NetworkConstantsUtil.timelineGifts){
-            final timelineGiftData = data['timelineGift'];
-            model.timelineGift = List<PostGiftModel>.from(timelineGiftData.map((value){
-              final postGift = PostGiftModel.fromJson(value);
-              return postGift;
-            }));
-        }else if(data['timeline_gift']!=null && url==NetworkConstantsUtil.postGifts){
-          model.postTimelineGift  = PostTimelineGiftResponse.fromJson(data);
-        }else if(data['supportRequest']!=null || url==NetworkConstantsUtil.supportRequests){
-            model.supportRequestReponse = SupportRequestsResponse.fromJson(data);
+        } else if (data['timelineGift'] != null &&
+            url == NetworkConstantsUtil.timelineGifts) {
+          final timelineGiftData = data['timelineGift'];
+          model.timelineGift =
+              List<PostGiftModel>.from(timelineGiftData.map((value) {
+            final postGift = PostGiftModel.fromJson(value);
+            return postGift;
+          }));
+        } else if (data['timeline_gift'] != null &&
+            url == NetworkConstantsUtil.postGifts) {
+          model.postTimelineGift = PostTimelineGiftResponse.fromJson(data);
+        } else if (data['supportRequest'] != null ||
+            url == NetworkConstantsUtil.supportRequests) {
+          model.supportRequestReponse = SupportRequestsResponse.fromJson(data);
         }
-
-
-
       }
     } else {
       if (data == null) {

@@ -3,7 +3,7 @@ import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
 import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
 import 'package:foap/screens/add_on/ui/reel/create_reel_video.dart';
 import 'package:get/get.dart';
-import '../model/polls_model.dart';
+import '../model/gift_model.dart';
 import '../model/post_gift_model.dart';
 import '../screens/tvs/tv_dashboard.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -107,6 +107,14 @@ class HomeController extends GetxController {
         subHeading: LocalizationString.liveUsers,
         linkType: QuickLinkType.liveUsers));
     // }
+
+    if (_settingsController.setting.value!.enableReel) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/highlights.png',
+          heading: LocalizationString.reels,
+          subHeading: LocalizationString.reels,
+          linkType: QuickLinkType.highlights));
+    }
     if (_settingsController.setting.value!.enableLive) {
       quickLinks.add(QuickLink(
           icon: 'assets/live.png',
@@ -502,7 +510,6 @@ class HomeController extends GetxController {
       getIt<UserProfileManager>().refreshProfile();
 
       AppUtil.showToast(
-          context: Get.context!,
           message: LocalizationString.giftSent,
           isSuccess: true);
     });

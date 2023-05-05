@@ -1,9 +1,9 @@
 import 'package:foap/screens/settings_menu/support_requests_screen.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
-import '../../helper/common_import.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import '../../universal_components/rounded_input_field.dart';
 import 'help_support_contorller.dart';
+import 'package:get/get.dart';
 
 class HelpScreen extends StatefulWidget {
   const HelpScreen({Key? key}) : super(key: key);
@@ -19,26 +19,23 @@ class _HelpScreenState extends State<HelpScreen> {
   final phoneController = TextEditingController();
   final messageController = TextEditingController();
 
-  String _name = '';
-  String _email = '';
-  String _phone = '';
-  String _message = '';
-
-  void _submitForm() {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(
               height: 50,
             ),
-            backNavigationBarWithIcon(context: context, title: LocalizationString.help,icon:ThemeIcon.card,iconBtnClicked: (){
-              Get.to(()=> const SupportRequestsScreen());
-            }),
+            backNavigationBarWithIcon(
+                context: context,
+                title: LocalizationString.help,
+                icon: ThemeIcon.card,
+                iconBtnClicked: () {
+                  Get.to(() => const SupportRequestsScreen());
+                }),
             divider(context: context).tP8,
             SingleChildScrollView(
               child: GestureDetector(
@@ -55,7 +52,6 @@ class _HelpScreenState extends State<HelpScreen> {
                       controller: nameController,
                       showBorder: true,
                       showDivider: false,
-                      textStyle: Theme.of(context).textTheme.titleSmall,
                       hintText: LocalizationString.name,
                       cornerRadius: 5,
                     ),
@@ -66,7 +62,6 @@ class _HelpScreenState extends State<HelpScreen> {
                       controller: emailController,
                       showBorder: true,
                       showDivider: false,
-                      textStyle: Theme.of(context).textTheme.titleSmall,
                       hintText: LocalizationString.email,
                       cornerRadius: 5,
                     ),
@@ -77,7 +72,6 @@ class _HelpScreenState extends State<HelpScreen> {
                       controller: phoneController,
                       showBorder: true,
                       showDivider: false,
-                      textStyle: Theme.of(context).textTheme.titleSmall,
                       hintText: LocalizationString.phoneNumber,
                       cornerRadius: 5,
                     ),
@@ -86,10 +80,9 @@ class _HelpScreenState extends State<HelpScreen> {
                     ),
                     InputField(
                       controller: messageController,
-                      maxLines: 12,
+                      maxLines: 5,
                       showBorder: true,
                       showDivider: false,
-                      textStyle: Theme.of(context).textTheme.titleSmall,
                       hintText: LocalizationString.message,
                       cornerRadius: 5,
                     ),
@@ -108,7 +101,7 @@ class _HelpScreenState extends State<HelpScreen> {
   }
 
   Widget _submitBtn() {
-    return FilledButtonType1(
+    return AppThemeButton(
       onPress: () {
         helpSupportContorller.submitSupportRequest(
             name: nameController.text,
@@ -117,11 +110,6 @@ class _HelpScreenState extends State<HelpScreen> {
             message: messageController.text);
       },
       text: LocalizationString.submit,
-      enabledTextStyle: Theme.of(context)
-          .textTheme
-          .bodyLarge!
-          .copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-      isEnabled: true,
     );
   }
 }
