@@ -45,7 +45,7 @@ class AppThemeButton extends StatelessWidget {
               style: TextStyle(
                   fontSize: FontSizes.b2,
                   fontWeight: TextWeight.medium,
-                  color: AppColorConstants.grayscale900),
+                  color: Colors.white),
             ).hP8,
           ),
           trailing != null ? trailing!.hP4 : Container()

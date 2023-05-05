@@ -73,7 +73,7 @@ class MyProfileState extends State<MyProfile> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.only(top: 10),
+                padding: EdgeInsets.zero,
                 children: [
                   addProfileView(),
                   if (_settingsController.setting.value!.enableHighlights)
@@ -109,14 +109,17 @@ class MyProfileState extends State<MyProfile> {
                                   fit: BoxFit.cover,
                                   imageUrl: _profileController
                                       .user.value!.coverImage!)
-                              .overlay(Colors.black26)
                               .bottomRounded(20)
                           : Container(
                               width: Get.width,
-                              height: 200,
+                              height: 225,
                               color:
                                   AppColorConstants.themeColor.withOpacity(0.2),
                             ).bottomRounded(20),
+                      Container(
+                        height: 225,
+                        color: Colors.black26,
+                      ).bottomRounded(20),
                       Positioned(
                         left: 0,
                         right: 0,
@@ -138,6 +141,7 @@ class MyProfileState extends State<MyProfile> {
                                   Heading6Text(
                                     _profileController.user.value!.userName,
                                     weight: TextWeight.medium,
+                                    color: Colors.white,
                                   ),
                                   if (_profileController.user.value!.isVerified)
                                     Row(
@@ -158,18 +162,19 @@ class MyProfileState extends State<MyProfile> {
                                       .user.value!.profileCategoryTypeId !=
                                   0)
                                 BodyLargeText(
-                                        _profileController.user.value!
-                                            .profileCategoryTypeName,
-                                        weight: TextWeight.medium)
-                                    .bP4,
+                                  _profileController
+                                      .user.value!.profileCategoryTypeName,
+                                  weight: TextWeight.medium,
+                                  color: Colors.white70,
+                                ).bP4,
                               _profileController.user.value!.country != null
                                   ? BodyMediumText(
                                       '${_profileController.user.value!.country}, ${_profileController.user.value!.city}',
-                                      color: AppColorConstants.themeColor,
+                                      color: Colors.white70,
                                     )
                                   : Container(),
                               const SizedBox(
-                                height: 40,
+                                height: 50,
                               ),
                               Container(
                                 color: AppColorConstants.cardColor.darken(),
@@ -254,12 +259,8 @@ class MyProfileState extends State<MyProfile> {
                               const SizedBox(
                                 height: 40,
                               ),
-                              AppThemeBorderButton(
+                              AppThemeButton(
                                   height: 40,
-                                  textStyle: TextStyle(
-                                      fontSize: FontSizes.h6,
-                                      color: AppColorConstants.grayscale900,
-                                      fontWeight: TextWeight.semiBold),
                                   text: LocalizationString.editProfile,
                                   onPress: () {
                                     Get.to(() => const UpdateProfile())!

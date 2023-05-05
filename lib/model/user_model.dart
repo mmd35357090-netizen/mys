@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:timeago/timeago.dart' as timeago;
-
 import 'chat_room_model.dart';
 import 'package:get/get.dart';
 
@@ -12,11 +11,13 @@ class UserLiveCallDetail {
   int status = 0;
   String token = '';
   String channelName = '';
+  List<UserModel>? host;
 
   UserLiveCallDetail();
 
   factory UserLiveCallDetail.fromJson(dynamic json) {
     UserLiveCallDetail model = UserLiveCallDetail();
+
     model.id = json['id'];
     model.status = json['status'];
     model.startTime = json['start_time'];
@@ -25,6 +26,12 @@ class UserLiveCallDetail {
     model.token = json['token'] ?? '';
     model.channelName = json['channel_name'] ?? '';
 
+    if (json['userdetails'] != null) {
+      model.host = <UserModel>[];
+      json['userdetails'].forEach((v) {
+        model.host!.add(UserModel.fromJson(v));
+      });
+    }
     return model;
   }
 }

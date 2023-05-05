@@ -8,6 +8,16 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
+import 'package:foap/screens/add_on/controller/relationship/relationship_controller.dart';
+import 'package:foap/screens/add_on/controller/relationship/relationship_search_controller.dart';
+import 'package:foap/screens/live_users/live_users_controller.dart';
+import 'package:foap/screens/settings_menu/help_support_contorller.dart';
+import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
+import 'package:get/get.dart';
+import 'package:giphy_get/l10n.dart';
+import 'components/reply_chat_cells/post_gift_controller.dart';
+import 'controllers/faq_controller.dart';
 import 'package:foap/screens/add_on/controller/reel/create_reel_controller.dart';
 import 'package:foap/screens/add_on/controller/reel/reels_controller.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
@@ -15,8 +25,6 @@ import 'package:foap/screens/login_sign_up/splash_screen.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:foap/util/shared_prefs.dart';
-import 'package:get/get.dart';
-import 'package:giphy_get/l10n.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -30,12 +38,16 @@ import 'controllers/chat_and_call/chat_detail_controller.dart';
 import 'controllers/chat_and_call/chat_history_controller.dart';
 import 'controllers/chat_and_call/chat_room_detail_controller.dart';
 import 'controllers/chat_and_call/select_user_group_chat_controller.dart';
+import 'controllers/gift_controller.dart';
 import 'controllers/home_controller.dart';
+import 'controllers/live_history_controller.dart';
 import 'controllers/live_tv_streaming_controller.dart';
 import 'controllers/login_controller.dart';
+import 'controllers/map_screen_controller.dart';
 import 'controllers/podcast_streaming_controller.dart';
 import 'controllers/post_controller.dart';
 import 'controllers/profile_controller.dart';
+import 'controllers/request_verification_controller.dart';
 import 'controllers/subscription_packages_controller.dart';
 import 'helper/languages.dart';
 import 'manager/db_manager.dart';
@@ -78,8 +90,15 @@ Future<void> main() async {
 
   AutoOrientation.portraitAutoMode();
 
+  bool isDarkTheme = await SharedPrefs().isDarkMode();
+  Get.changeThemeMode(isDarkTheme ? ThemeMode.dark : ThemeMode.light);
+  // Get.changeThemeMode(ThemeMode.dark);
+
+  Get.put(PlayerManager());
+
   isDarkMode = await SharedPrefs().isDarkMode();
   Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
+
 
   Get.put(DashboardController());
   Get.put(UserProfileManager());
@@ -98,6 +117,18 @@ Future<void> main() async {
   Get.put(ChatHistoryController());
   Get.put(ChatRoomDetailController());
   Get.put(TvStreamingController());
+  Get.put(MapScreenController());
+  Get.put(GiftController());
+  Get.put(LiveHistoryController());
+  Get.put(RequestVerificationController());
+  Get.put(FAQController());
+  Get.put(DatingController());
+  Get.put(RelationshipController());
+  Get.put(RelationshipSearchController());
+  Get.put(LiveUserController());
+  Get.put(PostGiftController());
+  Get.put(MercadappagoPaymentController());
+  Get.put(HelpSupportController());
   Get.put(PodcastStreamingController());
   Get.put(ReelsController());
   Get.put(CreateReelController());
@@ -163,13 +194,14 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
   @override
   Widget build(BuildContext context) {
     return OverlaySupport.global(
-        child: FutureBuilder<String>(
-            future: SharedPrefs().getLanguage(),
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        child: FutureBuilder<Locale>(
+            future: SharedPrefs().getLocale(),
+            builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return GetMaterialApp(
                   translations: Languages(),
-                  locale: Locale(snapshot.data!),
+                  locale: snapshot.data!,
+                  // locale: const Locale('pt',/ 'BR'),
                   fallbackLocale: const Locale('en', 'US'),
                   debugShowCheckedModeBanner: false,
                   // navigatorKey: navigationKey,
@@ -193,7 +225,8 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
                     Locale('tr', 'SA'),
                     Locale('ru', 'SA'),
                     Locale('es', 'SA'),
-                    Locale('fr', 'SA')
+                    Locale('fr', 'SA'),
+                    Locale('pt', 'BR')
                   ],
                 );
               } else {

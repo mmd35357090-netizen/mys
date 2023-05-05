@@ -5,6 +5,10 @@ import 'dart:typed_data';
 import 'package:foap/screens/add_on/model/preference_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import '../model/live_tv_model.dart';
+import '../model/post_gift_model.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
 import 'package:latlng/latlng.dart';
 import '../screens/add_on/controller/dating/dating_controller.dart';
 import 'package:foap/helper/imports/models.dart';
@@ -15,6 +19,7 @@ import '../util/shared_prefs.dart';
 export 'package:foap/apiHandler/api_response_model.dart';
 import 'package:get/get.dart';
 
+
 class ApiController {
   final UserProfileManager _userProfileManager = Get.find();
   final JsonDecoder _decoder = const JsonDecoder();
@@ -22,7 +27,6 @@ class ApiController {
   Future<ApiResponseModel> login(String email, String password) async {
     var url = NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.login;
     dynamic param = await ApiParamModel().getLoginParam(email, password);
-
     return http
         .post(Uri.parse(url), body: param)
         .then((http.Response response) async {
@@ -55,6 +59,27 @@ class ApiController {
       final ApiResponseModel parsedResponse =
           await getResponse(response.body, NetworkConstantsUtil.login);
       return parsedResponse;
+    });
+  }
+
+
+  // https://development.fwdtechnology.co/media_selling/api/web/v1/chats/live-streaming-username=null&profile_category_type=null&is_following=null
+  // https://development.fwdtechnology.co/media_selling/api/web/v1/chats/live-streaming-user?name=&profile_category_type=&is_following=
+
+  Future<ApiResponseModel> getLiveUser(
+      {String? name, String? profileCategoryType, bool? isFollowing}) async {
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.liveUsers}?expand=userdetails&name=&profile_category_type=&is_following=';
+    print('ramesh live user url: $url');
+
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    print('ramesh auth key: $authKey');
+    return http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((response) async {
+      final parseResponse =
+          await getResponse(response.body, NetworkConstantsUtil.liveUsers);
+      return parseResponse;
     });
   }
 
@@ -630,6 +655,7 @@ class ApiController {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     url = url.replaceFirst('{{id}}', userId.toString());
 
+    print('url $url');
     return http.get(Uri.parse(url), headers: {
       "Authorization": "Bearer ${authKey!}"
     }).then((http.Response response) async {
@@ -1447,6 +1473,40 @@ class ApiController {
     });
   }
 
+  Future<ApiResponseModel> getSupportMessages() async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url =
+        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.supportRequests;
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse = await getResponse(
+          response.body, NetworkConstantsUtil.supportRequests);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> getSupportMessageView(int id) async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url =
+        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.supportRequestView;
+
+    url =  url.replaceAll('id', id.toString());
+
+    print('getSupportMessageView  url: $url');
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse = await getResponse(
+          response.body, NetworkConstantsUtil.supportRequestView);
+      return parsedResponse;
+    });
+  }
+
+
+
   Future<ApiResponseModel> updateNotificationSettings({
     required String likesNotificationStatus,
     required String commentNotificationStatus,
@@ -1467,19 +1527,6 @@ class ApiController {
     });
   }
 
-  Future<ApiResponseModel> getSupportMessages() async {
-    String? authKey = await SharedPrefs().getAuthorizationKey();
-    var url =
-        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.supportRequests;
-
-    return await http.get(Uri.parse(url), headers: {
-      "Authorization": "Bearer ${authKey!}"
-    }).then((http.Response response) async {
-      final ApiResponseModel parsedResponse = await getResponse(
-          response.body, NetworkConstantsUtil.supportRequests);
-      return parsedResponse;
-    });
-  }
 
   Future<ApiResponseModel> searchHashtag(
       {required String hashtag, int page = 1}) async {
@@ -2688,6 +2735,68 @@ class ApiController {
     });
   }
 
+  Future<ApiResponseModel> getPostGifts(
+      {required int sendOnType, required int postId}) async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.postGifts}';
+
+    url = url.replaceAll('{{send_on_type}}', sendOnType.toString());
+    url = url.replaceAll('{{post_id}}', postId.toString());
+
+    print('getPostGift : $url');
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+          await getResponse(response.body, NetworkConstantsUtil.postGifts);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> getTimelineGifts() async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.timelineGifts}';
+    print('getTimelineGifts : $url');
+
+    return await http.get(Uri.parse(url), headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+          await getResponse(response.body, NetworkConstantsUtil.timelineGifts);
+      return parsedResponse;
+    });
+  }
+
+  Future<ApiResponseModel> sendPostGift(
+      {required PostGiftModel gift,
+      required int? receiverId,
+      required int? postId,
+      required int userId}) async {
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+    var url =
+        '${NetworkConstantsUtil.baseUrl}${NetworkConstantsUtil.sendPostGifts}';
+
+    dynamic param = await ApiParamModel().sendPostGiftParam(
+        giftId: gift.id!,
+        receiverId: receiverId,
+        sendOnType: 3,
+        postType: 2,
+        postId: postId);
+
+    return await http.post(Uri.parse(url), body: param, headers: {
+      "Authorization": "Bearer ${authKey!}"
+    }).then((http.Response response) async {
+      final ApiResponseModel parsedResponse =
+          await getResponse(response.body, NetworkConstantsUtil.sendPostGifts);
+
+      return parsedResponse;
+    });
+  }
+
   //**************** profile verification ***************//
 
   Future<ApiResponseModel> sendProfileVerificationRequest(
@@ -2983,7 +3092,8 @@ class ApiController {
         return ApiResponseModel.fromJson(
             {"message": data['message'], "isInvalidLogin": true}, url);
       } else {
-        return ApiResponseModel.fromJson(data, url);
+        final response = ApiResponseModel.fromJson(data, url);
+        return response;
       }
     } catch (e) {
       return ApiResponseModel.fromJson({"message": e.toString()}, url);

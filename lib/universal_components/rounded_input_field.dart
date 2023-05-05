@@ -24,6 +24,7 @@ class InputField extends StatefulWidget {
   final bool? showBorder;
   final Color? borderColor;
   final double? cornerRadius;
+  final bool? isEnable;
 
   final Color? cursorColor;
   final TextStyle? textStyle;
@@ -51,6 +52,7 @@ class InputField extends StatefulWidget {
     this.cornerRadius = 0,
     this.cursorColor,
     this.textStyle,
+    this.isEnable
   }) : super(key: key);
 
   @override
@@ -78,7 +80,7 @@ class _InputFieldState extends State<InputField> {
   late bool? showBorder;
   late Color? borderColor;
   late double? cornerRadius;
-
+  late bool? isEnable;
   late Color cursorColor;
 
   @override
@@ -102,6 +104,7 @@ class _InputFieldState extends State<InputField> {
     showBorder = widget.showBorder;
     borderColor = widget.borderColor;
     cornerRadius = widget.cornerRadius;
+    isEnable = widget.isEnable;
 
     super.initState();
   }
@@ -149,6 +152,7 @@ class _InputFieldState extends State<InputField> {
               Expanded(
                 child: Focus(
                   child: TextField(
+                    enabled: isEnable,
                     controller: controller,
                     keyboardType: hintText == hintText
                         ? TextInputType.emailAddress

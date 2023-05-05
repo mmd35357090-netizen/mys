@@ -43,6 +43,9 @@ class UpdateProfileState extends State<UpdateProfile> {
           //     context: context, title: LocalizationString.editProfile),
           // divider(context: context).vP8,
           addProfileView(),
+          const SizedBox(
+            height: 40,
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -376,11 +379,16 @@ class UpdateProfileState extends State<UpdateProfile> {
                               right: 16,
                               child: Container(
                                 color: AppColorConstants.cardColor,
-                                child: BodyLargeText(LocalizationString.editProfileCover).setPadding(
-                                    left: 10, right: 10, top: 8, bottom: 8),
+                                child: BodyLargeText(
+                                        LocalizationString.editProfileCover)
+                                    .setPadding(
+                                        left: 10, right: 10, top: 8, bottom: 8),
                               ).circular.ripple(() {
                                 openImagePickingPopup(isCoverImage: true);
-                              }))
+                              })),
+                          Container(
+                            color: Colors.black26,
+                          ).bottomRounded(20)
                         ],
                       ),
                       Column(children: [
@@ -402,17 +410,18 @@ class UpdateProfileState extends State<UpdateProfile> {
                         Heading5Text(
                           profileController.user.value!.userName,
                           weight: TextWeight.medium,
+                          color: Colors.white,
                         ).setPadding(bottom: 4),
                         profileController.user.value?.email != null
                             ? BodyMediumText(
                                 '${profileController.user.value!.email}',
-                                color: AppColorConstants.grayscale500,
+                                color: Colors.white70,
                               )
                             : Container(),
                         profileController.user.value?.country != null
                             ? BodyMediumText(
                                 '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
-                                color: AppColorConstants.grayscale500,
+                                color: Colors.white70,
                               ).vP4
                             : Container(),
                       ]).p8,
@@ -432,13 +441,13 @@ class UpdateProfileState extends State<UpdateProfile> {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
-          color: AppColorConstants.cardColor,
-          child: Wrap(
+              color: AppColorConstants.cardColor,
+              child: Wrap(
                 children: [
                   Padding(
                       padding: const EdgeInsets.only(
                           left: 20, right: 20, top: 20, bottom: 25),
-                      child:Heading5Text(
+                      child: Heading5Text(
                         LocalizationString.addPhoto,
                         weight: TextWeight.bold,
                       )),
@@ -461,7 +470,8 @@ class UpdateProfileState extends State<UpdateProfile> {
                   ListTile(
                       leading: Icon(Icons.wallpaper_outlined,
                           color: AppColorConstants.iconColor),
-                      title: BodyLargeText(LocalizationString.chooseFromGallery),
+                      title:
+                          BodyLargeText(LocalizationString.chooseFromGallery),
                       onTap: () async {
                         Get.back();
                         picker
@@ -481,6 +491,6 @@ class UpdateProfileState extends State<UpdateProfile> {
                       onTap: () => Get.back()),
                 ],
               ),
-        ));
+            ));
   }
 }

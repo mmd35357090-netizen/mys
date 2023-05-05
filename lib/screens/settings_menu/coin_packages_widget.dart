@@ -7,6 +7,8 @@ import '../../controllers/subscription_packages_controller.dart';
 import '../../model/package_model.dart';
 import '../../util/constant_util.dart';
 
+import 'mercadopago_payment_controller.dart';
+
 class CoinPackagesWidget extends StatefulWidget {
   const CoinPackagesWidget({Key? key}) : super(key: key);
 
@@ -16,6 +18,7 @@ class CoinPackagesWidget extends StatefulWidget {
 
 class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
   final SubscriptionPackageController packageController = Get.find();
+  final MercadappagoPaymentController _paymentController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,8 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
                     package: packageController.packages[index],
                     index: index,
                     buyPackageHandler: () {
-                      buyPackage(packageController.packages[index]);
+                      // _paymentController.makePayment();
+                      // buyPackage(packageController.packages[index]);
                     },
                   );
                 },

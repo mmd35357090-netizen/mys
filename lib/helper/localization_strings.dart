@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 
 class LocalizationString {
+  static String supportRequestHasBeenSubmitted = 'Support request has been submitted.'.tr;
+  static String allFieldAreRequied = 'All field are required'.tr;
+  static String help = 'Help'.tr;
   static String back = 'Back'.tr;
   static String about = 'About'.tr;
   static String addSomethingAboutPost = 'Add something about post'.tr;
@@ -458,6 +461,7 @@ class LocalizationString {
 
   static String supportRequests = "Support requests".tr;
   static String createSupportRequest = "Create support requests".tr;
+  static String fillForm = "Please fill all the fields".tr;
 
   static String findFriends = "Find Friends".tr;
   static String find = "Find".tr;
@@ -704,6 +708,7 @@ class LocalizationString {
   static String sendGift = 'Send gift'.tr;
   static String sentAGift = 'Sent a gift'.tr;
   static String coinsEarned = 'Coins earned'.tr;
+  static String giftSent = 'Gift is sent successfully'.tr;
 
   static String giftsReceived = 'Gifts received'.tr;
 
@@ -724,12 +729,14 @@ class LocalizationString {
   static String your = 'Your'.tr;
   static String recent = 'Recent'.tr;
   static String goLive = 'Go Live'.tr;
+  static String liveUsers = 'Live Users'.tr;
   static String liveNow = 'Now on live'.tr;
   static String reel = 'Clip'.tr;
   static String reels = 'Clips'.tr;
   static String selectMusic = 'Select music'.tr;
   static String originalAudio = 'Original audio'.tr;
   static String use = 'Use'.tr;
+  static String viewGift = 'View Gift'.tr;
 
   static String anyoneCanSeeClub =
       'Anyone can see this club and join the club'.tr;
@@ -1081,6 +1088,7 @@ class LocalizationString {
       "Are you sure, you want to leave group?".tr;
   static String deleteGroupConfirmation =
       "Are you sure, you want to delete group?".tr;
+
 
   static String today = 'Today'.tr;
   static String thisWeek = 'This week'.tr;

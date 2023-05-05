@@ -23,6 +23,7 @@ import '../screens/home_feed/comments_screen.dart';
 import '../screens/home_feed/post_media_full_screen.dart';
 import '../screens/profile/my_profile.dart';
 import '../screens/profile/other_user_profile.dart';
+import 'package:foap/components/post_gift_page_view.dart';
 
 class PostMediaTile extends StatelessWidget {
   final PostCardController postCardController = Get.find();
@@ -153,6 +154,7 @@ class PostCardState extends State<PostCard> {
   final SelectUserForChatController selectUserForChatController =
       SelectUserForChatController();
   final ProfileController _profileController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   final FlareControls flareControls = FlareControls();
 
@@ -165,11 +167,11 @@ class PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       addPostUserInfo().setPadding(left: 16, right: 16, bottom: 16),
-      if (widget.model.title.isNotEmpty)
-        _convertHashtag(widget.model.title).hp(DesignConstants.horizontalPadding),
-      if (widget.model.title.isNotEmpty)
-        const SizedBox(height: 20,),
-        GestureDetector(
+      // if (widget.model.title.isNotEmpty)
+      //   _convertHashtag(widget.model.title).hp(DesignConstants.horizontalPadding),
+      // if (widget.model.title.isNotEmpty)
+      //   const SizedBox(height: 20,),
+      GestureDetector(
           onDoubleTap: () {
             //   widget.model.isLike = !widget.model.isLike;
             postCardController.likeUnlikePost(
@@ -241,7 +243,37 @@ class PostCardState extends State<PostCard> {
         height: 16,
       ),
       commentAndLikeWidget().hP16,
+      viewGifts(),
+      if (widget.model.title.isNotEmpty)
+        _convertHashtag(widget.model.title)
+            .hp(DesignConstants.horizontalPadding),
     ]).vP16;
+  }
+
+  Widget viewGifts() {
+    return Column(
+      children: [
+        widget.model.isMyPost
+            ? TextButton(
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return FractionallySizedBox(
+                            heightFactor: 0.8,
+                            child: PostGiftsReceived(
+                              postId: widget.model.id,
+                            ));
+                      });
+                },
+                child: Text(LocalizationString.viewGift))
+            : Container(),
+        const SizedBox(
+          height: 10,
+        )
+      ],
+    );
   }
 
   Widget commentAndLikeWidget() {
@@ -320,6 +352,28 @@ class PostCardState extends State<PostCard> {
                       toUser: user, post: widget.model);
                 }));
       }),
+      !widget.model.isMyPost
+          ? ThemeIconWidget(
+              ThemeIcon.gift,
+              color: Theme.of(context).iconTheme.color,
+            ).lp(20).ripple(() {
+              showModalBottomSheet<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return FractionallySizedBox(
+                        heightFactor: 0.8,
+                        child: PostGiftPageView(giftSelectedCompletion: (gift) {
+                          // receiver id
+                          homeController.sendPostGift(
+                              gift,
+                              widget.model.user.id,
+                              widget.model.id,
+                              _userProfileManager.user.value!.id);
+                          Get.back();
+                        }));
+                  });
+            })
+          : Container(),
       const Spacer(),
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -403,44 +457,44 @@ class PostCardState extends State<PostCard> {
 
     return RichText(
         text: TextSpan(children: [
-          TextSpan(
-            text: '${widget.model.user.userName}  ',
-            style: TextStyle(
-                color: AppColorConstants.grayscale900, fontWeight: FontWeight.w900),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                openProfile();
-              },
-          ),
-          for (String text in split)
-            text.startsWith('#')
-                ? TextSpan(
-              text: '$text ',
-              style: TextStyle(
-                  color: AppColorConstants.themeColor,
-                  fontWeight: FontWeight.w700),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  widget.textTapHandler(text);
-                },
-            )
-                : text.startsWith('@')
-                ? TextSpan(
-              text: '$text ',
-              style: TextStyle(
-                  color: AppColorConstants.themeColor,
-                  fontWeight: FontWeight.w700),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  widget.textTapHandler(text);
-                },
-            )
-                : TextSpan(
+      TextSpan(
+        text: '${widget.model.user.userName}  ',
+        style: TextStyle(
+            color: AppColorConstants.grayscale900, fontWeight: FontWeight.w900),
+        recognizer: TapGestureRecognizer()
+          ..onTap = () {
+            openProfile();
+          },
+      ),
+      for (String text in split)
+        text.startsWith('#')
+            ? TextSpan(
                 text: '$text ',
                 style: TextStyle(
-                    color: AppColorConstants.grayscale900,
-                    fontWeight: FontWeight.w400))
-        ]));
+                    color: AppColorConstants.themeColor,
+                    fontWeight: FontWeight.w700),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    widget.textTapHandler(text);
+                  },
+              )
+            : text.startsWith('@')
+                ? TextSpan(
+                    text: '$text ',
+                    style: TextStyle(
+                        color: AppColorConstants.themeColor,
+                        fontWeight: FontWeight.w700),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        widget.textTapHandler(text);
+                      },
+                  )
+                : TextSpan(
+                    text: '$text ',
+                    style: TextStyle(
+                        color: AppColorConstants.grayscale900,
+                        fontWeight: FontWeight.w400))
+    ]));
   }
 
   void openActionPopup() {
@@ -466,9 +520,12 @@ class PostCardState extends State<PostCard> {
                     }),
                 divider(context: context),
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title:
+                        Center(child: BodyLargeText(LocalizationString.cancel)),
                     onTap: () => Get.back()),
-                const SizedBox(height: 25,)
+                const SizedBox(
+                  height: 25,
+                )
               ],
             )
           : Wrap(
@@ -522,7 +579,9 @@ class PostCardState extends State<PostCard> {
                       ),
                     ),
                     onTap: () => Get.back()),
-                const SizedBox(height: 25,)
+                const SizedBox(
+                  height: 25,
+                )
               ],
             ),
     ).round(40));

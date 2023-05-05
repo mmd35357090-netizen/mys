@@ -65,6 +65,7 @@ class NetworkConstantsUtil {
       'notifications?expand=createdByUser,refrenceDetails';
   static String submitRequest = 'support-requests';
   static String supportRequests = 'support-requests?is_reply=';
+  static String supportRequestView = 'support-requests/id';
   static String notificationSettings = 'users/push-notification-status';
 
   static String currentLiveUsers =
@@ -235,6 +236,7 @@ class NetworkConstantsUtil {
   static String randomLives =
       'chats/live-streaming-user?name=&profile_category_type=&is_following=';
   static String randomOnlineUser = 'chats/online-user?profile_category_type=';
+  static String liveUsers = 'chats/live-streaming-user';
 
   //***********gifts***********//
   static String giftsCategories = 'categories/gift?expand=gift';
@@ -243,6 +245,12 @@ class NetworkConstantsUtil {
   static String sendGift = 'gifts/send-gift';
   static String giftsReceived =
       'gifts/recieved-gift?expand=giftDetail,senderDetail&send_on_type={{send_on_type}}&live_call_id={{live_call_id}}&post_id={{post_id}}';
+  static String timelineGifts = 'gifts/timeline-gift';
+  static String postGifts =
+      'gifts/timeline-gift-recieved?expand=senderDetail,giftTimelineDetail&send_on_type={{send_on_type}}&post_id={{post_id}}';
+  static String sendPostGifts = 'gifts/send-timeline-gift';
+
+  // url : {{host}}/gifts/timeline-gift-recieved?expand=senderDetail,giftTimelineDetail&send_on_type=3&post_id=12
 
   //***********verification***********//
   static String requestVerification = 'user-verifications';

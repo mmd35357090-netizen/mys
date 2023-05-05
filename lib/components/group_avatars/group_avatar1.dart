@@ -28,6 +28,7 @@ class CategoryAvatarType1 extends StatelessWidget {
                 category.name,
                 maxLines: 1,
                 weight: TextWeight.semiBold,
+                color: Colors.white,
               ))
         ],
       ),

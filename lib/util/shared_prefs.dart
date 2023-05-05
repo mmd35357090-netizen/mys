@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class SharedPrefs {
   //Set/Get UserLoggedIn Status
@@ -115,5 +117,14 @@ class SharedPrefs {
   Future<String> getLanguage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.get('language') as String? ?? 'en';
+  }
+
+  Future<Locale> getLocale() async {
+    // Get the user's preferred locale from the system settings
+    var locale = await WidgetsBinding.instance.window.locale;
+    print('getLocale : ${locale.toString()}');
+    // Alternatively, you can use the device's current locale:
+    // var locale = await findSystemLocale();
+    return locale;
   }
 }

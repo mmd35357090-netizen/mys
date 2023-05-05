@@ -1,8 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
-import 'package:foap/screens/add_on/ui/event/events_dashboard.dart';
-import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
-import 'package:foap/screens/add_on/ui/reel/create_reel_video.dart';
+import 'package:foap/screens/live_users/live_users_screen.dart';
+import 'package:foap/helper/imports/common_import.dart';
+
 import 'package:get/get.dart';
 import '../../controllers/home_controller.dart';
 import '../chat/random_chat/choose_profile_category.dart';
@@ -23,13 +22,10 @@ enum QuickLinkType {
   clubs,
   pages,
   tv,
-  event,
   story,
   highlights,
   goLive,
-  reel,
-  podcast,
-  dating
+  liveUsers,
 }
 
 class QuickLink {
@@ -98,22 +94,16 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                     } else if (link.linkType == QuickLinkType.clubs) {
                       Get.to(() => const ClubsListing());
                     } else if (link.linkType == QuickLinkType.pages) {
-                    } else if (link.linkType == QuickLinkType.event) {
-                      Get.to(() => const EventsDashboardScreen());
                     } else if (link.linkType == QuickLinkType.goLive) {
                       Get.to(() => const CheckingLiveFeasibility());
-                    } else if (link.linkType == QuickLinkType.reel) {
-                      Get.to(() => const CreateReelScreen());
                     } else if (link.linkType == QuickLinkType.story) {
                       Get.to(() => const ChooseMediaForStory());
                     } else if (link.linkType == QuickLinkType.highlights) {
                       Get.to(() => const ChooseStoryForHighlights());
                     } else if (link.linkType == QuickLinkType.tv) {
                       Get.to(() => const TvDashboardScreen());
-                    } else if (link.linkType == QuickLinkType.podcast) {
-                      Get.to(() => const PodcastListDashboard());
-                    } else if (link.linkType == QuickLinkType.dating) {
-                      Get.to(() => const DatingDashboard());
+                    } else if (link.linkType == QuickLinkType.liveUsers) {
+                      Get.to(() => const LiveUserScreen());
                     }
                   })
               ]).setPadding(left: 16, right: 16, top: 20),

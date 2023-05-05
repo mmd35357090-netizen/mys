@@ -3,6 +3,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../../util/shared_prefs.dart';
 import '../dashboard/loading.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,7 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 4), () async{
+      String? authKey = await SharedPrefs().getAuthorizationKey();
+
       Get.offAll(() => const LoadingScreen());
     });
   }

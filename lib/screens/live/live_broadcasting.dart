@@ -691,7 +691,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                 color: AppColorConstants.grayscale500,
               ),
               BodySmallText(
-                message.messageContent.decrypted(),
+                message.decrypt,
                 color: AppColorConstants.grayscale500,
               ),
             ],

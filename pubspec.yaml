@@ -166,6 +166,16 @@ dependencies:
   geocoding: ^2.0.5
   latlng: ^0.2.0
   open_filex: ^4.3.2
+#  mpcheckout: ^0.1.0
+#  freezed_annotation: ^0.14.1
+#  mercado_pago_checkout: ^0.0.5
+#  mpcheckout: ^0.1.0
+#  mpcheckout: ^0.1.0
+  mercadopago_sdk: ^1.3.0
+#  mercadopago: ^2.2.0
+#  mercado_pago_mobile_checkout:
+
+
 
 dev_dependencies:
   flutter_test:

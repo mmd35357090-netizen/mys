@@ -39,11 +39,9 @@ class _SelectMediaState extends State<SelectMedia> {
     if (_settingsController.setting.value!.enableImagePost &&
         _settingsController.setting.value!.enableVideoPost) {
       mediaType = widget.mediaType ?? PostMediaType.all;
-    }
-    else if (_settingsController.setting.value!.enableImagePost) {
+    } else if (_settingsController.setting.value!.enableImagePost) {
       mediaType = widget.mediaType ?? PostMediaType.photo;
-    }
-    else if (_settingsController.setting.value!.enableVideoPost) {
+    } else if (_settingsController.setting.value!.enableVideoPost) {
       mediaType = widget.mediaType ?? PostMediaType.video;
     }
 
@@ -107,7 +105,11 @@ class _SelectMediaState extends State<SelectMedia> {
                         for (Media media
                             in _selectPostMediaController.selectedMediaList)
                           media.mediaType == GalleryMediaType.photo
-                              ? Image.file(media.file!, fit: BoxFit.cover)
+                              ? Image.file(
+                                  media.file!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                )
                               : VideoPostTile(
                                   url: media.file!.path,
                                   isLocalFile: true,

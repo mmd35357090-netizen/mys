@@ -1,8 +1,16 @@
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/settings_menu/account.dart';
+import 'package:foap/screens/settings_menu/payment_and_coins.dart';
+import 'package:foap/screens/settings_menu/security_privacy_options.dart';
+import 'package:foap/screens/settings_menu/settings_controller.dart';
 import 'package:get/get.dart';
-import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:share_plus/share_plus.dart';
+
+import 'change_language.dart';
+import 'faq_list.dart';
+import 'help_screen.dart';
+import 'notification_settings.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -13,7 +21,6 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   final SettingsController _settingsController = Get.find();
-  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -66,6 +73,12 @@ class _SettingsState extends State<Settings> {
                             LocalizationString.faqMessage, () {
                           Get.to(() => const FaqList());
                         }, true),
+                        addTileEvent(
+                            'assets/request.png',
+                            LocalizationString.help,
+                            LocalizationString.faqMessage, () {
+                          Get.to(() => const HelpScreen());
+                        }, true),
                         if (_settingsController
                             .setting.value!.enableDarkLightModeSwitch)
                           darkModeTile(),
@@ -84,7 +97,7 @@ class _SettingsState extends State<Settings> {
                               title: LocalizationString.logout,
                               subTitle: LocalizationString.logoutConfirmation,
                               okHandler: () {
-                                _userProfileManager.logout();
+                                getIt<UserProfileManager>().logout();
                               });
                         }, false),
                         addTileEvent(
@@ -136,7 +149,7 @@ class _SettingsState extends State<Settings> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      BodyLargeText(title.tr, weight: TextWeight.medium).bP4,
+                      BodyLargeText(title.tr).bP4,
                     ],
                   ),
                 ),
@@ -174,10 +187,7 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  BodyLargeText(LocalizationString.darkMode.tr,
-                      weight: TextWeight.medium)
-                ],
+                children: [BodyLargeText(LocalizationString.darkMode.tr)],
               ),
             ),
             // const Spacer(),

@@ -57,8 +57,8 @@ class _RandomLiveListingState extends State<RandomLiveListing> {
           return Stack(
             children: [
               CachedNetworkImage(
-                imageUrl:
-                liveUser.picture!,
+                imageUrl: liveUser.picture!,
+            
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: double.infinity,
@@ -80,7 +80,6 @@ class _RandomLiveListingState extends State<RandomLiveListing> {
                       ),
                     ],
                   )),
-
               Positioned(
                 left: 8,
                 bottom: 8,

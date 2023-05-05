@@ -71,6 +71,7 @@ class SocketManager {
     // if(_socketInstance!.connected == false){
     _socketInstance?.connect();
     // }
+    print('ramesh socket connected');
 
     socketGlobalListeners();
 
@@ -169,7 +170,7 @@ class SocketManager {
 
 //Get This Event After Connection Error To Socket With Error
   dynamic onConnectError(error) {
-    // print("===> ConnectError socket.................... $error");
+    print("===> ConnectError socket.................... $error");
   }
 
   //Get This Event When your call is created
@@ -200,24 +201,27 @@ class SocketManager {
 
   void onReceiveMessage(dynamic response) async {
     ChatMessageModel message = ChatMessageModel.fromJson(response);
-    int senderId = response['userId'];
-    String senderName = response['username'];
-    UserModel user = UserModel();
-    user.id = senderId;
-    user.userName = senderName;
+    int? senderId = response['userId'] ?? response['created_by'];
+    if (senderId != null) {
+      String senderName = response['username'];
+      UserModel user = UserModel();
+      user.id = senderId;
+      user.userName = senderName;
 
-    message.sender = user;
+      message.sender = user;
 
-    // ChatMessageModel message = ChatMessageModel.fromJson(response);
+      // ChatMessageModel message = ChatMessageModel.fromJson(response);
 
-    await getIt<DBManager>().newMessageReceived(message);
-    // await _chatDetailController.newMessageReceived(message);
-    // _chatController.newMessageReceived(message);
+      await getIt<DBManager>().newMessageReceived(message);
+      // await _chatDetailController.newMessageReceived(message);
+      // _chatController.newMessageReceived(message);
 
-    int roomsWithUnreadMessageCount =
-        await getIt<DBManager>().roomsWithUnreadMessages();
+      int roomsWithUnreadMessageCount =
+      await getIt<DBManager>().roomsWithUnreadMessages();
 
-    _dashboardController.updateUnreadMessageCount(roomsWithUnreadMessageCount);
+      _dashboardController.updateUnreadMessageCount(
+          roomsWithUnreadMessageCount);
+    }
   }
 
   void onDeleteMessage(dynamic response) {
@@ -267,7 +271,7 @@ class SocketManager {
     int userIdActionedBy = response['userIdActiondBy'];
     if (userIdActionedBy != _userProfileManager.user.value!.id) {
       response['action'] =
-          1; // 1 for added, 2 for removed , 3 for made admin , 4 for removed from admin, 5 left , 6 removed from group
+      1; // 1 for added, 2 for removed , 3 for made admin , 4 for removed from admin, 5 left , 6 removed from group
       Map<String, dynamic> chatMessage = {};
       chatMessage['id'] = 0;
       chatMessage['local_message_id'] = randomId();
@@ -286,7 +290,7 @@ class SocketManager {
   // group chat
   leaveGroupChat(dynamic response) {
     response['action'] =
-        5; // 1 for added, 2 for removed , 3 for made admin ,4 remove form admins, 5 left
+    5; // 1 for added, 2 for removed , 3 for made admin ,4 remove form admins, 5 left
     Map<String, dynamic> chatMessage = {};
     chatMessage['id'] = 0;
     chatMessage['local_message_id'] = randomId();
@@ -303,7 +307,7 @@ class SocketManager {
 
   removeUserAdmin(dynamic response) {
     response['action'] =
-        4; // 1 for added, 2 for removed , 3 for made admin ,4 left
+    4; // 1 for added, 2 for removed , 3 for made admin ,4 left
     Map<String, dynamic> chatMessage = {};
     chatMessage['id'] = 0;
     chatMessage['local_message_id'] = randomId();
@@ -321,7 +325,7 @@ class SocketManager {
 
   removeUserFromGroupChat(dynamic response) {
     response['action'] =
-        2; // 1 for added, 2 for removed , 3 for make admin ,4 left
+    2; // 1 for added, 2 for removed , 3 for make admin ,4 left
     Map<String, dynamic> chatMessage = {};
     chatMessage['id'] = 0;
     chatMessage['local_message_id'] = randomId();
@@ -339,7 +343,7 @@ class SocketManager {
 
   makeUserAdmin(dynamic response) {
     response['action'] =
-        3; // 1 for added, 2 for removed , 3 for made admin ,4 left
+    3; // 1 for added, 2 for removed , 3 for made admin ,4 left
     Map<String, dynamic> chatMessage = {};
     chatMessage['id'] = 0;
     chatMessage['local_message_id'] = randomId();
@@ -376,6 +380,7 @@ class SocketManager {
   }
 
   void liveCreatedConfirmation(dynamic response) {
+    print('liveCreatedConfirmation: $response');
     _agoraLiveController.liveCreatedConfirmation(response);
   }
 

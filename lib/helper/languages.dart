@@ -11,5 +11,6 @@ class Languages extends Translations {
         'ru': LanguageStrings.ru,
         'es': LanguageStrings.es,
         'fr': LanguageStrings.fr,
+        'pt': LanguageStrings.pt,
       };
 }

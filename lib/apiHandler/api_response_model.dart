@@ -1,7 +1,10 @@
 import 'dart:developer';
+import 'package:foap/helper/imports/common_import.dart';
+import '../model/post_gift_model.dart';
+import '../model/post_timeline_gift_response.dart';
+import '../model/support_request_response.dart';
 
 import 'package:foap/helper/imports/api_imports.dart';
-import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
 import 'package:foap/screens/add_on/model/podcast_model.dart';
 import 'package:foap/screens/add_on/model/preference_model.dart';
@@ -21,6 +24,9 @@ class ApiResponseModel {
   CompetitionModel? competition;
   int highlightId = 0;
   int createdPostId = 0;
+  int? totalLiveUsers;
+
+  SupportRequestsResponse? supportRequestReponse;
 
   List<CompetitionModel> competitions = [];
   List<PostModel> posts = [];
@@ -44,6 +50,7 @@ class ApiResponseModel {
   List<UserModel> liveUsers = [];
   List<GiftCategoryModel> giftCategories = [];
   List<GiftModel> gifts = [];
+  List<PostGiftModel> timelineGift = [];
   List<ReceivedGiftModel> giftReceived = [];
 
   List<NotificationModel> notifications = [];
@@ -89,6 +96,7 @@ class ApiResponseModel {
   List<UserModel> matchedUsers = [];
   List<UserModel> likeUsers = [];
   List<UserModel> datingUsers = [];
+  List<UserLiveCallDetail> liveStreamingUser = [];
 
   List<RelationshipName> relationshipNames = [];
   List<MyRelationsModel> relationships = [];
@@ -117,6 +125,9 @@ class ApiResponseModel {
   String? stripePaymentIntentClientSecret;
   String? paypalClientToken;
   String? transactionId;
+  bool isLoginFirstTime = false;
+  PostTimelineGiftResponse? postTimelineGift;
+
   // bool isLoginFirstTime = false;
 
   ApiResponseModel();
@@ -128,6 +139,10 @@ class ApiResponseModel {
     model.isInvalidLogin = json['isInvalidLogin'] == null ? false : true;
 
     log(json.toString());
+
+    // log(json);
+    log(url);
+
     // log(url);
 
     if (model.success) {
@@ -445,11 +460,13 @@ class ApiResponseModel {
             }
           }
         } else if (data['supportRequest'] != null) {
+          print('support request message go hrer -->');
           var items = data['supportRequest']['items'];
           if (items != null && items.length > 0) {
             model.supportMessages = List<SupportRequestModel>.from(
                 items.map((x) => SupportRequestModel.fromJson(x)));
           }
+          model.supportRequestReponse = SupportRequestsResponse.fromJson(data);
         } else if (data['follower'] != null) {
           if (url == NetworkConstantsUtil.followers) {
             var items = (data['follower']['items'] as List<dynamic>)
@@ -671,6 +688,31 @@ class ApiResponseModel {
             model.likeUsers =
                 List<UserModel>.from(items.map((x) => UserModel.fromJson(x)));
           }
+        } else if (data['liveStreamUser'] != null &&
+            url == NetworkConstantsUtil.liveUsers) {
+          // live users
+
+          final liverStreamUser = data['liveStreamUser'];
+          model.totalLiveUsers = int.parse(data['total_live_users'] ?? '0');
+          model.liveStreamingUser =
+              List<UserLiveCallDetail>.from(liverStreamUser.map((user) {
+            final item = UserLiveCallDetail.fromJson(user);
+            return item;
+          }));
+        } else if (data['timelineGift'] != null &&
+            url == NetworkConstantsUtil.timelineGifts) {
+          final timelineGiftData = data['timelineGift'];
+          model.timelineGift =
+              List<PostGiftModel>.from(timelineGiftData.map((value) {
+            final postGift = PostGiftModel.fromJson(value);
+            return postGift;
+          }));
+        } else if (data['timeline_gift'] != null &&
+            url == NetworkConstantsUtil.postGifts) {
+          model.postTimelineGift = PostTimelineGiftResponse.fromJson(data);
+        } else if (data['supportRequest'] != null ||
+            url == NetworkConstantsUtil.supportRequests) {
+          model.supportRequestReponse = SupportRequestsResponse.fromJson(data);
         }
       }
     } else {

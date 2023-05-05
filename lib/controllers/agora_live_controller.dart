@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:foap/controllers/subscription_packages_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -118,7 +117,6 @@ class AgoraLiveController extends GetxController {
             errorMessage = null;
           }, permissionDenied: () {
             canLive.value = -1;
-
             errorMessage = LocalizationString.pleaseAllowAccessToCameraForLive;
           }, permissionNotAskAgain: () {
             canLive.value = -1;
@@ -133,8 +131,7 @@ class AgoraLiveController extends GetxController {
 
   closeLive() {
     clear();
-    Get.back();
-    Get.back();
+    Get.close(2);
     // InterstitialAds().show();
   }
 
@@ -153,16 +150,18 @@ class AgoraLiveController extends GetxController {
     // if (live.host != null) {
     //   host = hostUser;
     // } else {
+
+    print('finding host');
+
     await ApiController()
         .getOtherUser(live.host.id.toString())
         .then((response) {
+      print('host user found');
       host = response.user;
     });
     // }
     liveId = live.liveId;
-
     remoteUserId.value = live.host.id;
-
     getIt<SocketManager>().emit(SocketConstants.joinLive, {
       'userId': _userProfileManager.user.value!.id,
       'liveCallId': liveId,
@@ -342,6 +341,7 @@ class AgoraLiveController extends GetxController {
       'localMessageId': localMessageId,
       'picture': _userProfileManager.user.value!.picture,
       'username': _userProfileManager.user.value!.userName,
+      'is_encrypted': 1,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -380,6 +380,7 @@ class AgoraLiveController extends GetxController {
       'localMessageId': localMessageId,
       'picture': _userProfileManager.user.value!.picture,
       'username': _userProfileManager.user.value!.userName,
+      'is_encrypted': 1,
       'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
     };
 
@@ -458,13 +459,11 @@ class AgoraLiveController extends GetxController {
             autoConsume: packageController.kAutoConsume || Platform.isIOS);
       } else {
         AppUtil.showToast(
-            message: LocalizationString.noProductAvailable,
-            isSuccess: false);
+            message: LocalizationString.noProductAvailable, isSuccess: false);
       }
     } else {
       AppUtil.showToast(
-          message: LocalizationString.storeIsNotAvailable,
-          isSuccess: false);
+          message: LocalizationString.storeIsNotAvailable, isSuccess: false);
     }
   }
 
