@@ -84,24 +84,22 @@ class ClubsListingState extends State<ClubsListing> {
         child: const ThemeIconWidget(
           ThemeIcon.plus,
           size: 25,
+          color: Colors.white,
         ),
       ).circular.ripple(() {
-        Get.to(() =>  CategoriesList(clubsController: _clubsController));
+        Get.to(() => CategoriesList(clubsController: _clubsController));
       }),
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBarWithIcon(
-              context: context,
-              title: LocalizationString.clubs,
+              title: clubsString.tr,
               iconBtnClicked: () {
                 _clubsController.clear();
                 Get.to(() => const SearchClubsListing());
               },
               icon: ThemeIcon.search),
-          divider(context: context).tP8,
+          divider().tP8,
           const SizedBox(
             height: 10,
           ),
@@ -164,10 +162,10 @@ class ClubsListingState extends State<ClubsListing> {
                   },
                   selectedIndex: _clubsController.segmentIndex.value,
                   menus: [
-                    LocalizationString.all,
-                    LocalizationString.joined,
-                    LocalizationString.myClub,
-                    LocalizationString.invites,
+                    allString.tr,
+                    joinedString.tr,
+                    myClubString.tr,
+                    invitesString.tr,
                   ]),
             ),
           ],
@@ -203,7 +201,7 @@ class ClubsListingState extends State<ClubsListing> {
                             deleteCallback: (club) {
                               _clubsController.clubDeleted(club);
                               AppUtil.showToast(
-                                  message: LocalizationString.clubIsDeleted,
+                                  message: clubIsDeletedString.tr,
                                   isSuccess: true);
                             },
                           ));
@@ -247,7 +245,7 @@ class ClubsListingState extends State<ClubsListing> {
                             deleteCallback: (club) {
                               _clubsController.clubDeleted(club);
                               AppUtil.showToast(
-                                  message: LocalizationString.clubIsDeleted,
+                                  message: clubIsDeletedString.tr,
                                   isSuccess: true);
                             },
                           ));
@@ -268,17 +266,11 @@ class ClubsListingState extends State<ClubsListing> {
         builder: (context) => ActionSheet1(
               items: [
                 GenericItem(
-                    id: '1',
-                    title: LocalizationString.share,
-                    icon: ThemeIcon.share),
+                    id: '1', title: shareString.tr, icon: ThemeIcon.share),
                 GenericItem(
-                    id: '2',
-                    title: LocalizationString.report,
-                    icon: ThemeIcon.report),
+                    id: '2', title: reportString.tr, icon: ThemeIcon.report),
                 GenericItem(
-                    id: '3',
-                    title: LocalizationString.hide,
-                    icon: ThemeIcon.hide),
+                    id: '3', title: hideString.tr, icon: ThemeIcon.hide),
               ],
               itemCallBack: (item) {},
             ));

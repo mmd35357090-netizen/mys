@@ -47,14 +47,14 @@ class _ChooseMediaForStoryState extends State<ChooseMediaForStory> {
               // ),
               const Spacer(),
               Obx(() => Heading4Text(
-                    LocalizationString.post,
+                    postString.tr,
                     weight: storyController.mediaList.isNotEmpty
                         ? TextWeight.bold
                         : TextWeight.medium,
                   ).ripple(() {
                     if (storyController.mediaList.isNotEmpty) {
                       storyController.uploadAllMedia(
-                          context: context, items: storyController.mediaList);
+                           items: storyController.mediaList);
                     }
                     // Get.to(() => ChooseStoryViewers(
                     //       images: storyController.selectedItems,
@@ -72,7 +72,7 @@ class _ChooseMediaForStoryState extends State<ChooseMediaForStory> {
                       storyController.mediaSelected(medias);
                     }, mediaCapturedCompletion: (media) {
                       storyController
-                          .uploadAllMedia(context: context, items: [media]);
+                          .uploadAllMedia( items: [media]);
                     });
                   }))
         ],

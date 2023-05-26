@@ -1,60 +1,6 @@
 import 'package:foap/model/post_gift_model.dart';
 
-class PostTimelineGiftResponse {
-  TimelineGift? timelineGift;
-
-  PostTimelineGiftResponse({this.timelineGift});
-
-  PostTimelineGiftResponse.fromJson(Map<String, dynamic> json) {
-    timelineGift = json['timeline_gift'] != null
-        ? new TimelineGift.fromJson(json['timeline_gift'])
-        : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.timelineGift != null) {
-      data['timeline_gift'] = this.timelineGift!.toJson();
-    }
-    return data;
-  }
-}
-
-
 class TimelineGift {
-  List<Items>? items;
-  Links? lLinks;
-  Meta? mMeta;
-
-  TimelineGift({this.items, this.lLinks, this.mMeta});
-
-  TimelineGift.fromJson(Map<String, dynamic> json) {
-    if (json['items'] != null) {
-      items = <Items>[];
-      json['items'].forEach((v) {
-        items!.add(new Items.fromJson(v));
-      });
-    }
-    lLinks = json['_links'] != null ? new Links.fromJson(json['_links']) : null;
-    mMeta = json['_meta'] != null ? new Meta.fromJson(json['_meta']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.items != null) {
-      data['items'] = this.items!.map((v) => v.toJson()).toList();
-    }
-    if (this.lLinks != null) {
-      data['_links'] = this.lLinks!.toJson();
-    }
-    if (this.mMeta != null) {
-      data['_meta'] = this.mMeta!.toJson();
-    }
-    return data;
-  }
-}
-
-class Items {
   int? id;
   int? recieverId;
   int? senderId;
@@ -68,21 +14,21 @@ class Items {
   SenderDetail? senderDetail;
   PostGiftModel? giftTimelineDetail;
 
-  Items(
+  TimelineGift(
       {this.id,
-        this.recieverId,
-        this.senderId,
-        this.giftId,
-        this.coin,
-        this.sendOnType,
-        this.liveCallId,
-        this.postId,
-        this.createdAt,
-        this.postType,
-        this.senderDetail,
-        this.giftTimelineDetail});
+      this.recieverId,
+      this.senderId,
+      this.giftId,
+      this.coin,
+      this.sendOnType,
+      this.liveCallId,
+      this.postId,
+      this.createdAt,
+      this.postType,
+      this.senderDetail,
+      this.giftTimelineDetail});
 
-  Items.fromJson(Map<String, dynamic> json) {
+  TimelineGift.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     recieverId = json['reciever_id'];
     senderId = json['sender_id'];
@@ -143,21 +89,21 @@ class SenderDetail {
 
   SenderDetail(
       {this.name,
-        this.username,
-        this.email,
-        this.image,
-        this.id,
-        this.isChatUserOnline,
-        this.chatLastTimeOnline,
-        this.location,
-        this.latitude,
-        this.longitude,
-        this.isReported,
-        this.picture,
-        this.coverImageUrl,
-        this.userStory,
-        this.profileCategoryName,
-        this.isLike});
+      this.username,
+      this.email,
+      this.image,
+      this.id,
+      this.isChatUserOnline,
+      this.chatLastTimeOnline,
+      this.location,
+      this.latitude,
+      this.longitude,
+      this.isReported,
+      this.picture,
+      this.coverImageUrl,
+      this.userStory,
+      this.profileCategoryName,
+      this.isLike});
 
   SenderDetail.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -199,7 +145,6 @@ class SenderDetail {
     return data;
   }
 }
-
 
 class Links {
   Self? self;
@@ -261,11 +206,11 @@ class Meta {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['totalCount'] = this.totalCount;
-    data['pageCount'] = this.pageCount;
-    data['currentPage'] = this.currentPage;
-    data['perPage'] = this.perPage;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['totalCount'] = totalCount;
+    data['pageCount'] = pageCount;
+    data['currentPage'] = currentPage;
+    data['perPage'] = perPage;
     return data;
   }
 }

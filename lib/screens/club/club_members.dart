@@ -45,12 +45,10 @@ class ClubMembersState extends State<ClubMembers> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            const SizedBox(
-              height: 55,
-            ),
+
             backNavigationBar(
-                context: context, title: LocalizationString.clubMembers),
-            divider(context: context).tP8,
+                 title: clubMembersString.tr),
+            divider().tP8,
             Expanded(
               child: GetBuilder<ClubsController>(
                   init: _clubsController,

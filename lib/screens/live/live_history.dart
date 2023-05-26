@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/number_extension.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/live_history_controller.dart';
+import '../../controllers/live/live_history_controller.dart';
 import '../../model/live_model.dart';
 
 class LiveHistory extends StatefulWidget {
@@ -44,84 +44,78 @@ class LiveHistoryState extends State<LiveHistory> {
     return Scaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const SizedBox(
-          height: 50,
-        ),
-        backNavigationBar(context: context, title: LocalizationString.live),
-        divider(context: context).tP8,
+
+        backNavigationBar(title: liveString.tr),
+        divider().tP8,
         Expanded(
-          child: GetBuilder<LiveHistoryController>(
-              init: _liveHistoryController,
-              builder: (ctx) {
-                return ListView.separated(
-                    controller: _controller,
-                    padding: const EdgeInsets.only(top: 20, bottom: 70),
-                    itemBuilder: (ctx, index) {
-                      LiveModel live = _liveHistoryController.lives[index];
-                      return Container(
-                        color: AppColorConstants.cardColor,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                ThemeIconWidget(
-                                  ThemeIcon.calendar,
-                                  size: 15,
-                                  color: AppColorConstants.themeColor,
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                BodySmallText(
-                                  '${LocalizationString.startedAt} ${live.startedAt!}',
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                ThemeIconWidget(
-                                  ThemeIcon.diamond,
-                                  size: 15,
-                                  color: AppColorConstants.themeColor,
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                BodySmallText(
-                                  live.giftSummary!.totalCoin.toString(),
-                                ),
-                                const Spacer(),
-                                Row(
-                                  children: [
-                                    ThemeIconWidget(
-                                      ThemeIcon.clock,
-                                      size: 15,
-                                      color: AppColorConstants.themeColor,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    BodySmallText(
-                                      live.totalTime.formatTime,
-                                      weight: TextWeight.medium,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ).p16,
-                      ).round(10);
-                    },
-                    separatorBuilder: (ctx, index) {
-                      return const SizedBox(
-                        height: 20,
-                      );
-                    },
-                    itemCount: _liveHistoryController.lives.length);
-              }).hP16,
+          child: Obx(() => ListView.separated(
+              controller: _controller,
+              padding: const EdgeInsets.only(top: 20, bottom: 70),
+              itemBuilder: (ctx, index) {
+                LiveModel live = _liveHistoryController.lives[index];
+                return Container(
+                  color: AppColorConstants.cardColor,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          ThemeIconWidget(
+                            ThemeIcon.calendar,
+                            size: 15,
+                            color: AppColorConstants.themeColor,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          BodySmallText(
+                            '${startedAtString.tr} ${live.startedAt!}',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          ThemeIconWidget(
+                            ThemeIcon.diamond,
+                            size: 15,
+                            color: AppColorConstants.themeColor,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          BodySmallText(
+                            live.giftSummary!.totalCoin.toString(),
+                          ),
+                          const Spacer(),
+                          Row(
+                            children: [
+                              ThemeIconWidget(
+                                ThemeIcon.clock,
+                                size: 15,
+                                color: AppColorConstants.themeColor,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              BodySmallText(
+                                live.totalTime.formatTime,
+                                weight: TextWeight.medium,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ).p16,
+                ).round(10);
+              },
+              separatorBuilder: (ctx, index) {
+                return const SizedBox(
+                  height: 20,
+                );
+              },
+              itemCount: _liveHistoryController.lives.length)).hP16,
         ),
       ]),
     );

@@ -104,14 +104,14 @@ class ClubsScreenShimmer extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     BodyLargeText(
-                      '250k ${LocalizationString.clubMembers}',
+                      '250k ${clubMembersString.tr}',
                     ),
                     const Spacer(),
                     SizedBox(
                         height: 40,
                         width: 120,
                         child: AppThemeButton(
-                            text: LocalizationString.join, onPress: () {}))
+                            text: joinString.tr, onPress: () {}))
                   ],
                 ).setPadding(left: 12, right: 12, bottom: 20)
               ],
@@ -146,7 +146,7 @@ class EventCategoriesScreenShimmer extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              BodyMediumText(LocalizationString.loading,
+              BodyMediumText(loadingString.tr,
                   weight: TextWeight.semiBold)
             ],
           )
@@ -206,14 +206,14 @@ class EventsScreenShimmer extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           BodyLargeText(
-                            '250k ${LocalizationString.clubMembers}',
+                            '250k ${clubMembersString.tr}',
                           ),
                           const Spacer(),
                           SizedBox(
                               height: 40,
                               width: 120,
                               child: AppThemeButton(
-                                  text: LocalizationString.join,
+                                  text: joinString.tr,
                                   onPress: () {}))
                         ],
                       ).setPadding(left: 12, right: 12, bottom: 20)
@@ -377,7 +377,7 @@ class ShimmerUsers extends StatelessWidget {
               width: 110,
               child: AppThemeBorderButton(
                   // backgroundColor: ColorConstants.cardColor,
-                  text: LocalizationString.follow,
+                  text: followString.tr,
                   // cornerRadius: 10,
                   textStyle: TextStyle(
                       fontSize: FontSizes.b2, fontWeight: TextWeight.medium),
@@ -438,16 +438,16 @@ class PostBoxShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    return ListView.builder(
       itemCount: 50,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       // You won't see infinite size error
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 4.0,
-          mainAxisSpacing: 4.0,
-          mainAxisExtent: 100),
+      // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      //     crossAxisCount: 3,
+      //     crossAxisSpacing: 4.0,
+      //     mainAxisSpacing: 4.0,
+      //     mainAxisExtent: 100),
       itemBuilder: (BuildContext context, int index) => AspectRatio(
         aspectRatio: 1,
         child: Container(
@@ -512,7 +512,7 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                   ).round(10)
                 ],
               ).p16,
-              divider(context: context).vP8,
+              divider().vP8,
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -520,7 +520,7 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       BodyMediumText(
-                        LocalizationString.date,
+                        dateString.tr,
                       ),
                       const SizedBox(
                         height: 5,
@@ -543,7 +543,7 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       BodyMediumText(
-                        LocalizationString.time,
+                        timeString.tr,
                       ),
                       const SizedBox(
                         height: 5,

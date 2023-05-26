@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
+import '../../components/app_text_field.dart';
 import '../../universal_components/rounded_input_field.dart';
 
 class PhoneLoginScreen extends StatefulWidget {
@@ -39,25 +40,24 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.08,
                     ),
-                    Heading3Text(LocalizationString.welcome,
-                        weight: TextWeight.bold),
+                    Heading3Text(welcomeString.tr, weight: TextWeight.bold),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.01,
                     ),
-                    Heading3Text(LocalizationString.signInMessage,
+                    Heading3Text(signInMessageString.tr,
                         weight: TextWeight.medium),
 
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.1,
                     ),
-                    Obx(() => InputMobileNumberField(
+                    Obx(() => AppMobileTextField(
                           controller: phone,
-                          showDivider: true,
-                          hintText: LocalizationString.phoneNumber,
-                          cornerRadius: 5,
-                          phoneCodeText: controller.phoneCountryCode.value,
+                          // showDivider: true,
+                          hintText: phoneNumberString.tr,
+                          // cornerRadius: 5,
+                          // phoneCodeText: controller.phoneCountryCode.value,
                           onChanged: (String value) {},
-                          phoneCodeValueChanged: (String value) {
+                          countryCodeValueChanged: (String value) {
                             controller.phoneCodeSelected(value);
                           },
                         )),
@@ -75,7 +75,7 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
                       },
                       child: Center(
                         child: BodyMediumText(
-                          LocalizationString.forgotPwd,
+                          forgotPwdString.tr,
                           weight: TextWeight.bold,
                           color: AppColorConstants.themeColor,
                         ),
@@ -93,7 +93,7 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
                           color: AppColorConstants.themeColor,
                         ),
                         Heading6Text(
-                          LocalizationString.or,
+                          orString.tr,
                         ),
                         Container(
                           height: 1,
@@ -113,10 +113,10 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Heading6Text(
-                          LocalizationString.dontHaveAccount,
+                          dontHaveAccountString.tr,
                         ),
                         Heading6Text(
-                          LocalizationString.signUp,
+                          signUpString.tr,
                           weight: TextWeight.medium,
                           color: AppColorConstants.themeColor,
                         ).ripple(() {
@@ -142,7 +142,7 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
             countryCode: controller.phoneCountryCode.value,
             phone: phone.text.trim());
       },
-      text: LocalizationString.signIn,
+      text: signInString.tr,
     );
   }
 }

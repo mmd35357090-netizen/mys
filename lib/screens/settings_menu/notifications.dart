@@ -32,12 +32,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            const SizedBox(
-              height: 50,
-            ),
             backNavigationBar(
-                context: context, title: LocalizationString.notifications),
-            divider(context: context).tP8,
+                 title: notificationsString.tr),
+            divider().tP8,
             Expanded(
               child: GetBuilder<NotificationController>(
                   init: _notificationController,
@@ -71,7 +68,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               return const SizedBox(height: 20);
                             })
                         : emptyData(
-                            title: LocalizationString.noNotificationFound,
+                            title: noNotificationFoundString.tr,
                             subTitle: '',
                           );
                   }),

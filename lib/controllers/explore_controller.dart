@@ -1,3 +1,5 @@
+import 'package:foap/apiHandler/apis/misc_api.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/controllers/post_controller.dart';
 import 'package:get/get.dart';
 
@@ -32,6 +34,10 @@ class ExploreController extends GetxController {
   bool hashtagsIsLoading = false;
 
   clear() {
+    isSearching = false;
+    searchText.value = '';
+    selectedSegment = 0;
+
     suggestUserPage = 1;
     canLoadMoreSuggestUser = true;
     suggestUserIsLoading = false;
@@ -43,6 +49,10 @@ class ExploreController extends GetxController {
     hashtagsPage = 1;
     canLoadMoreHashtags = true;
     hashtagsIsLoading = false;
+
+    hashTags.clear();
+    suggestedUsers.clear();
+    searchedUsers.clear();
   }
 
   startSearch() {
@@ -71,7 +81,7 @@ class ExploreController extends GetxController {
         PostSearchQuery query = PostSearchQuery();
         // query.isPopular = 1;
         query.title = searchText.value;
-        postController.setPostSearchQuery(query);
+        postController.setPostSearchQuery(query: query,callback: (){});
 
         // postController.getPosts();
         // getPosts(isPopular: 1, title: searchText);
@@ -97,20 +107,16 @@ class ExploreController extends GetxController {
   searchHashTags(String text) {
     if (canLoadMoreHashtags) {
       hashtagsIsLoading = true;
-      ApiController()
-          .searchHashtag(hashtag: text, page: hashtagsPage)
-          .then((response) {
-        hashTags.value = response.hashtags;
-        hashtagsIsLoading = false;
-        hashtagsPage += 1;
-        if (response.hashtags.length == response.metaData?.perPage) {
-          canLoadMoreHashtags = true;
-        } else {
-          canLoadMoreHashtags = false;
-        }
-
-        update();
-      });
+      MiscApi.searchHashtag(
+          hashtag: text,
+          page: hashtagsPage,
+          resultCallback: (result, metadata) {
+            hashTags.addAll(result);
+            hashtagsIsLoading = false;
+            hashtagsPage += 1;
+            canLoadMoreHashtags = result.length >= metadata.perPage;
+            update();
+          });
     }
   }
 
@@ -118,18 +124,15 @@ class ExploreController extends GetxController {
     if (canLoadMoreSuggestUser) {
       suggestUserIsLoading = true;
 
-      ApiController().getSuggestedUsers(page: suggestUserPage).then((response) {
-        suggestUserIsLoading = false;
-        suggestedUsers.value = response.topUsers;
-        suggestUserPage += 1;
-        if (response.topUsers.length == response.metaData?.perPage) {
-          canLoadMoreSuggestUser = true;
-        } else {
-          canLoadMoreSuggestUser = false;
-        }
-
-        update();
-      });
+      UsersApi.getSuggestedUsers(
+          page: suggestUserPage,
+          resultCallback: (result) {
+            suggestUserIsLoading = false;
+            suggestedUsers.value = result;
+            // suggestUserPage += 1;
+            // canLoadMoreSuggestUser = result.length >= metadata.perPage;
+            update();
+          });
     }
   }
 
@@ -137,21 +140,18 @@ class ExploreController extends GetxController {
     if (canLoadMoreAccounts) {
       accountsIsLoading = true;
 
-      ApiController()
-          .findFriends(isExactMatch: 0, searchText: text)
-          .then((response) {
-        accountsIsLoading = false;
-        searchedUsers.value = response.users;
+      UsersApi.searchUsers(
+          page: accountsPage,
+          isExactMatch: 0,
+          searchText: text,
+          resultCallback: (result, metadata) {
+            accountsIsLoading = false;
+            searchedUsers.addAll(result);
+            canLoadMoreSuggestUser = result.length >= metadata.perPage;
+            accountsPage += 1;
 
-        accountsPage += 1;
-        if (response.topUsers.length == response.metaData?.perPage) {
-          canLoadMoreAccounts = true;
-        } else {
-          canLoadMoreAccounts = false;
-        }
-
-        update();
-      });
+            update();
+          });
     }
   }
 
@@ -166,7 +166,8 @@ class ExploreController extends GetxController {
           suggestedUsers.indexWhere((element) => element.id == user.id)] = user;
     }
     update();
-    ApiController().followUnFollowUser(true, user.id).then((value) {});
+
+    UsersApi.followUnfollowUser(isFollowing: true, userId: user.id);
   }
 
   unFollowUser(UserModel user) {
@@ -180,6 +181,6 @@ class ExploreController extends GetxController {
           suggestedUsers.indexWhere((element) => element.id == user.id)] = user;
     }
     update();
-    ApiController().followUnFollowUser(false, user.id).then((value) {});
+    UsersApi.followUnfollowUser(isFollowing: false, userId: user.id);
   }
 }

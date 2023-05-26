@@ -1,3 +1,5 @@
+import 'package:foap/apiHandler/apis/club_api.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/manager/service_locator.dart';
 import 'package:get/get.dart';
 import '../../apiHandler/api_controller.dart';
@@ -26,37 +28,29 @@ class InviteFriendsToClubController extends GetxController {
   getFollowingUsers() {
     if (canLoadMore) {
       isLoading.value = true;
-      ApiController()
-          .getFollowingUsers(
-              page: page, userId: _userProfileManager.user.value!.id)
-          .then((response) {
-        isLoading.value = false;
-        following.addAll(response.users);
+      UsersApi.getFollowingUsers(
+          page: page,
+          userId: _userProfileManager.user.value!.id,
+          resultCallback: (result, metadata) {
+            isLoading.value = false;
+            following.addAll(result);
 
-        page += 1;
-        if (response.users.length == response.metaData?.perPage) {
-          canLoadMore = true;
-        } else {
-          canLoadMore = false;
-        }
-        update();
-      });
+            page += 1;
+            canLoadMore = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
   sendClubJoinInvite(int clubId) {
     if (selectedFriends.isNotEmpty) {
-      ApiController()
-          .sendClubInvite(
-              clubId: clubId,
-              userIds: selectedFriends
-                  .map((element) => element.id)
-                  .toList()
-                  .join(','),
-              message: '')
-          .then((value) {
-        Get.back();
-      });
+      ClubApi.sendClubInvite(
+          clubId: clubId,
+          userIds:
+              selectedFriends.map((element) => element.id).toList().join(','),
+          message: '');
+      Get.back();
     }
   }
 

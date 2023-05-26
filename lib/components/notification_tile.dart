@@ -51,7 +51,7 @@ class NotificationTileType4 extends StatelessWidget {
               .round(10),
         if (notification.type == NotificationType.follow)
           if (notification.actionBy?.isFollowing == false)
-            AppThemeButton(text: LocalizationString.followBack, onPress: () {})
+            AppThemeButton(text: followBackString.tr, onPress: () {})
       ],
     ).hP8.shadowWithBorder(
         borderWidth: 0.2,

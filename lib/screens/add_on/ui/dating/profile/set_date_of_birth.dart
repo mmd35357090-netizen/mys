@@ -1,7 +1,5 @@
 import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
 import 'package:foap/screens/add_on/ui/dating/profile/set_your_gender.dart';
-import 'package:foap/universal_components/rounded_input_field.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../../../model/preference_model.dart';
 
@@ -26,8 +24,7 @@ class _SetDateOfBirthState extends State<SetDateOfBirth> {
   @override
   void initState() {
     super.initState();
-    if (!widget.isFromSignup &&
-        _userProfileManager.user.value!.dob != null) {
+    if (!widget.isFromSignup && _userProfileManager.user.value!.dob != null) {
       String dob = _userProfileManager.user.value!.dob ?? '';
       var arr = dob.split('-');
       if (arr.length == 3) {
@@ -45,31 +42,29 @@ class _SetDateOfBirthState extends State<SetDateOfBirth> {
         body: Column(children: [
           const SizedBox(height: 50),
           profileScreensNavigationBar(
-              context: context,
-              rightBtnTitle:
-                  widget.isFromSignup ? LocalizationString.skip : null,
-              title: LocalizationString.birthdayMainHeader,
+              rightBtnTitle: widget.isFromSignup ? skipString.tr : null,
+              title: birthdayMainHeaderString.tr,
               completion: () {
                 Get.to(() => SetYourGender(isFromSignup: widget.isFromSignup));
               }),
-          divider(context: context).tP8,
+          divider().tP8,
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Heading2Text(
-                LocalizationString.birthdayHeader,
+                birthdayHeaderString.tr,
               ).setPadding(top: 20),
               Heading6Text(
-                LocalizationString.birthdaySubHeader,
+                birthdaySubHeaderString.tr,
               ).setPadding(top: 10),
               Row(
                 children: [
-                  addTextField(LocalizationString.day, 'dd', day),
+                  addTextField(dayString.tr, 'dd', day),
                   const SizedBox(width: 10),
-                  addTextField(LocalizationString.month, 'MM', month),
+                  addTextField(monthString.tr, 'MM', month),
                   const SizedBox(width: 10),
-                  addTextField(LocalizationString.year, 'YYYY', year),
+                  addTextField(yearString, 'YYYY', year),
                 ],
               ).setPadding(top: 50),
               Center(
@@ -78,7 +73,7 @@ class _SetDateOfBirthState extends State<SetDateOfBirth> {
                     width: MediaQuery.of(context).size.width - 50,
                     child: AppThemeButton(
                         cornerRadius: 25,
-                        text: LocalizationString.submit,
+                        text: submitString.tr,
                         onPress: () {
                           if (year.text != '' &&
                               month.text != '' &&
@@ -86,8 +81,7 @@ class _SetDateOfBirthState extends State<SetDateOfBirth> {
                             AddDatingDataModel dataModel = AddDatingDataModel();
                             dataModel.dob =
                                 "${year.text}-${month.text}-${day.text}";
-                            _userProfileManager.user.value!.dob =
-                                dataModel.dob;
+                            _userProfileManager.user.value!.dob = dataModel.dob;
                             datingController.updateDatingProfile(dataModel,
                                 (msg) {
                               if (widget.isFromSignup) {
@@ -99,7 +93,7 @@ class _SetDateOfBirthState extends State<SetDateOfBirth> {
                               // if (msg != '' &&
                               //     !isLoginFirstTime) {
                               //   AppUtil.showToast(
-                              //       context: context,
+                              //
                               //       message: msg,
                               //       isSuccess: true);
                               // }
@@ -121,13 +115,11 @@ class _SetDateOfBirthState extends State<SetDateOfBirth> {
           header,
         ),
         SizedBox(
-          width: 60,
-          child: InputField(
+          width: 100,
+          child: AppTextField(
             hintText: hint,
             controller: controller,
-            showBorder: true,
-            borderColor: Theme.of(context).disabledColor,
-            cornerRadius: 10,
+
           ),
         ).tP8,
       ],

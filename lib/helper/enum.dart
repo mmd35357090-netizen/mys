@@ -13,11 +13,11 @@ enum SearchFrom {
 
 enum PostSource { posts, mentions }
 
-enum PostMediaType {
-  all,
-  photo,
-  video,
-}
+enum PostType { basic, competition, club, reel }
+
+enum PostContentType { text, media, location }
+
+enum PostMediaType { all, photo, video, audio }
 
 enum MessageStatus {
   sending,
@@ -53,6 +53,7 @@ enum UploadMediaType { post, storyOrHighlights, chat, club, verification }
 enum GalleryMediaType {
   ///make picker to select only image file
   photo,
+  gif,
 
   ///make picker to select only video file
   video,

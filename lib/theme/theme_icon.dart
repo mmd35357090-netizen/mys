@@ -9,6 +9,7 @@ enum ThemeIcon {
   group,
   camera,
   gallery,
+  mention,
   wallpaper,
   // cameraFront,
   // cameraRear,
@@ -147,7 +148,7 @@ class ThemeIconWidget extends StatelessWidget {
     switch (icon) {
       case ThemeIcon.home:
         return Icon(
-          Icons.home_max_outlined,
+          Icons.home,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -546,7 +547,7 @@ class ThemeIconWidget extends StatelessWidget {
         );
       case ThemeIcon.chat:
         return Icon(
-          Icons.messenger,
+          Icons.chat,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -724,6 +725,12 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.gallery:
         return Icon(
           Icons.photo,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.mention:
+        return Icon(
+          Icons.switch_account_outlined,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );

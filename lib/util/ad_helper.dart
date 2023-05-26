@@ -95,7 +95,7 @@ class BannerAdsWidget {
   static List<Widget> cachedAds = [];
 
   static Future<Widget> getBannerWidget(
-      {required BuildContext context, required int index
+      { required int index
       // AdSize adSize,
       }) async {
     if (cachedAds.length > index) {
@@ -141,9 +141,9 @@ class BannerAdsWidget {
     Widget adWidget = Container(
       constraints: BoxConstraints(
         maxHeight: 50,
-        maxWidth: MediaQuery.of(context).size.width,
+        maxWidth: Get.size.width,
         minHeight: 32,
-        minWidth: MediaQuery.of(context).size.width,
+        minWidth: Get.size.width,
       ),
       child: AdWidget(ad: bannerAd),
     );

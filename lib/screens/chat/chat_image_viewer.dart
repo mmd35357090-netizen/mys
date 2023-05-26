@@ -40,7 +40,7 @@ class EnlargeImageViewState extends State<ChatImageViewer> {
                 }),
               ],
             ).hP16,
-            divider(context: context).vP8,
+            divider().vP8,
             Expanded(
                 child: MessageImage(
                     message: widget.chatMessage, fitMode: BoxFit.contain)),

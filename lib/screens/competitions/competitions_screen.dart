@@ -11,9 +11,9 @@ class CompetitionsScreen extends StatefulWidget {
 
 class CompetitionsState extends State<CompetitionsScreen> {
   List<String> competitionsArr = [
-    LocalizationString.current,
-    LocalizationString.completed,
-    LocalizationString.winners,
+    currentString.tr,
+    completedString.tr,
+    winnersString.tr,
   ];
 
   final CompetitionController competitionController = CompetitionController();
@@ -47,14 +47,11 @@ class CompetitionsState extends State<CompetitionsScreen> {
       child: Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: <Widget>[
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-            context: context,
-            title: LocalizationString.competition,
+            title: competitionString.tr,
           ),
-          divider(context: context).vP8,
+          divider().vP8,
           TabBar(
             labelColor: AppColorConstants.themeColor,
             unselectedLabelColor: AppColorConstants.grayscale900,
@@ -75,7 +72,7 @@ class CompetitionsState extends State<CompetitionsScreen> {
               );
             }),
           ),
-          divider(context: context),
+          divider(),
           GetBuilder<CompetitionController>(
               init: competitionController,
               builder: (ctx) {

@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../model/category_model.dart';
 import '../../model/tv_banner_model.dart';
 import 'package:foap/model/live_tv_model.dart';
@@ -17,14 +18,22 @@ class _TvListHomeState extends State<TvListHome> {
   final TvStreamingController _tvStreamingController = Get.find();
   final CarouselController _controller = CarouselController();
   int _current = 0;
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     _tvStreamingController.getTvCategories();
     _tvStreamingController.getTvBanners();
-    _tvStreamingController.getLiveTv();
+    loadTvsData();
 
     super.initState();
+  }
+
+  loadTvsData() {
+    _tvStreamingController.getLiveTv(callback: () {
+      _refreshController.loadComplete();
+    });
   }
 
   @override
@@ -40,9 +49,8 @@ class _TvListHomeState extends State<TvListHome> {
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            backNavigationBar(context: context, title: LocalizationString.tvs)
-                .tp(50),
-            divider(context: context).tP8,
+            backNavigationBar(title: tvsString.tr),
+            divider().tP8,
             Expanded(
                 child: GetBuilder<TvStreamingController>(
                     init: _tvStreamingController,
@@ -187,10 +195,8 @@ class _TvListHomeState extends State<TvListHome> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         children: [
-          Heading6Text(
-            model.name,
-              weight: TextWeight.medium
-          ).setPadding(top: 20, bottom: 8, left: 16, right: 0),
+          Heading6Text(model.name, weight: TextWeight.medium)
+              .setPadding(top: 20, bottom: 8, left: 16, right: 0),
           const Spacer(),
           const ThemeIconWidget(
             ThemeIcon.nextArrow,

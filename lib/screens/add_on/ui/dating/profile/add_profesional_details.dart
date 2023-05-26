@@ -1,8 +1,6 @@
 import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
-import 'package:foap/universal_components/rounded_input_field.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../../../model/preference_model.dart';
 
@@ -54,15 +52,15 @@ class AddProfessionalDetailsState extends State<AddProfessionalDetails> {
         body: Column(children: [
           const SizedBox(height: 50),
           profileScreensNavigationBar(
-              context: context,
+
               rightBtnTitle:
-                  widget.isFromSignup ? LocalizationString.skip : null,
-              title: LocalizationString.professional,
+                  widget.isFromSignup ? skipString.tr : null,
+              title: professionalString.tr,
               completion: () {
                 Get.offAll(() => const DashboardScreen());
                 getIt<SocketManager>().connect();
               }),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
               child: SingleChildScrollView(
             child: Column(
@@ -70,45 +68,37 @@ class AddProfessionalDetailsState extends State<AddProfessionalDetails> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Heading2Text(
-                  LocalizationString.addProfessionalHeader,
+                  addProfessionalHeaderString.tr,
                 ).setPadding(top: 20),
-                addHeader(LocalizationString.qualification)
+                addHeader(qualificationString.tr)
                     .setPadding(top: 30, bottom: 8),
-                InputField(
+                AppTextField(
                     hintText: 'Master in computer',
                     controller: qualificationController,
-                    showBorder: true,
-                    borderColor: AppColorConstants.borderColor,
-                    cornerRadius: 10),
-                addHeader(LocalizationString.occupation)
+                    ),
+                addHeader(occupationString.tr)
                     .setPadding(top: 30, bottom: 8),
-                InputField(
+                AppTextField(
                     hintText: 'Entrepreneur',
                     controller: occupationController,
-                    showBorder: true,
-                    borderColor: AppColorConstants.borderColor,
-                    cornerRadius: 10),
-                addHeader(LocalizationString.workExperience)
+                    ),
+                addHeader(workExperienceString.tr)
                     .setPadding(top: 30, bottom: 8),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Flexible(
-                        child: InputField(
+                        child: AppTextField(
                                 hintText: '1900',
                                 controller: experienceYearController,
-                                showBorder: true,
-                                borderColor: AppColorConstants.borderColor,
-                                cornerRadius: 10)
+                                )
                             .rp(4),
                       ),
                       Flexible(
-                        child: InputField(
+                        child: AppTextField(
                                 hintText: '10',
                                 controller: experienceMonthController,
-                                showBorder: true,
-                                borderColor: AppColorConstants.borderColor,
-                                cornerRadius: 10)
+                                )
                             .lp(4),
                       ),
                     ]),
@@ -118,7 +108,7 @@ class AddProfessionalDetailsState extends State<AddProfessionalDetails> {
                       width: MediaQuery.of(context).size.width - 50,
                       child: AppThemeButton(
                           cornerRadius: 25,
-                          text: LocalizationString.submit,
+                          text: submitString.tr,
                           onPress: () {
                             AddDatingDataModel dataModel = AddDatingDataModel();
                             if (qualificationController.text.isNotEmpty) {
@@ -169,7 +159,7 @@ class AddProfessionalDetailsState extends State<AddProfessionalDetails> {
                                 }
                                 // if (msg != '' && !isLoginFirstTime) {
                                 //   AppUtil.showToast(
-                                //       context: context,
+                                //
                                 //       message: msg,
                                 //       isSuccess: true);
                                 // }

@@ -1,8 +1,6 @@
 import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
 import 'package:foap/screens/add_on/model/preference_model.dart';
 import 'package:foap/screens/add_on/ui/dating/profile/set_date_of_birth.dart';
-import 'package:foap/universal_components/rounded_input_field.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
 class AddName extends StatefulWidget {
@@ -37,30 +35,27 @@ class _AddNameState extends State<AddName> {
         children: [
           const SizedBox(height: 50),
           profileScreensNavigationBar(
-              context: context,
+              
               rightBtnTitle:
-                  widget.isFromSignup ? LocalizationString.skip : null,
-              title: LocalizationString.nameMainHeader,
+                  widget.isFromSignup ? skipString.tr : null,
+              title: nameMainHeaderString.tr,
               completion: () {
                 Get.to(() => SetDateOfBirth(isFromSignup: widget.isFromSignup));
               }),
-          divider(context: context).tP8,
+          divider().tP8,
           Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Heading2Text(
-                  LocalizationString.nameHeader,
+                  nameHeaderString.tr,
                 ).setPadding(top: 100),
                 Heading6Text(
-                  LocalizationString.nameSubHeader,
+                  nameSubHeaderString.tr,
                 ).setPadding(top: 20),
-                InputField(
+                AppTextField(
                   hintText: 'e.g Alex',
                   controller: nameController,
-                  showBorder: true,
-                  borderColor: AppColorConstants.borderColor,
-                  cornerRadius: 10,
                 ).setPadding(top: 20),
                 Center(
                   child: SizedBox(
@@ -68,7 +63,7 @@ class _AddNameState extends State<AddName> {
                       width: MediaQuery.of(context).size.width - 50,
                       child: AppThemeButton(
                           cornerRadius: 25,
-                          text: LocalizationString.submit,
+                          text: submitString.tr,
                           onPress: () {
                             if (nameController.text != '') {
                               AddDatingDataModel dataModel =
@@ -87,7 +82,7 @@ class _AddNameState extends State<AddName> {
                                 // if (msg != '' &&
                                 //     !isLoginFirstTime) {
                                 //   AppUtil.showToast(
-                                //       context: context,
+                                //       
                                 //       message: msg,
                                 //       isSuccess: true);
                                 // }

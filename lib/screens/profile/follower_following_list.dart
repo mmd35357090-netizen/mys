@@ -53,15 +53,12 @@ class FollowerFollowingState extends State<FollowerFollowingList> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            const SizedBox(
-              height: 55,
-            ),
+
             backNavigationBar(
-                context: context,
                 title: widget.isFollowersList
-                    ? LocalizationString.followers
-                    : LocalizationString.following),
-            divider(context: context).tP8,
+                    ? followersString.tr
+                    : followingString.tr),
+            divider().tP8,
             Expanded(
               child: GetBuilder<UserNetworkController>(
                   init: _userNetworkController,

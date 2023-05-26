@@ -1,8 +1,6 @@
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../components/search_bar.dart';
 import '../calling/call_history.dart';
 import '../settings_menu/settings_controller.dart';
@@ -37,6 +35,7 @@ class _ChatHistoryState extends State<ChatHistory> {
         child: const ThemeIconWidget(
           ThemeIcon.edit,
           size: 25,
+          color: Colors.white,
         ),
       ).circular.ripple(() {
         selectUsers();
@@ -50,18 +49,18 @@ class _ChatHistoryState extends State<ChatHistory> {
           (_settingsController.setting.value!.enableAudioCalling ||
                   _settingsController.setting.value!.enableVideoCalling)
               ? titleNavigationBarWithIcon(
-                  context: context,
-                  title: LocalizationString.chats,
+
+                  title: chatsString.tr,
                   icon: ThemeIcon.mobile,
                   completion: () {
                     Get.to(() => const CallHistory());
                   })
               : titleNavigationBar(
-                  context: context,
-                  title: LocalizationString.chats,
+
+                  title: chatsString.tr,
                 ),
-          divider(context: context).tP8,
-          SearchBar(
+          divider().tP8,
+          SFSearchBar(
                   showSearchIcon: true,
                   iconColor: AppColorConstants.themeColor,
                   onSearchChanged: (value) {
@@ -99,7 +98,7 @@ class _ChatHistoryState extends State<ChatHistory> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Heading6Text(
-                              LocalizationString.delete,
+                              deleteString.tr,
                             weight: TextWeight.bold,
                               color: AppColorConstants.grayscale700,
 
@@ -129,8 +128,8 @@ class _ChatHistoryState extends State<ChatHistory> {
               : _chatController.isLoading == true
                   ? Container()
                   : emptyData(
-                      title: LocalizationString.noChatFound,
-                      subTitle: LocalizationString.followSomeUserToChat,
+                      title: noChatFoundString.tr,
+                      subTitle: followSomeUserToChatString.tr,
                     );
         });
   }
@@ -139,6 +138,7 @@ class _ChatHistoryState extends State<ChatHistory> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         isScrollControlled: true,
         builder: (context) => FractionallySizedBox(
               heightFactor: 0.9,

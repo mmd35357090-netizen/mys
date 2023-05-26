@@ -27,15 +27,15 @@
 //             height: 50,
 //           ),
 //           backNavigationBarWithIcon(
-//               context: context,
-//               title: LocalizationString.clubs,
+//
+//               title: clubs,
 //               iconBtnClicked: () {
 //                 Get.to(() => CategoriesList(
 //                       clubsController: clubsController,
 //                     ));
 //               },
 //               icon: ThemeIcon.add),
-//           divider(context: context).tP8,
+//           divider().tP8,
 //           Expanded(
 //             child: CustomScrollView(
 //               slivers: [
@@ -77,15 +77,15 @@
 //                             crossAxisAlignment: CrossAxisAlignment.start,
 //                             children: [
 //                               Heading5Text(
-//                                 LocalizationString.suggestedClubs,
+//                                 suggestedClubs,
 //                               ),
 //                               BodySmallText(
-//                                 LocalizationString.clubsYouMightInterested,
+//                                 clubsYouMightInterested,
 //                                 textAlign: TextAlign.center,
 //                               ).setPadding(top: 5)
 //                             ],
 //                           ),
-//                           BodyLargeText(LocalizationString.seeAll,
+//                           BodyLargeText(seeAll,
 //                                   color: ColorConstants.themeColor)
 //                               .ripple(() {
 //                             // seeAllPress();
@@ -145,21 +145,21 @@
 //
 //   showActionSheet(PostModel post) {
 //     showModalBottomSheet(
-//         context: context,
+//
 //         backgroundColor: Colors.transparent,
 //         builder: (context) => ActionSheet1(
 //               items: [
 //                 GenericItem(
 //                     id: '1',
-//                     title: LocalizationString.share,
+//                     title: share,
 //                     icon: ThemeIcon.share),
 //                 GenericItem(
 //                     id: '2',
-//                     title: LocalizationString.report,
+//                     title: report,
 //                     icon: ThemeIcon.report),
 //                 GenericItem(
 //                     id: '3',
-//                     title: LocalizationString.hide,
+//                     title: hide,
 //                     icon: ThemeIcon.hide),
 //               ],
 //               itemCallBack: (item) {},

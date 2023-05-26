@@ -35,7 +35,7 @@ class HashTagTile extends StatelessWidget {
                   weight: TextWeight.medium,
                 ).bP4,
                 BodyLargeText(
-                  '${hashtag.counter.formatNumber} ${LocalizationString.posts.toLowerCase()}',
+                  '${hashtag.counter.formatNumber} ${postsString.tr.toLowerCase()}',
                   weight: TextWeight.medium,
                 )
               ],

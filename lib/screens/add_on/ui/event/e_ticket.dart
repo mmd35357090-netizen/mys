@@ -25,14 +25,10 @@ class _ETicketState extends State<ETicket> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: [
-          const SizedBox(
-            height: 50,
-          ),
           backNavigationBar(
-            context: context,
-            title: LocalizationString.eTicket,
+            title: eTicketString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: Stack(
               children: [
@@ -74,7 +70,7 @@ class _ETicketState extends State<ETicket> {
                     left: 16,
                     right: 16,
                     child: AppThemeButton(
-                      text: LocalizationString.saveETicket,
+                      text: saveETicketString.tr,
                       onPress: () {
                         saveTicket();
                       },
@@ -95,19 +91,16 @@ class _ETicketState extends State<ETicket> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BodySmallText(
-                LocalizationString.event,
-                  weight: TextWeight.medium
-              ),
+              BodySmallText(eventString.tr, weight: TextWeight.medium),
               const SizedBox(
                 height: 10,
               ),
               Text(
                 widget.booking.event.name,
                 style: TextStyle(
-                    fontSize: FontSizes.b2,
-                    fontWeight: TextWeight.bold,
-                    ),
+                  fontSize: FontSizes.b2,
+                  fontWeight: TextWeight.bold,
+                ),
               )
             ],
           ),
@@ -117,17 +110,27 @@ class _ETicketState extends State<ETicket> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BodySmallText(
-                LocalizationString.dateAndTime,
-                  weight: TextWeight.medium
+              BodySmallText(dateAndTimeString.tr, weight: TextWeight.medium),
+              const SizedBox(
+                height: 10,
               ),
+              BodyLargeText(widget.booking.event.startAtDateTime,
+                  weight: TextWeight.bold)
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BodySmallText(eventLocationString.tr, weight: TextWeight.medium),
               const SizedBox(
                 height: 10,
               ),
               BodyLargeText(
-                widget.booking.event.startAtDateTime,
-                  weight: TextWeight.bold
-              )
+                  '${widget.booking.event.completeAddress}, ${widget.booking.event.placeName}',
+                  weight: TextWeight.bold)
             ],
           ),
           const SizedBox(
@@ -136,40 +139,14 @@ class _ETicketState extends State<ETicket> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BodySmallText(
-                LocalizationString.eventLocation,
-                  weight: TextWeight.medium
-              ),
+              BodySmallText(eventOrganizerString.tr, weight: TextWeight.medium),
               const SizedBox(
                 height: 10,
               ),
-              BodyLargeText(
-                '${widget.booking.event.completeAddress}, ${widget.booking.event.placeName}',
-                  weight: TextWeight.bold
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BodySmallText(
-                LocalizationString.eventOrganizer,
-                  weight: TextWeight.medium
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              for (EventOrganizer sponsor
-                  in widget.booking.event.organizers )
+              for (EventOrganizer sponsor in widget.booking.event.organizers)
                 Wrap(
                   children: [
-                    BodyLargeText(
-                      sponsor.name,
-                        weight: TextWeight.bold
-                    )
+                    BodyLargeText(sponsor.name, weight: TextWeight.bold)
                   ],
                 ),
             ],
@@ -191,10 +168,8 @@ class _ETicketState extends State<ETicket> {
             children: [
               SizedBox(
                   width: 120,
-                  child: BodyMediumText(
-                    LocalizationString.bookingId,
-                      weight: TextWeight.medium
-                  )),
+                  child: BodyMediumText(bookingIdString.tr,
+                      weight: TextWeight.medium)),
               Container(
                 height: 5,
                 width: 5,
@@ -213,10 +188,8 @@ class _ETicketState extends State<ETicket> {
             children: [
               SizedBox(
                   width: 120,
-                  child: BodyMediumText(
-                    LocalizationString.bookingStatus,
-                      weight: TextWeight.medium
-                  )),
+                  child: BodyMediumText(bookingStatusString.tr,
+                      weight: TextWeight.medium)),
               Container(
                 height: 5,
                 width: 5,
@@ -228,8 +201,8 @@ class _ETicketState extends State<ETicket> {
                     : AppColorConstants.themeColor.withOpacity(0.7),
                 child: BodySmallText(
                   widget.booking.statusType == BookingStatus.cancelled
-                      ? LocalizationString.cancelled
-                      : LocalizationString.confirmed,
+                      ? cancelledString.tr
+                      : confirmedString.tr,
                 ).p4,
               ).round(5)
             ],
@@ -242,10 +215,8 @@ class _ETicketState extends State<ETicket> {
             children: [
               SizedBox(
                   width: 120,
-                  child: BodyMediumText(
-                    LocalizationString.bookingDate,
-                      weight: TextWeight.medium
-                  )),
+                  child: BodyMediumText(bookingDateString.tr,
+                      weight: TextWeight.medium)),
               Container(
                 height: 5,
                 width: 5,
@@ -264,20 +235,16 @@ class _ETicketState extends State<ETicket> {
             children: [
               SizedBox(
                 width: 120,
-                child: BodyMediumText(
-                  LocalizationString.ticketType,
-                    weight: TextWeight.medium
-                ),
+                child: BodyMediumText(ticketTypeString.tr,
+                    weight: TextWeight.medium),
               ),
               Container(
                 height: 5,
                 width: 5,
                 color: AppColorConstants.themeColor,
               ).circular.rP16,
-              BodySmallText(
-                widget.booking.ticketType.name,
-                  weight: TextWeight.medium
-              )
+              BodySmallText(widget.booking.ticketType.name,
+                  weight: TextWeight.medium)
             ],
           ),
           const SizedBox(
@@ -288,10 +255,8 @@ class _ETicketState extends State<ETicket> {
             children: [
               SizedBox(
                   width: 120,
-                  child: BodyMediumText(
-                    LocalizationString.price,
-                      weight: TextWeight.medium
-                  )),
+                  child: BodyMediumText(priceString.tr,
+                      weight: TextWeight.medium)),
               Container(
                 height: 5,
                 width: 5,
@@ -308,7 +273,7 @@ class _ETicketState extends State<ETicket> {
   }
 
   saveTicket() {
-    EasyLoading.show(status: LocalizationString.loading);
+    EasyLoading.show(status: loadingString.tr);
     controller.capture().then((bytes) {
       _eventBookingDetailController.saveETicket(bytes!, context);
       EasyLoading.dismiss();

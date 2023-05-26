@@ -1,5 +1,4 @@
-import 'package:agora_rtc_engine/rtc_local_view.dart' as rtc_local_view;
-import 'package:agora_rtc_engine/rtc_remote_view.dart' as rtc_remote_view;
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:foap/components/timer_widget.dart';
 import 'package:foap/controllers/agora_call_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -141,12 +140,17 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
   // Generate local preview
   Widget _renderLocalPreview() {
     // if (_joined) {
-    return const rtc_local_view.SurfaceView();
+    return AgoraVideoView(
+      controller: VideoViewController(
+        rtcEngine: agoraCallController.engine!,
+        canvas: const VideoCanvas(uid: 0),
+      ),
+    );
     // } else {
     //   return Padding(
     //     padding: const EdgeInsets.all(15),
     //     child: Text(
-    //       LocalizationString.waitForJoiningLabel,
+    //       waitForJoiningLabel,
     //       textAlign: TextAlign.center,
     //       style: TextStyle(fontSize: FontSizes.b2).themeColor,
     //     ),
@@ -164,7 +168,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                   color: AppColorConstants.red,
                   child: Center(
                       child: Heading6Text(
-                    LocalizationString.reConnecting,
+                    reConnectingString.tr,
                     color: AppColorConstants.grayscale700,
                   )))
               : agoraCallController.videoPaused.value
@@ -172,13 +176,17 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                       color: AppColorConstants.themeColor,
                       child: Center(
                           child: Heading6Text(
-                        LocalizationString.videoPaused,
+                        videoPausedString.tr,
                         color: AppColorConstants.grayscale700,
                       )))
-                  : rtc_remote_view.SurfaceView(
-                      uid: agoraCallController.remoteUserId.value,
-                      channelId: widget.call.channelName,
-                      // channel id need to check
+                  : AgoraVideoView(
+                      controller: VideoViewController.remote(
+                        rtcEngine: agoraCallController.engine!,
+                        canvas: VideoCanvas(
+                            uid: agoraCallController.remoteUserId.value),
+                        connection:
+                            RtcConnection(channelId: widget.call.channelName),
+                      ),
                     ),
         ],
       );
@@ -217,8 +225,8 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               ),
               Heading5Text(
                 widget.call.isOutGoing
-                    ? LocalizationString.ringing
-                    : LocalizationString.incomingCall,
+                    ? ringingString.tr
+                    : incomingCallString.tr,
                 weight: TextWeight.medium,
                 color: AppColorConstants.grayscale500,
               )

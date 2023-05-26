@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:foap/manager/location_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:foap/components/place_picker/entities/entities.dart';
 import 'package:foap/components/place_picker/entities/localization_item.dart';
@@ -11,6 +11,7 @@ import 'package:foap/components/place_picker/widgets/widgets.dart';
 import '../../../util/app_config_constants.dart';
 import '../../custom_texts.dart';
 import '../uuid.dart';
+import 'package:get/get.dart';
 
 /// Place picker widget made with map widget from
 /// [google_maps_flutter](https://github.com/flutter/plugins/tree/master/packages/google_maps_flutter)
@@ -44,7 +45,7 @@ class PlacePicker extends StatefulWidget {
 /// Place picker state
 class PlacePickerState extends State<PlacePicker> {
   final Completer<GoogleMapController> mapController = Completer();
-
+  final LocationManager _locationManager = Get.find();
   /// Indicator for the selected location
   final Set<Marker> markers = {};
 
@@ -533,12 +534,16 @@ class PlacePickerState extends State<PlacePicker> {
     //   return;
     // }
 
-    Location().getLocation().then((locationData) {
-      LatLng target = LatLng(locationData.latitude!, locationData.longitude!);
+    _locationManager.getLocation(locationCallback: (location){
+      LatLng target = LatLng(location.latitude, location.longitude);
       moveToLocation(target);
-    }).catchError((error) {
-      // TODO: Handle the exception here
-      // print(error);
     });
+
+    // Location().getLocation().then((locationData) {
+    //
+    // }).catchError((error) {
+    //   // TODO: Handle the exception here
+    //   // print(error);
+    // });
   }
 }

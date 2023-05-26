@@ -70,7 +70,7 @@ class _PostMediaFullScreenState extends State<PostMediaFullScreen> {
       imageUrl: media.filePath,
       fit: BoxFit.contain,
       width: MediaQuery.of(context).size.width,
-      placeholder: (context, url) => AppUtil.addProgressIndicator(size:100),
+      placeholder: (context, url) => AppUtil.addProgressIndicator(size: 100),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     ).addPinchAndZoom();
   }
@@ -83,10 +83,10 @@ class _PostMediaFullScreenState extends State<PostMediaFullScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const ThemeIconWidget(
+            ThemeIconWidget(
               ThemeIcon.backArrow,
               size: 20,
-              color: Colors.white,
+              color: AppColorConstants.iconColor,
             ).ripple(() {
               Get.back();
             }),

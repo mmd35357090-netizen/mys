@@ -1,29 +1,31 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
-import 'package:detectable_text_field/widgets/detectable_text.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/gestures.dart';
 import 'package:foap/components/post_card_controller.dart';
+import 'package:foap/components/reply_chat_cells/post_gift_controller.dart';
 import 'package:foap/components/video_widget.dart';
 import 'package:foap/controllers/profile_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../controllers/chat_and_call/chat_detail_controller.dart';
 import '../controllers/chat_and_call/select_user_for_chat_controller.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/post_controller.dart';
 import '../model/post_gallery.dart';
 import '../model/post_model.dart';
+import '../model/post_search_query.dart';
 import '../screens/chat/select_users.dart';
 import '../screens/club/club_detail.dart';
+import '../screens/dashboard/posts.dart';
 import '../screens/home_feed/comments_screen.dart';
 import '../screens/home_feed/post_media_full_screen.dart';
+import '../screens/live/gifts_list.dart';
+import '../screens/post/received_gifts.dart';
 import '../screens/profile/my_profile.dart';
 import '../screens/profile/other_user_profile.dart';
-import 'package:foap/components/post_gift_page_view.dart';
 
 class PostMediaTile extends StatelessWidget {
   final PostCardController postCardController = Get.find();
@@ -68,9 +70,8 @@ class PostMediaTile extends StatelessWidget {
                       return DotsIndicator(
                         dotsCount: model.gallery.length,
                         position: (postCardController
-                                    .postScrollIndexMapping[model.id] ??
-                                0)
-                            .toDouble(),
+                                .postScrollIndexMapping[model.id] ??
+                            0),
                         decorator: DotsDecorator(
                             activeColor: Theme.of(Get.context!).primaryColor),
                       );
@@ -128,7 +129,8 @@ class PostMediaTile extends StatelessWidget {
 
 class PostCard extends StatefulWidget {
   final PostModel model;
-  final Function(String) textTapHandler;
+
+  // final Function(String) textTapHandler;
 
   final VoidCallback removePostHandler;
   final VoidCallback blockUserHandler;
@@ -137,7 +139,7 @@ class PostCard extends StatefulWidget {
   const PostCard(
       {Key? key,
       required this.model,
-      required this.textTapHandler,
+      // required this.textTapHandler,
       required this.removePostHandler,
       required this.blockUserHandler,
       required this.viewInsightHandler})
@@ -154,9 +156,9 @@ class PostCardState extends State<PostCard> {
   final SelectUserForChatController selectUserForChatController =
       SelectUserForChatController();
   final ProfileController _profileController = Get.find();
-  final UserProfileManager _userProfileManager = Get.find();
-
   final FlareControls flareControls = FlareControls();
+  final PostGiftController _postGiftController = Get.find();
+  final PostController _postController = Get.find();
 
   @override
   void initState() {
@@ -174,8 +176,7 @@ class PostCardState extends State<PostCard> {
       GestureDetector(
           onDoubleTap: () {
             //   widget.model.isLike = !widget.model.isLike;
-            postCardController.likeUnlikePost(
-                post: widget.model, context: context);
+            postCardController.likeUnlikePost(post: widget.model);
             // widget.likeTapHandler();
             flareControls.play("like");
           },
@@ -195,15 +196,23 @@ class PostCardState extends State<PostCard> {
           child: Stack(
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PostMediaTile(model: widget.model),
+                  if (widget.model.title.isNotEmpty)
+                    _convertHashtag(widget.model.title).setPadding(
+                        left: DesignConstants.horizontalPadding,
+                        right: DesignConstants.horizontalPadding,
+                        bottom: 25),
+                  if (widget.model.gallery.isNotEmpty)
+                    PostMediaTile(model: widget.model),
                   if (widget.model.isMyPost)
                     Container(
-                      color: AppColorConstants.themeColor,
+                      color: AppColorConstants.cardColor,
                       height: 50,
                       width: double.infinity,
                       child: BodyLargeText(
-                        LocalizationString.viewInsights,
+                        viewInsightsString.tr,
+                        color: Colors.white,
                         // color: AppColorConstants.themeColor,
                         weight: TextWeight.semiBold,
                       ).p16.ripple(() {
@@ -244,9 +253,9 @@ class PostCardState extends State<PostCard> {
       ),
       commentAndLikeWidget().hP16,
       viewGifts(),
-      if (widget.model.title.isNotEmpty)
-        _convertHashtag(widget.model.title)
-            .hp(DesignConstants.horizontalPadding),
+      const SizedBox(
+        height: 16,
+      ),
     ]).vP16;
   }
 
@@ -254,26 +263,29 @@ class PostCardState extends State<PostCard> {
     return Column(
       children: [
         widget.model.isMyPost
-            ? TextButton(
-                onPressed: () {
-                  showModalBottomSheet<void>(
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return FractionallySizedBox(
-                            heightFactor: 0.8,
-                            child: PostGiftsReceived(
-                              postId: widget.model.id,
-                            ));
-                      });
-                },
-                child: Text(LocalizationString.viewGift))
+            ? BodyLargeText(
+                viewGiftString.tr,
+                weight: TextWeight.bold,
+              ).ripple(() {
+                showModalBottomSheet<void>(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    builder: (context) {
+                      _postGiftController
+                          .fetchReceivedTimelineStickerGift(widget.model.id);
+                      return FractionallySizedBox(
+                          heightFactor: 1.5,
+                          child: ReceivedGiftsList(
+                            postId: widget.model.id,
+                          ));
+                    });
+              })
             : Container(),
         const SizedBox(
           height: 10,
         )
       ],
-    );
+    ).setPadding(left: 16, top: 16);
   }
 
   Widget commentAndLikeWidget() {
@@ -281,7 +293,8 @@ class PostCardState extends State<PostCard> {
       Obx(() => InkWell(
           onTap: () {
             postCardController.likeUnlikePost(
-                post: widget.model, context: context);
+              post: widget.model,
+            );
             // widget.likeTapHandler();
           },
           child: ThemeIconWidget(
@@ -353,22 +366,18 @@ class PostCardState extends State<PostCard> {
                 }));
       }),
       !widget.model.isMyPost
-          ? ThemeIconWidget(
+          ? const ThemeIconWidget(
               ThemeIcon.gift,
-              color: Theme.of(context).iconTheme.color,
             ).lp(20).ripple(() {
               showModalBottomSheet<void>(
                   context: context,
                   builder: (BuildContext context) {
                     return FractionallySizedBox(
                         heightFactor: 0.8,
-                        child: PostGiftPageView(giftSelectedCompletion: (gift) {
-                          // receiver id
+                        child: GiftsPageView(giftSelectedCompletion: (gift) {
+                          Get.back();
                           homeController.sendPostGift(
-                              gift,
-                              widget.model.user.id,
-                              widget.model.id,
-                              _userProfileManager.user.value!.id);
+                              gift, widget.model.user.id, widget.model.id);
                           Get.back();
                         }));
                   });
@@ -457,25 +466,27 @@ class PostCardState extends State<PostCard> {
 
     return RichText(
         text: TextSpan(children: [
-      TextSpan(
-        text: '${widget.model.user.userName}  ',
-        style: TextStyle(
-            color: AppColorConstants.grayscale900, fontWeight: FontWeight.w900),
-        recognizer: TapGestureRecognizer()
-          ..onTap = () {
-            openProfile();
-          },
-      ),
+      // TextSpan(
+      //   text: '${widget.model.user.userName}  ',
+      //   style: TextStyle(
+      //       color: AppColorConstants.grayscale900, fontWeight: FontWeight.w900),
+      //   recognizer: TapGestureRecognizer()
+      //     ..onTap = () {
+      //       openProfile();
+      //     },
+      // ),
       for (String text in split)
         text.startsWith('#')
             ? TextSpan(
                 text: '$text ',
                 style: TextStyle(
                     color: AppColorConstants.themeColor,
+                    fontSize: FontSizes.b1,
                     fontWeight: FontWeight.w700),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    widget.textTapHandler(text);
+                    postTextTapHandler(post: widget.model, text: text);
+                    // widget.textTapHandler(text);
                   },
               )
             : text.startsWith('@')
@@ -483,18 +494,47 @@ class PostCardState extends State<PostCard> {
                     text: '$text ',
                     style: TextStyle(
                         color: AppColorConstants.themeColor,
+                        fontSize: FontSizes.b1,
                         fontWeight: FontWeight.w700),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        widget.textTapHandler(text);
+                        // widget.textTapHandler(text);
+                        postTextTapHandler(post: widget.model, text: text);
                       },
                   )
                 : TextSpan(
                     text: '$text ',
                     style: TextStyle(
                         color: AppColorConstants.grayscale900,
+                        fontSize: FontSizes.b1,
                         fontWeight: FontWeight.w400))
     ]));
+  }
+
+  postTextTapHandler({required PostModel post, required String text}) {
+    if (text.startsWith('#')) {
+      PostSearchQuery query = PostSearchQuery();
+      query.hashTag = text.replaceAll('#', '');
+      _postController.setPostSearchQuery(query: query, callback: () {});
+
+      Get.to(()=> const Posts());
+      // _postController.getPosts();
+    } else {
+      String userTag = text.replaceAll('@', '');
+      if (post.mentionedUsers
+          .where((element) => element.userName == userTag)
+          .isNotEmpty) {
+        int mentionedUserId = post.mentionedUsers
+            .where((element) => element.userName == userTag)
+            .first
+            .id;
+        Get.to(() => OtherUserProfile(userId: mentionedUserId))!.then((value) {
+          _postController.getPosts(() {});
+        });
+      } else {
+        // print('not found');
+      }
+    }
   }
 
   void openActionPopup() {
@@ -506,22 +546,33 @@ class PostCardState extends State<PostCard> {
                 ListTile(
                     title: Center(
                         child: Heading6Text(
-                      LocalizationString.deletePost,
+                      deletePostString.tr,
                       weight: TextWeight.bold,
                     )),
                     onTap: () async {
                       Get.back();
                       postCardController.deletePost(
                           post: widget.model,
-                          context: context,
                           callback: () {
                             widget.removePostHandler();
                           });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title:
-                        Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(
+                        child: Heading6Text(
+                      shareString.tr,
+                      weight: TextWeight.bold,
+                    )),
+                    onTap: () async {
+                      Get.back();
+                      postCardController.sharePost(
+                        post: widget.model,
+                      );
+                    }),
+                divider(),
+                ListTile(
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
                 const SizedBox(
                   height: 25,
@@ -533,34 +584,33 @@ class PostCardState extends State<PostCard> {
                 ListTile(
                     title: Center(
                         child: Heading6Text(
-                      LocalizationString.report,
+                      reportString.tr,
                       weight: TextWeight.bold,
                     )),
                     onTap: () async {
                       Get.back();
 
                       AppUtil.showConfirmationAlert(
-                          title: LocalizationString.report,
-                          subTitle: LocalizationString.areYouSureToReportPost,
+                          title: reportString.tr,
+                          subTitle: areYouSureToReportPostString.tr,
                           okHandler: () {
                             postCardController.reportPost(
                                 post: widget.model,
-                                context: context,
                                 callback: () {
                                   widget.removePostHandler();
                                 });
                           });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     title: Center(
-                        child: Heading6Text(LocalizationString.blockUser,
+                        child: Heading6Text(blockUserString.tr,
                             weight: TextWeight.bold)),
                     onTap: () async {
                       Get.back();
                       AppUtil.showConfirmationAlert(
-                          title: LocalizationString.block,
-                          subTitle: LocalizationString.areYouSureToBlockUser,
+                          title: blockString.tr,
+                          subTitle: areYouSureToBlockUserString.tr,
                           okHandler: () {
                             postCardController.blockUser(
                                 userId: widget.model.user.id,
@@ -569,11 +619,24 @@ class PostCardState extends State<PostCard> {
                                 });
                           });
                     }),
-                divider(context: context),
+                divider(),
+                ListTile(
+                    title: Center(
+                        child: Heading6Text(
+                      shareString.tr,
+                      weight: TextWeight.bold,
+                    )),
+                    onTap: () async {
+                      Get.back();
+                      postCardController.sharePost(
+                        post: widget.model,
+                      );
+                    }),
+                divider(),
                 ListTile(
                     title: Center(
                       child: Heading6Text(
-                        LocalizationString.cancel,
+                        cancelString.tr,
                         weight: TextWeight.regular,
                         color: AppColorConstants.red,
                       ),

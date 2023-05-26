@@ -56,7 +56,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                 //         },
                 //         onSearchCompleted: (searchTerm) {})
                 //     .hP8,
-                // divider(context: context).tP16,
+                // divider().tP16,
                 Expanded(
                   child: GetBuilder<SelectUserForChatController>(
                       init: _selectUserForChatController,
@@ -103,7 +103,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                                 width: 16,
                                               ),
                                               Heading6Text(
-                                                LocalizationString.createGroup,
+                                                createGroupString.tr,
                                                 weight: TextWeight.semiBold,
                                               )
                                             ],
@@ -133,7 +133,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                                 width: 16,
                                               ),
                                               Heading6Text(
-                                                LocalizationString.strangerChat,
+                                                strangerChatString.tr,
                                                 weight: TextWeight.semiBold,
                                               )
                                             ],
@@ -150,7 +150,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                           viewCallback: () {
                                             EasyLoading.show(
                                                 status:
-                                                    LocalizationString.loading);
+                                                    loadingString.tr);
 
                                             widget.userSelected(
                                                 usersList[index - 2]);
@@ -158,12 +158,12 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                           audioCallCallback: () {
                                             Get.back();
                                             initiateAudioCall(
-                                                context, usersList[index - 2]);
+                                                 usersList[index - 2]);
                                           },
                                           chatCallback: () {
                                             EasyLoading.show(
                                                 status:
-                                                    LocalizationString.loading);
+                                                    loadingString.tr);
 
                                             widget.userSelected(
                                                 usersList[index - 2]);
@@ -178,7 +178,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                     },
                                     separatorBuilder: (context, index) {
                                       if (index < 2) {
-                                        return divider(context: context).vP16;
+                                        return divider().vP16;
                                       }
 
                                       return const SizedBox(
@@ -187,9 +187,9 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                     },
                                   )
                                 : emptyUser(
-                                    title: LocalizationString.noUserFound,
+                                    title: noUserFoundString.tr,
                                     subTitle:
-                                        LocalizationString.followSomeUserToChat,
+                                        followSomeUserToChatString.tr,
                                   );
                       }),
                 ),
@@ -226,7 +226,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
 
   void initiateVideoCall(UserModel opponent) {
     PermissionUtils.requestPermission(
-        [Permission.camera, Permission.microphone], context,
+        [Permission.camera, Permission.microphone],
         isOpenSettings: false, permissionGrant: () async {
       Call call = Call(
           uuid: '',
@@ -240,17 +240,17 @@ class SelectUserForChatState extends State<SelectUserForChat> {
       _agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
+          message: pleaseAllowAccessToCameraForVideoCallString.tr,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
+          message: pleaseAllowAccessToCameraForVideoCallString.tr,
           isSuccess: false);
     });
   }
 
-  void initiateAudioCall(BuildContext context, UserModel opponent) {
-    PermissionUtils.requestPermission([Permission.microphone], context,
+  void initiateAudioCall(UserModel opponent) {
+    PermissionUtils.requestPermission([Permission.microphone],
         isOpenSettings: false, permissionGrant: () async {
       Call call = Call(
           uuid: '',
@@ -264,11 +264,11 @@ class SelectUserForChatState extends State<SelectUserForChat> {
       _agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          message: pleaseAllowAccessToMicrophoneForAudioCallString.tr,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          message: pleaseAllowAccessToMicrophoneForAudioCallString.tr,
           isSuccess: false);
     });
   }
@@ -365,9 +365,9 @@ class SelectFollowingUserForMessageSendingState
                             },
                           ).hP16
                         : emptyUser(
-                            title: LocalizationString.noUserFound,
+                            title: noUserFoundString.tr,
                             subTitle:
-                                LocalizationString.followFriendsToSendPost,
+                                followFriendsToSendPostString.tr,
                           );
               }),
         ).round(20).p16,

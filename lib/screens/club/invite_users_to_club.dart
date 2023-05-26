@@ -30,9 +30,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 55,
-          ),
+
           SizedBox(
             height: 50,
             child: Stack(
@@ -47,7 +45,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Heading6Text(LocalizationString.invite,
+                    Heading6Text(inviteString.tr,
                             weight: TextWeight.medium)
                         .ripple(() {
                       _inviteFriendsToClubController
@@ -65,7 +63,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                       Obx(() => _inviteFriendsToClubController
                               .selectedFriends.isNotEmpty
                           ? Heading6Text(
-                              '${_inviteFriendsToClubController.selectedFriends.length} ${LocalizationString.friendsSelected}',
+                              '${_inviteFriendsToClubController.selectedFriends.length} ${friendsSelectedString.tr}',
                               weight: TextWeight.medium)
                           : Container())
                     ],
@@ -74,7 +72,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
               ],
             ),
           ).hP16,
-          divider(context: context).tP8,
+          divider().tP8,
           GetBuilder<InviteFriendsToClubController>(
             init: _inviteFriendsToClubController,
             builder: (ctx) {
@@ -136,7 +134,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                   : Container();
             },
           ),
-          SearchBar(
+          SFSearchBar(
                   showSearchIcon: true,
                   iconColor: AppColorConstants.themeColor,
                   onSearchChanged: (value) {
@@ -147,7 +145,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                   },
                   onSearchCompleted: (searchTerm) {})
               .p16,
-          divider(context: context).tP16,
+          divider().tP16,
           Expanded(
             child: GetBuilder<InviteFriendsToClubController>(
                 init: _inviteFriendsToClubController,

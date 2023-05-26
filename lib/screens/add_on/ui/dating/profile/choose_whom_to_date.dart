@@ -25,11 +25,11 @@ class _ChooseWhomToDateState extends State<ChooseWhomToDate> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Heading3Text(
-              LocalizationString.likeToDateHeader,
+              likeToDateHeaderString.tr,
 
             ).setPadding(top: 100),
             Heading4Text(
-              LocalizationString.likeToDateSubHeader,
+              likeToDateSubHeaderString.tr,
 
             ).setPadding(top: 20),
             ListView.builder(
@@ -45,7 +45,7 @@ class _ChooseWhomToDateState extends State<ChooseWhomToDate> {
                   width: MediaQuery.of(context).size.width - 50,
                   child: AppThemeButton(
                       cornerRadius: 25,
-                      text: LocalizationString.next,
+                      text: nextString.tr,
                       onPress: () {
                         Get.to(() =>  AddPersonalInfo(isFromSignup: widget.isFromSignup));
                       })),
@@ -68,7 +68,7 @@ class _ChooseWhomToDateState extends State<ChooseWhomToDate> {
               selectedGender == index
                   ? ThemeIcon.circle
                   : ThemeIcon.circleOutline,
-              color: Theme.of(context).iconTheme.color),
+              color: AppColorConstants.iconColor),
         ],
       ).hP25.ripple(() {
         setState(() {

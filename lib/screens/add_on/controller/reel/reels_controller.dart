@@ -4,6 +4,8 @@ import 'package:foap/model/post_search_query.dart';
 import 'package:get/get.dart';
 import 'package:foap/apiHandler/api_controller.dart';
 
+import '../../../../apiHandler/apis/post_api.dart';
+
 class ReelsController extends GetxController {
   RxList<PostModel> publicMoments = <PostModel>[].obs;
   RxList<PostModel> filteredMoments = <PostModel>[].obs;
@@ -66,65 +68,52 @@ class ReelsController extends GetxController {
 
   void getReels() async {
     if (canLoadMoreReels == true) {
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          isLoadingReels = true;
-          ApiController()
-              .getPosts(
-              isReel: 1,
-              userId: reelSearchQuery.userId,
-              isPopular: reelSearchQuery.isPopular,
-              isFollowing: reelSearchQuery.isFollowing,
-              isSold: reelSearchQuery.isSold,
-              isMine: reelSearchQuery.isMine,
-              isRecent: reelSearchQuery.isRecent,
-              title: reelSearchQuery.title,
-              hashtag: reelSearchQuery.hashTag,
-              page: reelsCurrentPage)
-              .then((response) async {
-            // posts.value = [];
-            publicMoments.addAll(response.success
-                ? response.posts
-                .where((element) => element.gallery.isNotEmpty)
-                .toList()
-                : []);
-            // reels.sort((a, b) => b.createDate!.compareTo(a.createDate!));
-            isLoadingReels = false;
+      isLoadingReels = true;
 
-            if (reelsCurrentPage == 1) {
+      PostApi.getPosts(
+          isReel: 1,
+          userId: reelSearchQuery.userId,
+          isPopular: reelSearchQuery.isPopular,
+          isFollowing: reelSearchQuery.isFollowing,
+          isSold: reelSearchQuery.isSold,
+          isMine: reelSearchQuery.isMine,
+          isRecent: reelSearchQuery.isRecent,
+          title: reelSearchQuery.title,
+          hashtag: reelSearchQuery.hashTag,
+          page: reelsCurrentPage,
+          resultCallback: (result, metadata) {
+            publicMoments.addAll(
+                result.where((element) => element.gallery.isNotEmpty).toList());
+            publicMoments
+                .sort((a, b) => b.createDate!.compareTo(a.createDate!));
+            isLoadingReels = false;
+            if (reelsCurrentPage == 1 && publicMoments.isNotEmpty) {
               currentPageChanged(0, publicMoments.first);
             }
-
-            reelsCurrentPage += 1;
-
-            if (response.posts.length == response.metaData?.pageCount) {
-              canLoadMoreReels = true;
-              // totalPages = response.metaData!.pageCount;
-            } else {
+            if (reelsCurrentPage >= metadata.pageCount) {
               canLoadMoreReels = false;
+            } else {
+              canLoadMoreReels = true;
             }
+            reelsCurrentPage += 1;
+            // totalPages = metadata.pageCount;
+
             update();
           });
-        }
-      });
     }
   }
 
   void getReelsWithAudio(int audioId) async {
     if (canLoadMoreReelsWithAudio == true) {
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          isLoadingReelsWithAudio = true;
-          ApiController()
-              .getPosts(
-              isReel: 1, audioId: audioId, page: reelsWithAudioCurrentPage)
-              .then((response) async {
-            // posts.value = [];
-            filteredMoments.addAll(response.success
-                ? response.posts
-                .where((element) => element.gallery.isNotEmpty)
-                .toList()
-                : []);
+      isLoadingReelsWithAudio = true;
+
+      PostApi.getPosts(
+          isReel: 1,
+          audioId: audioId,
+          page: reelsWithAudioCurrentPage,
+          resultCallback: (result, metadata) {
+            filteredMoments.addAll(
+                result.where((element) => element.gallery.isNotEmpty).toList());
             // reels.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             isLoadingReelsWithAudio = false;
 
@@ -133,8 +122,7 @@ class ReelsController extends GetxController {
             }
 
             reelsWithAudioCurrentPage += 1;
-
-            if (response.posts.length == response.metaData?.pageCount) {
+            if (result.length == metadata.pageCount) {
               canLoadMoreReelsWithAudio = true;
               // totalPages = response.metaData!.pageCount;
             } else {
@@ -142,13 +130,11 @@ class ReelsController extends GetxController {
             }
             update();
           });
-        }
-      });
     }
   }
 
   void likeUnlikeReel(
-      {required PostModel post, required BuildContext context}) {
+      {required PostModel post}) {
     post.isLike = !post.isLike;
     if (post.isLike) {
       likedReels.add(post);
@@ -157,18 +143,6 @@ class ReelsController extends GetxController {
     }
     likedReels.refresh();
     post.totalLike = post.isLike ? (post.totalLike) + 1 : (post.totalLike) - 1;
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController()
-            .likeUnlike(post.isLike, post.id)
-            .then((response) async {});
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet,
-            isSuccess: true);
-      }
-    });
-
-    // update();
+    PostApi.likeUnlikePost(like: post.isLike, postId: post.id);
   }
 }

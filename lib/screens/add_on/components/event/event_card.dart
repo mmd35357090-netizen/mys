@@ -40,7 +40,7 @@ class EventCard extends StatelessWidget {
                     right: 10,
                     child: Container(
                       color: AppColorConstants.themeColor,
-                      child: Text(LocalizationString.free).p4,
+                      child: Text(freeString.tr).p4,
                     ).round(5))
             ],
           ),
@@ -115,7 +115,7 @@ class EventCard2 extends StatelessWidget {
                     right: 10,
                     child: Container(
                       color: AppColorConstants.themeColor,
-                      child: Text(LocalizationString.free).p4,
+                      child: Text(freeString.tr).p4,
                     ).round(5))
             ],
           ),
@@ -160,7 +160,7 @@ class EventCard2 extends StatelessWidget {
                     //   height: 20,
                     // ),
                     // Text(
-                    //   '${event.totalMembers.formatNumber} ${LocalizationString.going}',
+                    //   '${event.totalMembers.formatNumber} ${going}',
                     //   style: TextStyle(fontSize: FontSizes.b2),
                     // ),
                   ],

@@ -25,12 +25,9 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
           backNavigationBar(
-              context: context, title: LocalizationString.privacy),
-          divider(context: context).tP8,
+               title: privacyString.tr),
+          divider().tP8,
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -69,7 +66,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                 .circular,
             const SizedBox(width: 10),
             Expanded(
-              child: BodyLargeText(LocalizationString.shareLocation,
+              child: BodyLargeText(shareLocationString.tr,
                   weight: TextWeight.medium),
             ),
             // const Spacer(),
@@ -90,7 +87,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                 )),
           ]).hP16,
         ),
-        divider(context: context)
+        divider()
       ],
     );
   }
@@ -120,11 +117,11 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        BodyLargeText(LocalizationString.faceIdOrTouchId,
+                        BodyLargeText(faceIdOrTouchIdString.tr,
                                 weight: TextWeight.medium)
                             .bP4,
                         BodySmallText(
-                          LocalizationString.unlockYourAppUsingBiometricLogin,
+                          unlockYourAppUsingBiometricLoginString.tr,
                         ),
                       ],
                     ),
@@ -147,7 +144,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                   ),
                 ]).hP16,
               ),
-              divider(context: context)
+              divider()
             ],
           ));
   }

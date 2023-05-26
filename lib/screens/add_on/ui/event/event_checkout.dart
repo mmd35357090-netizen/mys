@@ -51,12 +51,9 @@ class _EventCheckoutState extends State<EventCheckout> {
               height: Get.height,
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  backNavigationBar(
-                      context: context, title: LocalizationString.buyTicket),
-                  divider(context: context).tP8,
+
+                  backNavigationBar(title: buyTicketString.tr),
+                  divider().tP8,
                   Expanded(
                     child: Stack(
                       children: [
@@ -66,8 +63,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                               children: [
                                 Row(
                                   children: [
-                                    BodyLargeText(
-                                        LocalizationString.payableAmount,
+                                    BodyLargeText(payableAmountString.tr,
                                         weight: TextWeight.bold),
                                     BodyLargeText(
                                       ' (\$${widget.ticketOrder.amountToBePaid!})',
@@ -76,7 +72,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                                     ),
                                   ],
                                 ).setPadding(top: 16, left: 16, right: 16),
-                                divider(context: context).vP16,
+                                divider().vP16,
                                 walletView(),
                                 paymentGateways().hP16,
                                 const SizedBox(
@@ -117,12 +113,12 @@ class _EventCheckoutState extends State<EventCheckout> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // divider(context: context).vP25,
+                    // divider().vP25,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BodyMediumText(
-                          '${LocalizationString.wallet} (\$${_userProfileManager.user.value!.balance})',
+                          '${walletString.tr} (\$${_userProfileManager.user.value!.balance})',
                           weight: TextWeight.medium,
                           color: AppColorConstants.themeColor,
                         ),
@@ -134,7 +130,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                           children: [
                             Row(
                               children: [
-                                BodyLargeText(LocalizationString.useBalance,
+                                BodyLargeText(useBalanceString.tr,
                                     weight: TextWeight.medium),
                                 BodyLargeText(
                                   ' (\$${widget.ticketOrder.amountToBePaid! > double.parse(_userProfileManager.user.value!.balance) ? _userProfileManager.user.value!.balance : widget.ticketOrder.amountToBePaid!})',
@@ -167,7 +163,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BodyMediumText(
-                          LocalizationString.coins,
+                          coinsString.tr,
                           weight: TextWeight.medium,
                           color: AppColorConstants.themeColor,
                         ),
@@ -179,7 +175,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                           children: [
                             Row(
                               children: [
-                                BodyLargeText(LocalizationString.availableCoins,
+                                BodyLargeText(availableCoinsString.tr,
                                     weight: TextWeight.medium),
                                 BodyLargeText(
                                   ' (${_userProfileManager.user.value!.coins})',
@@ -193,7 +189,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                         )
                       ],
                     ).hP16,
-                    divider(context: context).vP25,
+                    divider().vP25,
                   ],
                 ),
             ],
@@ -206,7 +202,7 @@ class _EventCheckoutState extends State<EventCheckout> {
         if (_userProfileManager.user.value!.coins <
             _settingsController.setting.value!.minCoinsWithdrawLimit) {
           AppUtil.showToast(
-              message: LocalizationString.minCoinsRedeemLimit.replaceAll(
+              message: minCoinsRedeemLimitString.tr.replaceAll(
                   '{{coins}}',
                   _settingsController.setting.value!.minCoinsWithdrawLimit
                       .toString()),
@@ -221,8 +217,7 @@ class _EventCheckoutState extends State<EventCheckout> {
             width: 100,
             color: AppColorConstants.themeColor,
             child: Center(
-              child: BodyLargeText(LocalizationString.redeem,
-                  weight: TextWeight.medium),
+              child: BodyLargeText(redeemString.tr, weight: TextWeight.medium),
             )).round(5).backgroundCard(),
       ),
     );
@@ -238,7 +233,7 @@ class _EventCheckoutState extends State<EventCheckout> {
 
           return AlertDialog(
             title: Text(
-              LocalizationString.enterNumberOfCoins,
+              enterNumberOfCoinsString.tr,
             ),
             content: Container(
               color: AppColorConstants.backgroundColor,
@@ -280,17 +275,16 @@ class _EventCheckoutState extends State<EventCheckout> {
             ).round(10),
             actions: <Widget>[
               AppThemeButton(
-                text: LocalizationString.redeem,
+                text: redeemString.tr,
                 onPress: () {
                   if (textController.text.isNotEmpty) {
                     int coins = int.parse(textController.text);
                     if (coins >=
                         _settingsController
                             .setting.value!.minCoinsWithdrawLimit) {
-                      if (coins >=
-                          _userProfileManager.user.value!.coins) {
+                      if (coins >= _userProfileManager.user.value!.coins) {
                         AppUtil.showToast(
-                            message: LocalizationString.enterValidAmountOfCoins
+                            message: enterValidAmountOfCoinsString.tr
                                 .replaceAll(
                                     '{{coins}}',
                                     _settingsController
@@ -299,19 +293,18 @@ class _EventCheckoutState extends State<EventCheckout> {
                             isSuccess: false);
                         return;
                       }
-                      _profileController.redeemRequest(coins, context, () {
+                      _profileController.redeemRequest(coins, () {
                         _checkoutController.update();
                       });
                       textController.text = '';
                       Navigator.pop(dialogContext);
                     } else {
                       AppUtil.showToast(
-                          message: LocalizationString.minCoinsRedeemLimit
-                              .replaceAll(
-                                  '{{coins}}',
-                                  _settingsController
-                                      .setting.value!.minCoinsWithdrawLimit
-                                      .toString()),
+                          message: minCoinsRedeemLimitString.tr.replaceAll(
+                              '{{coins}}',
+                              _settingsController
+                                  .setting.value!.minCoinsWithdrawLimit
+                                  .toString()),
                           isSuccess: false);
                     }
                   }
@@ -334,7 +327,7 @@ class _EventCheckoutState extends State<EventCheckout> {
               Row(
                 children: [
                   Heading6Text(
-                    LocalizationString.payUsing,
+                    payUsingString.tr,
                     weight: TextWeight.bold,
                   ),
                   const SizedBox(
@@ -354,7 +347,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                 height: 20,
               ),
               // PaymentMethodTile(
-              //   text: LocalizationString.creditCard,
+              //   text: creditCard,
               //   icon: "assets/credit-card.png",
               //   price: '\$${_checkoutController.balanceToPay.value}',
               //   isSelected: _checkoutController.selectedPaymentGateway.value ==
@@ -367,7 +360,7 @@ class _EventCheckoutState extends State<EventCheckout> {
               // ),
               if (Stripe.instance.isApplePaySupported.value)
                 PaymentMethodTile(
-                  text: LocalizationString.applePay,
+                  text: applePayString.tr,
                   icon: _settingsController.darkMode.value
                       ? "assets/apple_pay.png"
                       : "assets/apple_pay_light.png",
@@ -385,7 +378,7 @@ class _EventCheckoutState extends State<EventCheckout> {
 
               Obx(() => _checkoutController.googlePaySupported.value == true
                   ? PaymentMethodTile(
-                      text: LocalizationString.googlePay,
+                      text: googlePayString.tr,
                       icon: "assets/google-pay.png",
                       price: '\$${_checkoutController.balanceToPay.value}',
                       isSelected:
@@ -400,7 +393,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                     )
                   : Container()),
               // PaymentMethodTile(
-              //   text: LocalizationString.paypal,
+              //   text: paypal,
               //   icon: "assets/paypal.png",
               //   price: '\$${_checkoutController.balanceToPay.value}',
               //   isSelected: _checkoutController.selectedPaymentGateway.value ==
@@ -412,7 +405,7 @@ class _EventCheckoutState extends State<EventCheckout> {
               //   },
               // ),
               PaymentMethodTile(
-                text: LocalizationString.stripe,
+                text: stripeString.tr,
                 icon: "assets/stripe.png",
                 price: '\$${_checkoutController.balanceToPay.value}',
                 isSelected: _checkoutController.selectedPaymentGateway.value ==
@@ -425,7 +418,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                 },
               ),
               PaymentMethodTile(
-                text: LocalizationString.razorPay,
+                text: razorPayString.tr,
                 icon: "assets/razorpay.png",
                 price: '\$${_checkoutController.balanceToPay.value}',
                 isSelected: _checkoutController.selectedPaymentGateway.value ==
@@ -437,7 +430,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                 },
               ),
               // PaymentMethodTile(
-              //   text: LocalizationString.inAppPurchase,
+              //   text: inAppPurchase,
               //   icon: "assets/in_app_purchases.png",
               //   price: '\$${_checkoutController.balanceToPay.value}',
               //   isSelected: _checkoutController.selectedPaymentGateway.value ==
@@ -449,7 +442,7 @@ class _EventCheckoutState extends State<EventCheckout> {
               //   },
               // ),
               // PaymentMethodTile(
-              //   text: LocalizationString.cash,
+              //   text: cash,
               //   icon: "assets/cash.png",
               //   price: _checkoutController.useWallet.value
               //       ? '${widget.ticketOrder.ticketAmount! - double.parse(_userProfileManager.user.value!.balance)}'
@@ -473,7 +466,7 @@ class _EventCheckoutState extends State<EventCheckout> {
 
   Widget checkoutButton() {
     return AppThemeButton(
-        text: LocalizationString.payAndBuy,
+        text: payAndBuyString.tr,
         onPress: () {
           checkout();
         });
@@ -511,7 +504,7 @@ class _EventCheckoutState extends State<EventCheckout> {
             height: 40,
           ),
           Heading3Text(
-            LocalizationString.placingOrder,
+            placingOrderString.tr,
             weight: TextWeight.semiBold,
             textAlign: TextAlign.center,
           ),
@@ -519,7 +512,7 @@ class _EventCheckoutState extends State<EventCheckout> {
             height: 10,
           ),
           BodyLargeText(
-            LocalizationString.doNotCloseApp,
+            doNotCloseAppString.tr,
             weight: TextWeight.regular,
             textAlign: TextAlign.center,
           ),
@@ -541,7 +534,7 @@ class _EventCheckoutState extends State<EventCheckout> {
             height: 40,
           ),
           Heading3Text(
-            LocalizationString.bookingConfirmed,
+            bookingConfirmedString.tr,
             weight: TextWeight.semiBold,
             textAlign: TextAlign.center,
           ),
@@ -552,7 +545,7 @@ class _EventCheckoutState extends State<EventCheckout> {
               width: 200,
               height: 50,
               child: AppThemeBorderButton(
-                  text: LocalizationString.bookMoreTickets,
+                  text: bookMoreTicketsString.tr,
                   onPress: () {
                     Get.close(3);
                   }))
@@ -574,7 +567,7 @@ class _EventCheckoutState extends State<EventCheckout> {
             height: 40,
           ),
           Heading3Text(
-            LocalizationString.errorInBooking,
+            errorInBookingString.tr,
             weight: TextWeight.semiBold,
             textAlign: TextAlign.center,
           ),
@@ -582,7 +575,7 @@ class _EventCheckoutState extends State<EventCheckout> {
             height: 10,
           ),
           BodyLargeText(
-            LocalizationString.pleaseTryAgain,
+            pleaseTryAgainString.tr,
             weight: TextWeight.regular,
             textAlign: TextAlign.center,
           ),
@@ -593,7 +586,7 @@ class _EventCheckoutState extends State<EventCheckout> {
               width: 100,
               height: 40,
               child: AppThemeBorderButton(
-                  text: LocalizationString.tryAgain,
+                  text: tryAgainString.tr,
                   onPress: () {
                     Get.back();
                   }))

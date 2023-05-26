@@ -14,13 +14,11 @@ class AppAccount extends StatefulWidget {
 }
 
 class _AppAccountState extends State<AppAccount> {
-  final RequestVerificationController _requestVerificationController =
-  RequestVerificationController();
+
   final SettingsController _settingsController = Get.find();
 
   @override
   void initState() {
-    _requestVerificationController.getVerificationRequests();
     super.initState();
   }
 
@@ -30,12 +28,10 @@ class _AppAccountState extends State<AppAccount> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.account),
-          divider(context: context).tP8,
+               title: accountString.tr),
+          divider().tP8,
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -44,32 +40,25 @@ class _AppAccountState extends State<AppAccount> {
                   children: [
                     addTileEvent(
                         'assets/live_bw.png',
-                        LocalizationString.liveHistory,
-                        LocalizationString.liveHistorySubHeadline, () {
+                        liveHistoryString.tr,
+                        liveHistorySubHeadlineString.tr, () {
                       Get.to(() => const LiveHistory());
                     }),
                     addTileEvent(
                         'assets/blocked_user.png',
-                        LocalizationString.blockedUser,
-                        LocalizationString.manageBlockedUser, () {
+                        blockedUserString.tr,
+                        manageBlockedUserString.tr, () {
                       Get.to(() => const BlockedUsersList());
                     }),
                     if (_settingsController
                         .setting.value!.enableProfileVerification)
                       addTileEvent('assets/verification.png',
-                          LocalizationString.requestVerification, '', () {
-                        if (_requestVerificationController
-                            .isVerificationInProcess) {
-                          Get.to(() => RequestVerificationList(
-                              requests: _requestVerificationController
-                                  .verificationRequests));
-                        } else {
-                          Get.to(() => const RequestVerification());
-                        }
-                      }),
+                          requestVerificationString.tr, '', () {
+                            Get.to(() => const RequestVerification());
+                          }),
                     addTileEvent(
                         'assets/findFriends.png',
-                        LocalizationString.addRelationship,
+                        addRelationshipString.tr,
                         '', () {
                       Get.to(() => const AddRelationship());
                     }),
@@ -124,7 +113,7 @@ class _AppAccountState extends State<AppAccount> {
                 )
               ]).hP16,
             ),
-            divider(context: context)
+            divider()
           ],
         ));
   }

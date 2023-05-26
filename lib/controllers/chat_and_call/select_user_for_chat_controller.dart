@@ -1,3 +1,4 @@
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../apiHandler/api_controller.dart';
@@ -37,18 +38,20 @@ class SelectUserForChatController extends GetxController {
   getFollowingUsers() {
     if (canLoadMoreFollowing) {
       followingIsLoading = true;
-      ApiController().getFollowingUsers(page: followingPage).then((response) {
-        followingIsLoading = false;
-        following.addAll(response.users);
+      UsersApi.getFollowingUsers(
+          page: followingPage,
+          resultCallback: (result, metadata) {
+            followingIsLoading = false;
+            following.addAll(result);
 
-        followingPage += 1;
-        if (response.users.length == response.metaData?.perPage) {
-          canLoadMoreFollowing = true;
-        } else {
-          canLoadMoreFollowing = false;
-        }
-        update();
-      });
+            followingPage += 1;
+            if (result.length == metadata.perPage) {
+              canLoadMoreFollowing = true;
+            } else {
+              canLoadMoreFollowing = false;
+            }
+            update();
+          });
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/login_sign_up/auth_tab.dart';
 import 'package:foap/screens/login_sign_up/signup_screen.dart';
 import 'package:get/get.dart';
 
@@ -117,9 +118,9 @@ class TutorialScreenState extends State<TutorialScreen> {
   addActionBtn() {
     return AppThemeButton(
       onPress: () {
-        Get.to(() => const SignUpScreen());
+        Get.to(() => const AuthTab());
       },
-      text: LocalizationString.signUp,
+      text: signUpString.tr,
 
     ).hP25;
   }

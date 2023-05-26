@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter_drawing_board/paint_contents.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
@@ -6,7 +8,9 @@ import 'package:foap/helper/imports/chat_imports.dart';
 import '../../util/constant_util.dart';
 
 class DrawingScreen extends StatefulWidget {
-  const DrawingScreen({Key? key}) : super(key: key);
+  final Function(Media)? drawingCompleted;
+
+  const DrawingScreen({Key? key, this.drawingCompleted}) : super(key: key);
 
   @override
   State<DrawingScreen> createState() => _DrawingScreenState();
@@ -16,7 +20,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
   final DrawingController _drawingController = DrawingController();
   final ChatDetailController _chatDetailController = Get.find();
   final DrawingBoardController _drawingBoardController =
-      DrawingBoardController();
+  DrawingBoardController();
+  late String filePath;
 
   List<Color> colorsList = [
     const Color(0xffffffff),
@@ -37,7 +42,25 @@ class _DrawingScreenState extends State<DrawingScreen> {
 
   @override
   void initState() {
+    initiatePath();
     super.initState();
+  }
+
+  initiatePath() async {
+    Directory directory = await getTemporaryDirectory();
+    filePath = '${directory.path}/drawing.png';
+    File file = File(filePath);
+    // print(filePath);
+    if (file.existsSync()) {
+      // print('deleted');
+      file.delete();
+    }
+  }
+
+  @override
+  void dispose() {
+    _drawingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,13 +71,13 @@ class _DrawingScreenState extends State<DrawingScreen> {
         children: [
           Expanded(
             child: Obx(() => DrawingBoard(
-                  controller: _drawingController,
-                  background: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: double.infinity,
-                      color: _drawingBoardController
-                          .selectedBackgroundColor.value),
-                )),
+              controller: _drawingController,
+              background: Container(
+                  width: MediaQuery.of(context).size.width,
+                  // height: double.infinity,
+                  color: _drawingBoardController
+                      .selectedBackgroundColor.value),
+            )),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -97,9 +120,9 @@ class _DrawingScreenState extends State<DrawingScreen> {
   }
 
   Widget _buildStrokeButton(
-    BuildContext context, {
-    required double strokeWidth,
-  }) {
+      BuildContext context, {
+        required double strokeWidth,
+      }) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: InkWell(
@@ -109,17 +132,17 @@ class _DrawingScreenState extends State<DrawingScreen> {
         },
         customBorder: const CircleBorder(),
         child: Obx(() => AnimatedContainer(
-              duration: kThemeAnimationDuration,
-              width: strokeWidth * 2,
-              height: strokeWidth * 2,
-              color: Colors.black,
-            ).borderWithRadius(
-                value: _drawingBoardController.selectedStrokeWidth.value ==
-                        strokeWidth
-                    ? 5
-                    : 0,
-                color: AppColorConstants.themeColor,
-                radius: strokeWidth + 5)),
+          duration: kThemeAnimationDuration,
+          width: strokeWidth * 2,
+          height: strokeWidth * 2,
+          color: Colors.black,
+        ).borderWithRadius(
+            value: _drawingBoardController.selectedStrokeWidth.value ==
+                strokeWidth
+                ? 5
+                : 0,
+            color: Theme.of(context).primaryColor,
+            radius: strokeWidth + 5)),
       ),
     );
   }
@@ -207,69 +230,70 @@ class _DrawingScreenState extends State<DrawingScreen> {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Obx(() => FloatingActionButton.small(
-            tooltip: "Erase",
-            backgroundColor: const Color(0xFFF7FBFF),
-            elevation: _drawingBoardController.isErasing.value == true ? 10 : 2,
-            shape: const CircleBorder(),
-            onPressed: () {
-              if (_drawingBoardController.isErasing.value == true) {
-                _drawingController.setPaintContent = SimpleLine();
-              } else {
-                _drawingController.setPaintContent = Eraser(
-                    color:
-                        _drawingBoardController.selectedBackgroundColor.value);
-              }
+        tooltip: "Erase",
+        backgroundColor: const Color(0xFFF7FBFF),
+        elevation: _drawingBoardController.isErasing.value == true ? 10 : 2,
+        shape: const CircleBorder(),
+        onPressed: () {
+          if (_drawingBoardController.isErasing.value == true) {
+            _drawingController.setPaintContent = SimpleLine();
+          } else {
+            _drawingController.setPaintContent = Eraser(
+                color:
+                _drawingBoardController.selectedBackgroundColor.value);
+          }
 
-              _drawingBoardController.eraseToggle();
-            },
-            child: const Icon(Icons.cleaning_services, color: Colors.blueGrey),
-          )),
+          _drawingBoardController.eraseToggle();
+        },
+        child: const Icon(Icons.cleaning_services, color: Colors.blueGrey),
+      )),
     );
   }
 
   Widget _buildStrokeColorButton(
-    BuildContext context, {
-    required Color color,
-  }) {
+      BuildContext context, {
+        required Color color,
+      }) {
     return Obx(() => Container(
-          height: 40,
-          width: _drawingBoardController.selectedStrokeColor.value == color
-              ? 30
-              : 40,
-          color: color,
-        ).border(
-            value: _drawingBoardController.selectedStrokeColor.value == color
-                ? 5
-                : 0,
-            color: AppColorConstants.themeColor)).ripple(() {
+      height: 40,
+      width: _drawingBoardController.selectedStrokeColor.value == color
+          ? 30
+          : 40,
+      color: color,
+    ).border(
+        value: _drawingBoardController.selectedStrokeColor.value == color
+            ? 5
+            : 0,
+        color: Theme.of(context).primaryColor)).ripple(() {
       _drawingController.setStyle(color: color);
       _drawingBoardController.setStrokeColor(color);
     });
   }
 
   Widget _buildBackgroundColorButton(
-    BuildContext context, {
-    required Color color,
-  }) {
+      BuildContext context, {
+        required Color color,
+      }) {
     return Obx(() => Container(
-          width: _drawingBoardController.selectedBackgroundColor.value == color
-              ? 30
-              : 40,
-          height: 40,
-          color: color,
-        ).border(
-            value:
-                _drawingBoardController.selectedBackgroundColor.value == color
-                    ? 5
-                    : 0,
-            color: AppColorConstants.themeColor)).ripple(() {
+      width: _drawingBoardController.selectedBackgroundColor.value == color
+          ? 30
+          : 40,
+      height: 40,
+      color: color,
+    ).border(
+        value:
+        _drawingBoardController.selectedBackgroundColor.value == color
+            ? 5
+            : 0,
+        color: Theme.of(context).primaryColor)).ripple(() {
+      // print('background color');
       _drawingBoardController.setBackgroundColor(color);
     });
   }
 
   Widget _buildUndoButton(
-    BuildContext context,
-  ) {
+      BuildContext context,
+      ) {
     return FloatingActionButton.small(
       tooltip: "Undo",
       onPressed: () {
@@ -279,7 +303,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
       },
       disabledElevation: 0,
       backgroundColor:
-          _drawingController.currentIndex > 0 ? Colors.blueGrey : Colors.grey,
+      _drawingController.currentIndex > 0 ? Colors.blueGrey : Colors.grey,
       child: const Icon(
         Icons.undo_rounded,
         color: Colors.white,
@@ -288,8 +312,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
   }
 
   Widget _buildRedoButton(
-    BuildContext context,
-  ) {
+      BuildContext context,
+      ) {
     return FloatingActionButton.small(
       tooltip: "Redo",
       onPressed: () {
@@ -300,9 +324,9 @@ class _DrawingScreenState extends State<DrawingScreen> {
       },
       disabledElevation: 0,
       backgroundColor:
-          _drawingController.currentIndex < _drawingController.getHistory.length
-              ? Colors.blueGrey
-              : Colors.grey,
+      _drawingController.currentIndex < _drawingController.getHistory.length
+          ? Colors.blueGrey
+          : Colors.grey,
       child: const Icon(
         Icons.redo_rounded,
         color: Colors.white,
@@ -336,22 +360,28 @@ class _DrawingScreenState extends State<DrawingScreen> {
 
   sendImage() async {
     Uint8List? imageBytes =
-        (await _drawingController.getImageData())?.buffer.asUint8List();
-
+    (await _drawingController.getImageData())?.buffer.asUint8List();
     if (imageBytes != null) {
-      // File file = File.fromRawPath(imageBytes);
+      File file = File(filePath);
+      await file.writeAsBytes(imageBytes);
 
-      // print('file path == ${file.path}');
-      _chatDetailController.sendImageMessage(
-          media: Media(
-              id: randomId(),
-              fileSize: imageBytes.length,
-              // file: file,
-              mediaByte: imageBytes,
-              mediaType: GalleryMediaType.photo,
-              creationTime: DateTime.now()),
-          mode: _chatDetailController.actionMode.value,
-          room: _chatDetailController.chatRoom.value!);
+      // print(filePath);
+      Media media = Media(
+          id: randomId(),
+          file: file,
+          fileSize: imageBytes.length,
+          mediaByte: imageBytes,
+          mediaType: GalleryMediaType.photo,
+          creationTime: DateTime.now());
+      if (widget.drawingCompleted != null) {
+        widget.drawingCompleted!(media);
+      } else {
+        _chatDetailController.sendImageMessage(
+          // context: context,
+            media: media,
+            mode: ChatMessageActionMode.none,
+            room: _chatDetailController.chatRoom.value!);
+      }
       Get.back();
     }
   }

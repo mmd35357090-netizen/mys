@@ -70,14 +70,11 @@ class _TVShowDetailState extends State<TVShowDetail> {
               if (orientation == Orientation.portrait)
                 Column(
                   children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
+
                     backNavigationBar(
-                      context: context,
                       title: widget.showModel.name!,
                     ),
-                    divider(context: context).tP8,
+                    divider().tP8,
                   ],
                 ),
               Obx(() {

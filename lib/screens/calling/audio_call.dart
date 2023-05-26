@@ -134,7 +134,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
                   color: AppColorConstants.red,
                   child: Center(
                       child: Heading3Text(
-                    LocalizationString.reConnecting,
+                    reConnectingString.tr,
                     color: AppColorConstants.grayscale100,
                   )))
               : const SizedBox(),
@@ -175,7 +175,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
                 height: 5,
               ),
               BodyLargeText(
-                LocalizationString.ringing,
+                ringingString.tr,
                 weight: TextWeight.medium,
                 color: AppColorConstants.grayscale500,
               )

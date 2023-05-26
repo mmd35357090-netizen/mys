@@ -54,7 +54,7 @@ class _ChooseGoalState extends State<ChooseGoal> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Heading4Text(
-                            LocalizationString.date,
+                            dateString.tr,
                           ),
                           const Heading5Text(
                             'Find what spark in and empowered community',
@@ -144,7 +144,7 @@ class _ChooseGoalState extends State<ChooseGoal> {
                 child: AppThemeButton(
                     enabledBackgroundColor: Colors.white,
                     cornerRadius: 25,
-                    text: LocalizationString.next,
+                    text: nextString.tr,
                     onPress: () {
                       Get.to(
                           () => WhatYouHope(isFromSignup: widget.isFromSignup));

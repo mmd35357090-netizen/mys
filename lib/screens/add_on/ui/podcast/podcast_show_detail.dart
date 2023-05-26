@@ -43,9 +43,9 @@ class _PodcastShowDetailState extends State<PodcastShowDetail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               backNavigationBar(
-                  context: context, title: widget.podcastShowModel.name)
-                  .tp(50),
-              divider(context: context).tP8,
+                   title: widget.podcastShowModel.name)
+                  ,
+              divider().tP8,
               Expanded(
                 child: CustomScrollView(slivers: [
                   SliverList(
@@ -54,7 +54,7 @@ class _PodcastShowDetailState extends State<PodcastShowDetail> {
                         const SizedBox(
                           height: 40,
                         ),
-                        Heading6Text(LocalizationString.audios,
+                        Heading6Text(audiosString.tr,
                             color: AppColorConstants.themeColor,
                             weight: TextWeight.bold,
                             )
@@ -118,8 +118,8 @@ class _PodcastShowDetailState extends State<PodcastShowDetail> {
           trimLines: 2,
           trimMode: read_more.TrimMode.Line,
           colorClickableText: Colors.white,
-          trimCollapsedText: LocalizationString.showMore,
-          trimExpandedText: '    ${LocalizationString.showLess}',
+          trimCollapsedText: showMoreString.tr,
+          trimExpandedText: '    ${showLessString.tr}',
           moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           lessStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),

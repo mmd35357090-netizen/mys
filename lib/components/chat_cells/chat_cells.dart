@@ -67,7 +67,7 @@ class ChatMessageTile extends StatelessWidget {
                                   color: AppColorConstants.iconColor,
                                 ).rotate(-40).rP4,
                                 BodyLargeText(
-                                  LocalizationString.forward,
+                                  forwardString.tr,
                                 ),
                               ],
                             )
@@ -180,7 +180,7 @@ class ChatMessageTile extends StatelessWidget {
 
   Widget nameWidget(BuildContext context) {
     return BodyLargeText(
-      message.isMineMessage ? LocalizationString.you : message.sender!.userName,
+      message.isMineMessage ? youString.tr : message.sender!.userName,
       weight: TextWeight.bold,
 
     );

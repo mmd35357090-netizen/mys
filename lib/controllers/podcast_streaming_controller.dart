@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/podcast_api.dart';
 import 'package:foap/model/category_model.dart';
 import 'package:foap/screens/add_on/model/podcast_banner_model.dart';
 import 'package:foap/screens/add_on/model/podcast_model.dart';
@@ -31,64 +31,70 @@ class PodcastStreamingController extends GetxController {
   }
 
   getPodcastCategories() {
-    ApiController().getPodcastCategories().then((response) {
-      categories.value = response.podcastCategories
-          .where((element) => element.podcasts.isNotEmpty)
-          .toList();
+    PodcastApi.getPodcastCategories(resultCallback: (result) {
+      categories.value =
+          result.where((element) => element.podcasts.isNotEmpty).toList();
       categories.refresh();
       update();
     });
   }
 
   getPodcastBanners() {
-    ApiController().getPodcastBanners().then((response) {
-      banners.value = response.podcastBanners;
+    PodcastApi.getPodcastBanners(resultCallback: (result) {
+      banners.value = result;
       update();
     });
   }
 
   getPodCastList({int? categoryId, String? name}) {
-    ApiController()
-        .getPodcastList(categoryId: categoryId, name: name)
-        .then((response) {
-      podcasts.value = response.podcasts;
-      update();
-    });
+    PodcastApi.getPodcastList(
+        categoryId: categoryId,
+        name: name,
+        resultCallback: (result) {
+          podcasts.value = result;
+          update();
+        });
   }
 
   getPodcastShows({int? podcastId, String? name}) {
-    ApiController()
-        .getPodcastShows(podcastId: podcastId, name: name)
-        .then((response) {
-      podcastShows.value = response.podcastShows;
-      podcastShows.refresh();
-      update();
-    });
+    PodcastApi.getPodcastShows(
+        podcastId: podcastId,
+        name: name,
+        resultCallback: (result) {
+          podcastShows.value = result;
+          podcastShows.refresh();
+          update();
+        });
   }
 
   getPodcastShowsEpisode({int? podcastShowId, String? name}) async {
-    return ApiController()
-        .getPodcastShowsEpisode(podcastShowId: podcastShowId, name: name)
-        .then((response) {
-      podcastShowEpisodes.value = response.podcastShowEpisodes;
-      podcastShowEpisodes.refresh();
-      update();
-    });
+    PodcastApi.getPodcastShowsEpisode(
+        podcastShowId: podcastShowId,
+        name: name,
+        resultCallback: (result) {
+          podcastShowEpisodes.value = result;
+          podcastShowEpisodes.refresh();
+          update();
+        });
   }
 
   getPodcastShowById(int showId, Function() completionCallBack) {
-    ApiController().getPodcastShowById(showId: showId).then((response) {
-      showDetail.value = response.podcastShowDetail;
-      update();
-      completionCallBack();
-    });
+    PodcastApi.getPodcastShowById(
+        showId: showId,
+        resultCallback: (result) {
+          showDetail.value = result;
+          update();
+          completionCallBack();
+        });
   }
 
   getHostById(int hostId, Function() completionCallBack) {
-    ApiController().getPodcastHostById(hostId: hostId).then((response) {
-      hostDetail.value = response.podcastHostDetail;
-      update();
-      completionCallBack();
-    });
+    PodcastApi.getPodcastHostById(
+        hostId: hostId,
+        resultCallback: (result) {
+          hostDetail.value = result;
+          update();
+          completionCallBack();
+        });
   }
 }

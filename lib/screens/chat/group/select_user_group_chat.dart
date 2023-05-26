@@ -1,8 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import '../../components/search_bar.dart';
-import '../../components/user_card.dart';
+import '../../../components/search_bar.dart';
+import '../../../components/user_card.dart';
 
 class SelectUserForGroupChat extends StatefulWidget {
   final ChatRoomModel? group;
@@ -51,8 +51,8 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                     }),
                     Heading6Text(
                             widget.group == null
-                                ? LocalizationString.next
-                                : LocalizationString.invite,
+                                ? nextString.tr
+                                : inviteString.tr,
                             weight: TextWeight.medium)
                         .ripple(() {
                       if (widget.group == null) {
@@ -61,7 +61,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                           Get.to(() => const EnterGroupInfo());
                         } else {
                           AppUtil.showToast(
-                              message: LocalizationString.pleaseSelectUsers,
+                              message: pleaseSelectUsersString.tr,
                               isSuccess: false);
                         }
                       } else {
@@ -81,13 +81,13 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                     children: [
                       BodyLargeText(
                           widget.group == null
-                              ? LocalizationString.createGroup
-                              : LocalizationString.addParticipants,
+                              ? createGroupString.tr
+                              : addParticipantsString.tr,
                           weight: TextWeight.medium),
                       Obx(() => selectUserForGroupChatController
                               .selectedFriends.isNotEmpty
                           ? BodyLargeText(
-                              '${selectUserForGroupChatController.selectedFriends.length} ${LocalizationString.friendsSelected}',
+                              '${selectUserForGroupChatController.selectedFriends.length} ${friendsSelectedString.tr}',
                               weight: TextWeight.bold)
                           : Container())
                     ],
@@ -96,7 +96,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
               ],
             ),
           ).hP16,
-          divider(context: context).tP8,
+          divider().tP8,
           GetBuilder<SelectUserForGroupChatController>(
             init: selectUserForGroupChatController,
             builder: (ctx) {
@@ -155,7 +155,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                   : Container();
             },
           ),
-          SearchBar(
+          SFSearchBar(
                   showSearchIcon: true,
                   iconColor: AppColorConstants.themeColor,
                   onSearchChanged: (value) {
@@ -166,7 +166,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                   },
                   onSearchCompleted: (searchTerm) {})
               .p16,
-          divider(context: context).tP16,
+          divider().tP16,
           Expanded(
             child: GetBuilder<SelectUserForGroupChatController>(
                 init: selectUserForGroupChatController,

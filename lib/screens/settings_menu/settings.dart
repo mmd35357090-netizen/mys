@@ -1,5 +1,6 @@
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/settings_menu/account.dart';
 import 'package:foap/screens/settings_menu/payment_and_coins.dart';
 import 'package:foap/screens/settings_menu/security_privacy_options.dart';
@@ -21,6 +22,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   final SettingsController _settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -35,79 +37,79 @@ class _SettingsState extends State<Settings> {
           body: Column(
             children: [
               if (_settingsController.appearanceChanged!.value) Container(),
-              const SizedBox(
-                height: 50,
-              ),
-              titleNavigationBar(
-                  context: context, title: LocalizationString.settings),
-              divider(context: context).tP8,
+              // const SizedBox(
+              //   height: 50,
+              // ),
+              backNavigationBar(title: settingsString.tr),
+              divider().tP8,
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
                     Column(
                       children: [
-                        addTileEvent('assets/language.png',
-                            LocalizationString.changeLanguage, '', () {
+                        addTileEvent(
+                            'assets/language.png', notificationsString.tr, '',
+                                () {
+                              Get.to(() => const NotificationsScreen());
+                            }, true),
+                        addTileEvent(
+                            'assets/language.png', changeLanguageString.tr, '',
+                            () {
                           Get.to(() => const ChangeLanguage());
                         }, true),
-                        addTileEvent('assets/coins.png',
-                            LocalizationString.paymentAndCoins, '', () {
+                        addTileEvent(
+                            'assets/coins.png', paymentAndCoinsString.tr, '',
+                            () {
                           Get.to(() => const PaymentAndCoins());
                         }, true),
-                        addTileEvent('assets/account.png',
-                            LocalizationString.account, '', () {
+                        addTileEvent('assets/account.png', accountString.tr, '',
+                            () {
                           Get.to(() => const AppAccount());
                         }, true),
-                        addTileEvent('assets/privacy.png',
-                            LocalizationString.privacy, '', () {
+                        addTileEvent('assets/privacy.png', privacyString.tr, '',
+                            () {
                           Get.to(() => const PrivacyOptions());
                         }, true),
                         addTileEvent(
                             'assets/settings.png',
-                            LocalizationString.notificationSettings,
-                            LocalizationString.tuneSettings, () {
+                            notificationSettingsString.tr,
+                            tuneSettingsString.tr, () {
                           Get.to(() => const AppNotificationSettings());
                         }, true),
-                        addTileEvent('assets/faq.png', LocalizationString.faq,
-                            LocalizationString.faqMessage, () {
+                        addTileEvent(
+                            'assets/faq.png', faqString.tr, faqMessageString.tr,
+                            () {
                           Get.to(() => const FaqList());
                         }, true),
-                        addTileEvent(
-                            'assets/request.png',
-                            LocalizationString.help,
-                            LocalizationString.faqMessage, () {
+                        addTileEvent('assets/request.png', helpString.tr,
+                            faqMessageString.tr, () {
                           Get.to(() => const HelpScreen());
                         }, true),
                         if (_settingsController
                             .setting.value!.enableDarkLightModeSwitch)
                           darkModeTile(),
-                        addTileEvent(
-                            'assets/share.png',
-                            LocalizationString.share,
-                            LocalizationString.shareAppSubtitle, () {
+                        addTileEvent('assets/share.png', shareString.tr,
+                            shareAppSubtitleString.tr, () {
                           Share.share(
-                              '${LocalizationString.installThisCoolApp} ${AppConfigConstants.liveAppLink}');
+                              '${installThisCoolAppString.tr} ${AppConfigConstants.liveAppLink}');
                         }, false),
-                        addTileEvent(
-                            'assets/logout.png',
-                            LocalizationString.logout,
-                            LocalizationString.exitApp, () {
+                        addTileEvent('assets/logout.png', logoutString.tr,
+                            exitAppString.tr, () {
                           AppUtil.showConfirmationAlert(
-                              title: LocalizationString.logout,
-                              subTitle: LocalizationString.logoutConfirmation,
+                              title: logoutString.tr,
+                              subTitle: logoutConfirmationString.tr,
                               okHandler: () {
-                                getIt<UserProfileManager>().logout();
+                                _userProfileManager.logout();
                               });
                         }, false),
                         addTileEvent(
                             'assets/delete_account.png',
-                            LocalizationString.deleteAccount,
-                            LocalizationString.deleteAccountSubheading, () {
+                            deleteAccountString.tr,
+                            deleteAccountSubheadingString.tr, () {
                           AppUtil.showConfirmationAlert(
-                              title: LocalizationString.deleteAccount,
-                              subTitle:
-                                  LocalizationString.areYouSureToDeleteAccount,
+                              title: deleteAccountString.tr,
+                              subTitle: areYouSureToDeleteAccountString.tr,
                               okHandler: () {
                                 _settingsController.deleteAccount();
                               });
@@ -162,7 +164,7 @@ class _SettingsState extends State<Settings> {
                   )
               ]).hP16,
             ),
-            divider(context: context)
+            divider()
           ],
         ));
   }
@@ -187,7 +189,7 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [BodyLargeText(LocalizationString.darkMode.tr)],
+                children: [BodyLargeText(darkModeString.tr)],
               ),
             ),
             // const Spacer(),
@@ -208,7 +210,7 @@ class _SettingsState extends State<Settings> {
                 )),
           ]).hP16,
         ),
-        divider(context: context)
+        divider()
       ],
     );
   }

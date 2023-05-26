@@ -1,1115 +1,1094 @@
-import 'package:get/get.dart';
-
-class LocalizationString {
-  static String supportRequestHasBeenSubmitted = 'Support request has been submitted.'.tr;
-  static String allFieldAreRequied = 'All field are required'.tr;
-  static String help = 'Help'.tr;
-  static String back = 'Back'.tr;
-  static String about = 'About'.tr;
-  static String addSomethingAboutPost = 'Add something about post'.tr;
-  static String ok = 'Ok'.tr;
-  static String submit = 'Submit'.tr;
-  static String done = 'Done'.tr;
-  static String left = 'left'.tr;
-  static String ended = 'Ended'.tr;
-  static String ago = 'ago'.tr;
-
-  static String current = 'Current'.tr;
-  static String completed = 'Completed'.tr;
-  static String winners = 'Winners'.tr;
-  static String winner = 'Winner'.tr;
-  static String prize = 'Prize'.tr;
-  static String selected = 'Selected'.tr;
-  static String you = 'You'.tr;
-  static String success = 'Success'.tr;
-  static String error = 'Error'.tr;
-  static String pending = 'Pending'.tr;
-  static String rejected = 'Rejected'.tr;
-  static String withdrawal = 'Withdrawal'.tr;
-  static String transactionHistory = 'Transaction history'.tr;
-  static String earning = 'Earning'.tr;
-  static String withdraw = 'Withdraw'.tr;
-  static String loading = 'loading...'.tr;
-  static String message = 'message'.tr;
-  static String newMessage = 'New Message'.tr;
-  static String reply = 'Reply'.tr;
-  static String forward = 'Forward'.tr;
-  static String chats = 'Chats'.tr;
-
-  static String callLog = 'Call log'.tr;
-  static String contactInfo = 'Contact info'.tr;
-
-  static String likes = 'Likes'.tr;
-  static String like = 'Like'.tr;
-  static String off = 'Off'.tr;
-  static String live = 'Live'.tr;
-  static String liveEnd = 'Live End'.tr;
-
-  static String fromPeopleOrFollow = 'From People | Follow'.tr;
-  static String fromEveryone = 'From Everyone'.tr;
-
-  static String writeComment = 'Write comment'.tr;
-  static String comments = 'Comments'.tr;
-  static String viewAll = 'View all'.tr;
-  static String allowComments = 'Allow comments'.tr;
-  static String newComment = 'New Comment'.tr;
-
-  static String top = 'Top'.tr;
-  static String trending = 'Trending'.tr;
-  static String account = 'Account'.tr;
-  static String hashTags = 'Hashtags'.tr;
-  static String locations = 'Locations'.tr;
-
-  static String continueStr = 'Continue'.tr;
-
-  static String termsOfUse = 'Terms of use'.tr;
-
-  static String no = 'No...'.tr;
-  static String yes = 'Yes...'.tr;
-  static String next = 'Next'.tr;
-
-  static String pleaseGrantRequiredPermission =
-      "Please grant the required permission from settings to access this feature."
-          .tr;
-
-  static String noInternet =
-      'Please check your internet connection and try again.'.tr;
-  static String noData = 'No data found'.tr;
-  static String watchAds = 'Watch Ads'.tr;
-  static String watchAdsReward =
-      'By watching Ads, you get to earn coins_value Coin per advert you watch. Click the button to start earning! '
-          .tr;
-  static String noProductAvailable = 'No product is available'.tr;
-
-  static String purchaseError =
-      'Some error occurred while performing purchase, please try again later.'
-          .tr;
-  static String storeIsNotAvailable = 'Store is not available.'.tr;
-
-  static String cancelledByUser = 'Cancelled by user'.tr;
-
-  static String faceId = 'Face ID'.tr;
-  static String touchId = 'Touch ID'.tr;
-
-  static String signingInTerms =
-      "By signing up, you are acknowledging that you have read, understood and accept our"
-          .tr;
-
-  static String termsOfService = "Terms of Service".tr;
-  static String welcome = 'Welcome'.tr;
-  static String hi = 'Hi'.tr;
-
-  static String profile = 'Profile'.tr;
-  static String editProfile = 'Edit profile'.tr;
-  static String profileUpdated = 'Profile updated'.tr;
-
-  static String dontHaveAccount = 'Don’t have an Account ? '.tr;
-  static String alreadyHaveAcc = 'Already have an Account ? '.tr;
-  static String signUp = 'Sign up'.tr;
-  static String signUpMessage = 'Create a new account'.tr;
-  static String createAnAccount = 'Create an account'.tr;
-
-  static String signIn = 'Sign in'.tr;
-  static String signInMessage = 'Sign in to continue'.tr;
-
-  static String userName = 'Username'.tr;
-  static String changeUserName = 'Change user name'.tr;
-  static String email = 'Email'.tr;
-  static String emailOrUsername = 'Email or username'.tr;
-
-  static String loginAnotherAccount = 'Login another account'.tr;
-  static String yourEmail = 'Your Email'.tr;
-  static String forgotPwd = 'Forgot Password?'.tr;
-  static String passwordIsEmpty = 'Please enter password'.tr;
-  static String emailPwdIsIncorrect = 'Email or password is incorrect'.tr;
-  static String passwordChanged = 'Password changed successfully'.tr;
-  static String weHaveSentOTP = 'We have sent an OTP'.tr;
-  static String enterOTP = 'Enter OTP'.tr;
-  static String wrongOTP = 'Wrong OTP, please enter the correct OTP'.tr;
-  static String resendOTP = 'Resend OTP'.tr;
-
-  static String pleaseEnterOneTimePassword =
-      "Please enter the one time password sent to your email to verify your account and change your password"
-          .tr;
-  static String pleaseEnterOneTimePasswordPhoneNumberChange =
-      "Please enter the one time password sent to your phone number to verify your phone number"
-          .tr;
-  static String helpToGetAccount = "Let’s help you get back your account".tr;
-  static String loginUsingAnotherAccount = "Login another account instead".tr;
-
-  static String pleaseEnterOtpSentToYourPhone =
-      "Please enter the one time password sent to your phone number to verify your phone number"
-          .tr;
-  static String helpToChangePhoneNumber =
-      "Let’s help you to change phone number".tr;
-
-  static String kindlyEnterEmail = "Kindly fill in your email address".tr;
-
-  static String didntReceivedCode = "If you didn’t receive code,".tr;
-
-  static String send = 'Send'.tr;
-  static String sent = 'Sent'.tr;
-  static String failed = 'Failed'.tr;
-
-  static String fwd = 'Forward'.tr;
-
-  static String sendOTP = 'Send OTP'.tr;
-  static String myAccount = 'My Account'.tr;
-  static String otpVerification = 'OTP Verification'.tr;
-  static String verify = 'Verify'.tr;
-
-  static String enterEmail = 'Enter email'.tr;
-
-  static String enterPhoneNumber = "Enter phone number".tr;
-  static String pleaseEnterEmail = 'Please enter email'.tr;
-  static String pleaseEnterPhone = 'Please enter phone number'.tr;
-  static String pleaseEnterMessage = 'Please enter message'.tr;
-  static String pleaseEnterCountry = 'Please enter country'.tr;
-  static String pleaseEnterCity = 'Please enter city'.tr;
-  static String pleaseEnterPaypalId = 'Please enter paypal id'.tr;
-
-  static String paymentDetailUpdated = 'Payment detail is updated'.tr;
-  static String paymentDetailSetup = 'Payment detail setup'.tr;
-  static String paymentDetail = 'Payment detail'.tr;
-  static String paypalId = 'Paypal Id'.tr;
-
-  static String country = 'Country'.tr;
-  static String city = 'City'.tr;
-
-  static String ringing = 'Ringing'.tr;
+String supportRequestHasBeenSubmittedString =
+    'Support request has been submitted.';
+String allFieldAreRequiedString = 'All field are required';
+String helpString = 'Help';
+String backString = 'Back';
+String aboutString = 'About';
+String addSomethingAboutPostString = 'Add something about post';
+String okString = 'Ok';
+String submitString = 'Submit';
+String doneString = 'Done';
+String leftString = 'left';
+String endedString = 'Ended';
+String agoString = 'ago';
+
+String currentString = 'Current';
+String completedString = 'Completed';
+String winnersString = 'Winners';
+String winnerString = 'Winner';
+String prizeString = 'Prize';
+String selectedString = 'Selected';
+String youString = 'You';
+String successString = 'Success';
+String errorString = 'Error';
+String pendingString = 'Pending';
+String rejectedString = 'Rejected';
+String withdrawalString = 'Withdrawal';
+String transactionHistoryString = 'Transaction history';
+String earningString = 'Earning';
+String withdrawString = 'Withdraw';
+String loadingString = 'loading...';
+String messageString = 'message';
+String newMessageString = 'New Message';
+String replyString = 'Reply';
+String forwardString = 'Forward';
+String chatsString = 'Chats';
+
+String callLogString = 'Call log';
+String contactInfoString = 'Contact info';
+
+String likesString = 'Likes';
+String likeString = 'Like';
+String offString = 'Off';
+String liveString = 'Live';
+String liveEndString = 'Live End';
+
+String fromPeopleOrFollowString = 'From People | Follow';
+String fromEveryoneString = 'From Everyone';
+
+String writeCommentString = 'Write comment';
+String commentsString = 'Comments';
+String viewAllString = 'View all';
+String allowCommentsString = 'Allow comments';
+String newCommentString = 'New Comment';
+
+String topString = 'Top';
+String trendingString = 'Trending';
+String accountString = 'Account';
+String hashTagsString = 'Hashtags';
+String locationsString = 'Locations';
+
+String continueStrString = 'Continue';
+
+String termsOfUseString = 'Terms of use';
+
+String noString = 'No...';
+String yesString = 'Yes...';
+String nextString = 'Next';
+
+String pleaseGrantRequiredPermissionString =
+    "Please grant the required permission from settings to access this feature.";
+
+String noInternetString =
+    'Please check your internet connection and try again.';
+String noDataString = 'No data found';
+String watchAdsString = 'Watch Ads';
+String watchAdsRewardString =
+    'By watching Ads, you get to earn coins_value Coin per advert you watch. Click the button to start earning! ';
+
+String noProductAvailableString = 'No product is available';
+
+String purchaseErrorString =
+    'Some error occurred while performing purchase, please try again later.';
+
+String storeIsNotAvailableString = 'Store is not available.';
+
+String cancelledByUserString = 'Cancelled by user';
+
+String faceIdString = 'Face ID';
+String touchIdString = 'Touch ID';
+
+String signingInTermsString =
+    "By signing up, you are acknowledging that you have read, understood and accept our";
+
+String termsOfServiceString = "Terms of Service";
+String welcomeString = 'Welcome';
+String hiString = 'Hi';
+
+String profileString = 'Profile';
+String editProfileString = 'Edit profile';
+String profileUpdatedString = 'Profile updated';
+
+String dontHaveAccountString = 'Don’t have an Account ? ';
+String alreadyHaveAccString = 'Already have an Account ? ';
+String signUpString = 'Sign up';
+String signUpMessageString = 'Create a new account';
+String createAnAccountString = 'Create an account';
 
-  static String wallpaper = 'Wallpaper'.tr;
-  static String wallpapers = 'Wallpapers'.tr;
-
-  static String friends = 'Friends'.tr;
-  static String share = 'Share'.tr;
-  static String shareContacts = 'Share Contacts'.tr;
-
-  static String pleaseEnterName = 'Please enter name'.tr;
-  static String pleaseEnterOTP = 'Please enter OTP'.tr;
-
-  static String coins = 'Coins'.tr;
-  static String totalCoins = 'Total Coins'.tr;
-  static String availableBalanceToWithdraw = 'Available balance to withdraw'.tr;
-  static String availableCoins = 'Available coins'.tr;
-
-  static String buyCoins = 'Buy more coins'.tr;
-  static String buyIn = 'Buy in'.tr;
-
-  static String coinsAdded = 'Coins added to your account'.tr;
-
-  static String pleaseEnterPassword = 'Please enter password'.tr;
-  static String pleaseEnterConfirmPassword = 'Please enter confirm password'.tr;
-  static String passwordsDoesNotMatched = 'Passwords do not match'.tr;
-  static String createAccountForTopPicks =
-      'Create an account to our top picks for you!'.tr;
-  static String pleaseEnterUserName = 'Please enter user name'.tr;
-  static String pleaseEnterValidUserName = 'Please enter valid user name'.tr;
-  static String userNameCanNotHaveSpace = 'Username can not have spaces'.tr;
-
-  static String enterNewPassword = 'Enter new password'.tr;
-  static String enterConfirmPassword = 'Enter confirm password'.tr;
-  static String enterOldPassword = 'Enter old password'.tr;
-  static String pleaseEnterCategoryName = 'Please enter category name'.tr;
-  static String pleaseEnterSliderName = 'Please enter slider name'.tr;
-
-  static String pleaseEnterColorName = 'Please enter color name'.tr;
-  static String pleaseSelectColor = 'Please select color'.tr;
-
-  static String userNameOrPasswordIsWrong = 'User name or password is wrong'.tr;
-  static String invalidPhoneNumber = 'Please enter a valid phone number'.tr;
-
-  static String home = 'Home'.tr;
-  static String dashboard = 'Dashboard'.tr;
-
-  static String topSuggestedUsers = 'Top suggested users'.tr;
-  static String topUsers = 'Top users'.tr;
-  static String joinedUsers = 'Joined users'.tr;
-
-  static String or = 'OR'.tr;
-  static String and = ' and '.tr;
-
-  static String password = 'Password'.tr;
-  static String newPassword = 'New Password'.tr;
-  static String confirmPassword = 'Confirm Password'.tr;
-
-  static String categories = 'Categories'.tr;
-  static String categoryName = 'Category Name'.tr;
-  static String sliderName = 'Slider Name'.tr;
-  static String sliders = 'Home Sliders'.tr;
-
-  static String requestSent = 'Request sent'.tr;
-
-  static String notAllowedMessage = 'Such kind of messages are not allowed'.tr;
-
-  static String errorMessage =
-      'There is some problem, Please try again later'.tr;
-
-  static String camera = 'Camera'.tr;
-  static String photo = 'Photo'.tr;
-  static String sentAPhoto = 'Sent a Photo'.tr;
-
-  static String video = 'Video'.tr;
-  static String sentAVideo = 'Sent a Video'.tr;
-
-  static String cancel = 'Cancel'.tr;
-  static String photos = 'Photos'.tr;
-  static String media = 'Media'.tr;
-  static String exportChat = 'Export chat'.tr;
-  static String exportChatWithMedia = 'Export chat with media'.tr;
-  static String exportChatWithoutMedia = 'Export chat without media'.tr;
-
-  static String videoCantExceed20Seconds =
-      'Video lengths can not exceed 20 seconds'.tr;
-
-  static String sticker = 'Sticker'.tr;
-  static String sentASticker = 'Sent a Sticker'.tr;
-
-  static String gif = 'Gif'.tr;
-  static String sentAGif = 'Sent a Gif'.tr;
-
-  static String audio = 'Audio'.tr;
-  static String sentAnAudio = 'Sent an Audio'.tr;
-
-  static String contact = 'Contact'.tr;
-  static String sentAContact = 'Sent a Contact'.tr;
-
-  static String gallery = 'Gallery'.tr;
-  static String highlights = 'Highlights'.tr;
-
-  static String deleteFromHighlight = 'Delete from highlight'.tr;
-  static String deleteStory = 'Delete story'.tr;
-  static String delete = 'Delete'.tr;
-  static String deleteChat = 'Delete chat'.tr;
-  static String chatDeleted = 'Chat deleted'.tr;
-
-  static String deleteMessageForMe = 'Delete message for me'.tr;
-  static String deleteMessageForAll = 'Delete message for all'.tr;
-  static String thisMessageIsDeleted = 'This message is deleted'.tr;
-
-  static String close = 'Close'.tr;
-  static String deleteRequest = 'Delete Request'.tr;
-  static String deActivateWallpaper = 'De-Activate Wallpaper'.tr;
-  static String deActivateAlbum = 'De-Activate Album'.tr;
-  static String deActivatePlaylist = 'De-Activate Playlist'.tr;
-  static String markAsClosed = 'Mark as closed'.tr;
-
-  static String add = 'Add'.tr;
-  static String addPhoto = 'Add photo'.tr;
-  static String takePhoto = 'Take photo'.tr;
-  static String chooseFromGallery = 'Choose from gallery'.tr;
-  static String removePhoto = 'Remove photo'.tr;
-
-  static String chooseCoverImage = 'Choose cover image'.tr;
-
-  static String category = 'Category'.tr;
-  static String deActivatedCategory = 'De-Activated Categories'.tr;
-
-  static String enterHighlightName = 'Enter highlight name'.tr;
-  static String create = 'Create'.tr;
-
-  static String search = 'Search'.tr;
-  static String searchAnything = 'Search anything'.tr;
-
-  static String logout = 'Log Out'.tr;
-  static String changePwd = 'Change Password'.tr;
-  static String logoutConfirmation = "Are you sure, you want to logout?".tr;
-
-  static String enterAddress = 'Enter address details'.tr;
-  static String changeLocation = 'Change Location'.tr;
-  static String location = 'Location'.tr;
-  static String sentALocation = 'Sent a Location'.tr;
-
-  static String createNewPwd = 'Create new password'.tr;
-  static String createNewPwdCondition =
-      'Your new password must be  different from last password'.tr;
-
-  static String oldPwdStr = 'Old password'.tr;
-  static String newPwdStr = 'New password'.tr;
-  static String confirmPwdStr = 'Confirm password'.tr;
-  static String pwdDoesNotMatched = 'Password does not match'.tr;
-  static String pwdChanged = 'Password changed'.tr;
-  static String pwdRule = 'Password rules'.tr;
-  static String passwordRule =
-      'Your password must be 8 or more characters long'.tr;
-
-  static String resetPwd = 'Reset password'.tr;
-  static String pleaseEnterRingtoneName = 'Please enter ringtone name'.tr;
-
-  static String pleaseEnterValidEmail = 'Please enter valid email address'.tr;
-  static String pleaseEnterValidPhone = 'Please enter valid phone number'.tr;
-
-  static String pleaseUploadImage = 'Please upload image'.tr;
-  static String pleaseUploadRingtoneImage = 'Please upload ringtone image'.tr;
-  static String pleaseUploadRingtone = 'Please upload Ringtone'.tr;
-
-  static String pleaseUploadWallpaper = 'Please upload wallpaper'.tr;
-  static String pleaseUploadWallpaperCover =
-      'Please upload wallpaper cover image'.tr;
-
-  static String emailAddress = 'Email Address'.tr;
-  static String resetPwdLinkSent =
-      'Reset password link is sent to your email address'.tr;
-  static String resetPwdLinkWillBeSent =
-      'Reset password link will be sent to your email address'.tr;
-  static String emailDoesNotExist = 'Email does not exists'.tr;
-  static String joined = 'Joined'.tr;
-  static String join = 'Join'.tr;
-  static String fee = 'Fee'.tr;
-  static String userNameIsUpdated = 'User name is updated'.tr;
-  static String categoryTypeUpdated = 'User profile category type is updated'.tr;
-
-  static String transaction = 'Transactions'.tr;
-  static String phoneNumber = 'Phone number'.tr;
-  static String changePhoneNumber = 'Change Phone number'.tr;
-
-  static String update = 'Update'.tr;
-  static String goPremium = 'Go Premium'.tr;
-  static String restorePurchase = 'Restore in app purchases'.tr;
-  static String aboutUs = 'About us'.tr;
-  static String contactUs = 'Contact us'.tr;
-  static String privacyPolicy = 'Privacy policy'.tr;
-
-  static String earnings = 'Earnings'.tr;
-  static String faq = 'FAQ'.tr;
-
-  static String notifications = 'Notifications'.tr;
-
-  static String settings = 'Settings'.tr;
-  static String notificationSettings = 'Notification Settings'.tr;
-  static String turnOffAll = 'Turn off all'.tr;
-  static String saveContact = 'Save Contact'.tr;
-  static String contactSaved = 'Contact Saved'.tr;
-  static String darkMode = 'Dark mode'.tr;
-  static String changeTheAppearanceSetting = 'Change the appearance setting'.tr;
-
-  static String settingsSaved = 'Settings Saved'.tr;
-  static String support = 'Support'.tr;
-
-  static String wantToReport = 'Want to report this?'.tr;
-  static String reported = 'Reported'.tr;
-  static String postReportedSuccessfully = 'Post is reported successfully'.tr;
-  static String userReportedSuccessfully = 'User is reported successfully'.tr;
-  static String storyReportedSuccessfully = 'Story is reported successfully'.tr;
-  static String userBlockedSuccessfully = 'User is blocked successfully'.tr;
-
-  static String report = 'Report'.tr;
-  static String block = 'Block'.tr;
-  static String unblock = 'Unblock'.tr;
-
-  static String blockUser = 'Block User'.tr;
-  static String blockedUser = 'Blocked User'.tr;
-  static String manageBlockedUser = 'Manage Blocked User list'.tr;
-
-  static String addRelationship = 'Add Relationship'.tr;
-  static String relationship = 'View Relationships'.tr;
-
-  static String myFamily = 'Family'.tr;
-
-  static String replied = 'Replied'.tr;
-
-  static String postToStory = 'Post to story'.tr;
-  static String shareTo = 'Share to'.tr;
-  static String story = 'Story'.tr;
-  static String sentAStory = 'Sent a Story'.tr;
-
-  static String follow = 'Follow'.tr;
-  static String followBack = 'Follow back'.tr;
-  static String likeBack = 'Like back'.tr;
-
-  static String unInvite = 'Cancel'.tr;
-  static String pendingApproval = 'Pending'.tr;
-  static String unFollow = 'UnFollow'.tr;
-
-  static String newFollower = 'New Follower'.tr;
-
-  static String following = 'Following'.tr;
-  static String followers = 'Followers'.tr;
-  static String posts = 'Posts'.tr;
-  static String post = 'Post'.tr;
-  static String sentAPost = 'Sent a Post'.tr;
-
-  static String mentions = 'Mentions'.tr;
-  static String packages = 'Packages'.tr;
-
-  static String trendingAtTwitter = 'Trending At Twitter'.tr;
-
-  static String competition = "Competition".tr;
-  static String disclaimer = "Disclaimer".tr;
-  static String inRewards = "In Rewards".tr;
-  static String description = "Description".tr;
-  static String examplePhotos = "Example photos".tr;
-  static String exampleVideos = "Example videos".tr;
-  static String submittedPhotos = "Submitted photos".tr;
-  static String viewSubmission = "View submission".tr;
-
-  static String postPhoto = "Post Photo".tr;
-  static String postVideo = "Post Video".tr;
-  static String winnerAnnouncementPending = "WINNER ANNOUNCEMENT PENDING".tr;
-  static String viewWinner = "VIEW WINNER".tr;
-
-  static String checkYourCoinsAndEarnMoreCoins =
-      "Check your coins and earn more coins".tr;
-  static String managePhotoAndAlbums = "Manage your photos and albums".tr;
-  static String friendsNearBy = "Your friends are nearby,  find them!".tr;
-  static String contactSupportQuickResponse =
-      "Contact our support for quick fixes".tr;
-  static String trackEarning = "Track your earnings".tr;
-  static String tuneSettings = "Tune your app settings".tr;
-  static String exitApp = "Exit the app".tr;
-  static String faqMessage = "Frequently asked questions by customers".tr;
-
-  static String supportRequests = "Support requests".tr;
-  static String createSupportRequest = "Create support requests".tr;
-  static String fillForm = "Please fill all the fields".tr;
-
-  static String findFriends = "Find Friends".tr;
-  static String find = "Find".tr;
-
-  static String justNow = "Just now".tr;
-  static String monthsAgo = "months ago".tr;
-  static String monthAgo = "month ago".tr;
-  static String weekAgo = "week ago".tr;
-  static String lastWeek = "Last week".tr;
-  static String daysAgo = "days ago".tr;
-  static String dayAgo = "day ago".tr;
-  static String yesterday = "Yesterday".tr;
-  static String hoursAgo = "hours ago".tr;
-  static String hours = "hours".tr;
-  static String anHourAgo = "An hour ago".tr;
-  static String minutesAgo = "minutes ago".tr;
-  static String aMinuteAgo = "A minute ago".tr;
-  static String secondsAgo = "seconds ago".tr;
-
-  static String feMinutes = 'Few minutes'.tr;
-  static String minutes = 'minutes'.tr;
-  static String days = 'days'.tr;
-
-  static String outgoingCall = "Outgoing Call...".tr;
-  static String incomingCall = "Incoming Call...".tr;
-
-  static String outgoing = "Outgoing".tr;
-  static String incoming = "Incoming".tr;
-  static String missed = "Missed".tr;
-
-  static String labelEndCall = "Are you sure you want to end your call?".tr;
-
-  static String labelEndCallCancel = "No cancel & return to call".tr;
-
-  static String labelEndCallNow = "Yes end call now".tr;
-  static String waitForJoiningLabel = 'Please wait for joining...'.tr;
-
-  static String videoPaused = "Video paused".tr;
-  static String reConnecting = "Reconnecting...".tr;
-  static String typing = "typing...".tr;
-
-  static String postDeleted = "Post deleted".tr;
-
-  static String noPostFound = "No post updates found".tr;
-  static String followFriendsToSeeUpdates =
-      "Follow your friends to see their post updates".tr;
-  static String noUserFound = "No user found".tr;
-  static String noInvitationRequest = "No invitation request".tr;
-
-  static String noHashtagFound = "No hashtag found".tr;
-  static String noPhotosFound = "No photos found".tr;
-  static String openIn = "Open in".tr;
-
-  // newly added keys
-  static String group = 'Group'.tr;
-  static String groups = 'Groups'.tr;
-  static String createGroup = 'Create Group'.tr;
-  static String friendsSelected = 'Friends selected'.tr;
-  static String describeAboutGroup = "Describe about group".tr;
-
-  static String drawing = "Drawing".tr;
-  static String user = "User".tr;
-  static String userDeleted = "User deleted".tr;
-  static String viewProfile = "View profile".tr;
-
-  static String skip = "Skip".tr;
-  static String edit = "Edit".tr;
-  static String public = "Public".tr;
-  static String private = "Private".tr;
-  static String privacy = "Privacy".tr;
-  static String name = "Name".tr;
-  static String hide = "Hide".tr;
-  static String choosePrivacy = "Choose Privacy".tr;
-  static String invite = "Invite".tr;
-  static String preview = "Preview".tr;
-  static String seeAll = "See All".tr;
-
-  static String clubs = "Clubs".tr;
-  static String suggestedClubs = "Suggested Clubs".tr;
-  static String clubsYouMightInterested = "Clubs you might be interested in".tr;
-  static String createClub = "Create club".tr;
-  static String addClubCoverPhoto = "Club photo".tr;
-  static String clubDescription = "Club description".tr;
-  static String clubDetail = "Club detail".tr;
-  static String createChatGroup = "Create chat group".tr;
-  static String all = 'All'.tr;
-  static String myClub = 'My Club'.tr;
-  static String clubMembers = "Members".tr;
-  static String clubSettings = 'Club Settings'.tr;
-
-  static String editClubInfo = 'Edit club info'.tr;
-  static String editClubImage = 'Edit club image'.tr;
-  static String deleteClub = 'Delete club'.tr;
-  static String areYouSureToDeleteClub = 'Are you sure to delete the club?'.tr;
-  static String clubIsDeleted = 'Club is deleted successfully'.tr;
-
-  static String participants = "Participants".tr;
-  static String addParticipants = 'Add Participants'.tr;
-
-  static String userDetail = "User detail".tr;
-  static String makeAdmin = "Make admin".tr;
-  static String removeAdmin = "Remove from admins".tr;
-  static String removeFromGroup = "Remove from group".tr;
-
-  static String groupSettings = "Group Settings".tr;
-  static String sendMessages = "Send Messages".tr;
-  static String editGroupInfo = "Edit Group Info".tr;
-
-  static String allParticipants = "All Participants".tr;
-  static String onlyAdmins = "Only Admins".tr;
-
-  static String chooseWhoCanSendMessageInGroup =
-      "Choose who can send message in group".tr;
-  static String chooseWhoCanEditGroup = "Choose who can edit group".tr;
-
-  static String followSomeUserToChat = 'Follow some user to start chat'.tr;
-  static String noChatFound = "No chat found".tr;
-
-  static String makeSomeCalls = 'Make some audio/video call with friends'.tr;
-  static String noCallFound = "No call found".tr;
-
-  static String noStoryFound = 'No Story found'.tr;
-  static String postSomeStories = 'Post some stories to create highlights'.tr;
-
-  static String noNotificationFound = 'No Notification found'.tr;
-
-  static String enterTextHere = 'Enter text here'.tr;
-  static String deleteAccount = 'Delete account'.tr;
-
-  static String areYouSureToDeleteAccount =
-      'Are you sure to delete account, Once account is deleted your all data will be deleted'
-          .tr;
-
-  static String pleaseAllowAccessToCameraForLive =
-      'Please allow access to camera and microphone to start live'.tr;
-  static String pleaseAllowAccessToCameraForVideoCall =
-      'Please allow access to camera and microphone to start video call'.tr;
-  static String pleaseAllowAccessToMicrophoneForAudioCall =
-      'Please allow access to microphone to start audio call'.tr;
-
-  static String registeredSuccessFully =
-      'Registered successfully, please login to continue'.tr;
-
-  static String star = 'Star'.tr;
-  static String unStar = 'UnStar'.tr;
-  static String starredMessages = 'Starred messages'.tr;
-  static String suggestedUsers = 'Suggested users'.tr;
-  static String yourStory = 'Your Story'.tr;
-  static String pleaseEnterTitle = 'Please enter title'.tr;
-  static String editProfilePicture = 'Edit photo'.tr;
-  static String editProfileCover = 'Update cover'.tr;
-
-  static String sentADrawing = 'Sent a Drawing'.tr;
-  static String sentAProfile = 'Sent a Profile'.tr;
-  static String chat = 'Chat'.tr;
-
-  static String online = 'Online'.tr;
-  static String offline = 'Offline'.tr;
-
-  static String lastSeen = 'Last seen'.tr;
-
-  static String appLocked = 'App is locked'.tr;
-
-  static String faceIdOrTouchId = 'Face ID/Touch ID'.tr;
-  static String unlockAppWithFaceId = 'Unlock app with Face ID'.tr;
-  static String unlockAppWithTouchId = 'Unlock app with Touch ID'.tr;
-
-  static String useFaceId = 'Use Face ID'.tr;
-  static String useTouchId = 'Use Touch ID'.tr;
-
-  static String unlockYourAppUsingBiometricLogin =
-      'Unlock you app with touch id / face id'.tr;
-
-  static String pleaseAuthenticateToUseBiometric =
-      'Please authenticate to use biometric login into app'.tr;
-  static String pleaseAuthenticateToRemoveBiometric =
-      'Please authenticate to remove biometric login into app'.tr;
-
-  static String deletePost = 'Delete Post'.tr;
-  static String postDeletedSuccessfully = 'Post is deleted successfully'.tr;
-
-  // new keys version 3
-
-  static String posting = 'Posting...'.tr;
-  static String postFailed = 'Failed posting'.tr;
-
-  static String retry = 'Retry'.tr;
-  static String discard = 'Discard'.tr;
-
-  static String pleaseEnterGroupName = 'Please enter group name'.tr;
-  static String pleaseSelectUsers =
-      'Please select some users to create group'.tr;
-  static String groupName = 'Group name'.tr;
-
-  static String shareAppSubtitle = 'Share the app with your friends'.tr;
-  static String shareAppMessage = 'Install this cool app'.tr;
-
-  static String admin = 'Admin'.tr;
-  static String leaveGroup = 'Leave group'.tr;
-  static String deleteGroup = 'Delete group'.tr;
-  static String onlyAdminCanSendMessage = 'Only admins can send message'.tr;
-
-  static String addedToGroup = 'is added to group'.tr;
-  static String removedFromGroup = 'is removed from group'.tr;
-  static String removedFromAdmins = 'is removed from admins'.tr;
-  static String leftTheGroup = 'left the group'.tr;
-  static String madeAdmin = 'is now admin'.tr;
-
-  static String timeToUpdateApp = 'Time to update app'.tr;
-  static String usingOlderVersionMessage =
-      'You are using older version of app, You need to update the app to continue'
-          .tr;
-
-  // new keys for v 1.4
-  static String maxVideoLengthMessage =
-      'Maximum 1 minute video is allowed to select'.tr;
-  static String copy = 'Copy'.tr;
-  static String groupUpdated = 'Group is updated'.tr;
-  static String strangerChat = 'Stranger chat'.tr;
-  static String haveFunByRandomChatting =
-      'Have fun by chatting with random peoples'.tr;
-  static String tvs = 'Tvs'.tr;
-  static String watchTvs = 'Watch your favourite tvs'.tr;
-
-  static String randomCall = 'Random call'.tr;
-  static String haveFunByRandomCalling =
-      'Have fun by calling to random peoples'.tr;
-
-  static String checkingConnection = 'Checking connection..'.tr;
-  static String pleaseCheckYourInternetConnection =
-      'Please check your internet connection'.tr;
-  static String goingLive = 'Going live'.tr;
-  static String go = 'Go'.tr;
-
-  static String endLiveCallConfirmation = 'Do you want to end live call?'.tr;
-
-  static String totalUserJoined = 'User joined'.tr;
-  static String users = 'Users'.tr;
-  static String network = 'Network'.tr;
-
-  static String duration = 'Duration'.tr;
-  static String messages = 'Messages'.tr;
-  static String gifts = 'Gifts'.tr;
-  static String sendGift = 'Send gift'.tr;
-  static String sentAGift = 'Sent a gift'.tr;
-  static String coinsEarned = 'Coins earned'.tr;
-  static String giftSent = 'Gift is sent successfully'.tr;
-
-  static String giftsReceived = 'Gifts received'.tr;
-
-  static String liveTime = 'Live time'.tr;
-  static String totalMessages = 'Total messages'.tr;
-  static String totalGifts = 'Total gits'.tr;
-
-  static String joinLiveProfessionals =
-      'Join trending live from professionals'.tr;
-  static String joinCompetitionsToEarn = 'Join competitions and earn money'.tr;
-
-  static String page = 'Pages'.tr;
-  static String spaceForBusiness =
-      'Space for business, brand and organizations'.tr;
-  static String placeForPeopleOfCommonInterest =
-      'A place for people of common interest'.tr;
-
-  static String your = 'Your'.tr;
-  static String recent = 'Recent'.tr;
-  static String goLive = 'Go Live'.tr;
-  static String liveUsers = 'Live Users'.tr;
-  static String liveNow = 'Now on live'.tr;
-  static String reel = 'Clip'.tr;
-  static String reels = 'Clips'.tr;
-  static String selectMusic = 'Select music'.tr;
-  static String originalAudio = 'Original audio'.tr;
-  static String use = 'Use'.tr;
-  static String viewGift = 'View Gift'.tr;
-
-  static String anyoneCanSeeClub =
-      'Anyone can see this club and join the club'.tr;
-  static String onlyMembersCanSeeClub =
-      'Only requested member or joined member can see it'.tr;
-  static String communication = 'Communication'.tr;
-
-  static String chatGroup = 'Chat group'.tr;
-  static String createChatGroupForDiscussion =
-      'Create chat group for discussion with club users'.tr;
-  static String basicInfo = 'Basic info'.tr;
-
-  static String clubName = 'Club name'.tr;
-  static String addClubPhoto = 'Add Cover Photo'.tr;
-  static String addClubPhotoSubHeading =
-      'Give people an idea of what your group is about with a photo'.tr;
-
-  static String coverPhoto = 'Cover photo'.tr;
-  static String leaveClub = 'Leave club'.tr;
-  static String remove = "Remove";
-
-  static String pleaseEnterClubName = 'Please enter club name'.tr;
-  static String pleaseEnterClubDesc = 'Please enter club description'.tr;
-  static String pleaseEnterSelectCubImage = 'Please select club image'.tr;
-
-  static String onRequest = 'On request'.tr;
-  static String onClubRequestJoin =
-      'Interested users can request to join, admin can approve the request'.tr;
-
-  static String watchAdsToEarnCoins = 'Watch Ads to earn coins'.tr;
-
-  static String youNeed = 'You need'.tr;
-  static String toJoinThisCompetition = 'to join this competition'.tr;
-
-  static String files = 'Files'.tr;
-  static String file = 'File'.tr;
-
-  static String findingPerfectUserToChat = 'Finding a perfect user to chat'.tr;
-  static String deleteAccountSubheading =
-      'Permanent delete account and whole data'.tr;
-
-  static String liveTv = 'Live TV'.tr;
-  static String allow = 'Allow'.tr;
-  static String map = 'Map'.tr;
-  static String shareLocation = 'Share location'.tr;
-  static String yourFollowersCanViewYourLocation =
-      'Your Followers can view your location'.tr;
-  static String moreFrom = 'More from'.tr;
-  static String more = 'More'.tr;
-
-  static String podcast = 'Podcast'.tr;
-  static String showMore = 'Show more'.tr;
-  static String showLess = 'Show less'.tr;
-  static String albums = 'Albums'.tr;
-  static String songs = 'Songs'.tr;
-
-  static String liveChat = 'Live chat'.tr;
-  static String subscribeChannelToView = 'Subscribe channel to view'.tr;
-  static String subscribeUsing = 'Subscribe using'.tr;
-
-  static String youAreSubscribedNow =
-      'You are subscribed to this channel now'.tr;
-  static String redeem = 'Redeem'.tr;
-  static String minCoinsRedeemLimit =
-      'Minimum {{coins}} coins required to redeem'.tr;
-  static String minWithdrawLimit = 'Minimum withdrawal limit is {{cash}}\$'.tr;
-  static String enterValidAmountOfCoins =
-      'Please enter valid amount of coins'.tr;
-  static String enterNumberOfCoins = 'Enter number of coins to redeem'.tr;
-  static String postedIn = 'Posted in'.tr;
-
-  static String liveHistory = 'Live History'.tr;
-  static String liveHistorySubHeadline = 'Your live history statics'.tr;
-  static String startedAt = 'Started at'.tr;
-
-  static String requestVerification = 'Request Verification'.tr;
-  static String applyVerification = 'Apply Verification'.tr;
-  static String verified = 'Verified'.tr;
-  static String youAreVerifiedNow = 'Your profile is verified now'.tr;
-  static String profileIsVerifiedOn = 'Verified on '.tr;
-
-  static String verifiedAccountSubtitle =
-      'Verified accounts have blue checkmark next to their names to show that we have confirmed you are a real person'
-          .tr;
-  static String documentType = 'Document type'.tr;
-  static String uploadDocument = 'Upload document'.tr;
-  static String selectDocumentType = 'Select a document type'.tr;
-  static String pleaseSelectDocumentType = 'Please select a document type'.tr;
-  static String pleaseUploadProof = 'Please upload identity proof'.tr;
-  static String verificationRequestSent =
-      'Profile verification request is sent, you will be updated soon '.tr;
-  static String status = 'Status'.tr;
-  static String inProcessing = 'In processing'.tr;
-  static String cancelled = 'Cancelled'.tr;
-  static String approved = 'Approved'.tr;
-
-  static String drivingLicense = 'Driving license'.tr;
-  static String passport = 'Passport'.tr;
-  static String panCard = 'Pan card'.tr;
-  static String other = 'Other'.tr;
-  static String messageToReviewer = 'Message to reviewer'.tr;
-  static String uploadFrontAndBack =
-      'Upload both front and back side of document'.tr;
-
-  static String youCanUploadMaximumTwoImages =
-      'You can upload maximum 2 images'.tr;
-
-  static String paymentAndCoins = 'Payment and coins'.tr;
-  static String changeLanguage = 'Change Language'.tr;
-  static String chooseImage = 'Choose image'.tr;
-
-  // v 1.6 keys
-  static String events = 'Events'.tr;
-  static String event = 'Event'.tr;
-  static String dateAndTime = 'Date and Time'.tr;
-  static String eventLocation = 'Event Location'.tr;
-  static String eventOrganizer = 'Event Organizer'.tr;
-  static String noEventFound = 'No event found'.tr;
-
-  static String going = "Going".tr;
-  static String buyTicket = 'Buy Ticket'.tr;
-  static String giftTicket = 'Gift Ticket'.tr;
-  static String selectUser = 'Select user'.tr;
-  static String giftingTo = 'Gifting to'.tr;
-  static String gift = 'Gift'.tr;
-  static String giftedTo = 'Gifted to :'.tr;
-  static String giftedBy = 'Gifted by :'.tr;
-
-  static String ticketGifted = 'Ticket is gifted successfully'.tr;
-  static String bookingCancelled = 'Booking is cancelled successfully'.tr;
-
-  static String ticketWillBeAvailableSoon = 'Tickets will be available soon'.tr;
-
-  static String eventIsSoldOut = 'Event is sold out'.tr;
-  static String ticketType = 'Ticket type'.tr;
-  static String orderSummary = 'Order Summary'.tr;
-  static String organizer = 'Organizer'.tr;
-  static String totalSeats = 'Total seats'.tr;
-  static String availableSeats = 'Available seats'.tr;
-  static String payAndBuy = 'Pay and buy'.tr;
-
-  static String subTotal = 'Sub Total'.tr;
-  static String fees = 'Fees'.tr;
-  static String tax = 'Tax'.tr;
-  static String total = 'Total'.tr;
-  static String checkout = 'Checkout'.tr;
-  static String couponCode = 'Coupon code'.tr;
-  static String code = 'Code'.tr;
-  static String minimumOrderPrice = 'Minimum order price'.tr;
-  static String discount = 'Discount'.tr;
-  static String price = 'Price'.tr;
-  static String serviceFee = 'Service fee'.tr;
-
-  static String enterCouponCode = 'Enter coupon coupon'.tr;
-  static String apply = 'Apply'.tr;
-  static String applyCoupon = 'Apply coupon'.tr;
-  static String noCouponApplied = 'No coupon applied'.tr;
-  static String couponApplied = 'coupon applied'.tr;
-  static String makePayment = 'Make payment'.tr;
-  static String selectPaymentGateway = 'Select payment gateway'.tr;
-  static String payUsing = 'Pay using'.tr;
-  static String pay = 'Pay'.tr;
-
-  // checkout
-  static String wallet = 'Wallet'.tr;
-  static String availableBalance = 'Available balance'.tr;
-  static String useBalance = 'Use balance'.tr;
-  static String payableAmount = 'Payable amount'.tr;
-
-  static String choosePaymentMethod = 'Choose payment method'.tr;
-  static String creditCard = 'Credit card'.tr;
-  static String applePay = 'Apple Pay'.tr;
-  static String googlePay = 'Google Pay'.tr;
-  static String paypal = 'Paypal'.tr;
-  static String razorPay = 'Razorpay'.tr;
-  static String stripe = 'Stripe'.tr;
-  static String inAppPurchase = 'In App Purchase'.tr;
-
-  static String cash = 'Cash'.tr;
-  static String ticketBooked = 'Ticket booked successfully'.tr;
-
-  // bookings
-  static String bookings = 'Bookings'.tr;
-  static String bookingInfo = 'Booking info'.tr;
-  static String bookingId = 'Booking Id'.tr;
-  static String bookingStatus = 'Booking status'.tr;
-  static String bookingDate = 'Booking date'.tr;
-  static String viewETicket = 'View E-Ticket'.tr;
-  static String eTicket = 'E-Ticket'.tr;
-  static String saveETicket = 'Save E-Ticket'.tr;
-  static String ticketSaved = 'Ticket Saved'.tr;
-  static String confirmed = 'Confirmed'.tr;
-  static String placingOrder = 'Placing order, please wait...'.tr;
-  static String doNotCloseApp =
-      'Do not close or refresh the app until the process is completed'.tr;
-  static String bookingConfirmed = 'Your booking is confirmed'.tr;
-  static String bookMoreTickets = 'Book more'.tr;
-
-  static String errorInBooking = 'Error in booking..'.tr;
-  static String pleaseTryAgain = 'Please try again later'.tr;
-  static String tryAgain = 'Try again'.tr;
-
-  static String noBookingFound = 'No booking found'.tr;
-  static String goToEventAndBook = 'Go to events and book tickets'.tr;
-
-  static String eventGallery = 'Event Gallery'.tr;
-
-  static String time = 'Time'.tr;
-  static String date = 'Date'.tr;
-  static String cancelBooking = 'Cancel booking'.tr;
-
-  static String upcoming = 'Upcoming'.tr;
-  static String free = 'Free'.tr;
-  static String paid = 'Paid'.tr;
-
-  static String suggestedForYou = 'Suggested for you'.tr;
-
-  static String publicGroup = "Public group".tr;
-  static String joinRequests = "Join requests".tr;
-  static String joinInvitations = "Join invitations".tr;
-  static String invites = "Invites".tr;
-
-  static String requestJoin = 'Request Join'.tr;
-  static String requested = 'Requested'.tr;
-  static String claimsToBe = 'Claims to be your'.tr;
-  static String approve = 'Approve'.tr;
-  static String reject = 'Reject'.tr;
-
-  static String accept = 'Accept'.tr;
-  static String decline = 'Decline'.tr;
-  static String addComment = 'Add comment'.tr;
-
-  static String dating = 'Dating'.tr;
-  static String matched = 'Matched'.tr;
-  static String likedBy = 'Liked By'.tr;
-  static String preferences = 'Set Preferences'.tr;
-  static String set = 'Set'.tr;
-  static String currentLocation = 'Current location'.tr;
-  static String dob = 'DOB'.tr;
-  static String gender = 'Gender'.tr;
-  static String personalDetails = 'Personal details'.tr;
-  static String interests = 'Interests'.tr;
-  static String professional = 'Professional details'.tr;
-  static String qualification = 'Qualification'.tr;
-  static String occupation = 'Occupation'.tr;
-  static String workExperience = 'Work experience'.tr;
-  static String day = "Day".tr;
-  static String month = "Month".tr;
-  static String year = "Year".tr;
-
-  static String noDatingProfilesFound = 'No dating profiles found'.tr;
-  static String datingExplore = 'Change your preferences and explore more'.tr;
-
-  static String noMatchedProfilesFound = 'No matching profiles found'.tr;
-  static String datingExploreForMatched =
-      'Explore more dating profiles and get matched'.tr;
-
-  static String noLikeProfilesFound = 'No profiles found'.tr;
-  static String noLikeProfiles = 'Explore more dating profiles'.tr;
-
-  static String locationMainHeader = 'Set location'.tr;
-  static String locationHeader = 'Set your location services'.tr;
-  static String locationSubHeader =
-      'We use your location to show you potential matches in your area'.tr;
-  static String locationService = 'Set location services'.tr;
-
-  static String notificationHeader = 'Allow notifications'.tr;
-  static String notificationSubHeader =
-      'We\'ll let you know when you get new matches and messages'.tr;
-  static String allowNotification = 'Allow notifications'.tr;
-  static String notNow = 'Not now'.tr;
-
-  static String nameMainHeader = 'Add name'.tr;
-  static String nameHeader = 'What\'s your first name?'.tr;
-  static String nameSubHeader = 'You won\'t be able to change this later'.tr;
-
-  static String addPhotoHeader = 'Add photos'.tr;
-  static String addPhotoSubHeader =
-      'Profile with more good photos are getting more matches, so add your best photos'
-          .tr;
-
-  static String birthdayMainHeader = 'Add DOB'.tr;
-  static String birthdayHeader = 'When\'s your birthday?'.tr;
-  static String birthdaySubHeader =
-      'Be accurate to specify this to get genuine matches'.tr;
-
-  static String genderMainHeader = 'Add gender'.tr;
-  static String genderHeader = 'Mention your gender'.tr;
-
-  static String likeToDateHeader = 'Who would you like to date?'.tr;
-  static String likeToDateSubHeader =
-      'You can choose more than one answer and change any time'.tr;
-
-  static String personalInfoHeader = 'We need to know more about you.'.tr;
-  static String personalInfoSubHeader =
-      'Be accurate to specify this to get genuine matches'.tr;
-
-  static String addInterestsHeader = 'Add Interests.'.tr;
-  static String addInterestsSubHeader = 'Add your interests and habits'.tr;
-  static String chooseInterests = 'Choose your interests'.tr;
-
-  static String addProfessionalHeader = 'Add Professional Details.'.tr;
-
-  static String followFriendsToSendPost = 'Follow friends to send post.'.tr;
-
-  static String setUserName = 'Set username'.tr;
-  static String setUserNameSubHeading =
-      'This username will be shown to all user. Choose a wise user name like it_mike_here'
-          .tr;
-
-  static String setProfileCategoryType = 'Choose profile category type'.tr;
-  static String setProfileCategoryTypeSubHeading =
-      'Category will help people find accounts like yours. You can change this'
-          .tr;
-
-  static String weWillSearchUserInCategory =
-      'We will search user in your specified category'.tr;
-
-  static String audios = 'Audios'.tr;
-  static String favourite = 'Favourite'.tr;
-  static String subscribed = 'Subscribed'.tr;
-
-  static String profileCategoryTypeSaved = 'Profile category type is saved'.tr;
-  static String installThisCoolApp = 'Install this cool app from'.tr;
-  static String accountIsDeleted = 'Account is deleted successfully'.tr;
-
-  static String storyDeleteSuccessfully = 'Story is deleted successfully'.tr;
-  static String areYouSureToReportPost = 'Are you sure to report this post?'.tr;
-  static String areYouSureToBlockUser = 'Are you sure to block this user?'.tr;
-
-  static String requestPending = 'Request Pending'.tr;
-
-  // dating
-  static String male = 'Male'.tr;
-  static String female = 'Female'.tr;
-  static String noSpecified = 'Not specified'.tr;
-
-  static String age = 'Age'.tr;
-  static String height = 'Height (in cm)'.tr;
-  static String color = 'Color'.tr;
-  static String religion = 'Religion'.tr;
-  static String language = 'Language'.tr;
-  static String smokingHabit = 'Smoking habit'.tr;
-  static String drinkingHabit = 'Drinking habit'.tr;
-  static String select = 'Select'.tr;
-  static String disLike = 'Dislike'.tr;
-
-  static String leaveGroupConfirmation =
-      "Are you sure, you want to leave group?".tr;
-  static String deleteGroupConfirmation =
-      "Are you sure, you want to delete group?".tr;
-
-
-  static String today = 'Today'.tr;
-  static String thisWeek = 'This week'.tr;
-  static String thisMonth = 'This month'.tr;
-  static String earlier = 'Earlier'.tr;
-  static String filter = 'Filter'.tr;
-  static String insights = 'Insights'.tr;
-  static String overview = 'Overview'.tr;
-  static String viewInsights = 'View Insights'.tr;
-
-  static String accountsReached = 'Accounts reached'.tr;
-  static String accountsEngaged = 'Accounts engaged'.tr;
-  static String reach = 'Reach'.tr;
-  static String nonFollowers = 'Non-Followers'.tr;
-
-  static String views = 'Views'.tr;
-
-  static String postInteractions = 'Post interactions'.tr;
-  static String saved = 'Saved'.tr;
-
-  static String profileActivity = 'Profile activity'.tr;
-  static String profileVisits = 'Profile visits'.tr;
-  static String follows = 'Follows'.tr;
-}
+String signInString = 'Sign in';
+String signInMessageString = 'Sign in to continue';
+
+String userNameString = 'Username';
+String changeUserNameString = 'Change user name';
+String emailString = 'Email';
+String emailOrUsernameString = 'Email or username';
+
+String loginAnotherAccountString = 'Login another account';
+String yourEmailString = 'Your Email';
+String forgotPwdString = 'Forgot Password?';
+String passwordIsEmptyString = 'Please enter password';
+String emailPwdIsIncorrectString = 'Email or password is incorrect';
+String passwordChangedString = 'Password changed successfully';
+String weHaveSentOTPString = 'We have sent an OTP';
+String enterOTPString = 'Enter OTP';
+String wrongOTPString = 'Wrong OTP, please enter the correct OTP';
+String resendOTPString = 'Resend OTP';
+
+String pleaseEnterOneTimePasswordString =
+    "Please enter the one time password sent to your email to verify your account and change your password";
+
+String pleaseEnterOneTimePasswordPhoneNumberChangeString =
+    "Please enter the one time password sent to your phone number to verify your phone number";
+
+String helpToGetAccountString = "Let’s help you get back your account";
+String loginUsingAnotherAccountString = "Login another account instead";
+
+String pleaseEnterOtpSentToYourPhoneString =
+    "Please enter the one time password sent to your phone number to verify your phone number";
+
+String helpToChangePhoneNumberString = "Let’s help you to change phone number";
+
+String kindlyEnterEmailString = "Kindly fill in your email address";
+
+String didntReceivedCodeString = "If you didn’t receive code,";
+
+String sendString = 'Send';
+String sentString = 'Sent';
+String failedString = 'Failed';
+
+String fwdString = 'Forward';
+
+String sendOTPString = 'Send OTP';
+String myAccountString = 'My Account';
+String otpVerificationString = 'OTP Verification';
+String verifyString = 'Verify';
+
+String enterEmailString = 'Enter email';
+
+String enterPhoneNumberString = "Enter phone number";
+String pleaseEnterEmailString = 'Please enter email';
+String pleaseEnterPhoneString = 'Please enter phone number';
+String pleaseEnterMessageString = 'Please enter message';
+String pleaseEnterCountryString = 'Please enter country';
+String pleaseEnterCityString = 'Please enter city';
+String pleaseEnterPaypalIdString = 'Please enter paypal id';
+
+String paymentDetailUpdatedString = 'Payment detail is updated';
+String paymentDetailSetupString = 'Payment detail setup';
+String paymentDetailString = 'Payment detail';
+String paypalIdString = 'Paypal Id';
+
+String countryString = 'Country';
+String cityString = 'City';
+
+String ringingString = 'Ringing';
+
+String wallpaperString = 'Wallpaper';
+String wallpapersString = 'Wallpapers';
+
+String friendsString = 'Friends';
+String shareString = 'Share';
+String shareContactsString = 'Share Contacts';
+
+String pleaseEnterNameString = 'Please enter name';
+String pleaseEnterOTPString = 'Please enter OTP';
+
+String coinsString = 'Coins';
+String totalCoinsString = 'Total Coins';
+String availableBalanceToWithdrawString = 'Available balance to withdraw';
+String availableCoinsString = 'Available coins';
+
+String buyCoinsString = 'Buy more coins';
+String buyInString = 'Buy in';
+
+String coinsAddedString = 'Coins added to your account';
+
+String pleaseEnterPasswordString = 'Please enter password';
+String pleaseEnterConfirmPasswordString = 'Please enter confirm password';
+String passwordsDoesNotMatchedString = 'Passwords do not match';
+String createAccountForTopPicksString =
+    'Create an account to our top picks for you!';
+String pleaseEnterUserNameString = 'Please enter user name';
+String pleaseEnterValidUserNameString = 'Please enter valid user name';
+String userNameCanNotHaveSpaceString = 'Username can not have spaces';
+
+String enterNewPasswordString = 'Enter new password';
+String enterConfirmPasswordString = 'Enter confirm password';
+String enterOldPasswordString = 'Enter old password';
+String pleaseEnterCategoryNameString = 'Please enter category name';
+String pleaseEnterSliderNameString = 'Please enter slider name';
+
+String pleaseEnterColorNameString = 'Please enter color name';
+String pleaseSelectColorString = 'Please select color';
+
+String userNameOrPasswordIsWrongString = 'User name or password is wrong';
+String invalidPhoneNumberString = 'Please enter a valid phone number';
+
+String homeString = 'Home';
+String dashboardString = 'Dashboard';
+
+String topSuggestedUsersString = 'Top suggested users';
+String topUsersString = 'Top users';
+String joinedUsersString = 'Joined users';
+
+String orString = 'OR';
+String andString = ' and ';
+
+String passwordString = 'Password';
+String newPasswordString = 'New Password';
+String confirmPasswordString = 'Confirm Password';
+
+String categoriesString = 'Categories';
+String categoryNameString = 'Category Name';
+String sliderNameString = 'Slider Name';
+String slidersString = 'Home Sliders';
+
+String requestSentString = 'Request sent';
+
+String notAllowedMessageString = 'Such kind of messages are not allowed';
+
+String errorMessageString = 'There is some problem, Please try again later';
+
+String cameraString = 'Camera';
+String photoString = 'Photo';
+String sentAPhotoString = 'Sent a Photo';
+
+String videoString = 'Video';
+String sentAVideoString = 'Sent a Video';
+
+String cancelString = 'Cancel';
+String photosString = 'Photos';
+String mediaString = 'Media';
+String exportChatString = 'Export chat';
+String exportChatWithMediaString = 'Export chat with media';
+String exportChatWithoutMediaString = 'Export chat without media';
+
+String videoCantExceed20SecondsString =
+    'Video lengths can not exceed 20 seconds';
+
+String stickerString = 'Sticker';
+String sentAStickerString = 'Sent a Sticker';
+
+String gifString = 'Gif';
+String sentAGifString = 'Sent a Gif';
+
+String audioString = 'Audio';
+String sentAnAudioString = 'Sent an Audio';
+
+String contactString = 'Contact';
+String sentAContactString = 'Sent a Contact';
+
+String galleryString = 'Gallery';
+String highlightsString = 'Highlights';
+
+String deleteFromHighlightString = 'Delete from highlight';
+String deleteStoryString = 'Delete story';
+String deleteString = 'Delete';
+String deleteChatString = 'Delete chat';
+String chatDeletedString = 'Chat deleted';
+
+String deleteMessageForMeString = 'Delete message for me';
+String deleteMessageForAllString = 'Delete message for all';
+String thisMessageIsDeletedString = 'This message is deleted';
+
+String closeString = 'Close';
+String deleteRequestString = 'Delete Request';
+String deActivateWallpaperString = 'De-Activate Wallpaper';
+String deActivateAlbumString = 'De-Activate Album';
+String deActivatePlaylistString = 'De-Activate Playlist';
+String markAsClosedString = 'Mark as closed';
+
+String addString = 'Add';
+String addPhotoString = 'Add photo';
+String takePhotoString = 'Take photo';
+String chooseFromGalleryString = 'Choose from gallery';
+String removePhotoString = 'Remove photo';
+
+String chooseCoverImageString = 'Choose cover image';
+
+String categoryString = 'Category';
+String deActivatedCategoryString = 'De-Activated Categories';
+
+String enterHighlightNameString = 'Enter highlight name';
+String createString = 'Create';
+
+String searchString = 'Search';
+String searchAnythingString = 'Search anything';
+
+String logoutString = 'Log Out';
+String changePwdString = 'Change Password';
+String logoutConfirmationString = "Are you sure, you want to logout?";
+
+String enterAddressString = 'Enter address details';
+String changeLocationString = 'Change Location';
+String locationString = 'Location';
+String sentALocationString = 'Sent a Location';
+
+String createNewPwdString = 'Create new password';
+String createNewPwdConditionString =
+    'Your new password must be  different from last password';
+
+String oldPwdStrString = 'Old password';
+String newPwdStrString = 'New password';
+String confirmPwdStrString = 'Confirm password';
+String pwdDoesNotMatchedString = 'Password does not match';
+String pwdChangedString = 'Password changed';
+String pwdRuleString = 'Password rules';
+String passwordRuleString = 'Your password must be 8 or more characters long';
+
+String resetPwdString = 'Reset password';
+String pleaseEnterRingtoneNameString = 'Please enter ringtone name';
+
+String pleaseEnterValidEmailString = 'Please enter valid email address';
+String pleaseEnterValidPhoneString = 'Please enter valid phone number';
+
+String pleaseUploadImageString = 'Please upload image';
+String pleaseUploadRingtoneImageString = 'Please upload ringtone image';
+String pleaseUploadRingtoneString = 'Please upload Ringtone';
+
+String pleaseUploadWallpaperString = 'Please upload wallpaper';
+String pleaseUploadWallpaperCoverString = 'Please upload wallpaper cover image';
+
+String emailAddressString = 'Email Address';
+String resetPwdLinkSentString =
+    'Reset password link is sent to your email address';
+String resetPwdLinkWillBeSentString =
+    'Reset password link will be sent to your email address';
+String emailDoesNotExistString = 'Email does not exists';
+String joinedString = 'Joined';
+String joinString = 'Join';
+String feeString = 'Fee';
+String userNameIsUpdatedString = 'User name is updated';
+String categoryTypeUpdatedString = 'User profile category type is updated';
+
+String transactionString = 'Transactions';
+String phoneNumberString = 'Phone number';
+String changePhoneNumberString = 'Change Phone number';
+
+String updateStrString = 'Update';
+String goPremiumString = 'Go Premium';
+String restorePurchaseString = 'Restore in app purchases';
+String aboutUsString = 'About us';
+String contactUsString = 'Contact us';
+String privacyPolicyString = 'Privacy policy';
+
+String earningsString = 'Earnings';
+String faqString = 'FAQ';
+
+String notificationsString = 'Notifications';
+
+String settingsString = 'Settings';
+String notificationSettingsString = 'Notification Settings';
+String turnOffAllString = 'Turn off all';
+String saveContactString = 'Save Contact';
+String contactSavedString = 'Contact Saved';
+String darkModeString = 'Dark mode';
+String changeTheAppearanceSettingString = 'Change the appearance setting';
+
+String settingsSavedString = 'Settings Saved';
+String supportString = 'Support';
+
+String wantToReportString = 'Want to report this?';
+String reportedString = 'Reported';
+String postReportedSuccessfullyString = 'Post is reported successfully';
+String userReportedSuccessfullyString = 'User is reported successfully';
+String storyReportedSuccessfullyString = 'Story is reported successfully';
+String userBlockedSuccessfullyString = 'User is blocked successfully';
+
+String reportString = 'Report';
+String blockString = 'Block';
+String unblockString = 'Unblock';
+
+String blockUserString = 'Block User';
+String blockedUserString = 'Blocked User';
+String manageBlockedUserString = 'Manage Blocked User list';
+
+String addRelationshipString = 'Add Relationship';
+String relationshipString = 'View Relationships';
+
+String myFamilyString = 'Family';
+
+String repliedString = 'Replied';
+
+String postToStoryString = 'Post to story';
+String shareToString = 'Share to';
+String storyString = 'Story';
+String sentAStoryString = 'Sent a Story';
+
+String followString = 'Follow';
+String followBackString = 'Follow back';
+String likeBackString = 'Like back';
+
+String unInviteString = 'Cancel';
+String pendingApprovalString = 'Pending';
+String unFollowString = 'UnFollow';
+
+String newFollowerString = 'New Follower';
+
+String followingString = 'Following';
+String followersString = 'Followers';
+String postsString = 'Posts';
+String postString = 'Post';
+String sentAPostString = 'Sent a Post';
+
+String mentionsString = 'Mentions';
+String packagesString = 'Packages';
+
+String trendingAtTwitterString = 'Trending At Twitter';
+
+String competitionString = "Competition";
+String disclaimerString = "Disclaimer";
+String inRewardsString = "In Rewards";
+String descriptionString = "Description";
+String examplePhotosString = "Example photos";
+String exampleVideosString = "Example videos";
+String submittedPhotosString = "Submitted photos";
+String viewSubmissionString = "View submission";
+
+String postPhotoString = "Post Photo";
+String postVideoString = "Post Video";
+String winnerAnnouncementPendingString = "WINNER ANNOUNCEMENT PENDING";
+String viewWinnerString = "VIEW WINNER";
+
+String checkYourCoinsAndEarnMoreCoinsString =
+    "Check your coins and earn more coins";
+String managePhotoAndAlbumsString = "Manage your photos and albums";
+String friendsNearByString = "Your friends are nearby,  find them!";
+String contactSupportQuickResponseString =
+    "Contact our support for quick fixes";
+String trackEarningString = "Track your earnings";
+String tuneSettingsString = "Tune your app settings";
+String exitAppString = "Exit the app";
+String faqMessageString = "Frequently asked questions by customers";
+
+String supportRequestsString = "Support requests";
+String createSupportRequestString = "Create support requests";
+String fillFormString = "Please fill all the fields";
+
+String findFriendsString = "Find Friends";
+String findString = "Find";
+
+String justNowString = "Just now";
+String monthsAgoString = "months ago";
+String monthAgoString = "month ago";
+String weekAgoString = "week ago";
+String lastWeekString = "Last week";
+String daysAgoString = "days ago";
+String dayAgoString = "day ago";
+String yesterdayString = "Yesterday";
+String hoursAgoString = "hours ago";
+String hoursString = "hours";
+String anHourAgoString = "An hour ago";
+String minutesAgoString = "minutes ago";
+String aMinuteAgoString = "A minute ago";
+String secondsAgoString = "seconds ago";
+
+String feMinutesString = 'Few minutes';
+String minutesString = 'minutes';
+String daysString = 'days';
+
+String outgoingCallString = "Outgoing Call...";
+String incomingCallString = "Incoming Call...";
+
+String outgoingString = "Outgoing";
+String incomingString = "Incoming";
+String missedString = "Missed";
+
+String labelEndCallString = "Are you sure you want to end your call?";
+
+String labelEndCallCancelString = "No cancel & return to call";
+
+String labelEndCallNowString = "Yes end call now";
+String waitForJoiningLabelString = 'Please wait for joining...';
+
+String videoPausedString = "Video paused";
+String reConnectingString = "Reconnecting...";
+String typingString = "typing...";
+
+String postDeletedString = "Post deleted";
+
+String noPostFoundString = "No post updates found";
+String followFriendsToSeeUpdatesString =
+    "Follow your friends to see their post updates";
+String noUserFoundString = "No user found";
+String noInvitationRequestString = "No invitation request";
+
+String noHashtagFoundString = "No hashtag found";
+String noPhotosFoundString = "No photos found";
+String openInString = "Open in";
+
+// newly added keys
+String groupString = 'Group';
+String groupsString = 'Groups';
+String createGroupString = 'Create Group';
+String friendsSelectedString = 'Friends selected';
+String describeAboutGroupString = "Describe about group";
+
+String drawingString = "Drawing";
+String userString = "User";
+String userDeletedString = "User deleted";
+String viewProfileString = "View profile";
+
+String skipString = "Skip";
+String editString = "Edit";
+String publicString = "Public";
+String privateString = "Private";
+String privacyString = "Privacy";
+String nameString = "Name";
+String hideString = "Hide";
+String choosePrivacyString = "Choose Privacy";
+String inviteString = "Invite";
+String previewString = "Preview";
+String seeAllString = "See All";
+
+String clubsString = "Clubs";
+String suggestedClubsString = "Suggested Clubs";
+String clubsYouMightInterestedString = "Clubs you might be interested in";
+String createClubString = "Create club";
+String addClubCoverPhotoString = "Club photo";
+String clubDescriptionString = "Club description";
+String clubDetailString = "Club detail";
+String createChatGroupString = "Create chat group";
+String allString = 'All';
+String myClubString = 'My Club';
+String clubMembersString = "Members";
+String clubSettingsString = 'Club Settings';
+
+String editClubInfoString = 'Edit club info';
+String editClubImageString = 'Edit club image';
+String deleteClubString = 'Delete club';
+String areYouSureToDeleteClubString = 'Are you sure to delete the club?';
+String clubIsDeletedString = 'Club is deleted successfully';
+
+String participantsString = "Participants";
+String addParticipantsString = 'Add Participants';
+
+String userDetailString = "User detail";
+String makeAdminString = "Make admin";
+String removeAdminString = "Remove from admins";
+String removeFromGroupString = "Remove from group";
+
+String groupSettingsString = "Group Settings";
+String sendMessagesString = "Send Messages";
+String editGroupInfoString = "Edit Group Info";
+
+String allParticipantsString = "All Participants";
+String onlyAdminsString = "Only Admins";
+
+String chooseWhoCanSendMessageInGroupString =
+    "Choose who can send message in group";
+String chooseWhoCanEditGroupString = "Choose who can edit group";
+
+String followSomeUserToChatString = 'Follow some user to start chat';
+String noChatFoundString = "No chat found";
+
+String makeSomeCallsString = 'Make some audio/video call with friends';
+String noCallFoundString = "No call found";
+
+String noStoryFoundString = 'No Story found';
+String postSomeStoriesString = 'Post some stories to create highlights';
+
+String noNotificationFoundString = 'No Notification found';
+
+String enterTextHereString = 'Enter text here';
+String deleteAccountString = 'Delete account';
+
+String areYouSureToDeleteAccountString =
+    'Are you sure to delete account, Once account is deleted your all data will be deleted';
+
+String pleaseAllowAccessToCameraForLiveString =
+    'Please allow access to camera and microphone to start live';
+String pleaseAllowAccessToCameraForVideoCallString =
+    'Please allow access to camera and microphone to start video call';
+String pleaseAllowAccessToMicrophoneForAudioCallString =
+    'Please allow access to microphone to start audio call';
+
+String registeredSuccessFullyString =
+    'Registered successfully, please login to continue';
+
+String starString = 'Star';
+String unStarString = 'UnStar';
+String starredMessagesString = 'Starred messages';
+String suggestedUsersString = 'Suggested users';
+String yourStoryString = 'Your Story';
+String pleaseEnterTitleString = 'Please enter title';
+String editProfilePictureString = 'Edit photo';
+String editProfileCoverString = 'Update cover';
+
+String sentADrawingString = 'Sent a Drawing';
+String sentAProfileString = 'Sent a Profile';
+String chatString = 'Chat';
+
+String onlineString = 'Online';
+String offlineString = 'Offline';
+
+String lastSeenString = 'Last seen';
+
+String appLockedString = 'App is locked';
+
+String faceIdOrTouchIdString = 'Face ID/Touch ID';
+String unlockAppWithFaceIdString = 'Unlock app with Face ID';
+String unlockAppWithTouchIdString = 'Unlock app with Touch ID';
+
+String useFaceIdString = 'Use Face ID';
+String useTouchIdString = 'Use Touch ID';
+
+String unlockYourAppUsingBiometricLoginString =
+    'Unlock you app with touch id / face id';
+
+String pleaseAuthenticateToUseBiometricString =
+    'Please authenticate to use biometric login into app';
+String pleaseAuthenticateToRemoveBiometricString =
+    'Please authenticate to remove biometric login into app';
+
+String deletePostString = 'Delete Post';
+String postDeletedSuccessfullyString = 'Post is deleted successfully';
+
+// new keys version 3
+
+String postingString = 'Posting...';
+String postFailedString = 'Failed posting';
+
+String retryString = 'Retry';
+String discardString = 'Discard';
+
+String pleaseEnterGroupNameString = 'Please enter group name';
+String pleaseSelectUsersString = 'Please select some users to create group';
+String groupNameString = 'Group name';
+
+String shareAppSubtitleString = 'Share the app with your friends';
+String shareAppMessageString = 'Install this cool app';
+
+String adminString = 'Admin';
+String leaveGroupString = 'Leave group';
+String deleteGroupString = 'Delete group';
+String onlyAdminCanSendMessageString = 'Only admins can send message';
+
+String addedToGroupString = 'is added to group';
+String removedFromGroupString = 'is removed from group';
+String removedFromAdminsString = 'is removed from admins';
+String leftTheGroupString = 'left the group';
+String madeAdminString = 'is now admin';
+
+String timeToUpdateAppString = 'Time to update app';
+String usingOlderVersionMessageString =
+    'You are using older version of app, You need to update the app to continue';
+
+// new keys for v 1.4
+String maxVideoLengthMessageString =
+    'Maximum 1 minute video is allowed to select';
+String copyString = 'Copy';
+String groupUpdatedString = 'Group is updated';
+String strangerChatString = 'Stranger chat';
+String haveFunByRandomChattingString =
+    'Have fun by chatting with random peoples';
+String tvsString = 'Tvs';
+String watchTvsString = 'Watch your favourite tvs';
+
+String randomCallString = 'Random call';
+String haveFunByRandomCallingString = 'Have fun by calling to random peoples';
+
+String checkingConnectionString = 'Checking connection..';
+String pleaseCheckYourInternetConnectionString =
+    'Please check your internet connection';
+String goingLiveString = 'Going live';
+String goString = 'Go';
+
+String endLiveCallConfirmationString = 'Do you want to end live call?';
+
+String totalUserJoinedString = 'User joined';
+String usersString = 'Users';
+String networkString = 'Network';
+
+String durationString = 'Duration';
+String messagesString = 'Messages';
+String giftsString = 'Gifts';
+String sendGiftString = 'Send gift';
+String sentAGiftString = 'Sent a gift';
+String coinsEarnedString = 'Coins earned';
+String giftSentString = 'Gift is sent successfully';
+
+String giftsReceivedString = 'Gifts received';
+
+String liveTimeString = 'Live time';
+String totalMessagesString = 'Total messages';
+String totalGiftsString = 'Total gits';
+
+String joinLiveProfessionalsString = 'Join trending live from professionals';
+String joinCompetitionsToEarnString = 'Join competitions and earn money';
+
+String pageString = 'Pages';
+String spaceForBusinessString = 'Space for business, brand and organizations';
+String placeForPeopleOfCommonInterestString =
+    'A place for people of common interest';
+
+String yourString = 'Your';
+String recentString = 'Recent';
+String goLiveString = 'Go Live';
+String liveUsersString = 'Live Users';
+String liveNowString = 'Now on live';
+String reelString = 'Clip';
+String reelsString = 'Clips';
+String selectMusicString = 'Select music';
+String originalAudioString = 'Original audio';
+String useString = 'Use';
+String viewGiftString = 'View Gift';
+
+String anyoneCanSeeClubString = 'Anyone can see this club and join the club';
+String onlyMembersCanSeeClubString =
+    'Only requested member or joined member can see it';
+String communicationString = 'Communication';
+
+String chatGroupString = 'Chat group';
+String createChatGroupForDiscussionString =
+    'Create chat group for discussion with club users';
+String basicInfoString = 'Basic info';
+
+String clubNameString = 'Club name';
+String addClubPhotoString = 'Add Cover Photo';
+String addClubPhotoSubHeadingString =
+    'Give people an idea of what your group is about with a photo';
+
+String coverPhotoString = 'Cover photo';
+String leaveClubString = 'Leave club';
+String removeString = "Remove";
+
+String pleaseEnterClubNameString = 'Please enter club name';
+String pleaseEnterClubDescString = 'Please enter club description';
+String pleaseEnterSelectCubImageString = 'Please select club image';
+
+String onRequestString = 'On request';
+String onClubRequestJoinString =
+    'Interested users can request to join, admin can approve the request';
+
+String watchAdsToEarnCoinsString = 'Watch Ads to earn coins';
+
+String youNeedString = 'You need';
+String toJoinThisCompetitionString = 'to join this competition';
+
+String filesString = 'Files';
+String fileString = 'File';
+
+String findingPerfectUserToChatString = 'Finding a perfect user to chat';
+String deleteAccountSubheadingString =
+    'Permanent delete account and whole data';
+
+String liveTvString = 'Live TV';
+String allowString = 'Allow';
+String mapString = 'Map';
+String shareLocationString = 'Share location';
+String yourFollowersCanViewYourLocationString =
+    'Your Followers can view your location';
+String moreFromString = 'More from';
+String moreString = 'More';
+
+String podcastString = 'Podcast';
+String showMoreString = 'Show more';
+String showLessString = 'Show less';
+String albumsString = 'Albums';
+String songsString = 'Songs';
+
+String liveChatString = 'Live chat';
+String subscribeChannelToViewString = 'Subscribe channel to view';
+String subscribeUsingString = 'Subscribe using';
+
+String youAreSubscribedNowString = 'You are subscribed to this channel now';
+String redeemString = 'Redeem';
+String minCoinsRedeemLimitString = 'Minimum {{coins}} coins required to redeem';
+String minWithdrawLimitString = 'Minimum withdrawal limit is {{cash}}\$';
+String enterValidAmountOfCoinsString = 'Please enter valid amount of coins';
+String enterNumberOfCoinsString = 'Enter number of coins to redeem';
+String postedInString = 'Posted in';
+
+String liveHistoryString = 'Live History';
+String liveHistorySubHeadlineString = 'Your live history s';
+String startedAtString = 'Started at';
+
+String requestVerificationString = 'Request Verification';
+String applyVerificationString = 'Apply Verification';
+String verifiedString = 'Verified';
+String youAreVerifiedNowString = 'Your profile is verified now';
+String profileIsVerifiedOnString = 'Verified on ';
+String requestSentOn = 'Request sent on';
+String verificationInUnderProcess = 'We are reviewing your profile';
+
+String verifiedAccountSubtitleString =
+    'Verified accounts have blue checkmark next to their names to show that we have confirmed you are a real person';
+
+String documentTypeString = 'Document type';
+String uploadDocumentString = 'Upload document';
+String selectDocumentTypeString = 'Select a document type';
+String pleaseSelectDocumentTypeString = 'Please select a document type';
+String pleaseUploadProofString = 'Please upload identity proof';
+String verificationRequestSentString =
+    'Profile verification request is sent, you will be updated soon ';
+String statusString = 'Status';
+String inProcessingString = 'In processing';
+String cancelledString = 'Cancelled';
+String approvedString = 'Approved';
+
+String drivingLicenseString = 'Driving license';
+String passportString = 'Passport';
+String panCardString = 'Pan card';
+String otherString = 'Other';
+String messageToReviewerString = 'Message to reviewer';
+String uploadFrontAndBackString = 'Upload both front and back side of document';
+
+String youCanUploadMaximumTwoImagesString = 'You can upload maximum 2 images';
+
+String paymentAndCoinsString = 'Payment and coins';
+String changeLanguageString = 'Change Language';
+String chooseImageString = 'Choose image';
+
+// v 1.6 keys
+String eventsString = 'Events';
+String eventString = 'Event';
+String dateAndTimeString = 'Date and Time';
+String eventLocationString = 'Event Location';
+String eventOrganizerString = 'Event Organizer';
+String noEventFoundString = 'No event found';
+
+String goingString = "Going";
+String buyTicketString = 'Buy Ticket';
+String giftTicketString = 'Gift Ticket';
+String selectUserString = 'Select user';
+String giftingToString = 'Gifting to';
+String giftString = 'Gift';
+String giftedToString = 'Gifted to :';
+String giftedByString = 'Gifted by :';
+
+String ticketGiftedString = 'Ticket is gifted successfully';
+String bookingCancelledString = 'Booking is cancelled successfully';
+
+String ticketWillBeAvailableSoonString = 'Tickets will be available soon';
+
+String eventIsSoldOutString = 'Event is sold out';
+String ticketTypeString = 'Ticket type';
+String orderSummaryString = 'Order Summary';
+String organizerString = 'Organizer';
+String totalSeatsString = 'Total seats';
+String availableSeatsString = 'Available seats';
+String payAndBuyString = 'Pay and buy';
+
+String subTotalString = 'Sub Total';
+String feesString = 'Fees';
+String taxString = 'Tax';
+String totalString = 'Total';
+String checkoutString = 'Checkout';
+String couponCodeString = 'Coupon code';
+String codeString = 'Code';
+String minimumOrderPriceString = 'Minimum order price';
+String discountString = 'Discount';
+String priceString = 'Price';
+String serviceFeeString = 'Service fee';
+
+String enterCouponCodeString = 'Enter coupon coupon';
+String applyString = 'Apply';
+String applyCouponString = 'Apply coupon';
+String noCouponAppliedString = 'No coupon applied';
+String couponAppliedString = 'coupon applied';
+String makePaymentString = 'Make payment';
+String selectPaymentGatewayString = 'Select payment gateway';
+String payUsingString = 'Pay using';
+String payString = 'Pay';
+
+// checkout
+String walletString = 'Wallet';
+String availableBalanceString = 'Available balance';
+String useBalanceString = 'Use balance';
+String payableAmountString = 'Payable amount';
+
+String choosePaymentMethodString = 'Choose payment method';
+String creditCardString = 'Credit card';
+String applePayString = 'Apple Pay';
+String googlePayString = 'Google Pay';
+String paypalString = 'Paypal';
+String razorPayString = 'Razorpay';
+String stripeString = 'Stripe';
+String inAppPurchaseString = 'In App Purchase';
+
+String cashString = 'Cash';
+String ticketBookedString = 'Ticket booked successfully';
+
+// bookings
+String bookingsString = 'Bookings';
+String bookingInfoString = 'Booking info';
+String bookingIdString = 'Booking Id';
+String bookingStatusString = 'Booking status';
+String bookingDateString = 'Booking date';
+String viewETicketString = 'View E-Ticket';
+String eTicketString = 'E-Ticket';
+String saveETicketString = 'Save E-Ticket';
+String ticketSavedString = 'Ticket Saved';
+String confirmedString = 'Confirmed';
+String placingOrderString = 'Placing order, please wait...';
+String doNotCloseAppString =
+    'Do not close or refresh the app until the process is completed';
+String bookingConfirmedString = 'Your booking is confirmed';
+String bookMoreTicketsString = 'Book more';
+
+String errorInBookingString = 'Error in booking..';
+String pleaseTryAgainString = 'Please try again later';
+String tryAgainString = 'Try again';
+
+String noBookingFoundString = 'No booking found';
+String goToEventAndBookString = 'Go to events and book tickets';
+
+String eventGalleryString = 'Event Gallery';
+
+String timeString = 'Time';
+String dateString = 'Date';
+String cancelBookingString = 'Cancel booking';
+
+String upcomingString = 'Upcoming';
+String freeString = 'Free';
+String paidString = 'Paid';
+
+String suggestedForYouString = 'Suggested for you';
+
+String publicGroupString = "Public group";
+String joinRequestsString = "Join requests";
+String joinInvitationsString = "Join invitations";
+String invitesString = "Invites";
+
+String requestJoinString = 'Request Join';
+String requestedString = 'Requested';
+String claimsToBeString = 'Claims to be your';
+String approveString = 'Approve';
+String rejectString = 'Reject';
+
+String acceptString = 'Accept';
+String declineString = 'Decline';
+String addCommentString = 'Add comment';
+
+String datingString = 'Dating';
+String matchedString = 'Matched';
+String likedByString = 'Liked By';
+String preferencesString = 'Set Preferences';
+String setString = 'Set';
+String currentLocationString = 'Current location';
+String dobString = 'DOB';
+String genderString = 'Gender';
+String personalDetailsString = 'Personal details';
+String interestsString = 'Interests';
+String professionalString = 'Professional details';
+String qualificationString = 'Qualification';
+String occupationString = 'Occupation';
+String workExperienceString = 'Work experience';
+String dayString = "Day";
+String monthString = "Month";
+String yearString = "Year";
+
+String noDatingProfilesFoundString = 'No dating profiles found';
+String datingExploreString = 'Change your preferences and explore more';
+
+String noMatchedProfilesFoundString = 'No matching profiles found';
+String datingExploreForMatchedString =
+    'Explore more dating profiles and get matched';
+
+String noLikeProfilesFoundString = 'No profiles found';
+String noLikeProfilesString = 'Explore more dating profiles';
+
+String locationMainHeaderString = 'Set location';
+String locationHeaderString = 'Set your location services';
+String locationSubHeaderString =
+    'We use your location to show you potential matches in your area';
+String locationServiceString = 'Set location services';
+
+String notificationHeaderString = 'Allow notifications';
+String notificationSubHeaderString =
+    'We\'ll let you know when you get new matches and messages';
+String allowNotificationString = 'Allow notifications';
+String notNowString = 'Not now';
+
+String nameMainHeaderString = 'Add name';
+String nameHeaderString = 'What\'s your first name?';
+String nameSubHeaderString = 'You won\'t be able to change this later';
+
+String addPhotoHeaderString = 'Add photos';
+String addPhotoSubHeaderString =
+    'Profile with more good photos are getting more matches, so add your best photos';
+
+String birthdayMainHeaderString = 'Add DOB';
+String birthdayHeaderString = 'When\'s your birthday?';
+String birthdaySubHeaderString =
+    'Be accurate to specify this to get genuine matches';
+
+String genderMainHeaderString = 'Add gender';
+String genderHeaderString = 'Mention your gender';
+
+String likeToDateHeaderString = 'Who would you like to date?';
+String likeToDateSubHeaderString =
+    'You can choose more than one answer and change any time';
+
+String personalInfoHeaderString = 'We need to know more about you.';
+String personalInfoSubHeaderString =
+    'Be accurate to specify this to get genuine matches';
+
+String addInterestsHeaderString = 'Add Interests.';
+String addInterestsSubHeaderString = 'Add your interests and habits';
+String chooseInterestsString = 'Choose your interests';
+
+String addProfessionalHeaderString = 'Add Professional Details.';
+
+String followFriendsToSendPostString = 'Follow friends to send post.';
+
+String setUserNameString = 'Set username';
+String setUserNameSubHeadingString =
+    'This username will be shown to all user. Choose a wise user name like it_mike_here';
+
+String setProfileCategoryTypeString = 'Choose profile category type';
+String setProfileCategoryTypeSubHeadingString =
+    'Category will help people find accounts like yours. You can change this';
+
+String weWillSearchUserInCategoryString =
+    'We will search user in your specified category';
+
+String audiosString = 'Audios';
+String favouriteString = 'Favourite';
+String subscribedString = 'Subscribed';
+
+String profileCategoryTypeSavedString = 'Profile category type is saved';
+String installThisCoolAppString = 'Install this cool app from';
+String accountIsDeletedString = 'Account is deleted successfully';
+
+String storyDeleteSuccessfullyString = 'Story is deleted successfully';
+String areYouSureToReportPostString = 'Are you sure to report this post?';
+String areYouSureToBlockUserString = 'Are you sure to block this user?';
+
+String requestPendingString = 'Request Pending';
+
+// dating
+String maleString = 'Male';
+String femaleString = 'Female';
+String noSpecifiedString = 'Not specified';
+
+String ageString = 'Age';
+String heightString = 'Height (in cm)';
+String colorString = 'Color';
+String religionString = 'Religion';
+String languageString = 'Language';
+String smokingHabitString = 'Smoking habit';
+String drinkingHabitString = 'Drinking habit';
+String selectString = 'Select';
+String disLikeString = 'Dislike';
+
+String leaveGroupConfirmationString = "Are you sure, you want to leave group?";
+String deleteGroupConfirmationString =
+    "Are you sure, you want to delete group?";
+
+String todayString = 'Today';
+String thisWeekString = 'This week';
+String thisMonthString = 'This month';
+String earlierString = 'Earlier';
+String filterString = 'Filter';
+String insightsString = 'Insights';
+String overviewString = 'Overview';
+String viewInsightsString = 'View Insights';
+
+String accountsReachedString = 'Accounts reached';
+String accountsEngagedString = 'Accounts engaged';
+String reachString = 'Reach';
+String nonFollowersString = 'Non-Followers';
+
+String viewsString = 'Views';
+
+String postInteractionsString = 'Post interactions';
+String savedString = 'Saved';
+
+String profileActivityString = 'Profile activity';
+String profileVisitsString = 'Profile visits';
+String followsString = 'Follows';
+
+String chatGPT = 'ChatGPT';
+String noLiveUserString = 'No live user found';

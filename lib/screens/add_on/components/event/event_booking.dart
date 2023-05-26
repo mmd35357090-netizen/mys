@@ -3,7 +3,6 @@ import 'package:foap/helper/imports/event_imports.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:get/get.dart';
 
-
 class EventBookingCard extends StatelessWidget {
   final EventBookingModel bookingModel;
 
@@ -20,11 +19,8 @@ class EventBookingCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Heading6Text(
-                    bookingModel.event.name,
-                      weight: TextWeight.semiBold
-
-                  ),
+                  Heading6Text(bookingModel.event.name,
+                      weight: TextWeight.semiBold),
                   bookingModel.giftedToUser != null
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,15 +29,13 @@ class EventBookingCard extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 BodyLargeText(
-                                  LocalizationString.giftedTo,
+                                  giftedToString.tr,
                                   weight: TextWeight.semiBold,
-
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
                                   bookingModel.giftedByUser!.userName,
-                                  style: TextStyle(
-            fontSize: FontSizes.b2),
+                                  style: TextStyle(fontSize: FontSizes.b2),
                                 ),
                                 const ThemeIconWidget(
                                   ThemeIcon.nextArrow,
@@ -68,16 +62,12 @@ class EventBookingCard extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                BodyLargeText(
-                                  LocalizationString.giftedBy,
-                                    weight: TextWeight.semiBold
-
-                                ),
+                                BodyLargeText(giftedByString.tr,
+                                    weight: TextWeight.semiBold),
                                 const SizedBox(width: 5),
                                 Text(
                                   bookingModel.giftedByUser!.userName,
-                                  style: TextStyle(
-            fontSize: FontSizes.b2),
+                                  style: TextStyle(fontSize: FontSizes.b2),
                                 ),
                                 const ThemeIconWidget(
                                   ThemeIcon.nextArrow,
@@ -107,7 +97,7 @@ class EventBookingCard extends StatelessWidget {
             ).round(10)
           ],
         ).p16,
-        divider(context: context).vP8,
+        divider().vP8,
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -115,7 +105,7 @@ class EventBookingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BodyMediumText(
-                  LocalizationString.date,
+                  dateString.tr,
                 ),
                 const SizedBox(
                   height: 5,
@@ -128,11 +118,8 @@ class EventBookingCard extends StatelessWidget {
                 const SizedBox(
                   height: 5,
                 ),
-                BodyLargeText(
-                  bookingModel.event.startAtDate,
-                    weight: TextWeight.semiBold
-
-                )
+                BodyLargeText(bookingModel.event.startAtDate,
+                    weight: TextWeight.semiBold)
               ],
             ),
             const SizedBox(
@@ -142,7 +129,7 @@ class EventBookingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BodyMediumText(
-                  LocalizationString.time,
+                  timeString.tr,
                 ),
                 const SizedBox(
                   height: 5,
@@ -155,11 +142,8 @@ class EventBookingCard extends StatelessWidget {
                 const SizedBox(
                   height: 5,
                 ),
-                BodyLargeText(
-                  bookingModel.event.startAtTime,
-                    weight: TextWeight.semiBold
-
-                )
+                BodyLargeText(bookingModel.event.startAtTime,
+                    weight: TextWeight.semiBold)
               ],
             ),
             const Spacer(),

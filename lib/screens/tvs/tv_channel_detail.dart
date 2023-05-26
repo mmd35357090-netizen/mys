@@ -89,7 +89,7 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                       })),
                 ],
               ).setPadding(left: 16, right: 16, top: 50, bottom: 16),
-              divider(context: context).tP8,
+              divider().tP8,
               Expanded(
                 child: ListView(
                     padding: EdgeInsets.zero,
@@ -129,9 +129,9 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                       trimMode: read_more.TrimMode.Line,
                                       colorClickableText: Colors.white,
                                       trimCollapsedText:
-                                          LocalizationString.showMore,
+                                          showMoreString.tr,
                                       trimExpandedText:
-                                          '    ${LocalizationString.showLess}',
+                                          '    ${showLessString.tr}',
 
                                       style: TextStyle(
                                           fontSize: FontSizes.b2,
@@ -149,7 +149,7 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                           color:
                                               AppColorConstants.grayscale900)),
                                   Heading5Text(
-                                          '${LocalizationString.moreFrom} ${widget.tvModel.name}',
+                                          '${moreFromString.tr} ${widget.tvModel.name}',
                                           weight: TextWeight.bold,
                                           color: AppColorConstants.themeColor)
                                       .setPadding(top: 15)

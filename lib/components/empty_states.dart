@@ -15,7 +15,7 @@ Widget noUserFound(BuildContext context) {
         height: 20,
       ),
       Heading5Text(
-        LocalizationString.noUserFound,
+        noUserFoundString.tr,
         weight: TextWeight.medium,
       )
     ],

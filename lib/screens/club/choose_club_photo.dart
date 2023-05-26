@@ -27,14 +27,12 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-            context: context,
-            title: LocalizationString.addClubCoverPhoto,
+
+            title: addClubCoverPhotoString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           const SizedBox(
             height: 20,
           ),
@@ -42,18 +40,18 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Heading4Text(
-                LocalizationString.addClubPhoto,
+                addClubPhotoString.tr,
                 weight: TextWeight.semiBold,
               ),
               BodyMediumText(
-                LocalizationString.addClubPhotoSubHeading,
+                addClubPhotoSubHeadingString.tr,
                 color: AppColorConstants.grayscale500,
               ),
               const SizedBox(
                 height: 20,
               ),
               Heading6Text(
-                LocalizationString.coverPhoto,
+                coverPhotoString.tr,
               ),
             ],
           ).hP16,
@@ -92,7 +90,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
                                 color: AppColorConstants.iconColor,
                               ),
                               BodyLargeText(
-                                LocalizationString.edit,
+                                editString.tr,
                               )
                             ],
                           )
@@ -115,8 +113,8 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
           const Spacer(),
           AppThemeButton(
               text: widget.club.id == null
-                  ? LocalizationString.createClub
-                  : LocalizationString.update,
+                  ? createClubString.tr
+                  : updateStrString.tr,
               onPress: () {
                 if (widget.club.id == null) {
                   createBtnClicked();
@@ -135,7 +133,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
   createBtnClicked() {
     if (_createClubsController.imageFile.value == null) {
       AppUtil.showToast(
-          message: LocalizationString.pleaseEnterSelectCubImage,
+          message: pleaseEnterSelectCubImageString.tr,
           isSuccess: false);
       return;
     }

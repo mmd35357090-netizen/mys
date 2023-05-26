@@ -19,7 +19,9 @@ class LiveModel {
     model.startTime = json['start_time'];
     model.endTime = json['end_time'];
     model.totalTime = json['total_time'];
-    model.giftSummary = GiftSummary.fromJson(json['giftSummary']);
+    model.giftSummary = json['giftSummary'] == null
+        ? null
+        : GiftSummary.fromJson(json['giftSummary']);
 
     model.startedAt = DateFormat('dd-MM-yyyy hh:mm a')
         .format(DateTime.fromMillisecondsSinceEpoch(json['start_time'] * 1000));

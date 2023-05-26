@@ -20,7 +20,7 @@ class ReplyOriginalMessageTile extends StatelessWidget {
             children: [
               BodyLargeText(
                 message.isMineMessage
-                    ? LocalizationString.you
+                    ? youString.tr
                     : message.userName,
                 weight: TextWeight.bold,
                 color: AppColorConstants.themeColor.darken(0.5),

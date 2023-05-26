@@ -92,17 +92,17 @@ class EventBookingDetailState extends State<EventBookingDetail> {
                                       height: 20,
                                     ),
                                     attendingUsersList(),
-                                    divider(context: context).vp(20),
+                                    divider().vp(20),
                                     eventInfo(),
-                                    divider(context: context).vP25,
+                                    divider().vP25,
                                     organizerWidget(),
-                                    divider(context: context).vP25,
+                                    divider().vP25,
                                     bookingInfoWidget(),
-                                    divider(context: context).vP25,
+                                    divider().vP25,
                                     if (widget.booking.giftedToUser != null)
                                       giftTo().bP25,
                                     eventLocationInfoWidget(),
-                                    divider(context: context).vP25,
+                                    divider().vP25,
                                     if (widget.booking.event.gallery.isNotEmpty)
                                       eventGallery(),
                                     const SizedBox(
@@ -133,7 +133,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BodyLargeText(LocalizationString.giftedTo,
+          BodyLargeText(giftedToString.tr,
               weight: TextWeight.semiBold),
           const SizedBox(
             height: 15,
@@ -159,7 +159,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
               AppThemeBorderButton(
                   width: 90,
                   height: 35,
-                  text: LocalizationString.viewProfile,
+                  text: viewProfileString.tr,
                   textStyle: TextStyle(fontSize: FontSizes.b4),
                   onPress: () {
                     Get.to(() => OtherUserProfile(
@@ -178,7 +178,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BodyLargeText(LocalizationString.giftedBy,
+          BodyLargeText(giftedByString.tr,
               weight: TextWeight.semiBold),
           const SizedBox(
             height: 15,
@@ -204,7 +204,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
               AppThemeBorderButton(
                   width: 90,
                   height: 35,
-                  text: LocalizationString.viewProfile,
+                  text: viewProfileString.tr,
                   textStyle: TextStyle(fontSize: FontSizes.b4),
                   onPress: () {
                     Get.to(() => OtherUserProfile(
@@ -246,7 +246,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
                           width: 10,
                         ),
                         Heading6Text(
-                          LocalizationString.giftTicket,
+                          giftTicketString.tr,
                           color: AppColorConstants.themeColor,
                           weight: TextWeight.bold,
                         )
@@ -264,7 +264,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
                 height: 40,
                 width: Get.width * 0.8,
                 child: AppThemeButton(
-                  text: LocalizationString.cancelBooking,
+                  text: cancelBookingString.tr,
                   onPress: () {
                     _eventBookingDetailController.cancelBooking(context);
                   },
@@ -353,7 +353,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BodyLargeText(LocalizationString.location,
+                BodyLargeText(locationString.tr,
                     weight: TextWeight.medium),
                 const SizedBox(
                   height: 5,
@@ -390,7 +390,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       BodyLargeText(sponsor.name, weight: TextWeight.regular),
-                      BodySmallText(LocalizationString.organizer,
+                      BodySmallText(organizerString.tr,
                           weight: TextWeight.regular),
                     ],
                   )
@@ -399,7 +399,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           ],
         ),
         const SizedBox(height: 25),
-        Heading6Text(LocalizationString.about, weight: TextWeight.medium),
+        Heading6Text(aboutString.tr, weight: TextWeight.medium),
         const SizedBox(
           height: 20,
         ),
@@ -418,7 +418,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
       children: [
         Container(
           color: AppColorConstants.themeColor.withOpacity(0.4),
-          child: Heading6Text(LocalizationString.bookingInfo,
+          child: Heading6Text(bookingInfoString.tr,
                   weight: TextWeight.medium)
               .setPadding(top: 5, bottom: 5, left: 10, right: 10),
         ).round(5),
@@ -430,7 +430,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           children: [
             SizedBox(
                 width: 120,
-                child: BodyMediumText(LocalizationString.bookingId,
+                child: BodyMediumText(bookingIdString.tr,
                     weight: TextWeight.medium)),
             Container(
               height: 5,
@@ -450,7 +450,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           children: [
             SizedBox(
                 width: 120,
-                child: BodyMediumText(LocalizationString.bookingStatus,
+                child: BodyMediumText(bookingStatusString.tr,
                     weight: TextWeight.medium)),
             Container(
               height: 5,
@@ -463,8 +463,8 @@ class EventBookingDetailState extends State<EventBookingDetail> {
                   : AppColorConstants.themeColor.withOpacity(0.7),
               child: BodySmallText(
                 widget.booking.statusType == BookingStatus.cancelled
-                    ? LocalizationString.cancelled
-                    : LocalizationString.confirmed,
+                    ? cancelledString.tr
+                    : confirmedString.tr,
               ).p4,
             ).round(5)
           ],
@@ -477,7 +477,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           children: [
             SizedBox(
                 width: 120,
-                child: BodyMediumText(LocalizationString.bookingDate,
+                child: BodyMediumText(bookingDateString.tr,
                     weight: TextWeight.medium)),
             Container(
               height: 5,
@@ -497,7 +497,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           children: [
             SizedBox(
               width: 120,
-              child: BodyMediumText(LocalizationString.ticketType,
+              child: BodyMediumText(ticketTypeString.tr,
                   weight: TextWeight.medium),
             ),
             Container(
@@ -517,7 +517,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           children: [
             SizedBox(
                 width: 120,
-                child: BodyMediumText(LocalizationString.price,
+                child: BodyMediumText(priceString.tr,
                     weight: TextWeight.medium)),
             Container(
               height: 5,
@@ -539,7 +539,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
       children: [
         Container(
           color: AppColorConstants.themeColor.withOpacity(0.4),
-          child: Heading6Text(LocalizationString.location,
+          child: Heading6Text(locationString.tr,
                   weight: TextWeight.medium)
               .setPadding(top: 5, bottom: 5, left: 10, right: 10),
         ).round(5),
@@ -568,13 +568,13 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Heading6Text(LocalizationString.eventGallery,
+                Heading6Text(eventGalleryString.tr,
                     weight: TextWeight.medium),
               ],
             ).setPadding(top: 5, bottom: 5, left: 10, right: 10),
           ).round(5),
           BodyLargeText(
-            LocalizationString.seeAll,
+            seeAllString.tr,
             color: AppColorConstants.themeColor,
           ).ripple(() {
             Get.to(() => EventGallery(event: widget.booking.event));
@@ -641,7 +641,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
                 widget.booking.giftedToUser == null)
               Container(
                 color: AppColorConstants.themeColor.withOpacity(0.7),
-                child: Heading6Text(LocalizationString.viewETicket,
+                child: Heading6Text(viewETicketString.tr,
                         weight: TextWeight.medium)
                     .setPadding(top: 5, bottom: 5, left: 10, right: 10),
               ).round(5).ripple(() {
@@ -676,7 +676,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
                       );
                     },
                     title: Heading5Text(
-                      '${LocalizationString.openIn} ${map.mapName}',
+                      '${openInString.tr} ${map.mapName}',
                     ),
                     leading: SvgPicture.asset(
                       map.icon,
@@ -718,7 +718,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             height: 40,
           ),
           Heading4Text(
-            LocalizationString.inProcessing,
+            inProcessingString.tr,
             weight: TextWeight.semiBold,
             textAlign: TextAlign.center,
           ),
@@ -726,7 +726,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             height: 10,
           ),
           BodyLargeText(
-            LocalizationString.doNotCloseApp,
+            doNotCloseAppString.tr,
             weight: TextWeight.regular,
             textAlign: TextAlign.center,
           ),
@@ -748,7 +748,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             height: 40,
           ),
           Heading4Text(
-            LocalizationString.errorInBooking,
+            errorInBookingString.tr,
             weight: TextWeight.semiBold,
             textAlign: TextAlign.center,
           ),
@@ -756,7 +756,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             height: 10,
           ),
           BodyLargeText(
-            LocalizationString.pleaseTryAgain,
+            pleaseTryAgainString.tr,
             weight: TextWeight.regular,
             textAlign: TextAlign.center,
           ),
@@ -767,7 +767,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
               width: 100,
               height: 40,
               child: AppThemeBorderButton(
-                  text: LocalizationString.tryAgain,
+                  text: tryAgainString.tr,
                   onPress: () {
                     Get.back();
                   }))
@@ -789,7 +789,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             height: 40,
           ),
           Heading3Text(
-            LocalizationString.ticketGifted,
+            ticketGiftedString.tr,
             weight: TextWeight.semiBold,
             textAlign: TextAlign.center,
           ),
@@ -800,7 +800,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
               width: 200,
               height: 50,
               child: AppThemeBorderButton(
-                  text: LocalizationString.bookMoreTickets,
+                  text: bookMoreTicketsString.tr,
                   onPress: () {
                     Get.back();
                   }))
@@ -822,7 +822,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
             height: 40,
           ),
           Heading3Text(
-            LocalizationString.bookingCancelled,
+            bookingCancelledString.tr,
             weight: TextWeight.semiBold,
             textAlign: TextAlign.center,
           ),
@@ -833,7 +833,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
               width: 200,
               height: 50,
               child: AppThemeBorderButton(
-                  text: LocalizationString.bookMoreTickets,
+                  text: bookMoreTicketsString.tr,
                   onPress: () {
                     Get.back();
                   }))

@@ -37,12 +37,10 @@ class _ViewRelationshipState extends State<ViewRelationship> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.relationship),
-          divider(context: context).tP8,
+               title: relationshipString.tr),
+          divider().tP8,
           Expanded(
             child: GetBuilder<RelationshipController>(
                 init: _relationshipController,
@@ -101,7 +99,7 @@ class _ViewRelationshipState extends State<ViewRelationship> {
                                           .relationships[index].status !=
                                       4)
                                     Heading6Text(
-                                      LocalizationString.pendingApproval,
+                                      pendingApprovalString.tr,
                                       color: AppColorConstants.themeColor,
                                     ).setPadding(top: 10),
                                 ],

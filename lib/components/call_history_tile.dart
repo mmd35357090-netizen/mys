@@ -38,10 +38,10 @@ class CallHistoryTile extends StatelessWidget {
                 ),
                 BodyMediumText(
                   model.isMissedCall
-                      ? LocalizationString.missed
+                      ? missedString.tr
                       : model.isOutgoing
-                          ? LocalizationString.outgoing
-                          : LocalizationString.incoming,
+                          ? outgoingString.tr
+                          : incomingString.tr,
                   color: model.isMissedCall
                       ? AppColorConstants.red
                       : AppColorConstants.grayscale900,

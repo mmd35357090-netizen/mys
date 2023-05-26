@@ -43,11 +43,11 @@ class ActionSheetState extends State<ActionSheet> {
                 Navigator.pop(context);
               }),
               const Spacer(),
-              BodyLargeText(LocalizationString.choosePrivacy,
+              BodyLargeText(choosePrivacyString.tr,
                   weight:TextWeight.medium),
               const Spacer(),
               BodyLargeText(
-                LocalizationString.done,
+                doneString.tr,
                 weight:TextWeight.medium,
               ).ripple(() {
                 if (selectedItem != null) {
@@ -57,7 +57,7 @@ class ActionSheetState extends State<ActionSheet> {
               })
             ],
           ).setPadding(left: 16, right: 16, top: 25),
-          divider(context: context, height: 0.2).tP25,
+          divider( height: 0.2).tP25,
           for (int i = 0; i < items.length; i++)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

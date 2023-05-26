@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import '../../components/user_card.dart';
+import '../../../components/user_card.dart';
 
 class GroupChatRoomDetail extends StatefulWidget {
   final ChatRoomModel chatRoom;
@@ -37,7 +37,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                   Get.back();
                 }),
                 Heading5Text(
-                  LocalizationString.contactInfo,
+                  contactInfoString.tr,
                   weight: TextWeight.bold,
                   color: AppColorConstants.themeColor,
                 ),
@@ -46,7 +46,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                 )
               ],
             ).hP16,
-            divider(context: context).vP8,
+            divider().vP8,
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -99,7 +99,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading5Text(LocalizationString.media,
+                  Heading5Text(mediaString.tr,
                       weight: TextWeight.medium),
                 ],
               ),
@@ -115,7 +115,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                 chatRoom: widget.chatRoom,
               ));
         }),
-        divider(context: context),
+        divider(),
         Container(
           height: 50,
           color: AppColorConstants.cardColor,
@@ -134,7 +134,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading5Text(LocalizationString.wallpaper,
+                  Heading5Text(wallpaperString.tr,
                       weight: TextWeight.medium),
                 ],
               ),
@@ -163,21 +163,21 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Heading5Text(LocalizationString.exportChat,
+              Heading5Text(exportChatString.tr,
                   weight: TextWeight.medium)
             ],
           ).hP8,
         ).ripple(() {
           exportChatActionPopup();
         }),
-        divider(context: context),
+        divider(),
         Container(
           height: 50,
           color: AppColorConstants.cardColor,
           child: Align(
             alignment: Alignment.centerLeft,
             child: Heading5Text(
-              LocalizationString.deleteChat,
+              deleteChatString.tr,
               weight: TextWeight.medium,
               color: AppColorConstants.red,
             ).hP8,
@@ -185,7 +185,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
         ).ripple(() {
           chatRoomDetailController.deleteRoomChat(widget.chatRoom);
           AppUtil.showToast(
-              message: LocalizationString.chatDeleted,
+              message: chatDeletedString.tr,
               isSuccess: true);
         })
       ],
@@ -206,7 +206,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               const SizedBox(
                 height: 5,
               ),
-              BodyMediumText(LocalizationString.audio,
+              BodyMediumText(audioString.tr,
                   weight: TextWeight.medium),
             ],
           ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
@@ -227,7 +227,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                 height: 5,
               ),
               BodyMediumText(
-                LocalizationString.video,
+                videoString.tr,
                   weight: TextWeight.medium
 
               ),
@@ -262,26 +262,27 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
   void exportChatActionPopup() {
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 ListTile(
                     title: Center(
-                        child: BodyLargeText(LocalizationString.exportChatWithMedia)),
+                        child: BodyLargeText(exportChatWithMediaString.tr)),
                     onTap: () async {
                       Get.back();
                       exportChatWithMedia();
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     title: Center(
-                        child: BodyLargeText(LocalizationString.exportChatWithoutMedia)),
+                        child: BodyLargeText(exportChatWithoutMediaString.tr)),
                     onTap: () async {
                       Get.back();
                       exportChatWithoutMedia();
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -292,7 +293,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Heading5Text(
-          '${widget.chatRoom.roomMembers.length} ${LocalizationString.participants}',
+          '${widget.chatRoom.roomMembers.length} ${participantsString.tr}',
 
         ),
         const SizedBox(
@@ -311,7 +312,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                     .hP8;
               },
               separatorBuilder: (ctx, index) {
-                return divider(context: context).vP4;
+                return divider().vP4;
               }).vP8,
         ).round(10).backgroundCard(shadowOpacity: 0.1),
       ],

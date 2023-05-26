@@ -141,7 +141,7 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Heading4Text(
-                        LocalizationString.subscribeChannelToView,
+                        subscribeChannelToViewString.tr,
                       ),
                       const SizedBox(
                         height: 20,
@@ -151,7 +151,7 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                         width: 250,
                         child: AppThemeButton(
                           text:
-                          '${LocalizationString.subscribeUsing} (${widget.tvModel!.coinsNeededToUnlock} ${LocalizationString.coins})',
+                          '${subscribeUsingString.tr} (${widget.tvModel!.coinsNeededToUnlock} ${coinsString.tr})',
                           onPress: () {
                             _liveTvStreamingController
                                 .subscribeTv(widget.tvModel!, (status) {
@@ -161,8 +161,8 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                                   isFreeTimePlayed = false;
 
                                   AppUtil.showToast(
-                                      message: LocalizationString
-                                          .youAreSubscribedNow,
+                                      message:
+                                          youAreSubscribedNowString.tr,
                                       isSuccess: true);
 
                                   play();

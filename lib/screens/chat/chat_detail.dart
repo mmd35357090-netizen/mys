@@ -82,7 +82,7 @@ class _ChatDetailState extends State<ChatDetail> {
               height: 50,
             ),
             appBar(),
-            divider(context: context).tP8,
+            divider().tP8,
             Expanded(child: messagesListView()),
             Obx(() {
               return Column(
@@ -248,7 +248,7 @@ class _ChatDetailState extends State<ChatDetail> {
                                                   .userName] ==
                                           true
                                       ? BodyMediumText(
-                                          LocalizationString.typing,
+                                          typingString.tr,
                                         )
                                       : BodyMediumText(
                                           _chatDetailController
@@ -258,7 +258,7 @@ class _ChatDetailState extends State<ChatDetail> {
                                                       .userDetail
                                                       .isOnline ==
                                                   true
-                                              ? LocalizationString.online
+                                              ? onlineString.tr
                                               : _chatDetailController.opponent
                                                       .value?.lastSeenAtTime ??
                                                   '',
@@ -269,13 +269,12 @@ class _ChatDetailState extends State<ChatDetail> {
                                       child: BodyMediumText(
                                         _chatDetailController
                                                 .whoIsTyping.isNotEmpty
-                                            ? '${_chatDetailController.whoIsTyping.join(',')} ${LocalizationString.typing}'
+                                            ? '${_chatDetailController.whoIsTyping.join(',')} ${typingString.tr}'
                                             : _chatDetailController
                                                 .chatRoom.value!.roomMembers
                                                 .map((e) {
                                                   if (e.userDetail.isMe) {
-                                                    return LocalizationString
-                                                        .you;
+                                                    return youString.tr;
                                                   }
                                                   return e.userDetail.userName;
                                                 })
@@ -329,9 +328,9 @@ class _ChatDetailState extends State<ChatDetail> {
                 }
               }),
               BodyLargeText(
-                '${_chatDetailController.selectedMessages.length} ${LocalizationString.selected.toLowerCase()}',
+                '${_chatDetailController.selectedMessages.length} ${selectedString.tr.toLowerCase()}',
               ),
-              BodyLargeText(LocalizationString.cancel, weight: TextWeight.bold)
+              BodyLargeText(cancelString.tr, weight: TextWeight.bold)
                   .ripple(() {
                 _chatDetailController.setToActionMode(
                     mode: ChatMessageActionMode.none);
@@ -360,7 +359,7 @@ class _ChatDetailState extends State<ChatDetail> {
               children: [
                 BodyLargeText(
                   message.isMineMessage
-                      ? LocalizationString.you
+                      ? youString.tr
                       : message.sender!.userName,
                   weight: TextWeight.medium,
                   color: AppColorConstants.themeColor,
@@ -395,7 +394,7 @@ class _ChatDetailState extends State<ChatDetail> {
               children: [
                 BodyLargeText(
                   message.isMineMessage
-                      ? LocalizationString.you
+                      ? youString.tr
                       : message.sender!.userName,
                   weight: TextWeight.medium,
                   color: AppColorConstants.themeColor,
@@ -470,8 +469,7 @@ class _ChatDetailState extends State<ChatDetail> {
                                           fontSize: FontSizes.h6,
                                           fontWeight: TextWeight.regular,
                                           color: AppColorConstants.themeColor),
-                                      hintText: LocalizationString
-                                          .pleaseEnterMessage),
+                                      hintText: pleaseEnterMessageString.tr),
                                 )),
                           ),
                         ),
@@ -482,7 +480,7 @@ class _ChatDetailState extends State<ChatDetail> {
                           return _chatDetailController
                                   .messageTf.value.text.isNotEmpty
                               ? Heading5Text(
-                                  LocalizationString.send,
+                                  sendString.tr,
                                   weight: TextWeight.bold,
                                   color: AppColorConstants.themeColor,
                                 ).ripple(() {
@@ -523,7 +521,7 @@ class _ChatDetailState extends State<ChatDetail> {
       height: 70,
       child: Center(
         child: BodyLargeText(
-          LocalizationString.onlyAdminCanSendMessage,
+          onlyAdminCanSendMessageString.tr,
         ),
       ),
     );
@@ -533,66 +531,68 @@ class _ChatDetailState extends State<ChatDetail> {
     return GetBuilder<ChatDetailController>(
         init: _chatDetailController,
         builder: (ctx) {
-          return _chatDetailController.messages.isEmpty
-              ? Container()
-              : Container(
-                  decoration: _chatDetailController.wallpaper.value.isEmpty
-                      ? null
-                      : BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                                _chatDetailController.wallpaper.value),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                  child: ListView.separated(
-                          controller: _controller,
-                          // itemScrollController: _itemScrollController,
-                          // itemPositionsListener: _itemPositionsListener,
-                          padding: const EdgeInsets.only(
-                              top: 10, bottom: 50, left: 16, right: 16),
-                          itemCount: _chatDetailController.messages.length,
-                          itemBuilder: (ctx, index) {
-                            ChatMessageModel message =
-                                _chatDetailController.messages[index];
+          return Container(
+            decoration: _chatDetailController.wallpaper.value.isEmpty
+                ? null
+                : BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(_chatDetailController.wallpaper.value),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+            child: _chatDetailController.messages.isEmpty
+                ? Container()
+                : Container(
+                    child: ListView.separated(
+                            controller: _controller,
+                            // itemScrollController: _itemScrollController,
+                            // itemPositionsListener: _itemPositionsListener,
+                            padding: const EdgeInsets.only(
+                                top: 10, bottom: 50, left: 16, right: 16),
+                            itemCount: _chatDetailController.messages.length,
+                            itemBuilder: (ctx, index) {
+                              ChatMessageModel message =
+                                  _chatDetailController.messages[index];
 
-                            ChatMessageModel? lastMessage;
+                              ChatMessageModel? lastMessage;
 
-                            if (index > 0) {
-                              lastMessage =
-                                  _chatDetailController.messages[index - 1];
-                            }
+                              if (index > 0) {
+                                lastMessage =
+                                    _chatDetailController.messages[index - 1];
+                              }
 
-                            String dateTimeStr = message.date;
-                            bool addDateSeparator = false;
-                            if (dateTimeStr != lastMessage?.date &&
-                                message.isDateSeparator == false) {
-                              addDateSeparator = true;
-                            }
+                              String dateTimeStr = message.date;
+                              bool addDateSeparator = false;
+                              if (dateTimeStr != lastMessage?.date &&
+                                  message.isDateSeparator == false) {
+                                addDateSeparator = true;
+                              }
 
-                            return Column(
-                              children: [
-                                if (addDateSeparator)
-                                  dateSeparatorWidget(message),
-                                message.isDeleted == true ||
-                                        message.isDateSeparator ||
-                                        message.messageContentType ==
-                                            MessageContentType.groupAction
-                                    ? messageTile(message)
-                                    : chatMessageFocusMenu(message),
-                              ],
-                            );
-                          },
-                          separatorBuilder: (ctx, index) {
-                            return const SizedBox(
-                              height: 20,
-                            );
-                          })
-                      .addPullToRefresh(
-                          refreshController: _refreshController,
-                          enablePullUp: false,
-                          onRefresh: refreshData,
-                          onLoading: () {}));
+                              return Column(
+                                children: [
+                                  if (addDateSeparator)
+                                    dateSeparatorWidget(message),
+                                  message.isDeleted == true ||
+                                          message.isDateSeparator ||
+                                          message.messageContentType ==
+                                              MessageContentType.groupAction
+                                      ? messageTile(message)
+                                      : chatMessageFocusMenu(message),
+                                ],
+                              );
+                            },
+                            separatorBuilder: (ctx, index) {
+                              return const SizedBox(
+                                height: 20,
+                              );
+                            })
+                        .addPullToRefresh(
+                            refreshController: _refreshController,
+                            enablePullUp: false,
+                            enablePullDown: true,
+                            onRefresh: refreshData,
+                            onLoading: () {})),
+          );
         });
   }
 
@@ -622,7 +622,7 @@ class _ChatDetailState extends State<ChatDetail> {
           FocusedMenuItem(
               backgroundColor: AppColorConstants.backgroundColor,
               title: BodyLargeText(
-                LocalizationString.copy,
+                copyString.tr,
               ),
               trailingIcon: const Icon(Icons.file_copy, size: 18),
               onPressed: () async {
@@ -633,7 +633,7 @@ class _ChatDetailState extends State<ChatDetail> {
           FocusedMenuItem(
               backgroundColor: AppColorConstants.backgroundColor,
               title: BodyLargeText(
-                LocalizationString.reply,
+                replyString.tr,
               ),
               trailingIcon: const Icon(Icons.reply, size: 18),
               onPressed: () {
@@ -643,7 +643,7 @@ class _ChatDetailState extends State<ChatDetail> {
           FocusedMenuItem(
               backgroundColor: AppColorConstants.backgroundColor,
               title: BodyLargeText(
-                LocalizationString.fwd,
+                fwdString.tr,
               ),
               trailingIcon: const Icon(
                 Icons.send,
@@ -657,7 +657,7 @@ class _ChatDetailState extends State<ChatDetail> {
         FocusedMenuItem(
             backgroundColor: AppColorConstants.backgroundColor,
             title: BodyLargeText(
-              LocalizationString.delete,
+              deleteString.tr,
             ),
             trailingIcon: const Icon(Icons.delete_outline, size: 18),
             onPressed: () {
@@ -670,9 +670,7 @@ class _ChatDetailState extends State<ChatDetail> {
           FocusedMenuItem(
               backgroundColor: AppColorConstants.backgroundColor,
               title: BodyLargeText(
-                message.isStar == 1
-                    ? LocalizationString.unStar
-                    : LocalizationString.star,
+                message.isStar == 1 ? unStarString.tr : starString.tr,
               ),
               trailingIcon: Icon(
                 Icons.star,
@@ -776,7 +774,7 @@ class _ChatDetailState extends State<ChatDetail> {
                           title: title,
                         ),
                         title: Heading5Text(
-                          '${LocalizationString.openIn} ${map.mapName}',
+                          '${openInString.tr} ${map.mapName}',
                         ),
                         leading: SvgPicture.asset(
                           map.icon,
@@ -812,21 +810,18 @@ class _ChatDetailState extends State<ChatDetail> {
                         child: Heading5Text(contact.displayName,
                             weight: TextWeight.bold)),
                     onTap: () async {}),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(
-                        child: BodyLargeText(LocalizationString.saveContact)),
+                    title: Center(child: BodyLargeText(saveContactString.tr)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.addNewContact(contact);
                       AppUtil.showToast(
-                          message: LocalizationString.contactSaved,
-                          isSuccess: false);
+                          message: contactSavedString.tr, isSuccess: false);
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title:
-                        Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -905,30 +900,27 @@ class _ChatDetailState extends State<ChatDetail> {
               children: [
                 ListTile(
                     title: Center(
-                        child: BodyLargeText(
-                            LocalizationString.deleteMessageForMe)),
+                        child: BodyLargeText(deleteMessageForMeString.tr)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.deleteMessage(deleteScope: 1);
                       // postCardController.reportPost(widget.model);
                     }),
-                divider(context: context),
+                divider(),
                 ifAnyMessageByOpponent == false &&
                         _chatDetailController.chatRoom.value?.canIChat == true
                     ? ListTile(
                         title: Center(
-                            child: BodyLargeText(
-                                LocalizationString.deleteMessageForAll)),
+                            child: BodyLargeText(deleteMessageForAllString.tr)),
                         onTap: () async {
                           Get.back();
                           _chatDetailController.deleteMessage(deleteScope: 2);
                           // postCardController.blockUser(widget.model.user.id);
                         })
                     : Container(),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title:
-                        Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
               ],
             ));

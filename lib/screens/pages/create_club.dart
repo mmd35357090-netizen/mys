@@ -20,10 +20,10 @@
 //             height: 50,
 //           ),
 //           backNavigationBar(
-//             context: context,
-//             title: LocalizationString.createClub,
+//
+//             title: createClub,
 //           ),
-//           divider(context: context).tP8,
+//           divider().tP8,
 //           Expanded(
 //             child: Column(
 //               children: [
@@ -35,7 +35,7 @@
 //                   cornerRadius: 5,
 //                   hintText: 'Name  your group',
 //                 ),
-//                 divider(context: context).vP16,
+//                 divider().vP16,
 //                 Stack(
 //                   children: const [
 //                     AbsorbPointer(
@@ -54,9 +54,9 @@
 //                   showActionSheet();
 //                 }),
 //                 const Spacer(),
-//                 divider(context: context).vP16,
+//                 divider().vP16,
 //                 AppThemeButton(
-//                     text: LocalizationString.createGroup,
+//                     text: createGroup,
 //                     onPress: () {
 //                       //Get.to(() => const ChooseClubCoverPhoto());
 //                       // NavigationService.instance.navigateToRoute(
@@ -72,20 +72,20 @@
 //
 //   showActionSheet() {
 //     showModalBottomSheet(
-//         context: context,
+//
 //         backgroundColor: Colors.transparent,
 //         builder: (context) => ActionSheet(
 //               items: [
 //                 GenericItem(
 //                     id: '1',
-//                     title: LocalizationString.public,
+//                     title: public,
 //                     subTitle:
 //                         'Anyone can see who\'s in the group and what they post',
 //                     isSelected: selectedItem?.id == '1',
 //                     icon: ThemeIcon.public),
 //                 GenericItem(
 //                     id: '2',
-//                     title: LocalizationString.private,
+//                     title: private,
 //                     subTitle:
 //                         'Only members can see who\'s in the group and what they post',
 //                     isSelected: selectedItem?.id == '2',

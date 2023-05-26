@@ -15,7 +15,6 @@ class Posts extends StatefulWidget {
   final int? locationId;
   final List<PostModel>? posts;
   final int? index;
-  final PostSource? source;
   final int? page;
   final int? totalPages;
 
@@ -27,7 +26,6 @@ class Posts extends StatefulWidget {
       this.userId,
       this.locationId,
       this.posts,
-      this.source,
       this.index})
       : super(key: key);
 
@@ -49,9 +47,9 @@ class _PostsState extends State<Posts> {
       _postController.addPosts(
           widget.posts ?? [], widget.page, widget.totalPages);
 
-      loadData();
+      // loadData();
       if (widget.index != null) {
-        Future.delayed(const Duration(seconds: 1), () {
+        Future.delayed(const Duration(milliseconds: 200), () {
           itemScrollController.jumpTo(
             index: widget.index!,
           );
@@ -60,24 +58,21 @@ class _PostsState extends State<Posts> {
     });
   }
 
-  void loadData() {
-    if (widget.userId != null) {
-      PostSearchQuery query = PostSearchQuery();
-      query.userId = widget.userId!;
-      _postController.setPostSearchQuery(query);
-    }
-    if (widget.hashTag != null) {
-      PostSearchQuery query = PostSearchQuery();
-      query.hashTag = widget.hashTag!;
-      _postController.setPostSearchQuery(query);
-    }
-  }
+  // void loadData() {
+  //   if (widget.userId != null) {
+  //     PostSearchQuery query = PostSearchQuery();
+  //     query.userId = widget.userId!;
+  //     _postController.setPostSearchQuery(query: query, callback: () {});
+  //   }
+  //   if (widget.hashTag != null) {
+  //     PostSearchQuery query = PostSearchQuery();
+  //     query.hashTag = widget.hashTag!;
+  //     _postController.setPostSearchQuery(query: query, callback: () {});
+  //   }
+  // }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-
-    _postController.clearPosts();
     super.dispose();
   }
 
@@ -130,58 +125,47 @@ class _PostsState extends State<Posts> {
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent ==
           scrollController.position.pixels) {
-        if (widget.source == PostSource.posts) {
-          if (!_postController.isLoadingPosts) {
-            _postController.getPosts();
-          }
-        } else {
-          if (!_postController.mentionsPostsIsLoading) {
-            _postController.getMyMentions();
-          }
-        }
+        _postController.getPosts(() {});
       }
     });
 
-    return Obx(() {
-      List<PostModel> posts = widget.source == PostSource.posts
-          ? _postController.posts
-          : _postController.mentions;
+    return GetBuilder<PostController>(
+        init: _postController,
+        builder: (ctx) {
+          List<PostModel> posts = _postController.posts;
 
-      return _postController.isLoadingPosts
-          ? const HomeScreenShimmer()
-          : posts.isEmpty
-              ? Center(child: BodyLargeText(LocalizationString.noData))
-              : ScrollablePositionedList.builder(
-                  itemScrollController: itemScrollController,
-                  itemPositionsListener: itemPositionsListener,
-                  padding: const EdgeInsets.only(top: 10, bottom: 50),
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    PostModel model = posts[index];
-                    return Column(
-                      children: [
-                        PostCard(
-                            model: model,
-                            textTapHandler: (text) {
-                              _postController.postTextTapHandler(
-                                  post: model, text: text);
-                            },
-                            viewInsightHandler: () {
-                              Get.to(() => ViewPostInsights(post: model));
-                            },
-                            removePostHandler: () {
-                              _postController.removePostFromList(model);
-                            },
-                            blockUserHandler: () {
-                              _postController.removeUsersAllPostFromList(model);
-                            }),
-                        const SizedBox(
-                          height: 15,
-                        )
-                      ],
+          return _postController.isLoadingPosts
+              ? const HomeScreenShimmer()
+              : posts.isEmpty
+                  ? Center(child: BodyLargeText(noDataString.tr))
+                  : ScrollablePositionedList.builder(
+                      itemScrollController: itemScrollController,
+                      itemPositionsListener: itemPositionsListener,
+                      padding: const EdgeInsets.only(top: 10, bottom: 50),
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        PostModel model = posts[index];
+                        return Column(
+                          children: [
+                            PostCard(
+                                model: model,
+                                viewInsightHandler: () {
+                                  Get.to(() => ViewPostInsights(post: model));
+                                },
+                                removePostHandler: () {
+                                  _postController.removePostFromList(model);
+                                },
+                                blockUserHandler: () {
+                                  _postController
+                                      .removeUsersAllPostFromList(model);
+                                }),
+                            const SizedBox(
+                              height: 15,
+                            )
+                          ],
+                        );
+                      },
                     );
-                  },
-                );
-    });
+        });
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/post_api.dart';
 import '../../model/post_model.dart';
 import '../profile/other_user_profile.dart';
 import 'comments_screen.dart';
@@ -52,8 +53,8 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                         ? Container()
                         : Heading6Text(
                                 model!.isReported
-                                    ? LocalizationString.reported
-                                    : LocalizationString.report,
+                                    ? reportedString.tr
+                                    : reportString.tr,
                                 weight: TextWeight.medium)
                             .ripple(() {
                             openReportPostPopup();
@@ -79,7 +80,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                       ),
               ],
             ).hP16,
-            divider(context: context).vP8,
+            divider().vP8,
             Expanded(
               child: Stack(children: [
                 CachedNetworkImage(
@@ -109,8 +110,8 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                                     ),
                                     BodyLargeText(
                                         model!.totalLike > 1
-                                            ? '${model!.totalLike} ${LocalizationString.likes}'
-                                            : '${model!.totalLike} ${LocalizationString.like}',
+                                            ? '${model!.totalLike} ${likesString.tr}'
+                                            : '${model!.totalLike} ${likeString.tr}',
                                         weight: TextWeight.medium)
                                   ]),
                               Column(
@@ -124,7 +125,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                                       onTap: () => openComments(),
                                       child: model!.totalComment > 0
                                           ? Heading5Text(
-                                              '${model!.totalComment} ${LocalizationString.comments}',
+                                              '${model!.totalComment} ${commentsString.tr}',
                                             )
                                           : Container(),
                                     )
@@ -141,23 +142,24 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
     if (!model!.isReported) {
       showModalBottomSheet(
           context: context,
+
           builder: (context) => Wrap(
                 children: [
-                  Heading3Text(LocalizationString.wantToReport,
+                  Heading3Text(wantToReportString.tr,
                           weight: TextWeight.semiBold)
                       .p16,
                   ListTile(
                       leading: const ThemeIconWidget(ThemeIcon.camera),
-                      title: Heading4Text(LocalizationString.report,
+                      title: Heading4Text(reportString.tr,
                           weight: TextWeight.regular),
                       onTap: () async {
                         Navigator.of(context).pop();
                         reportPostApiCall();
                       }),
-                  divider(context: context),
+                  divider(),
                   ListTile(
                       leading: const ThemeIconWidget(ThemeIcon.close),
-                      title: Heading4Text(LocalizationString.cancel,
+                      title: Heading4Text(cancelString.tr,
                           weight: TextWeight.regular),
                       onTap: () => Navigator.of(context).pop()),
                 ],
@@ -191,17 +193,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
 
     setState(() {});
 
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController()
-            .likeUnlike(!model!.isLike, model!.id)
-            .then((response) async {});
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet,
-            isSuccess: false);
-      }
-    });
+    PostApi.likeUnlikePost(like: !model!.isLike, postId: model!.id);
   }
 
   void reportPostApiCall() {
@@ -210,18 +202,12 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
       widget.handler!();
     }
 
-    setState(() {});
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().reportPost(model!.id).then((response) async {
-          EasyLoading.dismiss();
+    PostApi.reportPost(
+        postId: model!.id,
+        resultCallback: () {
+          AppUtil.showToast(
+              message: postReportedSuccessfullyString.tr,
+              isSuccess: true);
         });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet,
-            isSuccess: false);
-      }
-    });
   }
 }

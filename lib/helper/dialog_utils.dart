@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:foap/helper/imports/common_import.dart';
+
 class DialogUtils {
   static void showOkCancelAlertDialog({
-    required BuildContext context,
     required String message,
     required String okButtonTitle,
     required String cancelButtonTitle,
@@ -14,7 +14,6 @@ class DialogUtils {
   }) {
     showDialog(
       barrierDismissible: isCancelEnable == true,
-      context: context,
       builder: (context) {
         if (Platform.isIOS) {
           return WillPopScope(
@@ -41,13 +40,13 @@ class DialogUtils {
                 cancelButtonAction),
           );
         }
-      },
+      }, context: Get.context!,
     );
   }
 
-  static void showAlertDialog(BuildContext context, String message) {
+  static void showAlertDialog( String message) {
     showDialog(
-      context: context,
+      context: Get.context!,
       builder: (context) {
         if (Platform.isIOS) {
           return WillPopScope(
@@ -92,7 +91,6 @@ class DialogUtils {
       title: Text(AppConfigConstants.appName),
       content: Text(message),
       actions: _okCancelActions(
-        context: context,
         okButtonTitle: okButtonTitle,
         cancelButtonTitle: cancelButtonTitle,
         okButtonAction: okButtonAction,
@@ -103,20 +101,19 @@ class DialogUtils {
   }
 
   static CupertinoAlertDialog _showOkCancelCupertinoAlertDialog(
-    BuildContext context,
-    String message,
-    String okButtonTitle,
-    String cancelButtonTitle,
-    Function okButtonAction,
-    bool isCancelEnable,
-    Function cancelButtonAction,{String? title}
-  ) {
+      BuildContext context,
+      String message,
+      String okButtonTitle,
+      String cancelButtonTitle,
+      Function okButtonAction,
+      bool isCancelEnable,
+      Function cancelButtonAction,
+      {String? title}) {
     return CupertinoAlertDialog(
-        title: Text(title??AppConfigConstants.appName),
+        title: Text(title ?? AppConfigConstants.appName),
         content: Text(message),
         actions: isCancelEnable
             ? _okCancelActions(
-                context: context,
                 okButtonTitle: okButtonTitle,
                 cancelButtonTitle: cancelButtonTitle,
                 okButtonAction: okButtonAction,
@@ -124,28 +121,25 @@ class DialogUtils {
                 cancelButtonAction: cancelButtonAction,
               )
             : _okAction(
-                context: context,
-                okButtonAction: okButtonAction,
-                okButtonTitle: okButtonTitle));
+                okButtonAction: okButtonAction, okButtonTitle: okButtonTitle));
   }
 
   static List<Widget> _actions(BuildContext context) {
     return <Widget>[
       Platform.isIOS
           ? CupertinoDialogAction(
-              child: Text(LocalizationString.ok),
+              child: Text(okString.tr),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             )
-          : Text(LocalizationString.ok).ripple(() {
+          : Text(okString.tr).ripple(() {
               Navigator.of(context).pop();
             }),
     ];
   }
 
   static List<Widget> _okCancelActions({
-    required BuildContext context,
     required String okButtonTitle,
     required String cancelButtonTitle,
     required Function okButtonAction,
@@ -158,41 +152,39 @@ class DialogUtils {
               isDestructiveAction: true,
               child: Text(cancelButtonTitle),
               onPressed: () {
-                Navigator.of(context).pop();
+                Get.back();
               })
           : Text(cancelButtonTitle).ripple(() {
-              Navigator.of(context).pop();
+              Get.back();
             }),
       Platform.isIOS
           ? CupertinoDialogAction(
               child: Text(okButtonTitle),
               onPressed: () {
-                Navigator.of(context).pop();
+                Get.back();
                 okButtonAction();
               },
             )
           : Text(okButtonTitle).ripple(() {
-              Navigator.of(context).pop();
+              Get.back();
               okButtonAction();
             }),
     ];
   }
 
   static List<Widget> _okAction(
-      {required BuildContext context,
-      required String okButtonTitle,
-      required Function okButtonAction}) {
+      {required String okButtonTitle, required Function okButtonAction}) {
     return <Widget>[
       Platform.isIOS
           ? CupertinoDialogAction(
               child: Text(okButtonTitle),
               onPressed: () {
-                Navigator.of(context).pop();
+                Get.back();
                 okButtonAction();
               },
             )
           : Text(okButtonTitle).ripple(() {
-              Navigator.of(context).pop();
+              Get.back();
               okButtonAction();
             }),
     ];

@@ -28,12 +28,10 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.joinRequests),
-          divider(context: context).tP8,
+               title: joinRequestsString.tr),
+          divider().tP8,
           Expanded(
             child: GetBuilder<ClubDetailController>(
                 init: _clubDetailController,
@@ -73,7 +71,7 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
                         );
                       },
                       separatorBuilder: (context, index) {
-                        return divider(context: context).vP16;
+                        return divider().vP16;
                       });
                 }),
           ),

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
 
+import '../../controllers/subscription_packages_controller.dart';
 import '../../manager/socket_manager.dart';
 import '../../util/shared_prefs.dart';
 import '../login_sign_up/set_user_name.dart';
@@ -19,6 +20,7 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen> {
   final UserProfileManager _userProfileManager = Get.find();
+  final SubscriptionPackageController packageController = Get.find();
 
   late bool haveBiometricLogin = false;
   var localAuth = LocalAuthentication();
@@ -27,6 +29,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
+    packageController.initiate();
   }
 
   openNextScreen() {
@@ -104,23 +107,23 @@ class _LoadingScreenState extends State<LoadingScreen> {
                           const SizedBox(
                             height: 50,
                           ),
-                          Heading4Text(LocalizationString.appLocked,
+                          Heading4Text(appLockedString.tr,
                               weight: TextWeight.medium),
                           const SizedBox(
                             height: 10,
                           ),
                           Heading4Text(
                             bioMetricType.value == 1
-                                ? LocalizationString.unlockAppWithFaceId
-                                : LocalizationString.unlockAppWithTouchId,
+                                ? unlockAppWithFaceIdString.tr
+                                : unlockAppWithTouchIdString.tr,
                           ),
                           const SizedBox(
                             height: 50,
                           ),
                           Heading3Text(
                             bioMetricType.value == 1
-                                ? LocalizationString.useFaceId
-                                : LocalizationString.useTouchId,
+                                ? useFaceIdString.tr
+                                : useTouchIdString.tr,
                             color: AppColorConstants.themeColor,
                           ).ripple(() {
                             biometricLogin();

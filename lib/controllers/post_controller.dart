@@ -1,8 +1,10 @@
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/list_extension.dart';
 import 'package:get/get.dart';
 import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
 
+import '../apiHandler/apis/post_api.dart';
 import '../model/post_model.dart';
 import '../model/post_search_query.dart';
 
@@ -48,16 +50,17 @@ class PostController extends GetxController {
     this.totalPages = totalPages ?? 100;
 
     posts.addAll(postsList);
+    posts.unique((e) => e.id);
     update();
   }
 
-  setPostSearchQuery(PostSearchQuery query) {
+  setPostSearchQuery({required PostSearchQuery query, required VoidCallback callback}) {
     if (query != postSearchQuery) {
       clearPosts();
     }
     update();
     postSearchQuery = query;
-    getPosts();
+    getPosts(callback);
   }
 
   setMentionedPostSearchQuery(MentionedPostSearchQuery query) {
@@ -81,116 +84,101 @@ class PostController extends GetxController {
     mentions.refresh();
   }
 
-  void getPosts() async {
+  void getPosts(VoidCallback callback) async {
     if (canLoadMorePosts == true && totalPages > postsCurrentPage) {
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          isLoadingPosts = true;
-          ApiController()
-              .getPosts(
-                  userId: postSearchQuery!.userId,
-                  isPopular: postSearchQuery!.isPopular,
-                  isFollowing: postSearchQuery!.isFollowing,
-                  isSold: postSearchQuery!.isSold,
-                  isMine: postSearchQuery!.isMine,
-                  isRecent: postSearchQuery!.isRecent,
-                  title: postSearchQuery!.title,
-                  hashtag: postSearchQuery!.hashTag,
-                  page: postsCurrentPage)
-              .then((response) async {
-            // posts.value = [];
-            posts.addAll(response.success
-                ? response.posts
-                    .where((element) => element.gallery.isNotEmpty)
-                    .toList()
-                : []);
+      isLoadingPosts = true;
+
+      PostApi.getPosts(
+          userId: postSearchQuery!.userId,
+          isPopular: postSearchQuery!.isPopular,
+          isFollowing: postSearchQuery!.isFollowing,
+          isSold: postSearchQuery!.isSold,
+          isMine: postSearchQuery!.isMine,
+          isRecent: postSearchQuery!.isRecent,
+          title: postSearchQuery!.title,
+          hashtag: postSearchQuery!.hashTag,
+          page: postsCurrentPage,
+          resultCallback: (result, metadata) {
+            posts.addAll(
+                result.where((element) => element.gallery.isNotEmpty).toList());
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
+            posts.unique((e) => e.id);
             isLoadingPosts = false;
 
+            if (postsCurrentPage >= metadata.pageCount) {
+              canLoadMorePosts = false;
+            } else {
+              canLoadMorePosts = true;
+            }
             postsCurrentPage += 1;
 
-            if (response.posts.length == response.metaData?.pageCount) {
-              canLoadMorePosts = true;
-              totalPages = response.metaData!.pageCount;
-            } else {
-              canLoadMorePosts = false;
-            }
+            callback();
+
+            print('posts = ${posts.length}');
             update();
           });
-        }
-      });
     }
   }
 
   void getMyMentions() {
     if (canLoadMoreMentionsPosts) {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          mentionsPostsIsLoading = true;
-          ApiController()
-              .getMyMentions(userId: mentionedPostSearchQuery!.userId)
-              .then((response) async {
+      PostApi.getMentionedPosts(
+          userId: mentionedPostSearchQuery!.userId,
+          resultCallback: (result, metaData) {
             mentionsPostsIsLoading = false;
-
-            mentions.addAll(
-                response.success ? response.posts.reversed.toList() : []);
-
+            mentions.addAll(result.reversed.toList());
             mentionsPostPage += 1;
-            if (response.posts.length == response.metaData?.perPage) {
+            if (result.length == metaData.perPage) {
               canLoadMoreMentionsPosts = true;
             } else {
               canLoadMoreMentionsPosts = false;
             }
             update();
           });
-        }
-      });
     }
   }
 
-  void reportPost(int postId, BuildContext context) {
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController().reportPost(postId).then((response) async {});
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: true);
-      }
-    });
-  }
-
-  postTextTapHandler({required PostModel post, required String text}) {
-    if (text.startsWith('#')) {
-      PostSearchQuery query = PostSearchQuery();
-      query.hashTag = text.replaceAll('#', '');
-      setPostSearchQuery(query);
-
-      // Get.to(() => Posts(
-      //     hashTag: text.replaceAll('#', ''), source: PostSource.posts))!
-      //     .then((value) {
-      getPosts();
-      // });
-    } else {
-      String userTag = text.replaceAll('@', '');
-      if (post.mentionedUsers
-          .where((element) => element.userName == userTag)
-          .isNotEmpty) {
-        int mentionedUserId = post.mentionedUsers
-            .where((element) => element.userName == userTag)
-            .first
-            .id;
-        Get.to(() => OtherUserProfile(userId: mentionedUserId))!.then((value) {
-          getPosts();
+  void reportPost(int postId) {
+    PostApi.reportPost(
+        postId: postId,
+        resultCallback: () {
+          AppUtil.showToast(
+              message: postReportedSuccessfullyString.tr, isSuccess: true);
         });
-      } else {
-        // print('not found');
-      }
-    }
   }
+
+  // postTextTapHandler({required PostModel post, required String text}) {
+  //   if (text.startsWith('#')) {
+  //     PostSearchQuery query = PostSearchQuery();
+  //     query.hashTag = text.replaceAll('#', '');
+  //     setPostSearchQuery(query);
+  //
+  //     // Get.to(() => Posts(
+  //     //     hashTag: text.replaceAll('#', ''), source: PostSource.posts))!
+  //     //     .then((value) {
+  //     getPosts();
+  //     // });
+  //   } else {
+  //     String userTag = text.replaceAll('@', '');
+  //     if (post.mentionedUsers
+  //         .where((element) => element.userName == userTag)
+  //         .isNotEmpty) {
+  //       int mentionedUserId = post.mentionedUsers
+  //           .where((element) => element.userName == userTag)
+  //           .first
+  //           .id;
+  //       Get.to(() => OtherUserProfile(userId: mentionedUserId))!.then((value) {
+  //         getPosts();
+  //       });
+  //     } else {
+  //       // print('not found');
+  //     }
+  //   }
+  // }
 
   viewInsight(int postId) {
-    ApiController().getPostInsight(postId).then((response) {
-      insight.value = response.insight;
+    PostApi.getPostInsight(postId, resultCallback: (result) {
+      insight.value = result;
       insight.refresh();
     });
   }

@@ -1,15 +1,11 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 
 class AppUtil {
   static showToast({required String message, required bool isSuccess}) {
-    Get.snackbar(
-        isSuccess == true
-            ? LocalizationString.success
-            : LocalizationString.error,
-        message,
+    Get.snackbar(isSuccess == true ? successString.tr : errorString.tr, message,
         snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
         backgroundColor: isSuccess == true
             ? AppColorConstants.themeColor.darken()
             : AppColorConstants.red.lighten(),
@@ -28,7 +24,8 @@ class AppUtil {
       child: CircularProgressIndicator(
           strokeWidth: 2.0,
           backgroundColor: Colors.black12,
-          valueColor: AlwaysStoppedAnimation<Color>(AppColorConstants.themeColor)),
+          valueColor:
+              AlwaysStoppedAnimation<Color>(AppColorConstants.themeColor)),
     ));
   }
 
@@ -93,7 +90,7 @@ class AppUtil {
                           width: 100,
                           height: 40,
                           child: AppThemeBorderButton(
-                              text: LocalizationString.yes,
+                              text: yesString.tr,
                               onPress: () {
                                 Get.back(closeOverlays: true);
                                 okHandler();
@@ -106,8 +103,7 @@ class AppUtil {
                           width: 100,
                           height: 40,
                           child: AppThemeButton(
-
-                              text: LocalizationString.no,
+                              text: noString.tr,
                               onPress: () {
                                 Get.back(closeOverlays: true);
                               }),
@@ -168,7 +164,7 @@ class AppUtil {
                           width: 100,
                           height: 30,
                           child: AppThemeBorderButton(
-                              text: LocalizationString.ok,
+                              text: okString.tr,
                               onPress: () {
                                 Get.back(closeOverlays: true);
                                 okHandler();

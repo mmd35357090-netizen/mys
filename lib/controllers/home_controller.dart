@@ -1,19 +1,23 @@
+import 'package:foap/apiHandler/apis/gift_api.dart';
+import 'package:foap/apiHandler/apis/live_streaming_api.dart';
+import 'package:foap/apiHandler/apis/post_api.dart';
+import 'package:foap/apiHandler/apis/story_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
 import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
 import 'package:foap/screens/add_on/ui/reel/create_reel_video.dart';
-import 'package:get/get.dart';
+import 'package:foap/screens/live/live_users_screen.dart';
+import '../apiHandler/apis/misc_api.dart';
 import '../model/gift_model.dart';
 import '../model/post_gift_model.dart';
+import '../screens/chatgpt/chat_gpt.dart';
 import '../screens/tvs/tv_dashboard.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../screens/add_on/model/polls_model.dart';
 import '../model/post_model.dart';
 import '../screens/settings_menu/settings_controller.dart';
-import '../screens/tvs/tv_dashboard.dart';
 import 'dart:async';
 import 'package:foap/manager/db_manager.dart';
-import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/model/story_model.dart';
 import 'package:foap/model/post_gallery.dart';
 import 'package:foap/model/post_search_query.dart';
@@ -22,10 +26,8 @@ import 'package:foap/screens/highlights/choose_stories.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:foap/screens/story/choose_media_for_story.dart';
 import 'package:foap/screens/home_feed/quick_links.dart';
-import 'package:foap/screens/live/random_live_listing.dart';
 import 'package:foap/screens/live/checking_feasibility.dart';
 import 'package:foap/screens/competitions/competitions_screen.dart';
-
 
 class HomeController extends GetxController {
   final SettingsController _settingsController = Get.find();
@@ -88,67 +90,67 @@ class HomeController extends GetxController {
     if (_settingsController.setting.value!.enableStories) {
       quickLinks.add(QuickLink(
           icon: 'assets/stories.png',
-          heading: LocalizationString.story,
-          subHeading: LocalizationString.story,
+          heading: storyString.tr,
+          subHeading: storyString.tr,
           linkType: QuickLinkType.story));
     }
     if (_settingsController.setting.value!.enableHighlights) {
       quickLinks.add(QuickLink(
           icon: 'assets/highlights.png',
-          heading: LocalizationString.highlights,
-          subHeading: LocalizationString.highlights,
+          heading: highlightsString.tr,
+          subHeading: highlightsString.tr,
           linkType: QuickLinkType.highlights));
     }
 
     // if(_settingsController.setting.value!.enableLiveUser){
     quickLinks.add(QuickLink(
-        icon: 'assets/live.png',
-        heading: LocalizationString.liveUsers,
-        subHeading: LocalizationString.liveUsers,
+        icon: 'assets/live_users.png',
+        heading: liveUsersString.tr,
+        subHeading: liveUsersString.tr,
         linkType: QuickLinkType.liveUsers));
     // }
 
     if (_settingsController.setting.value!.enableReel) {
       quickLinks.add(QuickLink(
           icon: 'assets/highlights.png',
-          heading: LocalizationString.reels,
-          subHeading: LocalizationString.reels,
+          heading: reelsString.tr,
+          subHeading: reelsString.tr,
           linkType: QuickLinkType.highlights));
     }
     if (_settingsController.setting.value!.enableLive) {
       quickLinks.add(QuickLink(
           icon: 'assets/live.png',
-          heading: LocalizationString.goLive,
-          subHeading: LocalizationString.goLive,
+          heading: goLiveString.tr,
+          subHeading: goLiveString.tr,
           linkType: QuickLinkType.goLive));
     }
     if (_settingsController.setting.value!.enableCompetitions) {
       quickLinks.add(QuickLink(
           icon: 'assets/competitions.png',
-          heading: LocalizationString.competition,
-          subHeading: LocalizationString.joinCompetitionsToEarn,
+          heading: competitionString.tr,
+          subHeading: joinCompetitionsToEarnString.tr,
           linkType: QuickLinkType.competition));
     }
     if (_settingsController.setting.value!.enableClubs) {
       quickLinks.add(QuickLink(
           icon: 'assets/club_colored.png',
-          heading: LocalizationString.clubs,
-          subHeading: LocalizationString.placeForPeopleOfCommonInterest,
+          heading: clubsString.tr,
+          subHeading: placeForPeopleOfCommonInterestString.tr,
           linkType: QuickLinkType.clubs));
     }
 
     if (_settingsController.setting.value!.enableStrangerChat) {
       quickLinks.add(QuickLink(
           icon: 'assets/chat_colored.png',
-          heading: LocalizationString.strangerChat,
-          subHeading: LocalizationString.haveFunByRandomChatting,
+          heading: strangerChatString.tr,
+          subHeading: haveFunByRandomChattingString.tr,
           linkType: QuickLinkType.randomChat));
     }
     // if (_settingsController.setting.value!.enableCompetitions) {
     //   quickLinks.add(QuickLink(
     //       icon: 'assets/competitions.png',
-    //       heading: LocalizationString.competition,
-    //       subHeading: LocalizationString.joinCompetitionsToEarn,
+    //       heading: competition,
+    //       subHeading: joinCompetitionsToEarn,
     //       linkType: QuickLinkType.competition));
     // }
     // if (_settingsController.setting.value!.enableReel) {
@@ -157,9 +159,45 @@ class HomeController extends GetxController {
     if (_settingsController.setting.value!.enableWatchTv) {
       quickLinks.add(QuickLink(
           icon: 'assets/television.png',
-          heading: LocalizationString.tvs,
-          subHeading: LocalizationString.tvs,
+          heading: tvsString.tr,
+          subHeading: tvsString.tr,
           linkType: QuickLinkType.tv));
+    }
+    if (_settingsController.setting.value!.enablePodcasts) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/podcast.png',
+          heading: podcastString.tr,
+          subHeading: podcastString.tr,
+          linkType: QuickLinkType.podcast));
+    }
+    if (_settingsController.setting.value!.enableDating) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/dating.png',
+          heading: datingString.tr,
+          subHeading: datingString.tr,
+          linkType: QuickLinkType.dating));
+    }
+    // if (_settingsController.setting.value!.enableReel) {
+    quickLinks.add(QuickLink(
+        icon: 'assets/reel.png',
+        heading: reelString.tr,
+        subHeading: reelString.tr,
+        linkType: QuickLinkType.reel));
+    // }
+    if (_settingsController.setting.value!.enableEvents) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/event.png',
+          heading: eventString.tr,
+          subHeading: eventString.tr,
+          linkType: QuickLinkType.event));
+    }
+
+    if (_settingsController.setting.value!.enableChatGPT) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/chat.png',
+          heading: chatGPT.tr,
+          subHeading: eventString.tr,
+          linkType: QuickLinkType.chatGPT));
     }
   }
 
@@ -205,38 +243,25 @@ class HomeController extends GetxController {
   }
 
   void getPolls() async {
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController().getPolls().then((response) async {
-          polls.addAll(response.success ? response.polls.toList() : []);
-        });
-      }
+    MiscApi.getPolls(resultCallback: (result) {
+      polls.addAll(result);
     });
   }
 
   void postPollAnswer(
-      int? pollId, int? pollQuestionId, int? questionOptionId) async {
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController()
-            .postPollAnswer(pollId, pollQuestionId, questionOptionId)
-            .then((response) async {
-          polls.addAll(response.success ? response.polls.toList() : []);
+      int pollId, int pollQuestionId, int questionOptionId) async {
+    MiscApi.postPollAnswer(
+        pollId: pollId,
+        pollQuestionId: pollQuestionId,
+        questionOptionId: questionOptionId,
+        resultCallback: (result) {
+          polls.addAll(result);
         });
-      }
-    });
   }
 
   void getPosts(
       {required bool? isRecent, required VoidCallback callback}) async {
     if (_canLoadMorePosts == true) {
-      // for (int i = 0; i < 5; i++) {
-      //   BannerAdsHelper().loadBannerAds((ad) {
-      //     bannerAds.add(ad);
-      //     bannerAds.refresh();
-      //   });
-      // }
-
       if (isRecent == true) {
         postSearchQuery.isRecent = 1;
       }
@@ -245,30 +270,24 @@ class HomeController extends GetxController {
         isRefreshingPosts.value = true;
       }
 
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          ApiController()
-              .getPosts(
-                  userId: postSearchQuery.userId,
-                  isPopular: postSearchQuery.isPopular,
-                  isFollowing: postSearchQuery.isFollowing,
-                  isSold: postSearchQuery.isSold,
-                  isMine: postSearchQuery.isMine,
-                  isRecent: postSearchQuery.isRecent,
-                  title: postSearchQuery.title,
-                  hashtag: postSearchQuery.hashTag,
-                  clubId: postSearchQuery.clubId,
-                  page: _postsCurrentPage)
-              .then((response) async {
-            posts.addAll(response.success
-                ? response.posts
-                    .where((element) => element.gallery.isNotEmpty)
-                    .toList()
-                : []);
+      PostApi.getPosts(
+          userId: postSearchQuery.userId,
+          isPopular: postSearchQuery.isPopular,
+          isFollowing: postSearchQuery.isFollowing,
+          isSold: postSearchQuery.isSold,
+          isMine: postSearchQuery.isMine,
+          isRecent: postSearchQuery.isRecent,
+          title: postSearchQuery.title,
+          hashtag: postSearchQuery.hashTag,
+          clubId: postSearchQuery.clubId,
+          page: _postsCurrentPage,
+          resultCallback: (result, metadata) {
+            posts.addAll(
+                result.where((element) => element.gallery.isNotEmpty).toList());
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             isRefreshingPosts.value = false;
 
-            if (_postsCurrentPage >= response.metaData!.pageCount) {
+            if (_postsCurrentPage >= metadata.pageCount) {
               _canLoadMorePosts = false;
             } else {
               _canLoadMorePosts = true;
@@ -276,52 +295,9 @@ class HomeController extends GetxController {
             _postsCurrentPage += 1;
 
             callback();
+            update();
           });
-        }
-      });
     }
-  }
-
-  contentOptionSelected(String option) {
-    if (option == LocalizationString.story) {
-      Get.to(() => const ChooseMediaForStory());
-    } else if (option == LocalizationString.post) {
-      // Get.offAll(const DashboardScreen(
-      //   selectedTab: 2,
-      // ));
-    } else if (option == LocalizationString.highlights) {
-      Get.to(() => const ChooseStoryForHighlights());
-    } else if (option == LocalizationString.goLive) {
-      Get.to(() => const CheckingLiveFeasibility());
-    } else if (option == LocalizationString.competition) {
-      Get.to(() => const CompetitionsScreen());
-    } else if (option == LocalizationString.liveNow) {
-      Get.to(() => const RandomLiveListing());
-    } else if (option == LocalizationString.liveTv) {
-      Get.to(() => const TvDashboardScreen());
-      // Get.to(() => const LiveTVStreaming());
-
-    } else if (option == LocalizationString.podcast) {
-      Get.to(() => const PodcastListDashboard());
-    } else if (option == LocalizationString.reel) {
-      Get.to(() => const CreateReelScreen());
-      // Get.to(() => const LiveTVStreaming());
-    } else if (option == LocalizationString.dating) {
-      // check if user has already setup his profile
-
-      if (_userProfileManager.user.value!.canUseDating) {
-        Get.to(() => const DatingDashboard());
-      }
-
-    }
-    // else if (option == LocalizationString.podcast) {
-    //   Get.to(() => const PodcastListDashboard());
-    // } else if (option == LocalizationString.reel) {
-    //   Get.to(() => const CreateReelScreen());
-    //   // Get.to(() => const LiveTVStreaming());
-    // } else if (option == LocalizationString.dating) {
-    //   Get.to(() => const DatingDashboard());
-    // }
   }
 
   setCurrentVisibleVideo(
@@ -350,25 +326,12 @@ class HomeController extends GetxController {
   }
 
   void reportPost(int postId) {
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController().reportPost(postId).then((response) async {
-          if (response.success == true) {
-            AppUtil.showToast(
-                message: LocalizationString.postReportedSuccessfully,
-                isSuccess: true);
-          } else {
-            AppUtil.showToast(
-                message: LocalizationString.errorMessage,
-                isSuccess: true);
-          }
+    PostApi.reportPost(
+        postId: postId,
+        resultCallback: () {
+          AppUtil.showToast(
+              message: postReportedSuccessfullyString.tr, isSuccess: true);
         });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet,
-            isSuccess: true);
-      }
-    });
   }
 
   // void likeUnlikePost(PostModel post, BuildContext context) {
@@ -381,8 +344,8 @@ class HomeController extends GetxController {
   //           .then((response) async {});
   //     } else {
   //       AppUtil.showToast(
-  //           context: context,
-  //           message: LocalizationString.noInternet,
+  //
+  //           message: noInternet,
   //           isSuccess: true);
   //     }
   //   });
@@ -395,7 +358,6 @@ class HomeController extends GetxController {
     if (text.startsWith('#')) {
       Get.to(() => Posts(
                 hashTag: text.replaceAll('#', ''),
-                source: PostSource.posts,
               ))!
           .then((value) {
         getPosts(isRecent: false, callback: () {});
@@ -453,12 +415,8 @@ class HomeController extends GetxController {
 
   Future<List<UserModel>> getLiveUsers() async {
     List<UserModel> currentLiveUsers = [];
-    await AppUtil.checkInternet().then((value) async {
-      if (value) {
-        await ApiController().getCurrentLiveUsers().then((response) async {
-          currentLiveUsers = response.liveUsers;
-        });
-      }
+    await LiveStreamingApi.getCurrentLiveUsers(resultCallback: (result) {
+      currentLiveUsers = result;
     });
     return currentLiveUsers;
   }
@@ -470,8 +428,8 @@ class HomeController extends GetxController {
 
     List<int> viewedStoryIds = await getIt<DBManager>().getAllViewedStories();
 
-    await ApiController().getStories().then((response) async {
-      for (var story in response.stories) {
+    await StoryApi.getStories(resultCallback: (result) {
+      for (var story in result) {
         var allMedias = story.media;
         var notViewedStoryMedias = allMedias
             .where((element) => viewedStoryIds.contains(element.id) == false);
@@ -494,25 +452,25 @@ class HomeController extends GetxController {
   Future<List<StoryMediaModel>> getCurrentActiveStories() async {
     List<StoryMediaModel> myActiveStories = [];
 
-    await ApiController().getCurrentActiveStories().then((response) async {
-      myActiveStories = response.myActiveStories;
+    await StoryApi.getMyCurrentActiveStories(resultCallback: (result) {
+      myActiveStories = result;
       update();
     });
 
     return myActiveStories;
   }
 
-  sendPostGift(PostGiftModel gift, int? recieverId, int? postId, int? userId) {
-    ApiController()
-        .sendPostGift(
-            gift: gift, receiverId: recieverId, postId: postId, userId: userId!)
-        .then((value) {
-      getIt<UserProfileManager>().refreshProfile();
-
-      AppUtil.showToast(
-          message: LocalizationString.giftSent,
-          isSuccess: true);
-    });
+  sendPostGift(GiftModel gift, int receiverId, int? postId) {
+    GiftApi.sendStickerGift(
+        gift: gift,
+        liveId: null,
+        postId: postId,
+        receiverId: receiverId,
+        resultCallback: () {
+          // refresh profile to get updated wallet info
+          AppUtil.showToast(message: giftSentString.tr, isSuccess: true);
+          _userProfileManager.refreshProfile();
+        });
   }
 
   liveUsersUpdated() {

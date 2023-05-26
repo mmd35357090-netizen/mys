@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:foap/components/custom_camera/delegates/camera_picker_text_delegate.dart';
 import 'package:foap/components/gallery_picker/gallery_media_picker.dart';

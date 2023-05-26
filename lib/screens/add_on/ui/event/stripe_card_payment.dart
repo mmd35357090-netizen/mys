@@ -23,12 +23,10 @@ class StripeCardPaymentState extends State<StripeCardPayment> {
         body: SizedBox(
             height: Get.height,
             child: Column(children: [
-              const SizedBox(
-                height: 50,
-              ),
+
               backNavigationBar(
-                  context: context, title: LocalizationString.buyTicket),
-              divider(context: context).tP8,
+                   title: buyTicketString.tr),
+              divider().tP8,
               Column(
                 children: [
                   const SizedBox(
@@ -58,7 +56,7 @@ class StripeCardPaymentState extends State<StripeCardPayment> {
                     height: 50,
                   ),
                   AppThemeButton(
-                      text: LocalizationString.pay, onPress: _handlePayPress)
+                      text: payString.tr, onPress: _handlePayPress)
                 ],
               ).hP16
             ])));

@@ -67,16 +67,16 @@ class AddInterestsState extends State<AddInterests> {
         body: Column(children: [
           const SizedBox(height: 50),
           profileScreensNavigationBar(
-              context: context,
+
               rightBtnTitle:
-                  widget.isFromSignup ? LocalizationString.skip : null,
-              title: LocalizationString.addInterestsHeader,
+                  widget.isFromSignup ? skipString.tr : null,
+              title: addInterestsHeaderString.tr,
               completion: () {
                 Get.to(() => AddProfessionalDetails(
                       isFromSignup: widget.isFromSignup,
                     ));
               }),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
               child: SingleChildScrollView(
             child: Column(
@@ -84,22 +84,22 @@ class AddInterestsState extends State<AddInterests> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Heading2Text(
-                  LocalizationString.addInterestsHeader,
+                  addInterestsHeaderString.tr,
                 ).setPadding(top: 20),
                 Heading6Text(
-                  LocalizationString.addInterestsSubHeader,
+                  addInterestsSubHeaderString.tr,
                 ).setPadding(top: 20),
                 addHeader('Do you smoke?').setPadding(top: 30, bottom: 8),
                 SegmentedControl(
-                    segments: [LocalizationString.yes, LocalizationString.no],
+                    segments: [yesString.tr, noString.tr],
                     value: smoke,
                     onValueChanged: (value) {
                       setState(() => smoke = value);
                     }),
-                addHeader(LocalizationString.drinkingHabit)
+                addHeader(drinkingHabitString.tr)
                     .setPadding(top: 30, bottom: 8),
                 DropdownBorderedField(
-                  hintText: LocalizationString.select,
+                  hintText: selectString.tr,
                   controller: drinkHabitController,
                   showBorder: true,
                   borderColor: AppColorConstants.borderColor,
@@ -111,10 +111,10 @@ class AddInterestsState extends State<AddInterests> {
                     openDrinkHabitListPopup();
                   },
                 ),
-                addHeader(LocalizationString.interests)
+                addHeader(interestsString.tr)
                     .setPadding(top: 30, bottom: 8),
                 DropdownBorderedField(
-                  hintText: LocalizationString.select,
+                  hintText: selectString.tr,
                   controller: interestsController,
                   showBorder: true,
                   borderColor: AppColorConstants.borderColor,
@@ -126,10 +126,10 @@ class AddInterestsState extends State<AddInterests> {
                     openInterestsPopup();
                   },
                 ),
-                addHeader(LocalizationString.language)
+                addHeader(languageString.tr)
                     .setPadding(top: 30, bottom: 8),
                 DropdownBorderedField(
-                  hintText: LocalizationString.select,
+                  hintText: selectString.tr,
                   controller: languageController,
                   showBorder: true,
                   borderColor: AppColorConstants.borderColor,
@@ -147,7 +147,7 @@ class AddInterestsState extends State<AddInterests> {
                       width: MediaQuery.of(context).size.width - 50,
                       child: AppThemeButton(
                           cornerRadius: 25,
-                          text: LocalizationString.submit,
+                          text: submitString.tr,
                           onPress: () {
                             AddDatingDataModel dataModel = AddDatingDataModel();
                             dataModel.smoke = smoke + 1;
@@ -186,7 +186,7 @@ class AddInterestsState extends State<AddInterests> {
                               // if (msg != '' &&
                               //     !isLoginFirstTime) {
                               //   AppUtil.showToast(
-                              //       context: context,
+                              //
                               //       message: msg,
                               //       isSuccess: true);
                               // }
@@ -210,6 +210,7 @@ class AddInterestsState extends State<AddInterests> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -236,7 +237,7 @@ class AddInterestsState extends State<AddInterests> {
                                           ? ThemeIcon.selectedCheckbox
                                           : ThemeIcon.emptyCheckbox,
                                       color:
-                                          Theme.of(context).iconTheme.color));
+                                         AppColorConstants.iconColor));
                             }).p16)
                     .topRounded(40));
           });
@@ -247,6 +248,7 @@ class AddInterestsState extends State<AddInterests> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -283,7 +285,7 @@ class AddInterestsState extends State<AddInterests> {
                                           ? ThemeIcon.selectedCheckbox
                                           : ThemeIcon.emptyCheckbox,
                                       color:
-                                          Theme.of(context).iconTheme.color));
+                                      AppColorConstants.iconColor));
                             }).p16)
                     .topRounded(40));
           });
@@ -294,6 +296,7 @@ class AddInterestsState extends State<AddInterests> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -330,7 +333,7 @@ class AddInterestsState extends State<AddInterests> {
                                           ? ThemeIcon.selectedCheckbox
                                           : ThemeIcon.emptyCheckbox,
                                       color:
-                                          Theme.of(context).iconTheme.color));
+                                      AppColorConstants.iconColor));
                             }).p16)
                     .topRounded(40));
           });

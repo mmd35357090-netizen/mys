@@ -6,7 +6,6 @@ import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-
 class MatchedList extends StatefulWidget {
   const MatchedList({Key? key}) : super(key: key);
 
@@ -30,12 +29,10 @@ class MatchedListState extends State<MatchedList> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(height: 50),
           backNavigationBar(
-            context: context,
-            title: LocalizationString.matched,
+            title: matchedString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
               child: GetBuilder<DatingController>(
                   init: datingController,
@@ -44,10 +41,8 @@ class MatchedListState extends State<MatchedList> {
                         ? const ShimmerMatchedList()
                         : datingController.matchedUsers.isEmpty
                             ? emptyData(
-                                title:
-                                    LocalizationString.noMatchedProfilesFound,
-                                subTitle:
-                                    LocalizationString.datingExploreForMatched,
+                                title: noMatchedProfilesFoundString.tr,
+                                subTitle: datingExploreForMatchedString.tr,
                               )
                             : GridView.builder(
                                 itemCount: datingController.matchedUsers.length,
@@ -114,9 +109,7 @@ class MatchedListState extends State<MatchedList> {
                       ).bP16,
                     ))
           .borderWithRadius(
-              value: 1,
-              radius: 10,
-              color: AppColorConstants.themeColor)
+              value: 1, radius: 10, color: AppColorConstants.themeColor)
           .ripple(() {
         Get.to(() => OtherUserProfile(userId: profile.id));
       }),
@@ -163,7 +156,7 @@ class MatchedListState extends State<MatchedList> {
                     color: Colors.white,
                   )),
                 ).lp(1).rightRounded(10).ripple(() {
-                  EasyLoading.show(status: LocalizationString.loading);
+                  EasyLoading.show(status: loadingString.tr);
                   _chatDetailController.getChatRoomWithUser(
                       userId: profile.id,
                       callback: (room) {
@@ -198,9 +191,7 @@ class MatchedListState extends State<MatchedList> {
                   size: size / 2,
                 )),
           ).borderWithRadius(
-            value: 1,
-            radius: size / 3,
-            color: AppColorConstants.themeColor)
+            value: 1, radius: size / 3, color: AppColorConstants.themeColor)
         : SizedBox(
             height: size,
             width: size,
@@ -214,8 +205,6 @@ class MatchedListState extends State<MatchedList> {
               ),
             ),
           ).borderWithRadius(
-            value: 1,
-            radius: size / 3,
-            color: AppColorConstants.themeColor);
+            value: 1, radius: size / 3, color: AppColorConstants.themeColor);
   }
 }

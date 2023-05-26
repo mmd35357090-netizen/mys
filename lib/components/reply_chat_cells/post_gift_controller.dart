@@ -1,41 +1,75 @@
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-
-import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/gift_api.dart';
 import '../../model/gift_model.dart';
 import '../../model/post_gift_model.dart';
-import '../../util/app_util.dart';
 
 class PostGiftController extends GetxController {
   RxList<PostGiftModel> timelineGift = <PostGiftModel>[].obs;
+  RxList<ReceivedGiftModel> stickerGifts = <ReceivedGiftModel>[].obs;
 
-  void fetchPostGift(int postId) {
-    AppUtil.checkInternet().then((value) {
-      timelineGift.clear();
-      ApiController()
-          .getPostGifts(sendOnType: 3, postId: postId)
-          .then((response) {
-        // print('fetchPostGift success : $response');
-        // Get.snackbar('fetchPostGift', 'done');
-        final postGift = response.postTimelineGift;
-        timelineGift.clear();
-        postGift?.timelineGift?.items?.forEach((item) {
-          if (item.giftTimelineDetail != null) {
-            timelineGift.add(item.giftTimelineDetail!);
-          }
-        });
-      });
-    });
+  int giftsPage = 1;
+  bool canLoadMoreGifts = true;
+  bool isLoadingGifts = false;
+
+  int receivedGiftsPage = 1;
+  bool canLoadMoreReceivedGifts = true;
+  bool isLoadingReceivedGifts = false;
+
+  clear() {
+    timelineGift.clear();
+    giftsPage = 1;
+    canLoadMoreGifts = true;
+    isLoadingGifts = false;
+
+    receivedGiftsPage = 1;
+    canLoadMoreReceivedGifts = true;
+    isLoadingReceivedGifts = false;
+  }
+
+  void fetchReceivedTimelineStickerGift(int postId) {
+    if (canLoadMoreReceivedGifts) {
+      GiftApi.getReceivedStickerGifts(
+          page: receivedGiftsPage,
+          sendOnType: 3,
+          postId: postId,
+          resultCallback: (result, metadata) {
+            canLoadMoreReceivedGifts = result.length >= metadata.perPage;
+            receivedGiftsPage += 1;
+            stickerGifts.addAll(result);
+          },
+          liveId: null);
+    }
+  }
+
+  void fetchReceivedTimelineGift(int postId) {
+    if (canLoadMoreReceivedGifts) {
+      GiftApi.getTimelineReceivedTextGifts(
+          page: receivedGiftsPage,
+          sendOnType: 3,
+          postId: postId,
+          resultCallback: (result, metadata) {
+            final postGift = result;
+            canLoadMoreReceivedGifts = result.length >= metadata.perPage;
+            receivedGiftsPage += 1;
+            postGift.forEach((item) {
+              if (item.giftTimelineDetail != null) {
+                timelineGift.add(item.giftTimelineDetail!);
+              }
+            });
+          });
+    }
   }
 
   void fetchTimelinePostGift() {
-    AppUtil.checkInternet().then((value) {
-      ApiController().getTimelineGifts().then((response) {
-        timelineGift.clear();
-        timelineGift.addAll(response.timelineGift);
-      });
-    });
+    if (canLoadMoreGifts) {
+      GiftApi.getTimelineTextGifts(
+          page: giftsPage,
+          resultCallback: (result, metadata) {
+            canLoadMoreReceivedGifts = result.length >= metadata.perPage;
+            giftsPage += 1;
+
+            timelineGift.addAll(result);
+          });
+    }
   }
 }

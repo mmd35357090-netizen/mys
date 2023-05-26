@@ -1,3 +1,4 @@
+import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -11,10 +12,8 @@ import '../screens/chat/chat_detail.dart';
 showNewMessageBanner(ChatMessageModel message, int roomId) async {
   ChatRoomModel? room = await getIt<DBManager>().getRoomById(roomId);
   if (room == null) {
-    ApiController().getChatRoomDetail(roomId).then((response) {
-      if (response.room != null) {
-        showNotification(message, response.room!);
-      }
+    ChatApi.getChatRoomDetail(roomId, resultCallback: (result) {
+      showNotification(message, result);
     });
   } else {
     showNotification(message, room);

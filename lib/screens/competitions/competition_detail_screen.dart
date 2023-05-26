@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../settings_menu/settings_controller.dart';
 import '../settings_menu/web_view_screen.dart';
@@ -59,12 +60,18 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                     Get.back();
                   }),
                   const Spacer(),
-                  BodyLargeText(LocalizationString.disclaimer,
-                          weight: TextWeight.medium)
-                      .ripple(() {
-                    Get.to(() => WebViewScreen(
-                        header: LocalizationString.disclaimer,
-                        url: settingsController.setting.value!.disclaimerUrl!));
+                  BodyLargeText(disclaimerString.tr, weight: TextWeight.medium)
+                      .ripple(() async {
+                    if (await canLaunchUrl(Uri.parse(
+                        settingsController.setting.value!.disclaimerUrl!))) {
+                      await launchUrl(Uri.parse(
+                          settingsController.setting.value!.disclaimerUrl!));
+                    } else {
+                      // throw 'Could not launch $url';
+                    }
+                    // Get.to(() => WebViewScreen(
+                    //     header: disclaimerString.tr,
+                    //     url: settingsController.setting.value!.disclaimerUrl!));
                   }),
                 ],
               ).hP16,
@@ -72,10 +79,8 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                 left: 0,
                 right: 0,
                 child: Center(
-                  child: BodyLargeText(
-                    LocalizationString.competition,
-                      weight: TextWeight.bold
-                  ),
+                  child: BodyLargeText(competitionString.tr,
+                      weight: TextWeight.bold),
                 ),
               ),
             ],
@@ -83,7 +88,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
           const SizedBox(
             height: 10,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           GetBuilder<CompetitionController>(
               init: competitionController,
               builder: (ctx) {
@@ -104,7 +109,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                                       height: 270,
                                       placeholder: (context, url) =>
                                           AppUtil.addProgressIndicator(
-                                              size:100),
+                                              size: 100),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
                                     ),
@@ -124,9 +129,9 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                                       color: AppColorConstants.themeColor,
                                     ).bP8,
                                     Heading5Text(
-                                        competitionController
-                                            .competition.value!.description,
-                                        ),
+                                      competitionController
+                                          .competition.value!.description,
+                                    ),
                                   ],
                                 ).p16,
                                 const SizedBox(
@@ -153,10 +158,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       model.exampleImages.isNotEmpty
-          ? Heading4Text(
-              LocalizationString.exampleVideos,
-          weight: TextWeight.bold
-            ).hP16
+          ? Heading4Text(exampleVideosString.tr, weight: TextWeight.bold).hP16
           : Container(),
       const SizedBox(height: 65)
     ]).hP16;
@@ -167,8 +169,10 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       model.exampleImages.isNotEmpty
-          ? Heading3Text(LocalizationString.examplePhotos,
-              weight: TextWeight.medium,)
+          ? Heading3Text(
+              examplePhotosString.tr,
+              weight: TextWeight.medium,
+            )
           : Container(),
       const SizedBox(
         height: 20,
@@ -194,11 +198,10 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
               imageUrl: model.exampleImages[index],
               fit: BoxFit.cover,
               placeholder: (context, url) =>
-                  AppUtil.addProgressIndicator(size:100),
+                  AppUtil.addProgressIndicator(size: 100),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ).round(10)),
         // staggeredTileBuilder: (int index) => new StaggeredTile.count(1, 1),
-
       ),
       const SizedBox(height: 65)
     ]);
@@ -228,18 +231,18 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     String title;
     var loggedInUserPost = model.posts
-        .where((element) =>
-            element.user.id == _userProfileManager.user.value!.id)
+        .where(
+            (element) => element.user.id == _userProfileManager.user.value!.id)
         .toList();
     if (model.isJoined == 1) {
       title = loggedInUserPost.isNotEmpty
-          ? LocalizationString.viewSubmission
+          ? viewSubmissionString.tr
           : model.competitionMediaType == 1
-              ? LocalizationString.postPhoto
-              : LocalizationString.postVideo;
+              ? postPhotoString.tr
+              : postVideoString.tr;
     } else {
       title =
-          "${LocalizationString.join} (${LocalizationString.fee} ${model.joiningFee} ${LocalizationString.coins})";
+          "${joinString.tr} (${feeString.tr} ${model.joiningFee} ${coinsString.tr})";
     }
 
     return Positioned(
@@ -263,8 +266,9 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
             height: 95,
             color: AppColorConstants.themeColor,
             child: Center(
-              child: Heading6Text(title,
-                  ),
+              child: Heading6Text(
+                title,
+              ),
             ),
           )),
     );

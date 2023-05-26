@@ -31,10 +31,10 @@ class _AllowNotificationState extends State<AllowNotification> {
                 color: Theme.of(context).primaryColor),
           ).round(30),
           Heading3Text(
-            LocalizationString.notificationHeader,
+            notificationHeaderString.tr,
           ).setPadding(top: 40),
           Heading5Text(
-            LocalizationString.notificationSubHeader,
+            notificationSubHeaderString.tr,
           ).setPadding(top: 20),
           Center(
             child: SizedBox(
@@ -42,7 +42,7 @@ class _AllowNotificationState extends State<AllowNotification> {
                 width: MediaQuery.of(context).size.width - 50,
                 child: AppThemeButton(
                     cornerRadius: 25,
-                    text: LocalizationString.allowNotification,
+                    text: allowNotificationString.tr,
                     onPress: () {
                       Get.to(() => AddName(isFromSignup: widget.isFromSignup));
                     })),
@@ -54,7 +54,7 @@ class _AllowNotificationState extends State<AllowNotification> {
                 child: AppThemeButton(
 
                     cornerRadius: 25,
-                    text: LocalizationString.notNow,
+                    text: notNowString.tr,
                     onPress: () {
                       Get.to(() => AddName(isFromSignup: widget.isFromSignup));
                     })),

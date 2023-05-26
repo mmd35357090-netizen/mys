@@ -32,11 +32,9 @@ class BlockedUsersListState extends State<BlockedUsersList> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 55,
-          ),
-          backNavigationBar(context:context, title:LocalizationString.blockedUser),
-          divider(context: context).vP8,
+
+          backNavigationBar( title:blockedUserString.tr),
+          divider().vP8,
           Expanded(
             child: GetBuilder<BlockedUsersController>(
                 init: blockedUsersController,

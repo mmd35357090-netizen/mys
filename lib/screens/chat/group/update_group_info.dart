@@ -1,10 +1,7 @@
 import 'dart:io';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../universal_components/rounded_input_field.dart';
 
 class UpdateGroupInfo extends StatefulWidget {
   final ChatRoomModel group;
@@ -54,7 +51,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Heading5Text(LocalizationString.update,
+                    Heading5Text(updateStrString.tr,
                             weight: TextWeight.medium)
                         .ripple(() {
                       updateGroup();
@@ -65,14 +62,14 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                   left: 0,
                   right: 0,
                   child: Center(
-                    child: Heading5Text(LocalizationString.createGroup,
+                    child: Heading5Text(createGroupString.tr,
                         weight: TextWeight.medium),
                   ),
                 )
               ],
             ),
           ).hP16,
-          divider(context: context).tP8,
+          divider().tP8,
           SizedBox(
             height: 250,
             child: Column(
@@ -114,21 +111,17 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                       width: 10,
                     ),
                     Expanded(
-                      child: InputField(
+                      child: AppTextField(
                         controller: groupName,
-                        showDivider: true,
-                        hintText: LocalizationString.groupName,
-                        cornerRadius: 5,
+                        hintText: groupNameString.tr,
                       ),
                     )
                   ],
                 ),
-                InputField(
+                AppTextField(
                   maxLines: 5,
                   controller: groupDescription,
-                  showDivider: true,
-                  hintText: LocalizationString.describeAboutGroup,
-                  cornerRadius: 5,
+                  hintText: describeAboutGroupString.tr,
                 )
               ],
             ),
@@ -141,7 +134,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
   updateGroup() {
     if (groupName.text.isEmpty) {
       AppUtil.showToast(
-          message: LocalizationString.pleaseEnterGroupName, isSuccess: false);
+          message: pleaseEnterGroupNameString.tr, isSuccess: false);
       return;
     }
 
@@ -150,24 +143,25 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
         name: groupName.text,
         description: groupDescription.text,
         image: enterGroupInfoController.groupImagePath.value,
-        context: context);
+        );
   }
 
   void openImagePickingPopup() {
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 Padding(
                     padding: const EdgeInsets.only(
                         left: 20, right: 20, top: 20, bottom: 25),
                     child: BodyLargeText(
-                      LocalizationString.addPhoto,
+                      addPhotoString.tr,
                     )),
                 ListTile(
                     leading: Icon(Icons.camera_alt_outlined,
                         color: AppColorConstants.iconColor),
-                    title: BodyLargeText(LocalizationString.takePhoto),
+                    title: BodyLargeText(takePhotoString.tr),
                     onTap: () {
                       Get.back();
                       picker
@@ -179,11 +173,11 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                         } else {}
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: Icon(Icons.wallpaper_outlined,
                         color: AppColorConstants.iconColor),
-                    title: BodyLargeText(LocalizationString.chooseFromGallery),
+                    title: BodyLargeText(chooseFromGalleryString.tr),
                     onTap: () async {
                       Get.back();
                       picker
@@ -195,10 +189,10 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                         } else {}
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: Icon(Icons.close, color: AppColorConstants.iconColor),
-                    title: BodyLargeText(LocalizationString.cancel),
+                    title: BodyLargeText(cancelString.tr),
                     onTap: () => Get.back()),
               ],
             ));

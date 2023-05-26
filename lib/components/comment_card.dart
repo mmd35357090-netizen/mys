@@ -1,9 +1,7 @@
 import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/widgets/detectable_text.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
-import '../apiHandler/api_controller.dart';
 import '../model/comment_model.dart';
 import '../screens/dashboard/posts.dart';
 import '../screens/profile/other_user_profile.dart';
@@ -85,18 +83,19 @@ class CommentTileState extends State<CommentTile> {
     if (text.startsWith('#')) {
       Get.to(() => Posts(
             hashTag: text.replaceAll('#', ''),
-            source: PostSource.posts,
           ));
     } else {
       String userTag = text.replaceAll('@', '');
 
-      ApiController()
-          .findFriends(isExactMatch: 1, searchText: userTag)
-          .then((response) {
-        if (response.users.isNotEmpty) {
-          Get.to(() => OtherUserProfile(userId: response.users.first.id));
-        }
-      });
+      UsersApi.searchUsers(
+          page: 1,
+          isExactMatch: 1,
+          searchText: userTag,
+          resultCallback: (result, metadata) {
+            if (result.isNotEmpty) {
+              Get.to(() => OtherUserProfile(userId: result.first.id));
+            }
+          });
     }
   }
 }

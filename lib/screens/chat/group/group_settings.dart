@@ -2,8 +2,8 @@ import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
-import '../../components/actionSheets/action_sheet1.dart';
-import '../../model/generic_item.dart';
+import '../../../components/actionSheets/action_sheet1.dart';
+import '../../../model/generic_item.dart';
 
 class GroupSettings extends StatefulWidget {
   const GroupSettings({Key? key}) : super(key: key);
@@ -22,12 +22,10 @@ class _GroupSettingsState extends State<GroupSettings> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.groupSettings),
-          divider(context: context).tP8,
+               title: groupSettingsString.tr),
+          divider().tP8,
           const SizedBox(
             height: 20,
           ),
@@ -52,13 +50,13 @@ class _GroupSettingsState extends State<GroupSettings> {
                       width: 15,
                     ),
                     Heading5Text(
-                      LocalizationString.sendMessages,
+                      sendMessagesString.tr,
                     ),
                     const Spacer(),
                     Obx(() => Heading6Text(
                           _chatDetailController.chatRoom.value!.groupAccess == 1
-                              ? LocalizationString.onlyAdmins
-                              : LocalizationString.allParticipants,
+                              ? onlyAdminsString.tr
+                              : allParticipantsString.tr,
                         )),
                     const ThemeIconWidget(
                       ThemeIcon.nextArrow,
@@ -79,19 +77,20 @@ class _GroupSettingsState extends State<GroupSettings> {
   openActionSheetForSendMessage() {
     showModalBottomSheet(
         context: context,
+
         backgroundColor: Colors.transparent,
         builder: (context) => ActionSheet1(
               items: [
                 GenericItem(
                   id: '1',
-                  title: LocalizationString.allParticipants,
-                  subTitle: LocalizationString.allParticipants,
+                  title: allParticipantsString.tr,
+                  subTitle: allParticipantsString.tr,
                   // isSelected: selectedItem?.id == '1',
                 ),
                 GenericItem(
                   id: '2',
-                  title: LocalizationString.onlyAdmins,
-                  subTitle: LocalizationString.onlyAdmins,
+                  title: onlyAdminsString.tr,
+                  subTitle: onlyAdminsString.tr,
                   // isSelected: selectedItem?.id == '1',
                 ),
               ],

@@ -26,10 +26,10 @@ class _AddPhotosState extends State<AddPhotos> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Heading3Text(
-              LocalizationString.addPhotoHeader,
+              addPhotoHeaderString.tr,
             ).setPadding(top: 100),
             Heading5Text(
-              LocalizationString.addPhotoSubHeader,
+              addPhotoSubHeaderString.tr,
             ).setPadding(top: 20),
             GridView.builder(
                 itemCount: 6,
@@ -50,7 +50,7 @@ class _AddPhotosState extends State<AddPhotos> {
                   width: MediaQuery.of(context).size.width - 50,
                   child: AppThemeButton(
                       cornerRadius: 25,
-                      text: LocalizationString.next,
+                      text: nextString.tr,
                       onPress: () {
                         Get.to(() =>
                             SetDateOfBirth(isFromSignup: widget.isFromSignup));
@@ -83,18 +83,19 @@ class _AddPhotosState extends State<AddPhotos> {
   void openImagePickingPopup() {
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 Padding(
                     padding: const EdgeInsets.only(
                         left: 20, right: 20, top: 20, bottom: 25),
                     child: BodyLargeText(
-                      LocalizationString.addPhoto,
+                      addPhotoString.tr,
                     )),
                 ListTile(
                     leading: Icon(Icons.camera_alt_outlined,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.takePhoto),
+                        color: AppColorConstants.iconColor),
+                    title: Text(takePhotoString.tr),
                     onTap: () {
                       Get.back();
                       picker
@@ -107,11 +108,11 @@ class _AddPhotosState extends State<AddPhotos> {
                         }
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: Icon(Icons.wallpaper_outlined,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.chooseFromGallery),
+                        color: AppColorConstants.iconColor),
+                    title: Text(chooseFromGalleryString.tr),
                     onTap: () async {
                       Get.back();
                       picker
@@ -124,11 +125,11 @@ class _AddPhotosState extends State<AddPhotos> {
                         }
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: Icon(Icons.close,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.cancel),
+                        color: AppColorConstants.iconColor),
+                    title: Text(cancelString.tr),
                     onTap: () => Get.back()),
               ],
             ));
@@ -137,28 +138,29 @@ class _AddPhotosState extends State<AddPhotos> {
   void openImageRemovePopup(int index) {
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 Padding(
                     padding: const EdgeInsets.only(
                         left: 20, right: 20, top: 20, bottom: 25),
-                    child: Text(LocalizationString.removePhoto,
+                    child: Text(removePhotoString.tr,
                         style: Theme.of(context).textTheme.bodyLarge)),
                 ListTile(
                     leading: ThemeIconWidget(ThemeIcon.delete,
-                        color: Theme.of(context).iconTheme.color),
-                    title: Text(LocalizationString.remove),
+                        color: AppColorConstants.iconColor),
+                    title: Text(removeString.tr),
                     onTap: () {
                       Get.back();
                       setState(() {
                         images.removeAt(index);
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: ThemeIconWidget(ThemeIcon.close,
-                        color: Theme.of(context).iconTheme.color),
-                    title: BodyLargeText(LocalizationString.cancel),
+                        color: AppColorConstants.iconColor),
+                    title: BodyLargeText(cancelString.tr),
                     onTap: () => Get.back()),
               ],
             ));

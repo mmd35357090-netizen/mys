@@ -1,12 +1,9 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/highlights_imports.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:story_view/controller/story_controller.dart';
 import 'package:story_view/utils.dart';
 import 'package:story_view/widgets/story_view.dart';
-
-import '../../universal_components/rounded_input_field.dart';
 
 class HighlightViewer extends StatefulWidget {
   final HighlightsModel highlight;
@@ -79,32 +76,6 @@ class _HighlightViewerState extends State<HighlightViewer> {
     );
   }
 
-  Widget replyWidget() {
-    return FooterLayout(
-      footer: KeyboardAttachable(
-        // backgroundColor: Colors.blue,
-        child: Container(
-          height: 60,
-          color: AppColorConstants.themeColor,
-          child: Row(
-            children: [
-              Expanded(
-                child: InputField(
-                  hintText: LocalizationString.reply,
-                ),
-              ),
-              ThemeIconWidget(
-                ThemeIcon.send,
-                color: AppColorConstants.iconColor,
-              )
-            ],
-          ).hP25,
-        ),
-      ),
-      child: storyWidget(),
-    );
-  }
-
   Widget userProfileView() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -161,17 +132,16 @@ class _HighlightViewerState extends State<HighlightViewer> {
         builder: (context) => Wrap(
               children: [
                 ListTile(
-                    title: Center(
-                        child: Text(LocalizationString.deleteFromHighlight)),
+                    title: Center(child: Text(deleteFromHighlightString.tr)),
                     onTap: () async {
                       Get.back();
                       controller.play();
 
                       highlightController.deleteStoryFromHighlight();
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(child: Text(LocalizationString.cancel)),
+                    title: Center(child: Text(cancelString.tr)),
                     onTap: () {
                       controller.play();
                       Get.back();

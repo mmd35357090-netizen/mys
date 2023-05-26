@@ -1,4 +1,5 @@
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/profile_api.dart';
 import 'package:foap/controllers/profile_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import '../../model/get_relationship_model.dart';
 import '../../model/my_invitation_model.dart';
 import '../../model/my_relations_model.dart';
+
 class RelationshipController extends GetxController {
   RxList<RelationshipName> relationshipNames = <RelationshipName>[].obs;
 
@@ -22,8 +24,8 @@ class RelationshipController extends GetxController {
   }
 
   getRelationships() {
-    ApiController().getRelationships().then((response) {
-      relationshipNames.value = response.relationshipNames.toList();
+    ProfileApi.getRelationshipNames(resultCallback: (result) {
+      relationshipNames.value = result;
       relationshipNames.refresh();
 
       update();
@@ -31,17 +33,19 @@ class RelationshipController extends GetxController {
   }
 
   getUsersRelationships({required int userId}) {
-    ApiController().getUsersRelationships(userId).then((response) {
-      relationships.value = response.relationships.toList();
-      relationships.refresh();
-      update();
-    });
+    ProfileApi.getUsersRelationships(
+        userId: userId,
+        resultCallback: (result) {
+          relationships.value = result;
+          relationships.refresh();
+          update();
+        });
   }
 
   getMyRelationships() {
-    EasyLoading.show(status: LocalizationString.loading);
-    ApiController().getMyRelations().then((response) {
-      relationships.value = response.relationships.toList();
+    EasyLoading.show(status: loadingString.tr);
+    ProfileApi.getMyRelations(resultCallback: (result) {
+      relationships.value = result;
       relationships.refresh();
       EasyLoading.dismiss();
       update();
@@ -49,8 +53,8 @@ class RelationshipController extends GetxController {
   }
 
   getMyInvitations() {
-    ApiController().getMyInvitations().then((response) {
-      myInvitations.value = response.myInvitations.toList();
+    ProfileApi.getMyInvitations(resultCallback: (result, metaData) {
+      myInvitations.value = result;
       myInvitations.refresh();
       update();
     });
@@ -58,22 +62,25 @@ class RelationshipController extends GetxController {
 
   acceptRejectInvitation(int invitationId, int status, VoidCallback handler) {
     update();
-    EasyLoading.show(status: LocalizationString.loading);
-    ApiController().acceptRejectInvitation(invitationId, status).then((value) {
-      handler();
-      EasyLoading.dismiss();
-    });
+    EasyLoading.show(status: loadingString.tr);
+    ProfileApi.acceptRejectInvitation(
+        invitationId: invitationId,
+        status: status,
+        resultCallback: () {
+          handler();
+          EasyLoading.dismiss();
+        });
   }
 
   postRelationshipSettings(int relationSetting) {
     update();
-    EasyLoading.show(status: LocalizationString.loading);
-    ApiController()
-        .postRelationshipSettings(relationSetting)
-        .then((value) async {
-      await _profileController.getMyProfile();
-      update();
-      EasyLoading.dismiss();
-    });
+    EasyLoading.show(status: loadingString.tr);
+    ProfileApi.postRelationshipSettings(
+        relationSetting: relationSetting,
+        resultCallback: () async {
+          await _profileController.getMyProfile();
+          update();
+          EasyLoading.dismiss();
+        });
   }
 }

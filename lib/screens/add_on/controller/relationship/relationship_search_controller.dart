@@ -1,6 +1,8 @@
-import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/profile_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
+import '../../../../apiHandler/apis/users_api.dart';
+
 class RelationshipSearchController extends GetxController {
   RxList<UserModel> searchedUsers = <UserModel>[].obs;
   RxString searchText = ''.obs;
@@ -40,31 +42,29 @@ class RelationshipSearchController extends GetxController {
     if (canLoadMoreAccounts) {
       accountsIsLoading = true;
 
-      ApiController()
-          .findFriends(isExactMatch: 0, searchText: text)
-          .then((response) {
-        accountsIsLoading = false;
-        searchedUsers.value = response.users;
+      UsersApi.searchUsers(
+        page:accountsPage,
+          isExactMatch: 0,
+          searchText: text,
+          resultCallback: (result,metadata) {
+            accountsIsLoading = false;
+            searchedUsers.value = result;
+            canLoadMoreAccounts = result.length >= metadata.perPage;
+            accountsPage += 1;
 
-        accountsPage += 1;
-        if (response.topUsers.length == response.metaData?.perPage) {
-          canLoadMoreAccounts = true;
-        } else {
-          canLoadMoreAccounts = false;
-        }
-
-        update();
-      });
+            update();
+          });
     }
   }
 
   inviteUser(int relationShipId, int userId, VoidCallback handler) {
     update();
-    ApiController().postRelationInviteUnInvite(relationShipId, userId).then((value) {
-      if(value.success) {
-        handler();
-      }
-    });
+    ProfileApi.postRelationInviteUnInvite(
+        relationShipId: relationShipId,
+        userId: userId,
+        resultCallback: () {
+          handler();
+        });
   }
 
   unInviteUser(int userId) {

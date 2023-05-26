@@ -21,12 +21,13 @@ class AvatarView extends StatelessWidget {
     String initials = '';
 
     if (name != null) {
-      List<String> nameParts = (name ?? '').split(' ');
-      if (nameParts.length > 1) {
-        initials = nameParts[0].substring(0, 1).toUpperCase() +
-            nameParts[1].substring(0, 1).toUpperCase();
-      } else {
-        initials = nameParts[0].substring(0, 1).toUpperCase();
+      List<String> nameParts = name!.trim().split(' ');
+      initials = '';
+      for (var part in nameParts) {
+        initials += part.substring(0, 1).toUpperCase();
+        if (initials.length >= 2) {
+          break;
+        }
       }
     }
 
@@ -164,7 +165,7 @@ class UserAvatarView extends StatelessWidget {
               color: AppColorConstants.themeColor,
               child: Center(
                 child: BodyMediumText(
-                  LocalizationString.live,
+                  liveString.tr,
                 ),
               ),
             ).round(5))

@@ -66,21 +66,19 @@ class EventsListingState extends State<EventsListing> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-            context: context,
-            title: LocalizationString.events,
+
+            title: eventsString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: Obx(() {
               List<EventCategoryModel> categories =
                   _eventsController.categories;
               return categories.isEmpty
                   ? emptyData(
-                      title: LocalizationString.noEventFound,
+                      title: noEventFoundString.tr,
                       subTitle: '',
                     )
                   : Column(
@@ -143,7 +141,7 @@ class EventsListingState extends State<EventsListing> {
                                               const Spacer(),
                                               Row(children: [
                                                 BodySmallText(
-                                                  LocalizationString.seeAll,
+                                                  seeAllString.tr,
                                                 ),
                                                 const SizedBox(
                                                   width: 5,

@@ -1,10 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/tvs/tv_channel_detail.dart';
-import 'package:get/get.dart';
 import 'package:foap/model/live_tv_model.dart';
-
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../controllers/live_tv_streaming_controller.dart';
-
 
 class FavTvList extends StatefulWidget {
   const FavTvList({Key? key}) : super(key: key);
@@ -15,13 +13,20 @@ class FavTvList extends StatefulWidget {
 
 class _FavTvListState extends State<FavTvList> {
   final TvStreamingController _tvStreamingController = Get.find();
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _tvStreamingController.getFavTvs();
+      _tvStreamingController.clearTvs();
+      loadData();
     });
     super.initState();
+  }
+
+  loadData() {
+    _tvStreamingController.getFavTvs();
   }
 
   @override
@@ -34,95 +39,57 @@ class _FavTvListState extends State<FavTvList> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverOverlapAbsorber(
-                  handle:
-                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                  sliver: SliverPadding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    sliver: SliverAppBar(
-                      backgroundColor: AppColorConstants.backgroundColor,
-                      expandedHeight: 100.0,
-                      floating: true,
-                      pinned: true,
-                      forceElevated: true,
-                      leading: ThemeIconWidget(
-                        ThemeIcon.backArrow,
-                        size: 18,
-                        color: AppColorConstants.iconColor,
-                      ).ripple(() {
-                        Get.back();
-                      }),
-                      flexibleSpace: FlexibleSpaceBar(
-                          centerTitle: true,
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/tv/fav.png',
-                                height: 20,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 10),
-                              Heading4Text(
-                                LocalizationString.favourite,
-                              ),
-                            ],
-                          ),
-                          background: Container(
-                            height: 170,
-                            color: AppColorConstants.themeColor,
-                          ).overlay(Colors.black26)),
-                    ),
-                  )),
-            ];
-          },
-          body: CustomScrollView(
-            slivers: [
-              // Next, create a SliverList
-              GetBuilder<TvStreamingController>(
-                  init: _tvStreamingController,
-                  builder: (ctx) {
-                    return _tvStreamingController.tvs.isEmpty
-                        ? SliverToBoxAdapter(
-                            child: SizedBox(
-                                height:
-                                    (MediaQuery.of(context).size.height / 1.5),
-                                width: (MediaQuery.of(context).size.width),
-                                child: const Center(
-                                    child: CircularProgressIndicator())))
-                        : SliverGrid(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 2,
-                              crossAxisSpacing: 2,
-                              mainAxisExtent: 140,
-                            ),
-                            delegate: SliverChildBuilderDelegate(
-                              (BuildContext context, int index) {
-                                TvModel tvModel =
-                                    _tvStreamingController.tvs[index];
-                                return Card(
-                                    margin: const EdgeInsets.all(1),
-                                    child: CachedNetworkImage(
-                                      imageUrl: tvModel.image,
-                                      fit: BoxFit.fitHeight,
-                                      height: 230,
-                                    ).round(10).ripple(() {
-                                      Get.to(() => TVChannelDetail(
-                                            tvModel: tvModel,
-                                          ));
-                                    })).round(5);
-                              },
-                              childCount: _tvStreamingController.tvs.length,
-                            ),
-                          );
-                  })
-            ],
-          ),
+        body: Column(
+          children: [
+
+            backNavigationBar(title: favouriteString),
+            Expanded(child: tvList()),
+          ],
         ));
+  }
+
+  Widget tvList() {
+    return GetBuilder<TvStreamingController>(
+        init: _tvStreamingController,
+        builder: (ctx) {
+          return _tvStreamingController.isLoadingFavTvs
+              ? SizedBox(
+                  height: (MediaQuery.of(context).size.height / 1.5),
+                  width: (MediaQuery.of(context).size.width),
+                  child: const Center(child: CircularProgressIndicator()))
+              : _tvStreamingController.tvs.isEmpty
+                  ? emptyData(title: noDataString, subTitle: '')
+                  : GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 2,
+                        crossAxisSpacing: 2,
+                        mainAxisExtent: 140,
+                      ),
+                      itemCount: _tvStreamingController.tvs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        TvModel tvModel = _tvStreamingController.tvs[index];
+                        return Card(
+                            margin: const EdgeInsets.all(1),
+                            child: CachedNetworkImage(
+                              imageUrl: tvModel.image,
+                              fit: BoxFit.fitHeight,
+                              height: 230,
+                            ).round(10).ripple(() {
+                              Get.to(() => TVChannelDetail(
+                                    tvModel: tvModel,
+                                  ));
+                            })).round(5);
+                      },
+                    ).addPullToRefresh(
+                      refreshController: _refreshController,
+                      onRefresh: () {},
+                      onLoading: () {
+                        loadData();
+                      },
+                      enablePullUp: true,
+                      enablePullDown: false);
+        });
   }
 }

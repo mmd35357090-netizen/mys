@@ -26,7 +26,7 @@ class ForceUpdateView extends StatelessWidget {
             fit: BoxFit.contain,
           ).p25),
           Heading4Text(
-            LocalizationString.timeToUpdateApp.toUpperCase(),
+            timeToUpdateAppString.tr.toUpperCase(),
             weight: TextWeight.bold,
             textAlign: TextAlign.center,
           ).hP25,
@@ -34,7 +34,7 @@ class ForceUpdateView extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.03,
           ),
           Heading3Text(
-            LocalizationString.usingOlderVersionMessage,
+            usingOlderVersionMessageString.tr,
             weight: TextWeight.regular,
             textAlign: TextAlign.center,
           ).hP25,
@@ -46,7 +46,7 @@ class ForceUpdateView extends StatelessWidget {
             width: 280,
             child: AppThemeButton(
               cornerRadius: 25,
-              text: LocalizationString.update,
+              text: updateStrString.tr,
               onPress: () async {
                 await launchUrl(
                     Uri.parse(settingsController.setting.value!.latestAppDownloadLink!));
@@ -106,7 +106,7 @@ class InvalidPurchaseView extends StatelessWidget {
               width: 280,
               child: AppThemeButton(
                 cornerRadius: 25,
-                text: LocalizationString.ok,
+                text: okString.tr,
                 onPress: () async {
                   await launchUrl(Uri.parse(
                       'https://codecanyon.net/item/timeline-chat-calling-live-social-media-photo-video-sharing-app-iosandroidadmin-panel/39825646'));

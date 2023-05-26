@@ -2,6 +2,7 @@ import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/post_api.dart';
 import '../../model/post_model.dart';
 
 class PostChatTile extends StatelessWidget {
@@ -25,7 +26,7 @@ class PostChatTile extends StatelessWidget {
                 if (snapshot.hasData) {
                   return snapshot.data == null
                       ? Center(
-                          child: Heading5Text(LocalizationString.postDeleted,
+                          child: Heading5Text(postDeletedString.tr,
                               weight: TextWeight.bold,
                               color: AppColorConstants.themeColor),
                         )
@@ -89,7 +90,7 @@ class PostChatTile extends StatelessWidget {
                       snapshot.connectionState == ConnectionState.done) {
                     return Center(
                         child: Heading3Text(
-                      LocalizationString.postDeleted,
+                      postDeletedString.tr,
                       color: AppColorConstants.themeColor,
                       weight: TextWeight.bold,
                     ));
@@ -103,10 +104,12 @@ class PostChatTile extends StatelessWidget {
 
   Future<PostModel?> getPostDetail(int postId) async {
     PostModel? post;
-    await ApiController().getPostDetail(postId).then((value) {
-      post = value.post;
-    });
+    await PostApi.getPostDetail(postId, resultCallback: (result) {
+      post = result;
+      print('hello 2');
 
+    });
+    print('hello 2 ${post}');
     return post;
   }
 }
@@ -141,7 +144,7 @@ class MinimalInfoPostChatTile extends StatelessWidget {
                           httpHeaders: const {'accept': 'image/*'},
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
-                              AppUtil.addProgressIndicator(size:100),
+                              AppUtil.addProgressIndicator(size: 100),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
                         ),
@@ -160,13 +163,13 @@ class MinimalInfoPostChatTile extends StatelessWidget {
                       snapshot.connectionState == ConnectionState.done) {
                     return Center(
                       child: Heading5Text(
-                        LocalizationString.postDeleted,
+                        postDeletedString.tr,
                         weight: TextWeight.bold,
                         color: AppColorConstants.themeColor,
                       ),
                     );
                   } else {
-                    return AppUtil.addProgressIndicator(size:100);
+                    return AppUtil.addProgressIndicator(size: 100);
                   }
                 }
               }),
@@ -175,9 +178,11 @@ class MinimalInfoPostChatTile extends StatelessWidget {
 
   Future<PostModel?> getPostDetail(int postId) async {
     PostModel? post;
-    await ApiController().getPostDetail(postId).then((value) {
-      post = value.post;
+    await PostApi.getPostDetail(postId, resultCallback: (result) {
+      post = result;
+      print('hello');
     });
+    print('hello 1 ${post}');
 
     return post;
   }

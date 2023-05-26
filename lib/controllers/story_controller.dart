@@ -1,3 +1,6 @@
+import 'package:foap/apiHandler/apis/misc_api.dart';
+import 'package:foap/apiHandler/apis/post_api.dart';
+import 'package:foap/apiHandler/apis/story_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
@@ -28,18 +31,8 @@ class AppStoryController extends GetxController {
     update();
   }
 
-  deleteStory(VoidCallback callback) async {
-    await ApiController()
-        .deleteStory(id: storyMediaModel.value!.id)
-        .then((response) async {
-      if (response.success) {
-        callback();
-        // AppUtil.showToast(
-        //     context: Get.context!,
-        //     message: LocalizationString.storyDeleteSuccessfully,
-        //     isSuccess: true);
-      }
-    });
+  deleteStory(VoidCallback callback) {
+    StoryApi.deleteStory(id: storyMediaModel.value!.id, callback: callback);
   }
 
   setCurrentStoryMedia(StoryMediaModel storyMedia) {
@@ -49,7 +42,7 @@ class AppStoryController extends GetxController {
   }
 
   void uploadAllMedia(
-      {required List<Media> items, required BuildContext context}) async {
+      {required List<Media> items}) async {
     var responses =
         await Future.wait([for (Media media in items) uploadMedia(media)])
             .whenComplete(() {});
@@ -59,91 +52,71 @@ class AppStoryController extends GetxController {
 
   Future<Map<String, String>> uploadMedia(Media media) async {
     Map<String, String> gallery = {};
+    final completer = Completer<Map<String, String>>();
 
-    await AppUtil.checkInternet().then((value) async {
-      if (value) {
-        final tempDir = await getTemporaryDirectory();
-        File mainFile;
-        String? videoThumbnailPath;
+    final tempDir = await getTemporaryDirectory();
+    File mainFile;
+    String? videoThumbnailPath;
 
-        if (media.mediaType == GalleryMediaType.photo) {
-          Uint8List mainFileData = await media.file!.compress();
-          //image media
-          mainFile =
-              await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
-                  .create();
-          mainFile.writeAsBytesSync(mainFileData);
-        } else {
-          Uint8List mainFileData = media.file!.readAsBytesSync();
-          // video
-          mainFile =
-              await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.mp4')
-                  .create();
-          mainFile.writeAsBytesSync(mainFileData);
-
-          File videoThumbnail = await File(
-                  '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
+    if (media.mediaType == GalleryMediaType.photo) {
+      Uint8List mainFileData = await media.file!.compress();
+      //image media
+      mainFile =
+          await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
               .create();
+      mainFile.writeAsBytesSync(mainFileData);
+    } else {
+      Uint8List mainFileData = media.file!.readAsBytesSync();
+      // video
+      mainFile =
+          await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.mp4')
+              .create();
+      mainFile.writeAsBytesSync(mainFileData);
 
-          videoThumbnail.writeAsBytesSync(media.thumbnail!);
+      File videoThumbnail = await File(
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
+          .create();
 
-          await ApiController()
-              .uploadFile(
-                  file: videoThumbnail.path,
-                  type: UploadMediaType.storyOrHighlights)
-              .then((response) async {
-            videoThumbnailPath = response.postedMediaFileName!;
-            await videoThumbnail.delete();
-          });
-        }
+      videoThumbnail.writeAsBytesSync(media.thumbnail!);
 
-        EasyLoading.show(status: LocalizationString.loading);
-        await ApiController()
-            .uploadFile(
-                file: mainFile.path, type: UploadMediaType.storyOrHighlights)
-            .then((response) async {
-          String mainFileUploadedPath = response.postedMediaFileName!;
-          await mainFile.delete();
-          gallery = {
-            // 'image': media.mediaType == 1 ? mainFileUploadedPath : '',
-            'image': media.mediaType == GalleryMediaType.photo
-                ? mainFileUploadedPath
-                : videoThumbnailPath!,
-            'video': media.mediaType == GalleryMediaType.photo
-                ? ''
-                : mainFileUploadedPath,
-            'type': media.mediaType == GalleryMediaType.photo ? '2' : '3',
-            'description': '',
-            'background_color': '',
-          };
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
+      await MiscApi.uploadFile(videoThumbnail.path,
+          type: UploadMediaType.storyOrHighlights,
+          resultCallback: (fileName, filePath) async {
+        videoThumbnailPath = fileName;
+        await videoThumbnail.delete();
+      });
+    }
+
+    EasyLoading.show(status: loadingString.tr);
+
+    await MiscApi.uploadFile(mainFile.path,
+        type: UploadMediaType.storyOrHighlights,
+        resultCallback: (fileName, filePath) async {
+      String mainFileUploadedPath = fileName;
+      await mainFile.delete();
+      gallery = {
+        // 'image': media.mediaType == 1 ? mainFileUploadedPath : '',
+        'image': media.mediaType == GalleryMediaType.photo
+            ? mainFileUploadedPath
+            : videoThumbnailPath!,
+        'video': media.mediaType == GalleryMediaType.photo
+            ? ''
+            : mainFileUploadedPath,
+        'type': media.mediaType == GalleryMediaType.photo ? '2' : '3',
+        'description': '',
+        'background_color': '',
+      };
+      completer.complete(gallery);
     });
-    return gallery;
+
+    return completer.future;
   }
 
   void publishAction({
     required List<Map<String, String>> galleryItems,
   }) {
-    AppUtil.checkInternet().then((value) async {
-      EasyLoading.dismiss();
-
-      if (value) {
-        ApiController()
-            .postStory(
-          gallery: galleryItems,
-        )
-            .then((response) async {
-          Get.offAll(const DashboardScreen());
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
+    StoryApi.postStory(gallery: galleryItems);
+    Get.offAll(const DashboardScreen());
   }
 
 // isSelected(String id) {

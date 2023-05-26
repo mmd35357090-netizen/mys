@@ -10,11 +10,13 @@ import 'package:foap/theme/theme_icon.dart';
 import 'package:foap/util/app_config_constants.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:get/get.dart';
-import 'package:video_compress/video_compress.dart';
+import 'package:video_compress_ds/video_compress_ds.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+
+import '../../../../controllers/select_post_media_controller.dart';
 
 class PreviewReelsScreen extends StatefulWidget {
   final File reel;
@@ -24,10 +26,10 @@ class PreviewReelsScreen extends StatefulWidget {
 
   const PreviewReelsScreen(
       {Key? key,
-        required this.reel,
-        this.audioId,
-        this.audioStartTime,
-        this.audioEndTime})
+      required this.reel,
+      this.audioId,
+      this.audioStartTime,
+      this.audioEndTime})
       : super(key: key);
 
   @override
@@ -39,6 +41,8 @@ class PreviewReelsScreen extends StatefulWidget {
 class _PreviewReelsState extends State<PreviewReelsScreen> {
   ChewieController? chewieController;
   VideoPlayerController? videoPlayerController;
+  final SelectPostMediaController _selectPostMediaController =
+      SelectPostMediaController();
 
   @override
   void initState() {
@@ -77,8 +81,8 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
       child: Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
-          // alignment: Alignment.topCenter,
-          // fit: StackFit.loose,
+            // alignment: Alignment.topCenter,
+            // fit: StackFit.loose,
             children: [
               const SizedBox(
                 height: 50,
@@ -86,12 +90,12 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
               chewieController == null
                   ? Container()
                   : SizedBox(
-                height: (MediaQuery.of(context).size.width - 32) /
-                    videoPlayerController!.value.aspectRatio,
-                child: Chewie(
-                  controller: chewieController!,
-                ),
-              ).round(20),
+                      height: (MediaQuery.of(context).size.width - 32) /
+                          videoPlayerController!.value.aspectRatio,
+                      child: Chewie(
+                        controller: chewieController!,
+                      ),
+                    ).round(20),
               const SizedBox(
                 height: 25,
               ),
@@ -105,12 +109,11 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
                     Get.back();
                   }),
                   Container(
-                      color: AppColorConstants.themeColor,
-                      child: Text(
-                        LocalizationString.next,
-                        style: TextStyle(
-                            fontSize: FontSizes.b2),
-                      ).setPadding(left: 16, right: 16, bottom: 8, top: 8))
+                          color: AppColorConstants.themeColor,
+                          child: Text(
+                            nextString.tr,
+                            style: TextStyle(fontSize: FontSizes.b2),
+                          ).setPadding(left: 16, right: 16, bottom: 8, top: 8))
                       .circular
                       .ripple(() {
                     submitReel();
@@ -126,7 +129,7 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
   }
 
   submitReel() async {
-    EasyLoading.show(status: LocalizationString.loading);
+    EasyLoading.show(status: loadingString.tr);
     final thumbnail = await VideoThumbnail.thumbnailData(
       video: widget.reel.path,
       imageFormat: ImageFormat.JPEG,
@@ -151,12 +154,14 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
     media.title = null;
     media.mediaType = GalleryMediaType.video;
 
+    _selectPostMediaController.mediaSelected([media]);
     Get.to(() => AddPostScreen(
-      items: [media],
-      isReel: true,
-      audioId: widget.audioId,
-      audioStartTime: widget.audioStartTime,
-      audioEndTime: widget.audioEndTime,
-    ));
+          // items: [media],
+          isReel: true,
+          audioId: widget.audioId,
+          audioStartTime: widget.audioStartTime,
+          audioEndTime: widget.audioEndTime,
+          postType: PostType.reel,
+        ));
   }
 }

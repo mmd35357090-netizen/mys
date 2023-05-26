@@ -49,49 +49,49 @@ class _ChatMediaSharingOptionPopupState
         _settingsController.setting.value!.enableVideoSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.camera,
-          text: LocalizationString.photo,
+          text: photoString.tr,
           contentType: MessageContentType.photo));
     }
     if (_settingsController.setting.value!.enableFileSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.files,
-          text: LocalizationString.files,
+          text: filesString.tr,
           contentType: MessageContentType.file));
     }
     if (_settingsController.setting.value!.enableGifSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.gif,
-          text: LocalizationString.gif,
+          text: gifString.tr,
           contentType: MessageContentType.gif));
     }
     if (_settingsController.setting.value!.enableContactSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.contacts,
-          text: LocalizationString.contact,
+          text: contactString.tr,
           contentType: MessageContentType.contact));
     }
     if (_settingsController.setting.value!.enableLocationSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.location,
-          text: LocalizationString.location,
+          text: locationString.tr,
           contentType: MessageContentType.location));
     }
     if (_settingsController.setting.value!.enableAudioSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.mic,
-          text: LocalizationString.audio,
+          text: audioString.tr,
           contentType: MessageContentType.audio));
     }
     if (_settingsController.setting.value!.enableDrawingSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.drawing,
-          text: LocalizationString.drawing,
+          text: drawingString.tr,
           contentType: MessageContentType.drawing));
     }
     if (_settingsController.setting.value!.enableProfileSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.account,
-          text: LocalizationString.user,
+          text: userString.tr,
           contentType: MessageContentType.profile));
     }
   }
@@ -203,6 +203,7 @@ class _ChatMediaSharingOptionPopupState
 
     GiphyGif? gif = await GiphyGet.getGif(
       context: context,
+
       //Required
       apiKey: _settingsController.setting.value!.giphyApiKey!,
       //Required.
@@ -226,13 +227,13 @@ class _ChatMediaSharingOptionPopupState
         backgroundColor: Colors.transparent,
         context: context,
         builder: (context) => VoiceRecord(
-          recordingCallback: (media) {
-            _chatDetailController.sendAudioMessage(
-                media: media,
-                mode: _chatDetailController.actionMode.value,
-                room: _chatDetailController.chatRoom.value!);
-          },
-        ));
+              recordingCallback: (media) {
+                _chatDetailController.sendAudioMessage(
+                    media: media,
+                    mode: _chatDetailController.actionMode.value,
+                    room: _chatDetailController.chatRoom.value!);
+              },
+            ));
   }
 
   void openContactList() {
@@ -241,18 +242,18 @@ class _ChatMediaSharingOptionPopupState
         backgroundColor: Colors.transparent,
         context: context,
         builder: (context) => FractionallySizedBox(
-          heightFactor: 1,
-          child: ContactList(
-            selectedContactsHandler: (contacts) {
-              for (Contact contact in contacts) {
-                _chatDetailController.sendContactMessage(
-                    contact: contact,
-                    mode: _chatDetailController.actionMode.value,
-                    room: _chatDetailController.chatRoom.value!);
-              }
-            },
-          ),
-        ));
+              heightFactor: 1,
+              child: ContactList(
+                selectedContactsHandler: (contacts) {
+                  for (Contact contact in contacts) {
+                    _chatDetailController.sendContactMessage(
+                        contact: contact,
+                        mode: _chatDetailController.actionMode.value,
+                        room: _chatDetailController.chatRoom.value!);
+                  }
+                },
+              ),
+            ));
   }
 
   void openLocationPicker() {
@@ -285,6 +286,7 @@ class _ChatMediaSharingOptionPopupState
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         // isDismissible: false,
         isScrollControlled: true,
         enableDrag: false,
@@ -297,24 +299,24 @@ class _ChatMediaSharingOptionPopupState
         backgroundColor: Colors.transparent,
         context: context,
         builder: (context) => ChooseMediaForChat(
-          selectedMediaCompletetion: (medias) {
-            for (Media media in medias) {
-              if (media.mediaType == GalleryMediaType.photo) {
-                _chatDetailController.sendImageMessage(
-                    media: media,
-                    mode: _chatDetailController.actionMode.value,
-                    room: _chatDetailController.chatRoom.value!);
-                Navigator.of(context).pop();
-              } else {
-                Get.back();
-                _chatDetailController.sendVideoMessage(
-                    media: media,
-                    mode: _chatDetailController.actionMode.value,
-                    room: _chatDetailController.chatRoom.value!);
-              }
-            }
-          },
-        ));
+              selectedMediaCompletetion: (medias) {
+                for (Media media in medias) {
+                  if (media.mediaType == GalleryMediaType.photo) {
+                    _chatDetailController.sendImageMessage(
+                        media: media,
+                        mode: _chatDetailController.actionMode.value,
+                        room: _chatDetailController.chatRoom.value!);
+                    Navigator.of(context).pop();
+                  } else {
+                    Get.back();
+                    _chatDetailController.sendVideoMessage(
+                        media: media,
+                        mode: _chatDetailController.actionMode.value,
+                        room: _chatDetailController.chatRoom.value!);
+                  }
+                }
+              },
+            ));
   }
 
   void openUsersList() {
@@ -331,17 +333,18 @@ class _ChatMediaSharingOptionPopupState
   }
 
   void openGroups() {
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context) => VoiceRecord(
-          recordingCallback: (media) {
-            _chatDetailController.sendAudioMessage(
-                media: media,
-                mode: _chatDetailController.actionMode.value,
-                room: _chatDetailController.chatRoom.value!);
-          },
-        ));
+    // showModalBottomSheet(
+    //     backgroundColor: Colors.transparent,
+    //     context: context,
+    //
+    //     builder: (context) => VoiceRecord(
+    //       recordingCallback: (media) {
+    //         _chatDetailController.sendAudioMessage(
+    //             media: media,
+    //             mode: _chatDetailController.actionMode.value,
+    //             room: _chatDetailController.chatRoom.value!);
+    //       },
+    //     ));
   }
 
   void openFilePicker() async {

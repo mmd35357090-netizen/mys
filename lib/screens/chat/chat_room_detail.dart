@@ -78,7 +78,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                       )),
               ],
             ).hP16,
-            divider(context: context).tP8,
+            divider().tP8,
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.only(
@@ -196,7 +196,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                     width: 10,
                   ),
                   Heading6Text(
-                    LocalizationString.groupSettings,
+                    groupSettingsString.tr,
                       weight: TextWeight.regular
                   ),
                 ],
@@ -237,7 +237,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                     width: 10,
                   ),
                   Heading6Text(
-                    LocalizationString.media,
+                    mediaString.tr,
                       weight: TextWeight.regular
                   ),
                 ],
@@ -254,7 +254,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 chatRoom: widget.chatRoom,
               ));
         }),
-        divider(context: context),
+        divider(),
         Container(
           height: 50,
           color: AppColorConstants.cardColor,
@@ -274,7 +274,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                     width: 10,
                   ),
                   Heading6Text(
-                    LocalizationString.wallpaper,
+                    wallpaperString.tr,
                       weight: TextWeight.regular
                   ),
                 ],
@@ -291,7 +291,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 roomId: widget.chatRoom.id,
               ));
         }),
-        divider(context: context),
+        divider(),
         _chatRoomDetailController.starredMessages.isNotEmpty &&
                 _settingsController.setting.value!.enableStarMessage
             ? Obx(() => Container(
@@ -313,7 +313,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                             width: 10,
                           ),
                           Heading6Text(
-                            LocalizationString.starredMessages,
+                            starredMessagesString.tr,
                               weight: TextWeight.regular
                           ),
                         ],
@@ -352,7 +352,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Heading6Text(
-                LocalizationString.exportChat,
+                exportChatString.tr,
                   weight: TextWeight.regular
               )
             ],
@@ -360,13 +360,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         ).ripple(() {
           exportChatActionPopup();
         }),
-        divider(context: context),
+        divider(),
         Container(
           height: 50,
           color: AppColorConstants.cardColor,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Heading5Text(LocalizationString.deleteChat,
+            child: Heading5Text(deleteChatString.tr,
                     weight: TextWeight.medium, color: AppColorConstants.red)
                 .hP8,
           ),
@@ -374,7 +374,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           _chatRoomDetailController.deleteRoomChat(widget.chatRoom);
           _chatDetailController.deleteChat(widget.chatRoom.id);
           AppUtil.showToast(
-              message: LocalizationString.chatDeleted,
+              message: chatDeletedString.tr,
               isSuccess: true);
         })
       ],
@@ -384,7 +384,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
   Widget exitAndDeleteGroup() {
     return Column(
       children: [
-        divider(context: context),
+        divider(),
         Container(
           height: 50,
           color: AppColorConstants.cardColor,
@@ -392,8 +392,8 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
             alignment: Alignment.centerLeft,
             child: Heading5Text(
               widget.chatRoom.amIMember
-                  ? LocalizationString.leaveGroup
-                  : LocalizationString.deleteGroup,
+                  ? leaveGroupString.tr
+                  : deleteGroupString.tr,
     weight: TextWeight.medium,
     color: AppColorConstants.red
 
@@ -403,8 +403,8 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           if (widget.chatRoom.amIMember) {
 
             // AppUtil.showConfirmationAlert(
-            //     title: LocalizationString.leaveGroup,
-            //     subTitle: LocalizationString.leaveGroupConfirmation,
+            //     title: leaveGroup,
+            //     subTitle: leaveGroupConfirmation,
             //     cxt: context,
             //     okHandler: () {
             _chatRoomDetailController.leaveGroup(widget.chatRoom);
@@ -413,8 +413,8 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
             // print('test 2');
             //
             // AppUtil.showConfirmationAlert(
-            //     title: LocalizationString.deleteGroup,
-            //     subTitle: LocalizationString.deleteGroupConfirmation,
+            //     title: deleteGroup,
+            //     subTitle: deleteGroupConfirmation,
             //     cxt: context,
             //     okHandler: () {
             _chatRoomDetailController.deleteGroup(widget.chatRoom);
@@ -442,7 +442,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   height: 5,
                 ),
                 BodyMediumText(
-                  LocalizationString.audio,
+                  audioString.tr,
                     weight: TextWeight.medium
                 ),
               ],
@@ -462,7 +462,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   height: 5,
                 ),
                 BodyMediumText(
-                  LocalizationString.video,
+                  videoString.tr,
                     weight: TextWeight.medium
                 ),
               ],
@@ -522,26 +522,27 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
   void exportChatActionPopup() {
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 ListTile(
                     title: Center(
-                        child: BodyLargeText(LocalizationString.exportChatWithMedia)),
+                        child: BodyLargeText(exportChatWithMediaString.tr)),
                     onTap: () async {
                       Get.back();
                       exportChatWithMedia();
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     title: Center(
-                        child: BodyLargeText(LocalizationString.exportChatWithoutMedia)),
+                        child: BodyLargeText(exportChatWithoutMediaString.tr)),
                     onTap: () async {
                       Get.back();
                       exportChatWithoutMedia();
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -554,7 +555,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Heading5Text(
-                '${_chatDetailController.chatRoom.value!.roomMembers.length} ${LocalizationString.participants}',
+                '${_chatDetailController.chatRoom.value!.roomMembers.length} ${participantsString.tr}',
                   weight: TextWeight.bold
               ),
               const SizedBox(
@@ -594,7 +595,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                               width: 15,
                             ),
                             Heading6Text(
-                              LocalizationString.addParticipants,
+                              addParticipantsString.tr,
                                 weight: TextWeight.medium
                             )
                           ],
@@ -602,6 +603,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                           showModalBottomSheet(
                               backgroundColor: Colors.transparent,
                               context: context,
+
                               isScrollControlled: true,
                               builder: (context) => FractionallySizedBox(
                                   heightFactor: 0.9,
@@ -635,7 +637,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                             children: [
                               Heading6Text(
                                 member.userDetail.isMe
-                                    ? LocalizationString.you
+                                    ? youString.tr
                                     : member.userDetail.userName,
                                   weight: TextWeight.regular
                               ).bP4,
@@ -651,7 +653,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                           const Spacer(),
                           member.isAdmin == 1
                               ? Heading6Text(
-                                  LocalizationString.admin,
+                                  adminString.tr,
                               weight: TextWeight.medium
                                 ).bP4
                               : Container()
@@ -664,7 +666,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                       });
                     },
                     separatorBuilder: (ctx, index) {
-                      return divider(context: context).vp(10);
+                      return divider().vp(10);
                     }).vP8,
               ).round(10).backgroundCard(shadowOpacity: 0.1),
             ],
@@ -674,35 +676,35 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
   void openActionOptionsForParticipant(ChatRoomMember member) {
     GenericItem userDetail = GenericItem(
       id: '1',
-      title: LocalizationString.userDetail,
-      subTitle: LocalizationString.userDetail,
+      title: userDetailString.tr,
+      subTitle: userDetailString.tr,
       // isSelected: selectedItem?.id == '1',
     );
 
     GenericItem makeAdmin = GenericItem(
       id: '2',
-      title: LocalizationString.makeAdmin,
-      subTitle: LocalizationString.makeAdmin,
+      title: makeAdminString.tr,
+      subTitle: makeAdminString.tr,
       // isSelected: selectedItem?.id == '1',
     );
 
     GenericItem removeAdmin = GenericItem(
       id: '3',
-      title: LocalizationString.removeAdmin,
-      subTitle: LocalizationString.removeAdmin,
+      title: removeAdminString.tr,
+      subTitle: removeAdminString.tr,
       // isSelected: selectedItem?.id == '1',
     );
 
     GenericItem removeFromGroup = GenericItem(
       id: '4',
-      title: LocalizationString.removeFromGroup,
-      subTitle: LocalizationString.removeFromGroup,
+      title: removeFromGroupString.tr,
+      subTitle: removeFromGroupString.tr,
       // isSelected: selectedItem?.id == '1',
     );
     GenericItem cancel = GenericItem(
       id: '5',
-      title: LocalizationString.cancel,
-      subTitle: LocalizationString.cancel,
+      title: cancelString.tr,
+      subTitle: cancelString.tr,
       // isSelected: selectedItem?.id == '1',
     );
     List<GenericItem> items = [];
@@ -719,6 +721,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
 
     showModalBottomSheet(
         context: context,
+
         backgroundColor: Colors.transparent,
         builder: (context) => ActionSheet1(
               items: items,

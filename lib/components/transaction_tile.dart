@@ -28,7 +28,7 @@ class TransactionTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   BodyLargeText(
-                    LocalizationString.withdrawal,
+                    withdrawalString.tr,
                     color: AppColorConstants.themeColor,
                   ),
                   const SizedBox(height: 5),
@@ -47,10 +47,10 @@ class TransactionTile extends StatelessWidget {
                       .bP4,
                   BodyMediumText(
                     model.status == 1
-                        ? LocalizationString.pending
+                        ? pendingString.tr
                         : model.status == 2
-                            ? LocalizationString.rejected
-                            : LocalizationString.completed,
+                            ? rejectedString.tr
+                            : completedString.tr,
                     weight: TextWeight.medium,
                     color: model.status == 1
                         ? AppColorConstants.themeColor

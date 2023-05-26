@@ -492,7 +492,7 @@ class ChatMessageModel {
     if (createDate.isToday()) {
       return DateFormat('hh:mm a').format(createDate);
     } else if (createDate.isYesterday()) {
-      return LocalizationString.yesterday;
+      return yesterdayString.tr;
     } else if (difference < 7) {
       return DateFormat('EEEE').format(createDate);
     }
@@ -503,31 +503,31 @@ class ChatMessageModel {
     if (messageType == 1) {
       return textMessage;
     } else if (messageType == 2) {
-      return LocalizationString.sentAPhoto;
+      return sentAPhotoString.tr;
     } else if (messageType == 3) {
-      return LocalizationString.sentAVideo;
+      return sentAVideoString.tr;
     } else if (messageType == 4) {
-      return LocalizationString.sentAnAudio;
+      return sentAnAudioString.tr;
     } else if (messageType == 5) {
-      return LocalizationString.sentAGif;
+      return sentAGifString.tr;
     } else if (messageType == 6) {
-      return LocalizationString.sentASticker;
+      return sentAStickerString.tr;
     } else if (messageType == 7) {
-      return LocalizationString.sentAContact;
+      return sentAContactString.tr;
     } else if (messageType == 8) {
-      return LocalizationString.sentALocation;
+      return sentALocationString.tr;
     } else if (messageType == 9) {
       return '';
     } else if (messageType == 10) {
       return originalMessage.shortInfoForNotification;
     } else if (messageType == 11) {
-      return LocalizationString.sentAPost;
+      return sentAPostString.tr;
     } else if (messageType == 12) {
-      return LocalizationString.sentAStory;
+      return sentAStoryString.tr;
     } else if (messageType == 13) {
-      return LocalizationString.sentADrawing;
+      return sentADrawingString.tr;
     } else if (messageType == 14) {
-      return LocalizationString.sentAProfile;
+      return sentAProfileString.tr;
     } else if (messageType == 100) {
       Map<String, dynamic> actionMessage =
           json.decode(messageContent.decrypted());
@@ -535,19 +535,19 @@ class ChatMessageModel {
 
       if (action == 1) {
         String userName = actionMessage['username'] as String;
-        return '$userName ${LocalizationString.addedToGroup}';
+        return '$userName ${addedToGroupString.tr}';
       } else if (action == 2) {
         String userName = actionMessage['username'] as String;
-        return '$userName ${LocalizationString.removedFromGroup}';
+        return '$userName ${removedFromGroupString.tr}';
       } else if (action == 3) {
         String userName = actionMessage['username'] as String;
-        return '$userName ${LocalizationString.madeAdmin}';
+        return '$userName ${madeAdminString.tr}';
       } else if (action == 4) {
         String userName = actionMessage['username'] as String;
-        return '$userName ${LocalizationString.removedFromAdmins}';
+        return '$userName ${removedFromAdminsString.tr}';
       } else if (action == 5) {
         String userName = actionMessage['username'] as String;
-        return '$userName ${LocalizationString.leftTheGroup}';
+        return '$userName ${leftTheGroupString.tr}';
       }
     }
     return decrypt;

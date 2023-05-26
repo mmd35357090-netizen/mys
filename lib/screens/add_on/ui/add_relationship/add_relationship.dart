@@ -51,16 +51,16 @@ class _AddRelationshipState extends State<AddRelationship> {
             height: 50,
           ),
           Obx(() => backNavigationBarWithIconBadge(
-              context: context,
+              
               icon: ThemeIcon.notification,
-              title: LocalizationString.myFamily,
+              title: myFamilyString.tr,
               badgeCount: _relationshipController.myInvitations.isNotEmpty
                   ? _relationshipController.myInvitations.length
                   : 0,
               iconBtnClicked: () {
                 showSettingDialog();
               })),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: GetBuilder<RelationshipController>(
                 init: _relationshipController,
@@ -116,7 +116,7 @@ class _AddRelationshipState extends State<AddRelationship> {
                                     height: 20,
                                   ),
                                   Heading4Text(
-                                    LocalizationString.add,
+                                    addString.tr,
                                   ),
                                 ],
                               )).ripple(() {
@@ -160,6 +160,7 @@ class _AddRelationshipState extends State<AddRelationship> {
   showSettingDialog() {
     showDialog(
         context: context,
+
         builder: (BuildContext context) {
           return AlertDialog(content: StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -192,7 +193,7 @@ class _AddRelationshipState extends State<AddRelationship> {
                         ),
                       ),
                       ListTile(
-                        title: Text(LocalizationString.followers),
+                        title: Text(followersString.tr),
                         leading: Radio<RelationsRevealSetting>(
                           value: RelationsRevealSetting.followers,
                           groupValue: _profileController

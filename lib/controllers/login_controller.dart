@@ -2,6 +2,7 @@ import 'package:foap/screens/add_on/ui/dating/profile/set_location.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../apiHandler/apis/auth_api.dart';
 import '../screens/login_sign_up/set_user_name.dart';
 import '../screens/login_sign_up/verify_phone_login_OTP.dart';
 import '../util/shared_prefs.dart';
@@ -39,101 +40,71 @@ class LoginController extends GetxController {
   void login(String email, String password) {
     if (FormValidator().isTextEmpty(email)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterValidEmail,
+        pleaseEnterValidEmailString.tr,
       );
     } else if (FormValidator().isTextEmpty(password)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterPassword,
+        pleaseEnterPasswordString.tr,
       );
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController().login(email, password).then((response) async {
-            if (response.success) {
-              EasyLoading.dismiss();
-              await SharedPrefs().setAuthorizationKey(response.authKey!);
-              await _userProfileManager.refreshProfile();
-              await _settingsController.getSettings();
-              getIt<SocketManager>().connect();
-              // ask for location
-              // getIt<LocationManager>().postLocation();
+      AuthApi.login(
+          email: email,
+          password: password,
+          successCallback: (authKey) async {
+            await SharedPrefs().setAuthorizationKey(authKey);
+            await _userProfileManager.refreshProfile();
+            await _settingsController.getSettings();
+            getIt<SocketManager>().connect();
 
-              //For Testing Dating Flow
-              // isLoginFirstTime = true;
-              // Get.to(() => const SetLocation())!.then((value) {});
-
-              if (_userProfileManager.user.value!.userName.isEmpty) {
-                // isLoginFirstTime = true;
-                Get.to(() => const SetLocation(isFromSignup: false))!
-                    .then((value) {});
-              } else {
-                // isLoginFirstTime = false;
-                Get.offAll(() => const DashboardScreen());
-                getIt<SocketManager>().connect();
-                // getIt<LocationManager>().postLocation();
-                // if (response.isLoginFirstTime) {
-                //   Get.offAll(() => const SetProfileCategoryType(
-                //         isFromSignup: false,
-                //       ));
-                // } else {
-                //   SharedPrefs().setUserLoggedIn(true);
-                //   Get.offAll(() => const DashboardScreen());
-              }
+            if (_userProfileManager.user.value!.userName.isEmpty) {
+              Get.to(() => const SetLocation(isFromSignup: false))!
+                  .then((value) {});
             } else {
-              EasyLoading.dismiss();
-              if (response.token != null) {
-                Get.to(() => VerifyOTPScreen(
-                      isVerifyingEmail: true,
-                      isVerifyingPhone: false,
-                      token: response.token!,
-                    ));
-              } else {
-                EasyLoading.dismiss();
-                showErrorMessage(
-                  response.message,
-                );
-              }
+              Get.offAll(() => const DashboardScreen());
+              getIt<SocketManager>().connect();
             }
           });
-        } else {
-          showErrorMessage(
-            LocalizationString.noInternet,
-          );
-        }
-      });
+      // AppUtil.checkInternet().then((value) {
+      //   if (value) {
+      //     ApiController().login(email, password).then((response) async {
+      //       if (response.success) {
+      //       } else {
+      //         EasyLoading.dismiss();
+      //         if (response.token != null) {
+      //           Get.to(() => VerifyOTPScreen(
+      //                 isVerifyingEmail: true,
+      //                 isVerifyingPhone: false,
+      //                 token: response.token!,
+      //               ));
+      //         } else {
+      //           EasyLoading.dismiss();
+      //           showErrorMessage(
+      //             response.message,
+      //           );
+      //         }
+      //       }
+      //     });
+      //   } else {
+      //     showErrorMessage(
+      //       noInternet,
+      //     );
+      //   }
+      // });
     }
   }
 
   void phoneLogin({required String countryCode, required String phone}) {
     if (FormValidator().isTextEmpty(phone)) {
-      showErrorMessage(LocalizationString.pleaseEnterValidPhone);
+      showErrorMessage(pleaseEnterValidPhoneString.tr);
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController()
-              .loginWithPhone(code: countryCode, phone: phone)
-              .then((response) async {
-            if (response.success) {
-              EasyLoading.dismiss();
-              print('VerifyPhoneLoginOTP 1');
-              Get.to(() => VerifyPhoneLoginOTP(
-                    token: response.token!,
-                  ));
-            } else {
-              EasyLoading.dismiss();
-              showErrorMessage(
-                response.message,
-              );
-            }
+      AuthApi.loginWithPhone(
+          code: countryCode,
+          phone: phone,
+          successCallback: (token) {
+            Get.to(() => VerifyPhoneLoginOTP(
+                  token: token,
+                ));
           });
-        } else {
-          showErrorMessage(
-            LocalizationString.noInternet,
-          );
-        }
-      });
     }
   }
 
@@ -170,64 +141,48 @@ class LoginController extends GetxController {
       required String name,
       required String password,
       required String confirmPassword,
-      required BuildContext context}) {
+      }) {
     if (FormValidator().isTextEmpty(name) || userNameCheckStatus != 1) {
       showErrorMessage(
-        LocalizationString.pleaseEnterValidUserName,
+        pleaseEnterValidUserNameString.tr,
       );
     }
     if (name.contains(' ')) {
       showErrorMessage(
-        LocalizationString.userNameCanNotHaveSpace,
+        userNameCanNotHaveSpaceString.tr,
       );
     } else if (FormValidator().isTextEmpty(email)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterValidEmail,
+        pleaseEnterValidEmailString.tr,
       );
     } else if (FormValidator().isNotValidEmail(email)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterValidEmail,
+        pleaseEnterValidEmailString.tr,
       );
     } else if (FormValidator().isTextEmpty(password)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterPassword,
+        pleaseEnterPasswordString.tr,
       );
     } else if (FormValidator().isTextEmpty(confirmPassword)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterConfirmPassword,
+        pleaseEnterConfirmPasswordString.tr,
       );
     } else if (password != confirmPassword) {
       showErrorMessage(
-        LocalizationString.passwordsDoesNotMatched,
+        passwordsDoesNotMatchedString.tr,
       );
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-
-          ApiController()
-              .registerUser(name, email, password)
-              .then((response) async {
-            if (response.success) {
-              EasyLoading.dismiss();
-              Get.to(() => VerifyOTPScreen(
-                    isVerifyingEmail: true,
-                    isVerifyingPhone: false,
-                    token: response.token!,
-                  ));
-            } else {
-              EasyLoading.dismiss();
-              showErrorMessage(
-                response.message,
-              );
-            }
+      AuthApi.register(
+          email: email,
+          name: name,
+          password: password,
+          successCallback: (token) {
+            Get.to(() => VerifyPhoneLoginOTP(
+                  // isVerifyingEmail: true,
+                  // isVerifyingPhone: false,
+                  token: token,
+                ));
           });
-        } else {
-          showErrorMessage(
-            LocalizationString.noInternet,
-          );
-        }
-      });
     }
   }
 
@@ -235,40 +190,27 @@ class LoginController extends GetxController {
       {required String newPassword,
       required String confirmPassword,
       required String token,
-      required BuildContext context}) {
+      }) {
     if (FormValidator().isTextEmpty(newPassword)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterPassword,
+        pleaseEnterPasswordString.tr,
       );
     } else if (FormValidator().isTextEmpty(confirmPassword)) {
       showErrorMessage(
-        LocalizationString.pleaseEnterConfirmPassword,
+        pleaseEnterConfirmPasswordString.tr,
       );
     } else if (newPassword != confirmPassword) {
       showErrorMessage(
-        LocalizationString.passwordsDoesNotMatched,
+        passwordsDoesNotMatchedString.tr,
       );
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          ApiController()
-              .resetPassword(newPassword, token)
-              .then((response) async {
-            if (response.success) {
-              passwordReset = true;
-              update();
-            } else {
-              showErrorMessage(
-                response.message,
-              );
-            }
+      AuthApi.resetPassword(
+          token: token,
+          newPassword: newPassword,
+          successCallback: () {
+            passwordReset = true;
+            update();
           });
-        } else {
-          showErrorMessage(
-            LocalizationString.noInternet,
-          );
-        }
-      });
     }
   }
 
@@ -277,22 +219,15 @@ class LoginController extends GetxController {
       userNameCheckStatus = 0;
       return;
     }
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        // AppUtil.showLoader(context);
-        ApiController().checkUsername(userName).then((response) async {
-          // Navigator.of(context).pop();
-          if (response.success) {
-            userNameCheckStatus = 1;
-          } else {
-            userNameCheckStatus = 0;
-          }
-          update();
+
+    AuthApi.checkUsername(
+        username: userName,
+        successCallback: () {
+          userNameCheckStatus = 1;
+        },
+        failureCallback: () {
+          userNameCheckStatus = 0;
         });
-      } else {
-        userNameCheckStatus = 0;
-      }
-    });
   }
 
   phoneCodeSelected(String code) {
@@ -313,25 +248,15 @@ class LoginController extends GetxController {
     update();
   }
 
-  void resendOTP({required String token, required BuildContext context}) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().resendOTP(token).then((response) async {
+  void resendOTP({required String token}) {
+    EasyLoading.show(status: loadingString.tr);
+    AuthApi.resendOTP(
+        token: token,
+        successCallback: () {
           EasyLoading.dismiss();
-          showSuccessMessage(
-            response.message,
-          );
           canResendOTP.value = false;
-
           update();
         });
-      } else {
-        showErrorMessage(
-          LocalizationString.noInternet,
-        );
-      }
-    });
   }
 
   void callVerifyOTP({
@@ -340,149 +265,108 @@ class LoginController extends GetxController {
     required String otp,
     required String token,
   }) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController()
-            .verifyOTP(isVerifyingEmail, otp, token)
-            .then((response) async {
-          EasyLoading.dismiss();
+    EasyLoading.show(status: loadingString.tr);
 
-          if (response.success) {
+    if (isVerifyingEmail == true || isVerifyingPhone == true) {
+      AuthApi.verifyRegistrationOTP(
+          otp: otp,
+          token: token,
+          successCallback: (authKey) {
+            EasyLoading.dismiss();
+
             Future.delayed(const Duration(milliseconds: 500), () async {
-              if (isVerifyingEmail == true || isVerifyingPhone == true) {
-                SharedPrefs().setUserLoggedIn(true);
-                await SharedPrefs().setAuthorizationKey(response.authKey!);
-                await _userProfileManager.refreshProfile();
-                await _settingsController.getSettings();
-
-                print(
-                    '_userProfileManager.user.value ${_userProfileManager.user.value}');
-                if (_userProfileManager.user.value != null) {
-                  print(
-                      '_userProfileManager.user.value!.userName ${_userProfileManager.user.value!.userName}');
-
-                  if (_userProfileManager.user.value!.userName.isEmpty) {
-                    isLoginFirstTime = true;
-                    Get.offAll(() => const SetUserName());
-                  } else {
-                    // ask for location
-                    AppUtil.showToast(
-                        message: LocalizationString.registeredSuccessFully,
-                        isSuccess: true);
-                    Get.to(() => const LoginScreen());
-                  }
+              SharedPrefs().setUserLoggedIn(true);
+              await SharedPrefs().setAuthorizationKey(authKey);
+              await _userProfileManager.refreshProfile();
+              await _settingsController.getSettings();
+              if (_userProfileManager.user.value != null) {
+                if (_userProfileManager.user.value!.userName.isEmpty) {
+                  isLoginFirstTime = true;
+                  Get.offAll(() => const SetUserName());
+                } else {
+                  // ask for location
+                  // AppUtil.showToast(
+                  //     message: registeredSuccessFully,
+                  //     isSuccess: true);
+                  Get.to(() => const DashboardScreen());
                 }
-              } else {
-                Get.to(() => ResetPasswordScreen(token: response.token!));
               }
             });
-          } else {
-            AppUtil.showToast(message: response.message, isSuccess: false);
-          }
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
+          });
+    } else {
+      AuthApi.verifyForgotPasswordOTP(
+          otp: otp,
+          token: token,
+          successCallback: (token) {
+            EasyLoading.dismiss();
+
+            Future.delayed(const Duration(milliseconds: 500), () async {
+              Get.to(() => ResetPasswordScreen(token: token));
+            });
+          });
+    }
   }
 
   void callVerifyOTPForPhoneLogin({
     required String otp,
     required String token,
   }) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().verifyPhoneLoginOTP(otp, token).then((response) async {
+    EasyLoading.show(status: loadingString.tr);
+
+    AuthApi.verifyRegistrationOTP(
+        otp: otp,
+        token: token,
+        successCallback: (authKey) {
           EasyLoading.dismiss();
+          Future.delayed(const Duration(milliseconds: 500), () async {
+            SharedPrefs().setUserLoggedIn(true);
+            await SharedPrefs().setAuthorizationKey(authKey);
+            await _userProfileManager.refreshProfile();
+            await _settingsController.getSettings();
 
-          if (response.success) {
-            Future.delayed(const Duration(milliseconds: 500), () async {
-              SharedPrefs().setUserLoggedIn(true);
-              await SharedPrefs().setAuthorizationKey(response.authKey!);
-              await _userProfileManager.refreshProfile();
-              await _settingsController.getSettings();
-
-              print(
-                  '_userProfileManager.user.value ${_userProfileManager.user.value}');
-              if (_userProfileManager.user.value != null) {
-                print(
-                    '_userProfileManager.user.value!.userName ${_userProfileManager.user.value!.userName}');
-                if (_userProfileManager.user.value!.userName.isEmpty) {
-                  isLoginFirstTime = true;
-                  Get.offAll(() => const SetUserName());
-                } else {
-                  // ask for location
-                  AppUtil.showToast(
-                      message: LocalizationString.registeredSuccessFully,
-                      isSuccess: true);
-                  Get.to(() => const LoginScreen());
-                }
+            if (_userProfileManager.user.value != null) {
+              if (_userProfileManager.user.value!.userName.isEmpty) {
+                isLoginFirstTime = true;
+                Get.offAll(() => const SetUserName());
+              } else {
+                Get.to(() => const DashboardScreen());
               }
-            });
-          } else {
-            AppUtil.showToast(message: response.message, isSuccess: false);
-          }
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
-  }
-
-  void callVerifyOTPForChangePhone(
-      {required String otp,
-      required String token,
-      required BuildContext context}) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().verifyChangePhoneOTP(otp, token).then((response) async {
-          EasyLoading.dismiss();
-          AppUtil.showToast(message: response.message, isSuccess: true);
-          if (response.success) {
-            Future.delayed(const Duration(milliseconds: 500), () {
-              Get.back();
-            });
-          }
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
-  }
-
-  void forgotPassword({required String email, required BuildContext context}) {
-    if (FormValidator().isTextEmpty(email)) {
-      AppUtil.showToast(
-          message: LocalizationString.pleaseEnterEmail, isSuccess: false);
-    } else if (FormValidator().isNotValidEmail(email)) {
-      AppUtil.showToast(
-          message: LocalizationString.pleaseEnterValidEmail, isSuccess: false);
-    } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController().forgotPassword(email).then((response) async {
-            EasyLoading.dismiss();
-            AppUtil.showToast(message: response.message, isSuccess: true);
-            if (response.success) {
-              Get.to(() => VerifyOTPScreen(
-                    isVerifyingEmail: false,
-                    isVerifyingPhone: false,
-                    token: response.token!,
-                  ));
             }
           });
-        } else {
-          AppUtil.showToast(
-              message: LocalizationString.noInternet, isSuccess: false);
-        }
-      });
+        });
+  }
+
+  void callVerifyOTPForChangePhone({
+    required String otp,
+    required String token,
+  }) {
+    AuthApi.verifyChangePhoneOTP(
+        otp: otp,
+        token: token,
+        successCallback: () {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            Get.back();
+          });
+        });
+  }
+
+  void forgotPassword({required String email}) {
+    if (FormValidator().isTextEmpty(email)) {
+      AppUtil.showToast(
+          message: pleaseEnterEmailString.tr, isSuccess: false);
+    } else if (FormValidator().isNotValidEmail(email)) {
+      AppUtil.showToast(
+          message: pleaseEnterValidEmailString.tr, isSuccess: false);
+    } else {
+      AuthApi.forgotPassword(
+          email: email,
+          successCallback: (token) {
+            Get.to(() => VerifyPhoneLoginOTP(
+                  // isVerifyingEmail: false,
+                  // isVerifyingPhone: false,
+                  token: token,
+                ));
+          });
     }
   }
 

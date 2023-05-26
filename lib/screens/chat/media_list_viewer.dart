@@ -55,7 +55,7 @@ class _MediaListViewerState extends State<MediaListViewer> {
                     Get.back();
                   }),
                   Heading5Text(
-                    LocalizationString.media,
+                    mediaString.tr,
                     weight: TextWeight.bold,
                     color: AppColorConstants.themeColor,
                   ),
@@ -69,7 +69,7 @@ class _MediaListViewerState extends State<MediaListViewer> {
                   })
                 ],
               ).hP16,
-              divider(context: context).vP8,
+              divider().vP8,
               GetBuilder<MediaListViewerController>(
                   init: mediaListViewerController,
                   builder: (ctx) {

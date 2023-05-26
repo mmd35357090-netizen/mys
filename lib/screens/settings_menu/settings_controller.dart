@@ -1,10 +1,12 @@
 import 'package:flutter/services.dart';
+import 'package:foap/apiHandler/apis/auth_api.dart';
+import 'package:foap/apiHandler/apis/misc_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
-import 'package:rate_my_app/rate_my_app.dart';
+// import 'package:rate_my_app/rate_my_app.dart';
 
 import '../../apiHandler/api_controller.dart';
 import '../../manager/location_manager.dart';
@@ -29,12 +31,12 @@ class SettingsController extends GetxController {
 
   var localAuth = LocalAuthentication();
   RxInt bioMetricType = 0.obs;
-  RateMyApp rateMyApp = RateMyApp(
-    preferencesPrefix: 'rateMyApp_',
-    minDays: 0, // Show rate popup on first day of install.
-    minLaunches:
-        0, // Show rate popup after 5 launches of app after minDays is passed.
-  );
+  // RateMyApp rateMyApp = RateMyApp(
+  //   preferencesPrefix: 'rateMyApp_',
+  //   minDays: 0, // Show rate popup on first day of install.
+  //   minLaunches:
+  //       0, // Show rate popup after 5 launches of app after minDays is passed.
+  // );
 
   List<Map<String, String>> languagesList = [
     {'language_code': 'hi', 'language_name': 'Hindi'},
@@ -103,19 +105,14 @@ class SettingsController extends GetxController {
     String? authKey = await SharedPrefs().getAuthorizationKey();
 
     if (authKey != null) {
-      await ApiController().getSettings().then((response) async {
-        setting.value = response.settings;
+      await MiscApi.getSettings(resultCallback: (result) {
+        setting.value = result;
 
         if (setting.value?.latestVersion! !=
             AppConfigConstants.currentVersion) {
           forceUpdate.value = true;
           forceUpdate.value = false;
         }
-
-        // Stripe.publishableKey = setting.value!.stripePublishableKey!;
-        // Stripe.merchantIdentifier = 'merchant.com.socialified';
-        // Stripe.urlScheme = 'socialifiedstripe';
-        // await Stripe.instance.applySettings();
 
         update();
       });
@@ -144,8 +141,8 @@ class SettingsController extends GetxController {
     try {
       bool didAuthenticate = await localAuth.authenticate(
           localizedReason: status == true
-              ? LocalizationString.pleaseAuthenticateToUseBiometric
-              : LocalizationString.pleaseAuthenticateToRemoveBiometric);
+              ? pleaseAuthenticateToUseBiometricString.tr
+              : pleaseAuthenticateToRemoveBiometricString.tr);
 
       if (didAuthenticate == true) {
         SharedPrefs().setBioMetricAuthStatus(status);
@@ -159,20 +156,18 @@ class SettingsController extends GetxController {
   }
 
   deleteAccount() {
-    ApiController().deleteAccountApi().then((response) {
-      if (response.success) {
-        _userProfileManager.logout();
-        AppUtil.showToast(
-            message: LocalizationString.accountIsDeleted, isSuccess: true);
-      }
+    AuthApi.deleteAccount(successCallback: () {
+      _userProfileManager.logout();
+      AppUtil.showToast(
+          message: accountIsDeletedString.tr, isSuccess: true);
     });
   }
 
   askForRating(BuildContext context) {
-    rateMyApp.init().then((value) {
-      if (rateMyApp.shouldOpenDialog) {
-        rateMyApp.showRateDialog(context);
-      }
-    });
+    // rateMyApp.init().then((value) {
+    //   if (rateMyApp.shouldOpenDialog) {
+    //     rateMyApp.showRateDialog(context);
+    //   }
+    // });
   }
 }

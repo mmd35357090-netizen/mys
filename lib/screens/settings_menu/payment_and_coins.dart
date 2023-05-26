@@ -27,12 +27,9 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
           backNavigationBar(
-              context: context, title: LocalizationString.paymentAndCoins),
-          divider(context: context).tP8,
+               title: paymentAndCoinsString.tr),
+          divider().tP8,
           Expanded(
             child: ListView(
               padding:  EdgeInsets.zero,
@@ -41,14 +38,14 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                   children: [
                     addTileEvent(
                         'assets/coins.png',
-                        '${LocalizationString.coins} ($coin)',
-                        LocalizationString.checkYourCoinsAndEarnMoreCoins, () {
+                        '${coinsString.tr} ($coin)',
+                        checkYourCoinsAndEarnMoreCoinsString.tr, () {
                       Get.to(() => const PackagesScreen());
                     }),
                     addTileEvent(
                         'assets/earning.png',
-                        LocalizationString.earnings,
-                        LocalizationString.trackEarning, () {
+                        earningsString.tr,
+                        trackEarningString.tr, () {
                       Get.to(() => const PaymentWithdrawalScreen());
                     }),
                   ],
@@ -102,7 +99,7 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                 )
               ]).hP16,
             ),
-            divider(context: context)
+            divider()
           ],
         ));
   }

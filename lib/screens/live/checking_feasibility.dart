@@ -1,7 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:agora_rtc_engine/rtc_local_view.dart' as rtc_local_view;
-import 'package:get/get.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:foap/helper/imports/live_imports.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -28,14 +27,12 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
   }
 
   openSettingAppForAccess() {
-    _agoraLiveController.checkFeasibilityToLive(
-        context: context, isOpenSettings: true);
+    _agoraLiveController.checkFeasibilityToLive(isOpenSettings: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    _agoraLiveController.checkFeasibilityToLive(
-        context: context, isOpenSettings: false);
+    _agoraLiveController.checkFeasibilityToLive(isOpenSettings: false);
 
     const colorizeColors = [
       Colors.purple,
@@ -48,7 +45,12 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
       body: Center(
         child: Stack(
           children: [
-            const rtc_local_view.SurfaceView(),
+            if(_agoraLiveController.engine != null)AgoraVideoView(
+              controller: VideoViewController(
+                rtcEngine: _agoraLiveController.engine!,
+                canvas: const VideoCanvas(uid: 0),
+              ),
+            ),
             Positioned(
                 left: 0,
                 right: 0,
@@ -59,11 +61,10 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                         child: AnimatedTextKit(
                           animatedTexts: [
                             ColorizeAnimatedText(
-                              LocalizationString.checkingConnection,
+                              checkingConnectionString.tr,
                               textStyle: TextStyle(
                                   fontSize: FontSizes.h3,
-                                  fontWeight: FontWeight.bold
-                              ),
+                                  fontWeight: FontWeight.bold),
                               colors: colorizeColors,
                             ),
                           ],
@@ -79,8 +80,7 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                               Container(
                                 height: 200,
                                 width: 200,
-                                color: AppColorConstants.red
-                                    .withOpacity(0.5),
+                                color: AppColorConstants.red.withOpacity(0.5),
                                 child: const ThemeIconWidget(
                                   ThemeIcon.camera,
                                   size: 100,
@@ -103,7 +103,7 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                                 width: 200,
                                 height: 50,
                                 child: AppThemeButton(
-                                  text: LocalizationString.allow,
+                                  text: allowString.tr,
                                   onPress: () {
                                     openAppSettings();
                                   },
@@ -117,8 +117,7 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                                 height: 45,
                                 child: Center(
                                   child: Heading4Text(
-                                    LocalizationString.back,
-
+                                    backString.tr,
                                   ),
                                 ),
                               ).ripple(() {
@@ -132,27 +131,38 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                             children: <Widget>[
                               const SizedBox(width: 20.0, height: 100.0),
                               Heading3Text(
-                                LocalizationString.goingLive,
+                                goingLiveString.tr,
                               ),
                               const SizedBox(width: 20.0, height: 100.0),
                               DefaultTextStyle(
-                                style: TextStyle(fontSize: FontSizes.h3, fontWeight: TextWeight.semiBold),
+                                style: TextStyle(
+                                    fontSize: FontSizes.h3,
+                                    fontWeight: TextWeight.semiBold,
+                                    color: AppColorConstants.themeColor),
                                 child: AnimatedTextKit(
                                   pause: const Duration(milliseconds: 10),
                                   totalRepeatCount: 1,
                                   animatedTexts: [
                                     RotateAnimatedText('3',
                                         duration: const Duration(seconds: 1),
-                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
+                                        textStyle: TextStyle(
+                                            fontSize: FontSizes.h3,
+                                            fontWeight: TextWeight.regular)),
                                     RotateAnimatedText('2',
                                         duration: const Duration(seconds: 1),
-                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
+                                        textStyle: TextStyle(
+                                            fontSize: FontSizes.h3,
+                                            fontWeight: TextWeight.regular)),
                                     RotateAnimatedText('1',
                                         duration: const Duration(seconds: 1),
-                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
-                                    RotateAnimatedText(LocalizationString.go,
+                                        textStyle: TextStyle(
+                                            fontSize: FontSizes.h3,
+                                            fontWeight: TextWeight.regular)),
+                                    RotateAnimatedText(goString.tr,
                                         duration: const Duration(seconds: 1),
-                                        textStyle: TextStyle(fontSize: FontSizes.h3,fontWeight: TextWeight.regular)),
+                                        textStyle: TextStyle(
+                                            fontSize: FontSizes.h3,
+                                            fontWeight: TextWeight.regular)),
                                   ],
                                   onTap: () {},
                                   onFinished: () {

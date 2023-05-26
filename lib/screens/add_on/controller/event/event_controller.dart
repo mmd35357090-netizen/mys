@@ -1,4 +1,5 @@
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/events_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
 
@@ -64,61 +65,52 @@ class EventsController extends GetxController {
   getEvents({String? name, int? categoryId, int? status, int? isJoined}) {
     if (canLoadMoreEvents) {
       isLoadingEvents.value = true;
-      ApiController()
-          .getEvents(
-              name: name,
-              status: status,
-              categoryId: categoryId,
-              isJoined: isJoined,
-              page: eventsPage)
-          .then((response) {
-        events.addAll(response.events);
-        isLoadingEvents.value = false;
+      EventApi.getEvents(
+          name: name,
+          status: status,
+          categoryId: categoryId,
+          isJoined: isJoined,
+          page: eventsPage,
+          resultCallback: (result, metadata) {
+            events.addAll(result);
+            isLoadingEvents.value = false;
 
-        eventsPage += 1;
-        if (response.events.length == response.metaData?.perPage) {
-          canLoadMoreEvents = true;
-        } else {
-          canLoadMoreEvents = false;
-        }
-        update();
-      });
+            canLoadMoreEvents = result.length >= metadata.perPage;
+            eventsPage += 1;
+
+            update();
+          });
     }
-  }
-
-  eventDeleted(EventModel event) {
-    events.removeWhere((element) => element.id == event.id);
-    events.refresh();
   }
 
   getMembers({int? eventId}) {
     if (canLoadMoreMembers) {
       isLoadingMembers = true;
-      ApiController()
-          .getEventMembers(eventId: eventId, page: membersPage)
-          .then((response) {
-        members.addAll(response.eventMembers);
-        isLoadingMembers = false;
+      EventApi.getEventMembers(
+          eventId: eventId,
+          page: membersPage,
+          resultCallback: (result) {
+            members.addAll(result);
+            isLoadingMembers = false;
 
-        membersPage += 1;
-        if (response.eventMembers.length == response.metaData?.perPage) {
-          canLoadMoreMembers = true;
-        } else {
-          canLoadMoreMembers = false;
-        }
-        update();
-      });
+            membersPage += 1;
+            // if (response.eventMembers.length == response.metaData?.perPage) {
+            //   canLoadMoreMembers = true;
+            // } else {
+            //   canLoadMoreMembers = false;
+            // }
+          });
+
+      update();
     }
   }
 
   getCategories() {
     isLoadingCategories.value = true;
-    ApiController().getEventCategories().then((response) {
-      categories.value = response.eventCategories
-          .where((element) => element.events.isNotEmpty)
-          .toList();
+    EventApi.getEventCategories(resultCallback: (result) {
+      categories.value =
+          result.where((element) => element.events.isNotEmpty).toList();
       isLoadingCategories.value = false;
-
     });
   }
 
@@ -131,7 +123,8 @@ class EventsController extends GetxController {
     }).toList();
 
     events.refresh();
-    ApiController().joinEvent(eventId: event.id).then((response) {});
+
+    EventApi.joinEvent(eventId: event.id);
   }
 
   leaveEvent(EventModel event) {
@@ -143,6 +136,6 @@ class EventsController extends GetxController {
     }).toList();
 
     events.refresh();
-    ApiController().leaveEvent(eventId: event.id).then((response) {});
+    EventApi.leaveEvent(eventId: event.id);
   }
 }

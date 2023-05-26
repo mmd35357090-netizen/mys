@@ -44,6 +44,8 @@ class SettingModel {
   double serviceFee;
 
   String? pid;
+  String? chatGPTKey;
+  bool enableChatGPT;
 
   bool enableImagePost;
   bool enableVideoPost;
@@ -76,6 +78,13 @@ class SettingModel {
   bool enablePodcasts;
   bool enableGift;
   bool enablePolls;
+
+  String? themeColor;
+  String? bgColorForLightTheme;
+  String? bgColorForDarkTheme;
+  String? textColorForLightTheme;
+  String? textColorForDarkTheme;
+  String? font;
 
   // nee to add
   bool enableReel;
@@ -157,7 +166,14 @@ class SettingModel {
     required this.enableGift,
     required this.enablePolls,
     required this.enableDating,
-
+    required this.chatGPTKey,
+    required this.enableChatGPT,
+    required this.font,
+    required this.themeColor,
+    required this.bgColorForLightTheme,
+    required this.bgColorForDarkTheme,
+    required this.textColorForLightTheme,
+    required this.textColorForDarkTheme,
   });
 
 
@@ -246,7 +262,15 @@ class SettingModel {
     enableGift: json["is_gift_sending"] == 1,
     enablePolls: json["is_polls"] == 1,
     enableDating: json["is_dating"] == 1,
+    enableChatGPT: json["is_chat_gpt"] == 1,
 
+    themeColor: json["theme_color"] ?? '4169e1',
+    bgColorForLightTheme: json["theme_light_background_color"] ?? 'FFFFFF',
+    bgColorForDarkTheme: json["theme_dark_background_color"] ?? '000000',
+    textColorForLightTheme: json["theme_light_text_color"] ?? '000000',
+    textColorForDarkTheme: json["theme_dark_text_color"] ?? 'FFFFFF',
+    font: json["theme_font"],
+    chatGPTKey: json["chat_gpt_key"],
   );
 
 }

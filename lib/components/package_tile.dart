@@ -30,14 +30,14 @@ class PackageTile extends StatelessWidget {
               height: 5,
             ),
             BodySmallText(
-              '${package.coin} ${LocalizationString.coins}',
+              '${package.coin} ${coinsString.tr}',
               weight: TextWeight.medium,
             ),
           ],
         ),
         const Spacer(),
         BodyLargeText(
-          '${LocalizationString.buyIn} \$${package.price}',
+          '${buyInString.tr} \$${package.price}',
           weight: TextWeight.semiBold,
         )
         // SizedBox(

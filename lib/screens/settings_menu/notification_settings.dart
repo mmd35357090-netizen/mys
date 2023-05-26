@@ -12,7 +12,8 @@ class AppNotificationSettings extends StatefulWidget {
 }
 
 class _AppNotificationSettingsState extends State<AppNotificationSettings> {
-  final NotificationSettingController settingController = NotificationSettingController();
+  final NotificationSettingController settingController =
+      NotificationSettingController();
 
   @override
   void initState() {
@@ -27,11 +28,8 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(
-              height: 50,
-            ),
-            backNavigationBar(context:context, title:LocalizationString.notificationSettings),
-            divider(context: context).vP8,
+            backNavigationBar(title: notificationSettingsString.tr),
+            divider().vP8,
             const SizedBox(
               height: 20,
             ),
@@ -43,10 +41,8 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          BodyLargeText(
-                            LocalizationString.turnOffAll,
-                              weight: TextWeight.bold
-                          ),
+                          BodyLargeText(turnOffAllString.tr,
+                              weight: TextWeight.bold),
                           settingController.turnOfAll.value == 1
                               ? ThemeIconWidget(
                                   ThemeIcon.selectedRadio,
@@ -65,8 +61,8 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
                                 })
                         ],
                       ).setPadding(left: 16, right: 16, bottom: 16),
-                      settingSegment(LocalizationString.likes).vP8,
-                      settingSegment(LocalizationString.comments).vP8,
+                      settingSegment(likesString.tr).vP8,
+                      settingSegment(commentsString.tr).vP8,
                     ],
                   );
                 })
@@ -80,29 +76,26 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BodyLargeText(
-          title,
-            weight: TextWeight.bold
-        ),
+        BodyLargeText(title, weight: TextWeight.bold),
         const SizedBox(
           height: 10,
         ),
         settingOption(
             title,
-            LocalizationString.off,
-            title == LocalizationString.likes
+            offString.tr,
+            title == likesString.tr
                 ? settingController.likesNotificationStatus.value == 0
                 : settingController.commentNotificationStatus.value == 0),
         settingOption(
             title,
-            LocalizationString.fromPeopleOrFollow,
-            title == LocalizationString.likes
+            fromPeopleOrFollowString.tr,
+            title == likesString.tr
                 ? settingController.likesNotificationStatus.value == 2
                 : settingController.commentNotificationStatus.value == 2),
         settingOption(
             title,
-            LocalizationString.fromEveryone,
-            title == LocalizationString.likes
+            fromEveryoneString.tr,
+            title == likesString.tr
                 ? settingController.likesNotificationStatus.value == 1
                 : settingController.commentNotificationStatus.value == 1),
       ],
@@ -125,7 +118,7 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
                 color: AppColorConstants.iconColor)
       ],
     ).vP8.ripple(() {
-      settingController.updateNotificationSetting(context: context,
+      settingController.updateNotificationSetting(
           section: sectionName, title: title);
     });
   }

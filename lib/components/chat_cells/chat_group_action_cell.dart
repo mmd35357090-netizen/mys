@@ -19,23 +19,23 @@ class ChatGroupActionCell extends StatelessWidget {
     if (action == 1) {
       String userName = actionMessage['username'] as String;
 
-      actionMessageString = '$userName ${LocalizationString.addedToGroup}';
+      actionMessageString = '$userName ${addedToGroupString.tr}';
     } else if (action == 2) {
       String userName = actionMessage['username'] as String;
 
-      actionMessageString = '$userName ${LocalizationString.removedFromGroup}';
+      actionMessageString = '$userName ${removedFromGroupString.tr}';
     } else if (action == 3) {
       String userName = actionMessage['username'] as String;
 
-      actionMessageString = '$userName ${LocalizationString.madeAdmin}';
+      actionMessageString = '$userName ${madeAdminString.tr}';
     } else if (action == 4) {
       String userName = actionMessage['username'] as String;
 
-      actionMessageString = '$userName ${LocalizationString.removedFromAdmins}';
+      actionMessageString = '$userName ${removedFromAdminsString.tr}';
     } else if (action == 5) {
       String userName = actionMessage['username'] as String;
 
-      actionMessageString = '$userName ${LocalizationString.leftTheGroup}';
+      actionMessageString = '$userName ${leftTheGroupString.tr}';
     }
 
     return Container(

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/events_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
@@ -32,12 +33,10 @@ class EventBookingDetailController extends GetxController {
     Share.shareXFiles([XFile(pathOfImage.path)]).then((result) {
       if (result.status == ShareResultStatus.success) {
         AppUtil.showToast(
-            message: LocalizationString.ticketSaved,
-            isSuccess: true);
+            message: ticketSavedString.tr, isSuccess: true);
       } else {
         AppUtil.showToast(
-            message: LocalizationString.errorMessage,
-            isSuccess: false);
+            message: errorMessageString.tr, isSuccess: false);
       }
     });
   }
@@ -45,31 +44,33 @@ class EventBookingDetailController extends GetxController {
   giftToUser(UserModel user) {
     processingBooking.value = ProcessingBookingStatus.inProcess;
     update();
-    ApiController()
-        .giftEventTicket(ticketId: eventBooking.value!.id, toUserId: user.id)
-        .then((response) {
-      if (response.success) {
-        processingBooking.value = ProcessingBookingStatus.gifted;
-      } else {
-        processingBooking.value = ProcessingBookingStatus.failed;
-      }
-      update();
-    });
+    EventApi.giftEventTicket(
+        ticketId: eventBooking.value!.id,
+        toUserId: user.id,
+        resultCallback: (status) {
+          if (status) {
+            processingBooking.value = ProcessingBookingStatus.gifted;
+          } else {
+            processingBooking.value = ProcessingBookingStatus.failed;
+          }
+          update();
+        });
   }
 
   cancelBooking(BuildContext context) {
     processingBooking.value = ProcessingBookingStatus.inProcess;
     update();
-    ApiController()
-        .cancelEventBooking(bookingId: eventBooking.value!.id)
-        .then((result) {
-      EasyLoading.dismiss();
-      if (result.success) {
-        processingBooking.value = ProcessingBookingStatus.cancelled;
-      } else {
-        processingBooking.value = ProcessingBookingStatus.failed;
-      }
-      update();
-    });
+
+    EventApi.cancelEventBooking(
+        bookingId: eventBooking.value!.id,
+        resultCallback: (status) {
+          EasyLoading.dismiss();
+          if (status) {
+            processingBooking.value = ProcessingBookingStatus.cancelled;
+          } else {
+            processingBooking.value = ProcessingBookingStatus.failed;
+          }
+          update();
+        });
   }
 }

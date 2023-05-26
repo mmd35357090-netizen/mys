@@ -1,6 +1,7 @@
+import 'package:foap/helper/date_extension.dart';
 import 'package:foap/model/post_model.dart';
 import 'package:foap/model/user_model.dart';
-import 'package:timeago/timeago.dart' as timeago;
+// import 'package:timeago/timeago.dart' as timeago;
 
 import '../helper/enum.dart';
 import 'club_model.dart';
@@ -52,7 +53,8 @@ class NotificationModel {
       );
 
   String notificationTime() {
-    return timeago.format(date);
+    // return timeago.format(date);
+    return date.getTimeAgo;
   }
 
   static NotificationType getType(int type) {

@@ -3,9 +3,9 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/number_extension.dart';
 import 'package:get/get.dart';
 import '../../components/search_bar.dart';
-import '../../controllers/agora_live_controller.dart';
+import '../../controllers/live/agora_live_controller.dart';
 import '../../model/call_model.dart';
-import 'live_users_controller.dart';
+import '../../controllers/live/live_users_controller.dart';
 
 class LiveUserScreen extends StatefulWidget {
   const LiveUserScreen({Key? key}) : super(key: key);
@@ -34,29 +34,15 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
       body: KeyboardDismissOnTap(
           child: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(
-              context: context, title: LocalizationString.liveUsers),
-          divider(context: context).tP8,
+
+          backNavigationBar(title: liveUsersString.tr),
+          divider().tP8,
           const SizedBox(
             height: 20,
           ),
-          // SearchBar(
-          //         showSearchIcon: true,
-          //         iconColor: Theme.of(context).primaryColor,
-          //         onSearchChanged: (value) {
-          //           // _chatController.searchTextChanged(value);
-          //         },
-          //         onSearchStarted: () {
-          //           //controller.startSearch();
-          //         },
-          //         onSearchCompleted: (searchTerm) {})
-          //     .p16,
           Expanded(
             child: Obx(
-              () => GridView.builder(
+              () => _liveUserController.liveStreamUser.isEmpty ? emptyData(title: noLiveUserString, subTitle: '') :  GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 8,

@@ -55,7 +55,7 @@ class ClubCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               BodyLargeText(
-                '${club.totalMembers!.formatNumber} ${LocalizationString.clubMembers}',
+                '${club.totalMembers!.formatNumber} ${clubMembersString.tr}',
               ),
               const Spacer(),
               if (!club.createdByUser!.isMe)
@@ -64,12 +64,12 @@ class ClubCard extends StatelessWidget {
                     width: 120,
                     child: AppThemeButton(
                         text: club.isJoined == true
-                            ? LocalizationString.leaveClub
+                            ? leaveClubString.tr
                             : club.isRequested == true
-                                ? LocalizationString.requested
+                                ? requestedString.tr
                                 : club.isRequestBased == true
-                                    ? LocalizationString.requestJoin
-                                    : LocalizationString.join,
+                                    ? requestJoinString.tr
+                                    : joinString.tr,
                         onPress: () {
                           if (club.isJoined == true) {
                             leaveBtnClicked();
@@ -81,7 +81,7 @@ class ClubCard extends StatelessWidget {
               //     height: 40,
               //     width: 120,
               //     child: AppThemeButton(
-              //         text: LocalizationString.preview,
+              //         text: preview,
               //         onPress: () {
               //           previewBtnClicked();
               //         }))
@@ -135,7 +135,7 @@ class ClubInvitationCard extends StatelessWidget {
                   weight: TextWeight.bold
               ).vP8,
               BodyLargeText(
-                '${invitation.club!.totalMembers!.formatNumber} ${LocalizationString.clubMembers}',
+                '${invitation.club!.totalMembers!.formatNumber} ${clubMembersString.tr}',
               ),
               SizedBox(
                   height: 40,
@@ -144,13 +144,13 @@ class ClubInvitationCard extends StatelessWidget {
                     children: [
                       AppThemeButton(
                           width: Get.width * 0.4,
-                          text: LocalizationString.accept,
+                          text: acceptString.tr,
                           onPress: () {
                             acceptBtnClicked();
                           }),
                       AppThemeBorderButton(
                           width: Get.width * 0.4,
-                          text: LocalizationString.decline,
+                          text: declineString.tr,
                           onPress: () {
                             declineBtnClicked();
                           })

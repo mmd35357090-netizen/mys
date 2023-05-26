@@ -55,12 +55,12 @@ class VerifyOTPPhoneNumberChangeState
             height: 105,
           ),
           Heading5Text(
-            LocalizationString.helpToChangePhoneNumber,
+            helpToChangePhoneNumberString.tr,
             weight: TextWeight.bold,
             color: AppColorConstants.themeColor,
             textAlign: TextAlign.center,
           ),
-          BodyLargeText(LocalizationString.pleaseEnterOtpSentToYourPhone,
+          BodyLargeText(pleaseEnterOtpSentToYourPhoneString.tr,
                   color: AppColorConstants.themeColor)
               .setPadding(top: 43, bottom: 35),
           Obx(() => PinCodeTextField(
@@ -103,9 +103,9 @@ class VerifyOTPPhoneNumberChangeState
               )),
           Obx(() => Row(
                 children: [
-                  BodyLargeText(LocalizationString.didntReceivedCode,
+                  BodyLargeText(didntReceivedCodeString.tr,
                       color: AppColorConstants.themeColor),
-                  BodyLargeText(LocalizationString.resendOTP,
+                  BodyLargeText(resendOTPString.tr,
                           color: loginController.canResendOTP.value == false
                               ? AppColorConstants.disabledColor
                               : AppColorConstants.themeColor,
@@ -113,7 +113,7 @@ class VerifyOTPPhoneNumberChangeState
                       .ripple(() {
                     if (loginController.canResendOTP.value == true) {
                       loginController.resendOTP(
-                          token: widget.token, context: context);
+                          token: widget.token);
                     }
                   }),
 
@@ -154,9 +154,9 @@ class VerifyOTPPhoneNumberChangeState
     return AppThemeButton(
       onPress: () {
         loginController.callVerifyOTPForChangePhone(
-            context: context, otp: controller.text, token: widget.token);
+             otp: controller.text, token: widget.token);
       },
-      text: LocalizationString.verify,
+      text: verifyString.tr,
 
     );
   }

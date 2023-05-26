@@ -126,7 +126,7 @@ class ChatRoomDetailController extends GetxController {
           message.isDateSeparator == false) {
         messagesString += '\n';
         messagesString +=
-            '[${message.messageTime}] ${message.isMineMessage ? 'Me' : message.userName}: ${message.isDeleted == true ? LocalizationString.thisMessageIsDeleted : message.messageContent}';
+            '[${message.messageTime}] ${message.isMineMessage ? 'Me' : message.userName}: ${message.isDeleted == true ? thisMessageIsDeletedString.tr : message.messageContent}';
       }
     }
 

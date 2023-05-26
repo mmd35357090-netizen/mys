@@ -1,14 +1,13 @@
 import 'dart:io';
-
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import 'dialog_utils.dart';
+import 'package:get/get.dart';
 
 class PermissionUtils {
   static void requestPermission(
     List<Permission> permission,
-    BuildContext context, {
+     {
     required Function permissionGrant,
     required Function permissionDenied,
     required Function permissionNotAskAgain,
@@ -30,14 +29,13 @@ class PermissionUtils {
       permissionDenied();
       if (isOpenSettings) {
         DialogUtils.showOkCancelAlertDialog(
-          context: context,
-          message: LocalizationString.pleaseGrantRequiredPermission,
+          message: pleaseGrantRequiredPermissionString.tr,
           cancelButtonTitle: Platform.isAndroid
-              ? LocalizationString.no
-              : LocalizationString.cancel,
+              ? noString.tr
+              : cancelString.tr,
           okButtonTitle: Platform.isAndroid
-              ? LocalizationString.yes
-              : LocalizationString.ok,
+              ? yesString.tr
+              : okString.tr,
           cancelButtonAction: () {},
           okButtonAction: () {
             openAppSettings();
@@ -45,7 +43,7 @@ class PermissionUtils {
         );
       } else if (isShowMessage) {
         DialogUtils.showAlertDialog(
-            context, LocalizationString.pleaseGrantRequiredPermission);
+             pleaseGrantRequiredPermissionString.tr);
       }
     }
   }

@@ -2,14 +2,11 @@ import 'package:foap/components/search_bar.dart';
 import 'package:foap/helper/common_components.dart';
 import 'package:foap/helper/extension.dart';
 import 'package:foap/helper/localization_strings.dart';
-import 'package:foap/screens/add_on/controller/event/event_controller.dart';
 import 'package:foap/theme/theme_icon.dart';
 import 'package:foap/util/app_config_constants.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
 import 'package:flutter/material.dart';
-
-import 'event_detail.dart';
 
 class SearchEventListing extends StatefulWidget {
   const SearchEventListing({Key? key}) : super(key: key);
@@ -55,8 +52,8 @@ class SearchEventListingState extends State<SearchEventListing> {
                 width: 10,
               ),
               Expanded(
-                child: SearchBar(
-                    hintText: LocalizationString.search,
+                child: SFSearchBar(
+                    hintText: searchString.tr,
                     showSearchIcon: true,
                     iconColor: AppColorConstants.themeColor,
                     onSearchChanged: (value) {
@@ -69,7 +66,7 @@ class SearchEventListingState extends State<SearchEventListing> {
               ),
             ],
           ).setPadding(left: 16, right: 16, top: 25, bottom: 20),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: Obx(() {
               ScrollController scrollController = ScrollController();
@@ -122,5 +119,4 @@ class SearchEventListingState extends State<SearchEventListing> {
       ),
     );
   }
-
 }

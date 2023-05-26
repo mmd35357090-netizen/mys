@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_contacts/contact.dart';
+import 'package:foap/apiHandler/apis/chat_api.dart';
+import 'package:foap/apiHandler/apis/misc_api.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/string_extension.dart';
@@ -99,40 +102,40 @@ class ChatDetailController extends GetxController {
 
   deleteChat(int roomId) {
     messages.clear();
-    ApiController().deleteChatRoomMessages(roomId);
+    ChatApi.deleteChatRoomMessages(roomId);
     update();
   }
 
   getUpdatedChatRoomDetail(
       {required ChatRoomModel room, required VoidCallback callback}) {
-    ApiController().getChatRoomDetail(room.id).then((response) async {
-      chatRoom.value = response.room;
+    ChatApi.getChatRoomDetail(room.id, resultCallback: (result) async {
+      chatRoom.value = result;
       chatRoom.refresh();
 
       // update room in local storage
       await getIt<DBManager>().updateRoom(chatRoom.value!);
       callback();
-      // update();
     });
   }
 
   getChatRoomWithUser(
       {required int userId, required Function(ChatRoomModel) callback}) {
     createChatRoom(userId, (roomId) async {
-      ApiController().getChatRoomDetail(roomId).then((response) async{
-        if (response.room != null) {
-          await getIt<DBManager>().saveRooms([response.room!]);
-          callback(response.room!);
-        }
+      ChatApi.getChatRoomDetail(roomId, resultCallback: (result) async {
+        await getIt<DBManager>().saveRooms([result]);
+        callback(result);
       });
     });
   }
 
   Future<UserModel?> getOpponentUser({required int userId}) async {
     UserModel? user;
-    await ApiController().getOtherUser(userId.toString()).then((response) {
-      user = response.user;
-    });
+    await UsersApi.getOtherUser(
+        userId: userId,
+        resultCallback: (result) {
+          user = result;
+        });
+
     return user;
   }
 
@@ -174,32 +177,19 @@ class ChatDetailController extends GetxController {
     if (canLoadMoreMessages && isLoading == false) {
       isLoading = true;
 
-      ApiController()
-          .getChatHistory(roomId: roomId, lastMessageId: lastFetchedMessageId)
-          .then((response) async {
-        completion();
-        if (response.success) {
-          if (response.messages.isNotEmpty) {
-            // for (ChatMessageModel message in response.messages) {
-            //   print('saving ${message.id}');
+      ChatApi.getChatHistory(
+          roomId: roomId,
+          lastMessageId: lastFetchedMessageId,
+          resultCallback: (result) async {
+            if (result.isNotEmpty) {
+              await getIt<DBManager>().saveMessage(chatMessages: result);
 
-            await getIt<DBManager>()
-                .saveMessage(chatMessages: response.messages);
-            // }
-
-            if (chatRoom.id == this.chatRoom.value?.id) {
-              loadChat(chatRoom, () {});
+              if (chatRoom.id == this.chatRoom.value?.id) {
+                loadChat(chatRoom, () {});
+              }
             }
-          }
-          isLoading = false;
-          chatHistoryPage += 1;
-          if (response.messages.length == response.metaData?.perPage) {
-            canLoadMoreMessages = true;
-          } else {
-            canLoadMoreMessages = false;
-          }
-        }
-      });
+            isLoading = false;
+          });
     } else {
       completion();
     }
@@ -209,8 +199,8 @@ class ChatDetailController extends GetxController {
     ChatRoomModel? chatRoom = await getIt<DBManager>().getRoomById(roomId);
 
     if (chatRoom == null) {
-      await ApiController().getChatRoomDetail(roomId).then((response) {
-        callback(response.room!);
+      await ChatApi.getChatRoomDetail(roomId, resultCallback: (result) {
+        callback(result);
       });
     } else {
       callback(chatRoom);
@@ -222,13 +212,13 @@ class ChatDetailController extends GetxController {
   }
 
   createChatRoom(int userId, Function(int) callback) {
-    ApiController().createChatRoom(userId).then((response) {
+    ChatApi.createChatRoom(userId, resultCallback: (roomId) {
       getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom, {
         'userId': '${_userProfileManager.user.value!.id},$userId'.toString(),
-        'room': response.roomId
+        'room': roomId
       });
 
-      callback(response.roomId);
+      callback(roomId);
     });
   }
 
@@ -287,10 +277,10 @@ class ChatDetailController extends GetxController {
     update();
   }
 
-  // updateOnlineStatus() {
-  //   isOnline.value = !isOnline.value;
-  //   update();
-  // }
+// updateOnlineStatus() {
+//   isOnline.value = !isOnline.value;
+//   update();
+// }
 
   expandCollapseActions() {
     expandActions = !expandActions;
@@ -354,8 +344,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(MessageContentType.post);
     // currentMessageModel.messageContent = json.encode(content).replaceAll('\\', '');
@@ -386,8 +376,7 @@ class ChatDetailController extends GetxController {
     bool hasProfanity = filter.hasProfanity(messageText);
     if (hasProfanity) {
       AppUtil.showToast(
-          message: LocalizationString.notAllowedMessage,
-          isSuccess: true);
+          message: notAllowedMessageString.tr, isSuccess: true);
       return false;
     }
 
@@ -431,7 +420,7 @@ class ChatDetailController extends GetxController {
 
       currentMessageModel.roomId = room.id;
 
-      currentMessageModel.userName = LocalizationString.you;
+      currentMessageModel.userName = youString.tr;
       currentMessageModel.senderId = _userProfileManager.user.value!.id;
       currentMessageModel.messageType = messageTypeId(
           mode == ChatMessageActionMode.reply
@@ -497,8 +486,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -560,8 +549,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -633,8 +622,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -674,7 +663,7 @@ class ChatDetailController extends GetxController {
     currentMessageModel.sender = _userProfileManager.user.value!;
 
     currentMessageModel.roomId = room.id;
-    currentMessageModel.userName = LocalizationString.you;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(MessageContentType.forward);
     currentMessageModel.messageContent =
@@ -728,8 +717,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.roomId = room.id;
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -817,8 +806,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
     currentMessageModel.sender = _userProfileManager.user.value!;
 
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -910,8 +899,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
     currentMessageModel.sender = _userProfileManager.user.value!;
 
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -999,8 +988,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.sender = _userProfileManager.user.value!;
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -1063,8 +1052,8 @@ class ChatDetailController extends GetxController {
     //   currentMessageModel.sender = _userProfileManager.user.value!;
     //
     //   currentMessageModel.roomId = room.id;
-    //   // currentMessageModel.messageTime = LocalizationString.justNow;
-    //   currentMessageModel.userName = LocalizationString.you;
+    //   // currentMessageModel.messageTime = justNow;
+    //   currentMessageModel.userName = you;
     //   currentMessageModel.senderId = _userProfileManager.user.value!.id;
     //   currentMessageModel.messageType = messageTypeId(MessageContentType.reply);
     //   currentMessageModel.repliedOnMessageContent = repliedOnMessage;
@@ -1100,8 +1089,8 @@ class ChatDetailController extends GetxController {
     currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
     currentMessageModel.sender = _userProfileManager.user.value!;
 
-    // currentMessageModel.messageTime = LocalizationString.justNow;
-    currentMessageModel.userName = LocalizationString.you;
+    // currentMessageModel.messageTime = justNow;
+    currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
     currentMessageModel.messageType = messageTypeId(
         mode == ChatMessageActionMode.reply
@@ -1236,34 +1225,10 @@ class ChatDetailController extends GetxController {
         //     await messageMediaDirectory(messageId);
 
         if (media.mediaType == GalleryMediaType.photo) {
-          // mainFile = await FileManager.saveChatMediaToDirectory(
-          //     media, messageId, false, chatRoom.value!.id);
-          // Uint8List mainFileData;
-          // if (media.mediaByte == null) {
-          //   mainFileData = await media.file!.compress();
-          // } else {
-          //   mainFileData = media.mediaByte!;
-          // }
-          // //image media
-          // String imagePath = '$messageMediaDirectoryPath/$messageId.png';
-          // mainFile = await File(imagePath).create();
-          // mainFile.writeAsBytesSync(mainFileData);
         } else if (media.mediaType == GalleryMediaType.video) {
-          // mainFile = await FileManager.saveChatMediaToDirectory(
-          //     media, messageId, false, chatRoom.value!.id);
-          //
-          // File videoThumbnail = await FileManager.saveChatMediaToDirectory(
-          //     media, messageId, true, chatRoom.value!.id);
-
-          // String thumbnailPath = '$messageMediaDirectoryPath/$messageId.png';
-          // File videoThumbnail = await File(thumbnailPath).create();
-          // videoThumbnail.writeAsBytesSync(media.thumbnail!);
-
-          await ApiController()
-              .uploadFile(file: thumbnailFile!.path, type: UploadMediaType.chat)
-              .then((response) async {
-            videoThumbnailPath = response.postedMediaCompletePath!;
-            // await videoThumbnail.delete();
+          await MiscApi.uploadFile(thumbnailFile!.path,
+              type: UploadMediaType.chat, resultCallback: (filename, filepath) {
+            videoThumbnailPath = filepath;
           });
         } else if (media.mediaType == GalleryMediaType.audio) {
           // mainFile = await FileManager.saveChatMediaToDirectory(
@@ -1297,10 +1262,9 @@ class ChatDetailController extends GetxController {
           //     media, messageId, false, chatRoom.value!.id);
         }
 
-        await ApiController()
-            .uploadFile(file: mainFile.path, type: UploadMediaType.chat)
-            .then((response) async {
-          String mainFileUploadedPath = response.postedMediaCompletePath!;
+        await MiscApi.uploadFile(mainFile.path, type: UploadMediaType.chat,
+            resultCallback: (filename, filepath) {
+          String mainFileUploadedPath = filepath;
 
           // await mainFile.delete();
 
@@ -1326,8 +1290,7 @@ class ChatDetailController extends GetxController {
         });
       } else {
         AppUtil.showToast(
-            message: LocalizationString.noInternet,
-            isSuccess: false);
+            message: noInternetString.tr, isSuccess: false);
       }
     });
     return gallery;
@@ -1378,7 +1341,7 @@ class ChatDetailController extends GetxController {
     await contact.insert();
   }
 
-  //*************** updates from socket *******************//
+//*************** updates from socket *******************//
 
   messagedDeleted(
       {required int messageId, required int roomId, required userId}) async {
@@ -1543,10 +1506,10 @@ class ChatDetailController extends GetxController {
     }
   }
 
-  // call
+// call
   void initiateVideoCall() {
     PermissionUtils.requestPermission(
-        [Permission.camera, Permission.microphone], Get.context!,
+        [Permission.camera, Permission.microphone],
         isOpenSettings: false, permissionGrant: () async {
       Call call = Call(
           uuid: '',
@@ -1560,17 +1523,17 @@ class ChatDetailController extends GetxController {
       agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
+          message: pleaseAllowAccessToCameraForVideoCallString.tr,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
+          message: pleaseAllowAccessToCameraForVideoCallString.tr,
           isSuccess: false);
     });
   }
 
   void initiateAudioCall() {
-    PermissionUtils.requestPermission([Permission.microphone], Get.context!,
+    PermissionUtils.requestPermission([Permission.microphone],
         isOpenSettings: false, permissionGrant: () async {
       Call call = Call(
           uuid: '',
@@ -1584,11 +1547,11 @@ class ChatDetailController extends GetxController {
       agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          message: pleaseAllowAccessToMicrophoneForAudioCallString.tr,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          message: pleaseAllowAccessToMicrophoneForAudioCallString.tr,
           isSuccess: false);
     });
   }

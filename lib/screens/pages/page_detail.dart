@@ -59,7 +59,7 @@
 //                             width:
 //                                 (MediaQuery.of(context).size.width - 32) * 0.48,
 //                             child: AppThemeButton(
-//                                 text: LocalizationString.join, onPress: () {})),
+//                                 text: join, onPress: () {})),
 //                         SizedBox(
 //                             height: 30,
 //                             width:
@@ -67,7 +67,7 @@
 //                             child: AppThemeButton(
 //                                 enabledBackgroundColor:
 //                                     ColorConstants.disabledColor,
-//                                 text: LocalizationString.invite,
+//                                 text: invite,
 //                                 onPress: () {}))
 //                       ],
 //                     ).p16,
@@ -135,7 +135,7 @@
 //                     Get.back();
 //                   }),
 //                   Heading5Text(
-//                     LocalizationString.clubs,
+//                     clubs,
 //                     weight: TextWeight.medium,
 //                     color: ColorConstants.grayscale100,
 //                   ),
@@ -153,21 +153,21 @@
 //
 //   showActionSheet(PostModel post) {
 //     showModalBottomSheet(
-//         context: context,
+//
 //         backgroundColor: Colors.transparent,
 //         builder: (context) => ActionSheet1(
 //               items: [
 //                 GenericItem(
 //                     id: '1',
-//                     title: LocalizationString.share,
+//                     title: share,
 //                     icon: ThemeIcon.share),
 //                 GenericItem(
 //                     id: '2',
-//                     title: LocalizationString.report,
+//                     title: report,
 //                     icon: ThemeIcon.report),
 //                 GenericItem(
 //                     id: '3',
-//                     title: LocalizationString.hide,
+//                     title: hide,
 //                     icon: ThemeIcon.hide),
 //               ],
 //               itemCallBack: (item) {},

@@ -46,7 +46,7 @@ class _ContactListState extends State<ContactList> {
                     Navigator.of(context).pop();
                   }),
                   Heading5Text(
-                    LocalizationString.send,
+                    sendString.tr,
                     weight: TextWeight.medium,
 
                   ).ripple(() {
@@ -62,7 +62,7 @@ class _ContactListState extends State<ContactList> {
                 child: Column(
                   children: [
                     Obx(() => Heading6Text(
-                          '${LocalizationString.shareContacts} ${contactsController.selectedContacts.length}/${contactsController.contacts.length}',
+                          '${shareContactsString.tr} ${contactsController.selectedContacts.length}/${contactsController.contacts.length}',
                       weight: TextWeight.medium,
                         ))
                   ],
@@ -70,7 +70,7 @@ class _ContactListState extends State<ContactList> {
               )
             ],
           ),
-          divider(context: context).tP16,
+          divider().tP16,
           Expanded(
             child: GetBuilder<ContactsController>(
                 init: contactsController,

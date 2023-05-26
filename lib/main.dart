@@ -1,17 +1,16 @@
 import 'dart:io';
-
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:foap/apiHandler/apis/auth_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
 import 'package:foap/screens/add_on/controller/relationship/relationship_controller.dart';
 import 'package:foap/screens/add_on/controller/relationship/relationship_search_controller.dart';
-import 'package:foap/screens/live_users/live_users_controller.dart';
+import 'package:foap/controllers/live/live_users_controller.dart';
 import 'package:foap/screens/settings_menu/help_support_contorller.dart';
 import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
 import 'package:get/get.dart';
@@ -33,14 +32,14 @@ import 'apiHandler/api_controller.dart';
 import 'components/post_card_controller.dart';
 import 'controllers/add_post_controller.dart';
 import 'controllers/agora_call_controller.dart';
-import 'controllers/agora_live_controller.dart';
+import 'controllers/live/agora_live_controller.dart';
 import 'controllers/chat_and_call/chat_detail_controller.dart';
 import 'controllers/chat_and_call/chat_history_controller.dart';
 import 'controllers/chat_and_call/chat_room_detail_controller.dart';
 import 'controllers/chat_and_call/select_user_group_chat_controller.dart';
 import 'controllers/gift_controller.dart';
 import 'controllers/home_controller.dart';
-import 'controllers/live_history_controller.dart';
+import 'controllers/live/live_history_controller.dart';
 import 'controllers/live_tv_streaming_controller.dart';
 import 'controllers/login_controller.dart';
 import 'controllers/map_screen_controller.dart';
@@ -51,6 +50,7 @@ import 'controllers/request_verification_controller.dart';
 import 'controllers/subscription_packages_controller.dart';
 import 'helper/languages.dart';
 import 'manager/db_manager.dart';
+import 'manager/location_manager.dart';
 import 'manager/notification_manager.dart';
 import 'manager/player_manager.dart';
 
@@ -70,15 +70,6 @@ Future<void> main() async {
   cameras = await availableCameras();
 
   await Firebase.initializeApp();
-  // await EasyLocalization.ensureInitialized();
-  await FlutterDownloader.initialize(
-      debug: true,
-      // optional: set to false to disable printing logs to console (default: true)
-      ignoreSsl:
-          true // option: set to false to disable working with http links (default: false)
-      );
-  // await CustomGalleryPermissions.requestPermissionExtend();
-
   final firebaseMessaging = FCM();
   await firebaseMessaging.setNotifications();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -99,7 +90,6 @@ Future<void> main() async {
   isDarkMode = await SharedPrefs().isDarkMode();
   Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
 
-
   Get.put(DashboardController());
   Get.put(UserProfileManager());
   Get.put(PlayerManager());
@@ -117,8 +107,9 @@ Future<void> main() async {
   Get.put(ChatHistoryController());
   Get.put(ChatRoomDetailController());
   Get.put(TvStreamingController());
+  Get.put(LocationManager());
   Get.put(MapScreenController());
-  Get.put(GiftController());
+  // Get.put(GiftController());
   Get.put(LiveHistoryController());
   Get.put(RequestVerificationController());
   Get.put(FAQController());
@@ -147,7 +138,7 @@ Future<void> main() async {
   await getIt<DBManager>().createDatabase();
 
   if (userProfileManager.isLogin == true) {
-    ApiController().updateTokens();
+    AuthApi.updateFcmToken();
   }
 
   AwesomeNotifications().initialize(

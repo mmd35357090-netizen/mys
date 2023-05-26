@@ -4,7 +4,6 @@ import GoogleMobileAds
 import PushKit
 import flutter_callkit_incoming
 import GoogleMaps
-import flutter_downloader
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate,PKPushRegistryDelegate {
@@ -16,12 +15,6 @@ import flutter_downloader
 
         GADMobileAds.sharedInstance().start(completionHandler: nil)
         GeneratedPluginRegistrant.register(with: self)
-        
-        FlutterDownloaderPlugin.setPluginRegistrantCallback { registry in
-                if (!registry.hasPlugin("FlutterDownloaderPlugin")) {
-                   FlutterDownloaderPlugin.register(with: registry.registrar(forPlugin: "FlutterDownloaderPlugin")!)
-                }
-        }
 
 //      ImageGallery.shared.createImagePickerChanel(window: window!)
 //      Setup VOIP

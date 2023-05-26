@@ -10,7 +10,7 @@ class DeletedMessageChatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      LocalizationString.thisMessageIsDeleted,
+      thisMessageIsDeletedString.tr,
       style: TextStyle(fontSize: FontSizes.b2)
           .copyWith(decoration: TextDecoration.underline),
     );

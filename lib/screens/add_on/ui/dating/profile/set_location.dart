@@ -18,6 +18,7 @@ class SetLocation extends StatefulWidget {
 class _SetLocationState extends State<SetLocation> {
   final DatingController datingController = DatingController();
   final UserProfileManager _userProfileManager = Get.find();
+  final LocationManager _locationManager = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +28,12 @@ class _SetLocationState extends State<SetLocation> {
         children: [
           const SizedBox(height: 50),
           profileScreensNavigationBar(
-              context: context,
-              rightBtnTitle:
-              widget.isFromSignup ? LocalizationString.skip : null,
-              title: LocalizationString.locationMainHeader,
+              rightBtnTitle: widget.isFromSignup ? skipString.tr : null,
+              title: locationMainHeaderString.tr,
               completion: () {
                 Get.to(() => AddName(isFromSignup: widget.isFromSignup));
               }),
-          divider(context: context).tP8,
+          divider().tP8,
           Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -47,10 +46,10 @@ class _SetLocationState extends State<SetLocation> {
                       size: 20, color: Theme.of(context).primaryColor),
                 ).round(30).tP25,
                 Heading3Text(
-                  LocalizationString.locationHeader,
+                  locationHeaderString.tr,
                 ).setPadding(top: 40),
                 Heading4Text(
-                  LocalizationString.locationSubHeader,
+                  locationSubHeaderString.tr,
                 ).setPadding(top: 20),
                 Center(
                   child: SizedBox(
@@ -58,36 +57,34 @@ class _SetLocationState extends State<SetLocation> {
                       width: MediaQuery.of(context).size.width - 50,
                       child: AppThemeButton(
                           cornerRadius: 25,
-                          text: LocalizationString.locationService,
+                          text: locationServiceString.tr,
                           onPress: () {
-                            LocationManager().getLocation((location) async {
-                              try {
-                                AddDatingDataModel dataModel =
-                                AddDatingDataModel();
-                                dataModel.latitude =
-                                    location.latitude.toString();
-                                dataModel.longitude =
-                                    location.longitude.toString();
-                                _userProfileManager.user.value!.latitude =
-                                    location.latitude.toString();
-                                _userProfileManager.user.value!.longitude =
-                                    location.longitude.toString();
-                                datingController.updateDatingProfile(dataModel,
-                                        (msg) {
-                                      if (widget.isFromSignup) {
-                                        Get.to(() => AddName(
-                                            isFromSignup: widget.isFromSignup));
-                                      } else {
-                                        Get.back();
-                                      }
-                                    });
-                              } catch (err) {}
-                            });
+                            enableLocation();
                           })),
                 ).setPadding(top: 150),
               ]).hP25,
         ],
       ),
     );
+  }
+
+  enableLocation() {
+    _locationManager.getLocation(locationCallback: (locationData) {
+      try {
+        AddDatingDataModel dataModel = AddDatingDataModel();
+        dataModel.latitude = locationData.latitude.toString();
+        dataModel.longitude = locationData.longitude.toString();
+        _userProfileManager.user.value!.latitude = locationData.latitude.toString();
+        _userProfileManager.user.value!.longitude =
+            locationData.longitude.toString();
+        datingController.updateDatingProfile(dataModel, (msg) {
+          if (widget.isFromSignup) {
+            Get.to(() => AddName(isFromSignup: widget.isFromSignup));
+          } else {
+            Get.back();
+          }
+        });
+      } catch (err) {}
+    });
   }
 }

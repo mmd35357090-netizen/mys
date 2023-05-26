@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:profanity_filter/profanity_filter.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/comment_card.dart';
 import '../../components/hashtag_tile.dart';
 import '../../components/user_card.dart';
@@ -32,25 +32,41 @@ class CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentInputField = TextEditingController();
   final ScrollController _controller = ScrollController();
   final CommentsController _commentsController = CommentsController();
+  final RefreshController _commentsRefreshController =
+      RefreshController(initialRefresh: false);
+  final RefreshController _usersRefreshController =
+      RefreshController(initialRefresh: false);
+  final RefreshController _hashtagRefreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     super.initState();
-    _commentsController.getComments(widget.postId ?? widget.model!.id, context);
+    loadData();
+  }
+
+  @override
+  dispose() {
+    _commentsController.clear();
+    super.dispose();
+  }
+
+  loadData() {
+    _commentsController.getComments(widget.postId ?? widget.model!.id, () {
+      _commentsRefreshController.loadComplete();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: AppColorConstants.cardColor.darken(),
+        color: AppColorConstants.backgroundColor.lighten(0.02),
         child: Column(
           children: <Widget>[
             SizedBox(
-              height: widget.isPopup == true ? 20 : 50,
+              height: widget.isPopup == true ? 0 : 50,
             ),
-            backNavigationBar(
-                context: context, title: LocalizationString.comments),
-            divider(context: context).tP8,
+            backNavigationBar(title: commentsString.tr),
             Obx(() => _commentsController.hashTags.isNotEmpty ||
                     _commentsController.searchedUsers.isNotEmpty
                 ? Expanded(
@@ -84,7 +100,14 @@ class CommentsScreenState extends State<CommentsScreen> {
                                 height: 20,
                               );
                             },
-                          );
+                          ).addPullToRefresh(
+                              refreshController: _commentsRefreshController,
+                              onRefresh: () {},
+                              onLoading: () {
+                                loadData();
+                              },
+                              enablePullUp: true,
+                              enablePullDown: false);
                         }))),
             buildMessageTextField(),
             const SizedBox(
@@ -107,36 +130,44 @@ class CommentsScreenState extends State<CommentsScreen> {
                 selection: TextSelection.fromPosition(
                     TextPosition(offset: _commentsController.position.value)));
 
-            return TextField(
-              controller: commentInputField,
-              onChanged: (text) {
-                _commentsController.textChanged(
-                    text, commentInputField.selection.baseOffset);
-              },
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: LocalizationString.writeComment,
-                hintStyle: TextStyle(
-                    fontSize: FontSizes.h6,
-                    color: AppColorConstants.grayscale700),
-              ),
-              textInputAction: TextInputAction.send,
-              style: TextStyle(
-                  fontSize: FontSizes.h6,
-                  color: AppColorConstants.grayscale900),
-              onSubmitted: (_) {
-                addNewMessage();
-              },
-              onTap: () {
-                Timer(
-                    const Duration(milliseconds: 300),
-                    () => _controller
-                        .jumpTo(_controller.position.maxScrollExtent));
-              },
-            ).hP8;
-          }).borderWithRadius(value: 0.5, radius: 25)),
-          SizedBox(
-            width: 50.0,
+            return Container(
+              color: AppColorConstants.cardColor.withOpacity(0.5),
+              child: TextField(
+                controller: commentInputField,
+                onChanged: (text) {
+                  _commentsController.textChanged(
+                      text, commentInputField.selection.baseOffset);
+                },
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: writeCommentString.tr,
+                  hintStyle: TextStyle(
+                      fontSize: FontSizes.b2,
+                      color: AppColorConstants.grayscale700),
+                ),
+                textInputAction: TextInputAction.send,
+                style: TextStyle(
+                    fontSize: FontSizes.b2,
+                    color: AppColorConstants.grayscale900),
+                onSubmitted: (_) {
+                  addNewMessage();
+                },
+                onTap: () {
+                  Timer(
+                      const Duration(milliseconds: 300),
+                      () => _controller
+                          .jumpTo(_controller.position.maxScrollExtent));
+                },
+              ).hP8,
+            );
+          }).borderWithRadius(value: 0.5, radius: 15)),
+          const SizedBox(
+            width: 20,
+          ),
+          Container(
+            width: 45,
+            height: 45,
+            color: AppColorConstants.grayscale900,
             child: InkWell(
               onTap: addNewMessage,
               child: Icon(
@@ -144,7 +175,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                 color: AppColorConstants.themeColor,
               ),
             ),
-          )
+          ).circular
         ],
       ),
     );
@@ -155,8 +186,7 @@ class CommentsScreenState extends State<CommentsScreen> {
       final filter = ProfanityFilter();
       bool hasProfanity = filter.hasProfanity(commentInputField.text);
       if (hasProfanity) {
-        AppUtil.showToast(
-            message: LocalizationString.notAllowedMessage, isSuccess: true);
+        AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
         return;
       }
 
@@ -179,7 +209,7 @@ class CommentsScreenState extends State<CommentsScreen> {
         init: _commentsController,
         builder: (ctx) {
           return ListView.separated(
-              padding: const EdgeInsets.only(top: 20),
+              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
               itemCount: _commentsController.searchedUsers.length,
               itemBuilder: (BuildContext ctx, int index) {
                 return UserTile(
@@ -194,7 +224,15 @@ class CommentsScreenState extends State<CommentsScreen> {
                 return const SizedBox(
                   height: 20,
                 );
-              }).hP16;
+              }).addPullToRefresh(
+              refreshController: _usersRefreshController,
+              onRefresh: () {},
+              onLoading: () {
+                _commentsController.searchUsers(
+                    text: _commentsController.currentUserTag.value);
+              },
+              enablePullUp: true,
+              enablePullDown: false);
         });
   }
 
@@ -214,7 +252,15 @@ class CommentsScreenState extends State<CommentsScreen> {
                 },
               );
             },
-          );
+          ).addPullToRefresh(
+              refreshController: _hashtagRefreshController,
+              onRefresh: () {},
+              onLoading: () {
+                _commentsController.searchHashTags(
+                    text: _commentsController.currentHashtag.value);
+              },
+              enablePullUp: true,
+              enablePullDown: false);
         });
   }
 }

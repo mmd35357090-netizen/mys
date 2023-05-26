@@ -43,7 +43,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                 Get.back();
               }),
               const Spacer(),
-              Heading6Text(LocalizationString.create,
+              Heading6Text(createString.tr,
                       weight: TextWeight.medium,
                       color: AppColorConstants.themeColor)
                   .ripple(() {
@@ -52,7 +52,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                   highlightsController.createHighlights(name: nameText.text);
                 } else {
                   AppUtil.showToast(
-                      message: LocalizationString.pleaseEnterTitle,
+                      message: pleaseEnterTitleString.tr,
                       isSuccess: false);
                 }
               }),
@@ -62,7 +62,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
             height: 25,
           ),
           addProfileView(),
-          BodyLargeText(LocalizationString.chooseCoverImage,
+          BodyLargeText(chooseCoverImageString.tr,
                   weight: TextWeight.bold, color: AppColorConstants.themeColor)
               .ripple(() {
             openImagePickingPopup();
@@ -87,7 +87,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                   hintStyle: TextStyle(
                       fontSize: FontSizes.h5,
                       color: AppColorConstants.themeColor),
-                  hintText: LocalizationString.enterHighlightName),
+                  hintText: enterHighlightNameString.tr),
             ),
           )
         ],
@@ -155,19 +155,20 @@ class _CreateHighlightState extends State<CreateHighlight> {
   void openImagePickingPopup() {
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 Padding(
                     padding: const EdgeInsets.only(
                         left: 20, right: 20, top: 20, bottom: 25),
                     child: BodyLargeText(
-                      LocalizationString.addPhoto,
+                      addPhotoString.tr,
                     )),
                 ListTile(
                     leading: const Icon(Icons.camera_alt_outlined,
                         color: Colors.black87),
                     title: BodyLargeText(
-                      LocalizationString.takePhoto,
+                      takePhotoString.tr,
                     ),
                     onTap: () async {
                       Navigator.of(context).pop();
@@ -178,12 +179,12 @@ class _CreateHighlightState extends State<CreateHighlight> {
                             .updateCoverImage(File(pickedFile.path));
                       } else {}
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: const Icon(Icons.wallpaper_outlined,
                         color: Colors.black87),
                     title: BodyLargeText(
-                      LocalizationString.chooseFromGallery,
+                      chooseFromGalleryString.tr,
                     ),
                     onTap: () async {
                       Navigator.of(context).pop();
@@ -194,10 +195,10 @@ class _CreateHighlightState extends State<CreateHighlight> {
                             .updateCoverImage(File(pickedFile.path));
                       } else {}
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: const Icon(Icons.close, color: Colors.black87),
-                    title: BodyLargeText(LocalizationString.cancel),
+                    title: BodyLargeText(cancelString.tr),
                     onTap: () => Get.back()),
               ],
             ));

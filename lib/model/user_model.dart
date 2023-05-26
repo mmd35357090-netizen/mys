@@ -1,5 +1,6 @@
+import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:timeago/timeago.dart' as timeago;
+// import 'package:timeago/timeago.dart' as timeago;
 import 'chat_room_model.dart';
 import 'package:get/get.dart';
 
@@ -55,7 +56,7 @@ class UserModel {
 
   String? name;
   String userName = '';
-  String category = '';
+  // String category = '';
 
   String? email = '';
   String? picture;
@@ -130,7 +131,7 @@ class UserModel {
     model.userName = json['username'] == null
         ? ''
         : json['username'].toString().toLowerCase();
-    model.category = json['category'] ?? 'Other';
+    // model.category = json['category'] ?? 'Other';
 
     model.email = json['email'];
     model.picture = json['picture'];
@@ -148,7 +149,7 @@ class UserModel {
     model.countryCode = json['country_code'];
     model.city = json['city'];
     model.gender = json['sex'] == null ? '1' : json['sex'].toString();
-    model.genderType = model.gender == ''
+    model.genderType = model.gender == '1'
         ? GenderType.male
         : model.gender == '2'
             ? GenderType.female
@@ -238,25 +239,25 @@ class UserModel {
   static UserModel placeholderUser() {
     UserModel model = UserModel();
     model.id = 1;
-    model.userName = LocalizationString.loading;
-    // model.name = LocalizationString.loading;
-    model.email = LocalizationString.loading;
-    model.picture = LocalizationString.loading;
-    model.bio = LocalizationString.loading;
+    model.userName = loadingString.tr;
+    // model.name = loadingString.tr;
+    model.email = loadingString.tr;
+    model.picture = loadingString.tr;
+    model.bio = loadingString.tr;
     model.isFollowing = false;
     model.isFollower = false;
 
-    model.phone = LocalizationString.loading;
-    model.country = LocalizationString.loading;
-    model.countryCode = LocalizationString.loading;
-    model.city = LocalizationString.loading;
+    model.phone = loadingString.tr;
+    model.country = loadingString.tr;
+    model.countryCode = loadingString.tr;
+    model.city = loadingString.tr;
     model.gender = 'Male';
 
     model.totalPost = 0;
     model.coins = 0;
     model.isReported = false;
-    model.paypalId = LocalizationString.loading;
-    model.balance = LocalizationString.loading;
+    model.paypalId = loadingString.tr;
+    model.balance = loadingString.tr;
     model.isBioMetricLoginEnabled = 0;
     model.commentPushNotificationStatus = 0;
     model.likePushNotificationStatus = 0;
@@ -279,12 +280,14 @@ class UserModel {
 
   String get lastSeenAtTime {
     if (chatLastTimeOnline == null) {
-      return LocalizationString.offline;
+      return offlineString.tr;
     }
 
     DateTime dateTime =
         DateTime.fromMillisecondsSinceEpoch(chatLastTimeOnline! * 1000).toUtc();
-    return '${LocalizationString.lastSeen} ${timeago.format(dateTime)}';
+    // return '${lastSeenString.tr} ${timeago.format(dateTime)}';
+    return '${lastSeenString.tr} ${dateTime.getTimeAgo}';
+
   }
 
   bool get isMe {

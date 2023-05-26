@@ -27,11 +27,9 @@ class _ClubSettingsState extends State<ClubSettings> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.clubSettings),
+               title: clubSettingsString.tr),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.only(top: 25),
@@ -39,7 +37,7 @@ class _ClubSettingsState extends State<ClubSettings> {
                 Row(
                   children: [
                     Heading6Text(
-                      LocalizationString.editClubInfo,
+                      editClubInfoString.tr,
                     ),
                     const Spacer(),
                     const ThemeIconWidget(
@@ -56,11 +54,11 @@ class _ClubSettingsState extends State<ClubSettings> {
                         // },
                       ));
                 }),
-                divider(context: context).vP16,
+                divider().vP16,
                 Row(
                   children: [
                     Heading6Text(
-                      LocalizationString.editClubImage,
+                      editClubImageString.tr,
                     ),
                     const Spacer(),
                     const ThemeIconWidget(
@@ -77,16 +75,16 @@ class _ClubSettingsState extends State<ClubSettings> {
                         // },
                       ));
                 }),
-                divider(context: context).vP16,
+                divider().vP16,
                 Row(
                   children: [
-                    Heading6Text(LocalizationString.deleteClub,
+                    Heading6Text(deleteClubString.tr,
                         weight: TextWeight.medium, color: AppColorConstants.red),
                   ],
                 ).ripple(() {
                   AppUtil.showConfirmationAlert(
-                      title: LocalizationString.deleteClub,
-                      subTitle: LocalizationString.areYouSureToDeleteClub,
+                      title: deleteClubString.tr,
+                      subTitle: areYouSureToDeleteClubString.tr,
                       okHandler: () {
                         _clubsController.deleteClub(
                             club: widget.club,
@@ -95,7 +93,7 @@ class _ClubSettingsState extends State<ClubSettings> {
                             });
                       });
                 }),
-                divider(context: context).vP16,
+                divider().vP16,
               ],
             ).hP16,
           )

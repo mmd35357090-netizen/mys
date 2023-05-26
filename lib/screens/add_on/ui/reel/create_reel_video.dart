@@ -137,7 +137,7 @@ class _CreateReelScreenState extends State<CreateReelScreen>
                                       null
                                       ? _createReelController
                                       .selectedAudio.value!.name
-                                      : LocalizationString.selectMusic,
+                                      : selectMusicString.tr,
                                   weight: TextWeight.bold,
                                 ),
                               ],

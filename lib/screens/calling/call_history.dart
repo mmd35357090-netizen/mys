@@ -35,17 +35,14 @@ class _CallHistoryState extends State<CallHistory> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            const SizedBox(
-              height: 50,
-            ),
+
             backNavigationBarWithIcon(
-                context: context,
                 icon: ThemeIcon.mobile,
-                title: LocalizationString.callLog,
+                title: callLogString.tr,
                 iconBtnClicked: () {
                   selectUsers();
                 }),
-            divider(context: context).tP8,
+            divider().tP8,
             Expanded(
               child: GetBuilder<CallHistoryController>(
                   init: _callHistoryController,
@@ -84,8 +81,8 @@ class _CallHistoryState extends State<CallHistory> {
                         : _callHistoryController.isLoading == true
                             ? Container()
                             : emptyData(
-                                title: LocalizationString.noCallFound,
-                                subTitle: LocalizationString.makeSomeCalls,
+                                title: noCallFoundString.tr,
+                                subTitle: makeSomeCallsString.tr,
                                );
                   }).hP16,
             ),
@@ -97,6 +94,7 @@ class _CallHistoryState extends State<CallHistory> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         builder: (context) => SelectUserForChat(userSelected: (user) {
               _chatDetailController.getChatRoomWithUser(
                   userId: user.id,

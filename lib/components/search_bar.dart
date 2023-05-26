@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
-class SearchBar extends StatefulWidget {
+class SFSearchBar extends StatefulWidget {
   final ValueChanged<String>? onSearchChanged;
   final VoidCallback? onSearchStarted;
   final ValueChanged<String> onSearchCompleted;
@@ -16,7 +16,7 @@ class SearchBar extends StatefulWidget {
   final double? shadowOpacity;
   final String? hintText;
 
-  const SearchBar({
+  const SFSearchBar({
     Key? key,
     required this.onSearchCompleted,
     this.onSearchStarted,
@@ -32,10 +32,10 @@ class SearchBar extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
+  State<SFSearchBar> createState() => _SFSearchBarState();
 }
 
-class _SearchBarState extends State<SearchBar> {
+class _SFSearchBarState extends State<SFSearchBar> {
   late ValueChanged<String>? onSearchChanged;
   late VoidCallback? onSearchStarted;
   late ValueChanged<String> onSearchCompleted;
@@ -125,7 +125,7 @@ class _SearchBarState extends State<SearchBar> {
                         TextStyle(
                             fontSize: FontSizes.b3,
                             color: AppColorConstants.grayscale700),
-                    hintText: hintText ?? LocalizationString.searchAnything,
+                    hintText: hintText ?? searchAnythingString.tr,
                     border: InputBorder.none,
                   )).setPadding(bottom: 4, left: 8),
             ),

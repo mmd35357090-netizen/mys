@@ -15,7 +15,7 @@ class ContactChatTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Heading5Text(
-                LocalizationString.contact,
+                contactString.tr,
                   weight: TextWeight.bold),
               BodyLargeText(
                 message.mediaContent.contact!.displayName,

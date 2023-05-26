@@ -46,23 +46,20 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
           if (widget.isFromSignup == false)
             Column(
               children: [
-                const SizedBox(
-                  height: 50,
-                ),
+
                 backNavigationBar(
-                    context: context,
-                    title: LocalizationString.setProfileCategoryType)
+                    title: setProfileCategoryTypeString.tr)
               ],
             ),
           if (widget.isFromSignup == true)
             Heading3Text(
-              LocalizationString.setProfileCategoryType,
+              setProfileCategoryTypeString.tr,
             ),
           const SizedBox(
             height: 20,
           ),
           BodySmallText(
-            LocalizationString.setProfileCategoryTypeSubHeading,
+            setProfileCategoryTypeSubHeadingString.tr,
             textAlign: TextAlign.center,
             weight: TextWeight.medium,
           ).hP16,
@@ -107,13 +104,13 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
                     return const SizedBox(height: 20);
                   }))),
           AppThemeButton(
-              text: LocalizationString.submit,
+              text: submitString.tr,
               onPress: () {
                 profileController.updateProfileCategoryType(
-                    profileCategoryType:
-                        _setProfileCategoryController.profileCategoryType.value,
-                    isSigningUp: true,
-                    context: context);
+                  profileCategoryType:
+                      _setProfileCategoryController.profileCategoryType.value,
+                  isSigningUp: true,
+                );
               }).hP16,
           const SizedBox(
             height: 20,

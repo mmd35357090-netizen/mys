@@ -1,4 +1,6 @@
+import 'package:foap/apiHandler/apis/competition_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/post_imports.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../apiHandler/api_controller.dart';
@@ -39,31 +41,28 @@ class CompetitionController extends GetxController {
 
   getCompetitions(VoidCallback callback) async {
     if (canLoadMoreCompetition) {
-      await ApiController().getCompetitions(page: page).then((response) {
-        allCompetitions.addAll(response.competitions);
-        allCompetitions.value = allCompetitions.toSet().toList();
+      await CompetitionApi.getCompetitions(
+          page: page,
+          resultCallback: (result, metadata) {
+            allCompetitions.addAll(result);
+            allCompetitions.value = allCompetitions.toSet().toList();
 
-        current.value =
-            allCompetitions.where((element) => element.isOngoing).toList();
-        completed.value =
-            allCompetitions.where((element) => element.isPast).toList();
-        winners.value = allCompetitions
-            .where((element) => element.winnerAnnounced())
-            .toList();
+            current.value =
+                allCompetitions.where((element) => element.isOngoing).toList();
+            completed.value =
+                allCompetitions.where((element) => element.isPast).toList();
+            winners.value = allCompetitions
+                .where((element) => element.winnerAnnounced())
+                .toList();
 
-        isLoadingCompetition.value = false;
+            isLoadingCompetition.value = false;
 
-        if (response.competitions.length == response.metaData?.perPage) {
-          canLoadMoreCompetition = true;
-        } else {
-          canLoadMoreCompetition = false;
-        }
-        page += 1;
+            canLoadMoreCompetition = result.length >= metadata.perPage;
 
-        callback();
-
-        update();
-      });
+            page += 1;
+            callback();
+            update();
+          });
     } else {
       callback();
     }
@@ -88,35 +87,23 @@ class CompetitionController extends GetxController {
   }
 
   loadCompetitionDetail({required int id}) {
-    ApiController().getCompetitionsDetail(id).then((response) {
-      competition.value = response.competition;
+    CompetitionApi.getCompetitionsDetail(
+        id: id,
+        resultCallback: (result) {
+          competition.value = result;
 
-      update();
-    });
+          update();
+        });
   }
 
   void joinCompetition(CompetitionModel competition, BuildContext context) {
     int coin = _userProfileManager.user.value!.coins;
 
     if (coin >= competition.joiningFee) {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController()
-              .joinCompetition(competition.id)
-              .then((response) async {
-            EasyLoading.dismiss();
-            AppUtil.showToast(
-                 message: response.message, isSuccess: true);
-            competition.isJoined = 1;
-            update();
-            _userProfileManager.refreshProfile();
-          });
-        } else {
-          AppUtil.showToast(
-              message: LocalizationString.noInternet,
-              isSuccess: false);
-        }
+      CompetitionApi.joinCompetition(competition.id, resultCallback: () {
+        competition.isJoined = 1;
+        update();
+        _userProfileManager.refreshProfile();
       });
     } else {
       Get.to(() =>
@@ -126,8 +113,8 @@ class CompetitionController extends GetxController {
 
   viewMySubmission(CompetitionModel competition) async {
     var loggedInUserPost = competition.posts
-        .where((element) =>
-            element.user.id == _userProfileManager.user.value!.id)
+        .where(
+            (element) => element.user.id == _userProfileManager.user.value!.id)
         .toList();
     //User have already published post for this competition
     PostModel postModel = loggedInUserPost.first;
@@ -144,13 +131,16 @@ class CompetitionController extends GetxController {
 
   submitMedia(CompetitionModel competition) async {
     if (competition.competitionMediaType == 1) {
-      Get.to(() => SelectMedia(
-            mediaType: PostMediaType.photo,
+      Get.to(() => AddPostScreen(
+            postType: PostType.competition,
+            // mediaType: PostMediaType.photo,
             competitionId: competition.id,
           ));
     } else {
-      Get.to(() => SelectMedia(
-            mediaType: PostMediaType.video,
+      Get.to(() => AddPostScreen(
+            postType: PostType.competition,
+
+            // mediaType: PostMediaType.video,
             competitionId: competition.id,
           ));
     }

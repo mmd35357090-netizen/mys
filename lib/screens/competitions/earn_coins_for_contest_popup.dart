@@ -21,11 +21,9 @@ class _EarnCoinForContestPopupState extends State<EarnCoinForContestPopup> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(context: context, title: LocalizationString.coins),
-          divider(context: context).tP8,
+
+          backNavigationBar( title: coinsString.tr),
+          divider().tP8,
           const Spacer(),
           Container(
                   height: 450,
@@ -33,22 +31,22 @@ class _EarnCoinForContestPopupState extends State<EarnCoinForContestPopup> {
                   child: Column(
                     children: [
                       Heading6Text(
-                        LocalizationString.youNeed,
+                        youNeedString.tr,
                       ).bp(20),
                       Heading4Text(
-                        '${widget.needCoins} ${LocalizationString.coins}',
+                        '${widget.needCoins} ${coinsString.tr}',
                         weight: TextWeight.bold,
                         color: AppColorConstants.themeColor,
                       ).bp(15),
                       Heading6Text(
-                        LocalizationString.toJoinThisCompetition,
+                        toJoinThisCompetitionString.tr,
                       ).bp(120),
                       Heading5Text(
-                        LocalizationString.watchAdsToEarnCoins,
+                        watchAdsToEarnCoinsString.tr,
                         color: AppColorConstants.themeColor,
                       ).ripple(() {}).bp(20),
                       AppThemeButton(
-                        text: LocalizationString.buyCoins,
+                        text: buyCoinsString.tr,
                         onPress: () {
                           Get.back();
                           Get.to(() => const PackagesScreen());

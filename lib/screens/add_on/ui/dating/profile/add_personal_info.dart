@@ -62,14 +62,14 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
         body: Column(children: [
           const SizedBox(height: 50),
           profileScreensNavigationBar(
-              context: context,
+              
               rightBtnTitle:
-                  widget.isFromSignup ? LocalizationString.skip : null,
-              title: LocalizationString.personalDetails,
+                  widget.isFromSignup ? skipString.tr : null,
+              title: personalDetailsString.tr,
               completion: () {
                 Get.to(() => AddInterests(isFromSignup: widget.isFromSignup));
               }),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -77,12 +77,12 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Heading2Text(
-                    LocalizationString.personalInfoHeader,
+                    personalInfoHeaderString.tr,
                   ).setPadding(top: 20),
                   Heading6Text(
-                    LocalizationString.personalInfoSubHeader,
+                    personalInfoSubHeaderString.tr,
                   ).setPadding(top: 20),
-                  addHeader(LocalizationString.color)
+                  addHeader(colorString.tr)
                       .setPadding(top: 30, bottom: 8),
                   SegmentedControl(
                       segments: colors,
@@ -90,7 +90,7 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                       onValueChanged: (value) {
                         setState(() => selectedColor = value);
                       }),
-                  addHeader(LocalizationString.height).setPadding(top: 30),
+                  addHeader(heightString.tr).setPadding(top: 30),
                   Slider(
                     min: 121.0,
                     max: 243.0,
@@ -105,10 +105,10 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                       });
                     },
                   ),
-                  addHeader(LocalizationString.religion)
+                  addHeader(religionString.tr)
                       .setPadding(top: 15, bottom: 8),
                   DropdownBorderedField(
-                    hintText: LocalizationString.select,
+                    hintText: selectString.tr,
                     controller: religionController,
                     showBorder: true,
                     borderColor: AppColorConstants.borderColor,
@@ -120,7 +120,7 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                       openReligionPopup();
                     },
                   ),
-                  addHeader(LocalizationString.status)
+                  addHeader(statusString.tr)
                       .setPadding(top: 30, bottom: 8),
                   SegmentedControl(
                       segments: status,
@@ -134,7 +134,7 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                         width: MediaQuery.of(context).size.width - 50,
                         child: AppThemeButton(
                             cornerRadius: 25,
-                            text: LocalizationString.submit,
+                            text: submitString.tr,
                             onPress: () {
                               AddDatingDataModel dataModel =
                                   AddDatingDataModel();
@@ -176,7 +176,7 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                                 // if (msg != '' &&
                                 //     !isLoginFirstTime) {
                                 //   AppUtil.showToast(
-                                //       context: context,
+                                //       
                                 //       message: msg,
                                 //       isSuccess: true);
                                 // }
@@ -201,6 +201,7 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {

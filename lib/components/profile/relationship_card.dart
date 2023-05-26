@@ -44,7 +44,7 @@ class RelationshipCard extends StatelessWidget {
                 weight: TextWeight.medium),
           if (relationship.status != 4)
             BodyMediumText(
-              LocalizationString.requestPending,
+              requestPendingString.tr,
               weight: TextWeight.semiBold,
               color: AppColorConstants.themeColor,
             ),

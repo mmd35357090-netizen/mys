@@ -1,7 +1,7 @@
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/events_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
-
 
 class EventBookingsController extends GetxController {
   RxList<EventBookingModel> upcomingBookings = <EventBookingModel>[].obs;
@@ -66,23 +66,21 @@ class EventBookingsController extends GetxController {
     if (isLoading.value == true) {
       return;
     }
-
     //upcoming = 1, COMPLETED = 3, CANCELLED = 4
     if (canLoadMoreCompletedBookings) {
       isLoading.value = true;
 
-      ApiController().getEventBookings(currentStatus: 3).then((response) {
-        completedBookings.addAll(response.eventBookings);
-        isLoading.value = false;
+      EventApi.getEventBookings(
+          currentStatus: 3,
+          resultCallback: (result, metadata) {
+            completedBookings.addAll(result);
+            isLoading.value = false;
 
-        completedBookingsPage += 1;
-        if (response.eventBookings.length == response.metaData?.perPage) {
-          canLoadMoreCompletedBookings = true;
-        } else {
-          canLoadMoreCompletedBookings = false;
-        }
-        update();
-      });
+            completedBookingsPage += 1;
+            canLoadMoreCompletedBookings = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
@@ -94,18 +92,17 @@ class EventBookingsController extends GetxController {
     if (canLoadMoreUpcomingBookings) {
       isLoading.value = true;
 
-      ApiController().getEventBookings(currentStatus: 1).then((response) {
-        upcomingBookings.addAll(response.eventBookings);
-        isLoading.value = false;
+      EventApi.getEventBookings(
+          currentStatus: 1,
+          resultCallback: (result, metadata) {
+            upcomingBookings.addAll(result);
+            isLoading.value = false;
 
-        upcomingBookingsPage += 1;
-        if (response.eventBookings.length == response.metaData?.perPage) {
-          canLoadMoreUpcomingBookings = true;
-        } else {
-          canLoadMoreUpcomingBookings = false;
-        }
-        update();
-      });
+            upcomingBookingsPage += 1;
+            canLoadMoreUpcomingBookings = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
@@ -118,18 +115,17 @@ class EventBookingsController extends GetxController {
     if (canLoadMoreCancelledBookings) {
       isLoading.value = true;
 
-      ApiController().getEventBookings(currentStatus: 4).then((response) {
-        cancelledBookings.addAll(response.eventBookings);
-        isLoading.value = false;
+      EventApi.getEventBookings(
+          currentStatus: 4,
+          resultCallback: (result, metadata) {
+            cancelledBookings.addAll(result);
+            isLoading.value = false;
 
-        cancelledBookingsPage += 1;
-        if (response.eventBookings.length == response.metaData?.perPage) {
-          canLoadMoreCancelledBookings = true;
-        } else {
-          canLoadMoreCancelledBookings = false;
-        }
-        update();
-      });
+            cancelledBookingsPage += 1;
+            canLoadMoreCancelledBookings = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 }

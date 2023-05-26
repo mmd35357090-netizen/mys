@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/model/post_model.dart';
 
+import '../apiHandler/apis/post_api.dart';
+
 class SinglePostDetailController extends GetxController {
   Rx<PostModel?> post = Rx<PostModel?>(null);
   bool isLoading = false;
@@ -14,28 +16,20 @@ class SinglePostDetailController extends GetxController {
 
   getPostDetail(int postId) async {
     isLoading = true;
-    await ApiController().getPostDetail(postId).then((value) {
-      post.value = value.post;
+    await PostApi.getPostDetail(postId, resultCallback: (result) {
+      post.value = result;
       isLoading = false;
       update();
     });
   }
 
-  void likeUnlikePost( BuildContext context) {
+  void likeUnlikePost(BuildContext context) {
     post.value!.isLike = !post.value!.isLike;
     post.value!.totalLike = post.value!.isLike
         ? (post.value!.totalLike) + 1
         : (post.value!.totalLike) - 1;
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController()
-            .likeUnlike(post.value!.isLike, post.value!.id)
-            .then((response) async {});
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: true);
-      }
-    });
+
+    PostApi.likeUnlikePost(like: post.value!.isLike, postId: post.value!.id);
 
     update();
   }

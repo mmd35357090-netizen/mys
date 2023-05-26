@@ -1,8 +1,7 @@
+import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import '../../apiHandler/api_controller.dart';
 import '../../helper/permission_utils.dart';
 import '../../model/call_history_model.dart';
 import '../../model/call_model.dart';
@@ -26,18 +25,22 @@ class CallHistoryController extends GetxController {
   callHistory() {
     if (canLoadMoreCalls) {
       isLoading = true;
-      ApiController().getCallHistory(page: callHistoryPage).then((response) {
-        calls.addAll(response.callHistory);
-        isLoading = false;
 
-        callHistoryPage += 1;
-        if (response.callHistory.length == response.metaData?.perPage) {
-          canLoadMoreCalls = true;
-        } else {
-          canLoadMoreCalls = false;
-        }
-        update();
-      });
+      ChatApi.getCallHistory(
+          page: callHistoryPage,
+          resultCallback: (result, metadata) {
+
+            calls.addAll(result);
+            isLoading = false;
+
+            callHistoryPage += 1;
+            canLoadMoreCalls = result.length >= metadata.perPage;
+
+            print('result.length ${result.length}');
+            print('metadata.perPage ${metadata.perPage}');
+
+            update();
+          });
     }
   }
 
@@ -51,7 +54,7 @@ class CallHistoryController extends GetxController {
 
   void initiateVideoCall({required UserModel opponent}) {
     PermissionUtils.requestPermission(
-        [Permission.camera, Permission.microphone], Get.context!,
+        [Permission.camera, Permission.microphone],
         isOpenSettings: false, permissionGrant: () async {
       Call call = Call(
           uuid: '',
@@ -65,17 +68,17 @@ class CallHistoryController extends GetxController {
       agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
+          message: pleaseAllowAccessToCameraForVideoCallString.tr,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToCameraForVideoCall,
+          message: pleaseAllowAccessToCameraForVideoCallString.tr,
           isSuccess: false);
     });
   }
 
   void initiateAudioCall({required UserModel opponent}) {
-    PermissionUtils.requestPermission([Permission.microphone], Get.context!,
+    PermissionUtils.requestPermission([Permission.microphone],
         isOpenSettings: false, permissionGrant: () async {
       Call call = Call(
           uuid: '',
@@ -89,11 +92,11 @@ class CallHistoryController extends GetxController {
       agoraCallController.makeCallRequest(call: call);
     }, permissionDenied: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          message: pleaseAllowAccessToMicrophoneForAudioCallString.tr,
           isSuccess: false);
     }, permissionNotAskAgain: () {
       AppUtil.showToast(
-          message: LocalizationString.pleaseAllowAccessToMicrophoneForAudioCall,
+          message: pleaseAllowAccessToMicrophoneForAudioCallString.tr,
           isSuccess: false);
     });
   }

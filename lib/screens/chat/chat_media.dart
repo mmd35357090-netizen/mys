@@ -47,10 +47,10 @@ class _ChatMediaListState extends State<ChatMediaList> {
                     groupValue: chatRoomDetailController.selectedSegment.value,
                     children: {
                       0: BodyMediumText(
-                        LocalizationString.photo,
+                        photoString.tr,
                       ).hP25,
                       1: BodyMediumText(
-                        LocalizationString.video,
+                        videoString.tr,
                       ).hP25,
                     },
                     onValueChanged: (value) {
@@ -63,7 +63,7 @@ class _ChatMediaListState extends State<ChatMediaList> {
               )
             ],
           ).hP16,
-          divider(context: context).tP8,
+          divider().tP8,
           mediaList()
         ],
       ),

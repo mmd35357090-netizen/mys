@@ -1,8 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../controllers/profile_controller.dart';
-import '../../universal_components/rounded_input_field.dart';
 
 class ChangeLocation extends StatefulWidget {
   const ChangeLocation({Key? key}) : super(key: key);
@@ -41,41 +38,39 @@ class _ChangeLocationState extends State<ChangeLocation> {
             height: 50,
           ),
           profileScreensNavigationBar(
-              context: context,
-              title: LocalizationString.changeLocation,
-              rightBtnTitle: LocalizationString.done,
+              
+              title: changeLocationString.tr,
+              rightBtnTitle: doneString.tr,
               completion: () {
                 updateLocation();
               }),
-          divider(context: context).vP8,
+          divider().vP8,
           const SizedBox(
             height: 20,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading6Text(LocalizationString.country,
+              Heading6Text(countryString.tr,
                   weight: TextWeight.medium),
               Container(
                 color: Colors.transparent,
                 height: 50,
-                child: InputField(
+                child: AppTextField(
                   controller: country,
-                  showDivider: true,
-                  hintText: LocalizationString.country,
+                  hintText: countryString.tr,
                 ),
               ).vP8,
               const SizedBox(
                 height: 20,
               ),
-              Heading6Text(LocalizationString.city, weight: TextWeight.medium),
+              Heading6Text(cityString.tr, weight: TextWeight.medium),
               Container(
                 color: Colors.transparent,
                 height: 50,
-                child: InputField(
+                child: AppTextField(
                   controller: city,
-                  showDivider: true,
-                  hintText: LocalizationString.city,
+                  hintText: cityString.tr,
                 ),
               ).vP8,
               const SizedBox(
@@ -90,6 +85,6 @@ class _ChangeLocationState extends State<ChangeLocation> {
 
   updateLocation() {
     profileController.updateLocation(
-        country: country.text, city: city.text, context: context);
+        country: country.text, city: city.text);
   }
 }

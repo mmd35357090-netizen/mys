@@ -34,12 +34,9 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(
-              context: context, title: LocalizationString.earnings),
-          divider(context: context).vP8,
+
+          backNavigationBar(title: earningsString.tr),
+          divider().vP8,
           const SizedBox(
             height: 20,
           ),
@@ -54,7 +51,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
           Padding(
               padding:
                   const EdgeInsets.only(left: 15.0, top: 15.0, bottom: 15.0),
-              child: BodyLargeText(LocalizationString.transactionHistory,
+              child: BodyLargeText(transactionHistoryString.tr,
                   weight: TextWeight.bold)),
           Expanded(
             child: GetBuilder<ProfileController>(
@@ -85,8 +82,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        BodySmallText(
-                            LocalizationString.availableBalanceToWithdraw,
+                        BodySmallText(availableBalanceToWithdrawString.tr,
                             weight: TextWeight.medium),
                         const SizedBox(height: 10),
                         Heading3Text(
@@ -114,7 +110,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BodySmallText(
-                          LocalizationString.availableCoins,
+                          availableCoinsString.tr,
                         ),
                         const SizedBox(height: 10),
                         Column(
@@ -150,7 +146,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
 
           return AlertDialog(
             title: Text(
-              LocalizationString.enterNumberOfCoins,
+              enterNumberOfCoinsString.tr,
             ),
             content: Container(
               color: AppColorConstants.backgroundColor,
@@ -164,8 +160,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                         ),
-                        style: TextStyle(
-            fontSize: FontSizes.b2),
+                        style: TextStyle(fontSize: FontSizes.b2),
                         onChanged: (value) {
                           if (textController.text.isNotEmpty) {
                             _settingsController
@@ -193,17 +188,16 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
             ).round(10),
             actions: <Widget>[
               AppThemeButton(
-                text: LocalizationString.redeem,
+                text: redeemString.tr,
                 onPress: () {
                   if (textController.text.isNotEmpty) {
                     int coins = int.parse(textController.text);
                     if (coins >=
                         _settingsController
                             .setting.value!.minCoinsWithdrawLimit) {
-                      if (coins >=
-                          _userProfileManager.user.value!.coins) {
+                      if (coins >= _userProfileManager.user.value!.coins) {
                         AppUtil.showToast(
-                            message: LocalizationString.enterValidAmountOfCoins
+                            message: enterValidAmountOfCoinsString.tr
                                 .replaceAll(
                                     '{{coins}}',
                                     _settingsController
@@ -212,17 +206,16 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
                             isSuccess: false);
                         return;
                       }
-                      _profileController.redeemRequest(coins, context, () {});
+                      _profileController.redeemRequest(coins, () {});
                       textController.text = '';
                       Navigator.pop(dialogContext);
                     } else {
                       AppUtil.showToast(
-                          message: LocalizationString.minCoinsRedeemLimit
-                              .replaceAll(
-                                  '{{coins}}',
-                                  _settingsController
-                                      .setting.value!.minCoinsWithdrawLimit
-                                      .toString()),
+                          message: minCoinsRedeemLimitString.tr.replaceAll(
+                              '{{coins}}',
+                              _settingsController
+                                  .setting.value!.minCoinsWithdrawLimit
+                                  .toString()),
                           isSuccess: false);
                     }
                   }
@@ -238,16 +231,14 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
       onTap: () {
         if (int.parse(_userProfileManager.user.value!.balance) < 50) {
           AppUtil.showToast(
-              message: LocalizationString.minWithdrawLimit.replaceAll(
+              message: minWithdrawLimitString.tr.replaceAll(
                   '{{cash}}',
                   _settingsController.setting.value!.minWithdrawLimit
                       .toString()),
               isSuccess: false);
-        } else if ((_userProfileManager.user.value!.paypalId ?? '')
-            .isEmpty) {
+        } else if ((_userProfileManager.user.value!.paypalId ?? '').isEmpty) {
           AppUtil.showToast(
-              message: LocalizationString.pleaseEnterPaypalId,
-              isSuccess: false);
+              message: pleaseEnterPaypalIdString.tr, isSuccess: false);
         } else {
           _profileController.withdrawalRequest();
         }
@@ -258,8 +249,11 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
             width: 100,
             color: AppColorConstants.themeColor,
             child: Center(
-              child: BodySmallText(LocalizationString.withdraw,
-                  weight: TextWeight.medium),
+              child: BodyLargeText(
+                withdrawString.tr,
+                weight: TextWeight.medium,
+                color: Colors.white,
+              ),
             )).round(5).backgroundCard(),
       ),
     );
@@ -271,7 +265,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
         if (_userProfileManager.user.value!.coins <
             _settingsController.setting.value!.minCoinsWithdrawLimit) {
           AppUtil.showToast(
-              message: LocalizationString.minCoinsRedeemLimit.replaceAll(
+              message: minCoinsRedeemLimitString.tr.replaceAll(
                   '{{coins}}',
                   _settingsController.setting.value!.minCoinsWithdrawLimit
                       .toString()),
@@ -286,8 +280,11 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
             width: 100,
             color: AppColorConstants.themeColor,
             child: Center(
-              child: BodySmallText(LocalizationString.redeem,
-                  weight: TextWeight.medium),
+              child: BodyLargeText(
+                redeemString.tr,
+                weight: TextWeight.medium,
+                color: Colors.white,
+              ),
             )).round(5).backgroundCard(),
       ),
     );

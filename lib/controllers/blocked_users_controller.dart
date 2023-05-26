@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
-import '../apiHandler/api_controller.dart';
+import '../apiHandler/apis/users_api.dart';
 
 class BlockedUsersController extends GetxController {
   RxList<UserModel> usersList = <UserModel>[].obs;
@@ -20,34 +18,29 @@ class BlockedUsersController extends GetxController {
   getBlockedUsers() {
     if (canLoadMoreBlockedUser) {
       isLoading = true;
-      EasyLoading.show(status: LocalizationString.loading);
-      ApiController()
-          .getBlockedUsersList(page: blockedUserPage)
-          .then((response) {
-        isLoading = false;
-        EasyLoading.dismiss();
-        usersList.value = response.blockedUsers;
 
-        blockedUserPage += 1;
-        if (response.blockedUsers.length == response.metaData?.perPage) {
-          canLoadMoreBlockedUser = true;
-        } else {
-          canLoadMoreBlockedUser = false;
-        }
+      UsersApi.getBlockedUsers(
+          page: blockedUserPage,
+          resultCallback: (result, metadata) {
+            isLoading = false;
+            EasyLoading.dismiss();
+            usersList.addAll(result);
+            blockedUserPage += 1;
+            canLoadMoreBlockedUser = result.length >= metadata.perPage;
 
-        update();
-      });
+            update();
+          });
     }
   }
 
   unBlockUser(int userId) {
     isLoading = true;
-    EasyLoading.show(status: LocalizationString.loading);
-    ApiController().unBlockUser(userId).then((value) {
-      isLoading = false;
-      EasyLoading.dismiss();
-      usersList.removeWhere((element) => element.id == userId);
-      update();
-    });
+    UsersApi.unBlockUser(
+        userId: userId,
+        resultCallback: () {
+          isLoading = false;
+          usersList.removeWhere((element) => element.id == userId);
+          update();
+        });
   }
 }

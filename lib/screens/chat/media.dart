@@ -8,6 +8,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class Media {
   ///File saved on local storage
   File? file;
+  String? fileUrl;
 
   ///Unique id to identify
   String? id;
@@ -61,6 +62,8 @@ class Media {
   Media({
     this.id,
     this.file,
+    this.fileUrl,
+
     this.thumbnail,
     this.mediaByte,
     this.size,

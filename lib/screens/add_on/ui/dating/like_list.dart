@@ -30,12 +30,10 @@ class LikeListState extends State<LikeList> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(height: 50),
           backNavigationBar(
-            context: context,
-            title: LocalizationString.likedBy,
+            title: likedByString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
               child: GetBuilder<DatingController>(
                   init: datingController,
@@ -44,8 +42,8 @@ class LikeListState extends State<LikeList> {
                         ? const ShimmerLikeList()
                         : datingController.likeUsers.isEmpty
                             ? emptyData(
-                                title: LocalizationString.noLikeProfilesFound,
-                                subTitle: LocalizationString.noLikeProfiles,
+                                title: noLikeProfilesFoundString.tr,
+                                subTitle: noLikeProfilesString.tr,
                               )
                             : ListView.builder(
                                 padding:
@@ -98,10 +96,10 @@ class LikeListState extends State<LikeList> {
                           ).bP4,
                           BodySmallText(
                             profile.genderType == GenderType.female
-                                ? LocalizationString.female
+                                ? femaleString.tr
                                 : profile.genderType == GenderType.other
-                                    ? LocalizationString.other
-                                    : LocalizationString.male,
+                                    ? otherString.tr
+                                    : maleString.tr,
                           )
                         ],
                       ).hP16,
@@ -115,7 +113,7 @@ class LikeListState extends State<LikeList> {
                 AppThemeBorderButton(
                     height: 30,
                     borderColor: AppColorConstants.themeColor,
-                    text: LocalizationString.likeBack,
+                    text: likeBackString.tr,
                     textStyle: TextStyle(
                         fontSize: FontSizes.h6,
                         fontWeight: TextWeight.medium,
@@ -123,7 +121,7 @@ class LikeListState extends State<LikeList> {
                     onPress: () {
                       datingController.likeUnlikeProfile(
                           DatingActions.liked, profile.id.toString());
-                      EasyLoading.show(status: LocalizationString.loading);
+                      EasyLoading.show(status: loadingString.tr);
                       _chatDetailController.getChatRoomWithUser(
                           userId: profile.id,
                           callback: (room) {

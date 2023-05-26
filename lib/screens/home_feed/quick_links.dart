@@ -1,16 +1,19 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/live_users/live_users_screen.dart';
-import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/event_imports.dart';
+import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
+import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
+import 'package:foap/screens/chatgpt/chat_gpt.dart';
+import 'package:foap/screens/live/live_users_screen.dart';
 
 import 'package:get/get.dart';
 import '../../controllers/home_controller.dart';
+import '../add_on/ui/reel/create_reel_video.dart';
 import '../chat/random_chat/choose_profile_category.dart';
 
 import '../club/clubs_listing.dart';
 import '../competitions/competitions_screen.dart';
 import '../highlights/choose_stories.dart';
 import '../live/checking_feasibility.dart';
-import '../live/random_live_listing.dart';
 import '../story/choose_media_for_story.dart';
 import '../tvs/tv_dashboard.dart';
 
@@ -22,10 +25,15 @@ enum QuickLinkType {
   clubs,
   pages,
   tv,
+  event,
+  podcast,
   story,
   highlights,
   goLive,
   liveUsers,
+  reel,
+  dating,
+  chatGPT
 }
 
 class QuickLink {
@@ -66,9 +74,10 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                 for (QuickLink link in _homeController.quickLinks)
                   quickLinkView(link).ripple(() {
                     widget.callback();
-                    if (link.linkType == QuickLinkType.live) {
-                      Get.to(() => const RandomLiveListing());
-                    } else if (link.linkType == QuickLinkType.competition) {
+                    // if (link.linkType == QuickLinkType.live) {
+                    //   Get.to(() => const RandomLiveListing());
+                    // } else
+                    if (link.linkType == QuickLinkType.competition) {
                       Get.to(() => const CompetitionsScreen());
                     } else if (link.linkType == QuickLinkType.randomChat) {
                       if (AppConfigConstants.isDemoApp) {
@@ -104,6 +113,16 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                       Get.to(() => const TvDashboardScreen());
                     } else if (link.linkType == QuickLinkType.liveUsers) {
                       Get.to(() => const LiveUserScreen());
+                    } else if (link.linkType == QuickLinkType.event) {
+                      Get.to(() => const EventsDashboardScreen());
+                    } else if (link.linkType == QuickLinkType.podcast) {
+                      Get.to(() => const PodcastListDashboard());
+                    } else if (link.linkType == QuickLinkType.reel) {
+                      Get.to(() => const CreateReelScreen());
+                    } else if (link.linkType == QuickLinkType.dating) {
+                      Get.to(() => const DatingDashboard());
+                    } else if (link.linkType == QuickLinkType.chatGPT) {
+                      Get.to(() => const ChatGPT());
                     }
                   })
               ]).setPadding(left: 16, right: 16, top: 20),
@@ -136,7 +155,7 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
             ],
           ).hP16,
         ).round(40),
-        divider(context: context).vP8
+        divider().vP8
       ],
     );
   }

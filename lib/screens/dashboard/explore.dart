@@ -1,7 +1,7 @@
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:foap/components/post_card.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/dashboard/posts.dart';
-import 'package:get/get.dart';
 import '../../components/hashtag_tile.dart';
 import '../../components/search_bar.dart';
 import '../../components/user_card.dart';
@@ -28,14 +28,12 @@ class _ExploreState extends State<Explore> {
 
   @override
   void didUpdateWidget(covariant Explore oldWidget) {
-    // TODO: implement didUpdateWidget
     exploreController.getSuggestedUsers();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     exploreController.clear();
     super.dispose();
   }
@@ -65,7 +63,7 @@ class _ExploreState extends State<Explore> {
                   width: 10,
                 ),
                 Expanded(
-                  child: SearchBar(
+                  child: SFSearchBar(
                       showSearchIcon: true,
                       iconColor: AppColorConstants.themeColor,
                       onSearchChanged: (value) {
@@ -107,7 +105,7 @@ class _ExploreState extends State<Explore> {
                           child: Column(
                             children: [
                               segmentView(),
-                              divider(context: context, height: 0.2),
+                              divider(height: 0.2),
                               searchedResult(
                                   segment: exploreController.selectedSegment),
                             ],
@@ -128,10 +126,10 @@ class _ExploreState extends State<Explore> {
           exploreController.segmentChanged(segment);
         },
         segments: [
-          LocalizationString.top,
-          LocalizationString.account,
-          LocalizationString.hashTags,
-          // LocalizationString.locations,
+          topString.tr,
+          accountString.tr,
+          hashTagsString.tr,
+          // locations,
         ]);
   }
 
@@ -156,7 +154,7 @@ class _ExploreState extends State<Explore> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Heading3Text(LocalizationString.suggestedUsers,
+                    Heading3Text(suggestedUsersString.tr,
                         weight: TextWeight.bold),
                     const SizedBox(
                       height: 10,
@@ -243,9 +241,7 @@ class _ExploreState extends State<Explore> {
                 })
             : SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
-                child: emptyUser(
-                    title: LocalizationString.noUserFound,
-                    subTitle: ''),
+                child: emptyUser(title: noUserFoundString.tr, subTitle: ''),
               );
   }
 
@@ -273,7 +269,6 @@ class _ExploreState extends State<Explore> {
                     onItemCallback: () {
                       Get.to(() => Posts(
                             hashTag: exploreController.hashTags[index].name,
-                            source: PostSource.posts,
                           ));
                     },
                   );
@@ -281,8 +276,7 @@ class _ExploreState extends State<Explore> {
               )
             : SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
-                child: emptyData(
-                    title: LocalizationString.noHashtagFound, subTitle: ''),
+                child: emptyData(title: noHashtagFoundString.tr, subTitle: ''),
               );
   }
 
@@ -319,94 +313,30 @@ class _ExploreState extends State<Explore> {
               child: postController.isLoadingPosts
                   ? const PostBoxShimmer()
                   : postController.posts.isNotEmpty
-                      ? GridView.builder(
+                      ? ListView.builder(
                           controller: scrollController,
                           itemCount: postController.posts.length,
-                          physics: const NeverScrollableScrollPhysics(),
+                          // physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          // You won't see infinite size error
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 4.0,
-                                  mainAxisSpacing: 4.0,
-                                  mainAxisExtent: 100),
                           itemBuilder: (BuildContext context, int index) =>
-                              postController.posts[index].gallery.first
-                                          .isVideoPost ==
-                                      true
-                                  ? Stack(children: [
-                                      AspectRatio(
-                                          aspectRatio: 1,
-                                          child: CachedNetworkImage(
-                                            imageUrl: postController
-                                                .posts[index]
-                                                .gallery
-                                                .first
-                                                .videoThumbnail!,
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                AppUtil.addProgressIndicator(
-                                                    size: 100),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(
-                                              Icons.error,
-                                            ),
-                                          ).round(10)),
-                                      const Positioned(
-                                        right: 5,
-                                        top: 5,
-                                        child: ThemeIconWidget(
-                                          ThemeIcon.play,
-                                          size: 50,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    ]).ripple(() {
-                                      Get.to(() => Posts(
-                                            posts:
-                                                List.from(postController.posts),
-                                            index: index,
-                                            source: PostSource.posts,
-                                            page:
-                                                postController.postsCurrentPage,
-                                          ));
-                                    })
-                                  : AspectRatio(
-                                          aspectRatio: 1,
-                                          child: CachedNetworkImage(
-                                            imageUrl: postController
-                                                .posts[index]
-                                                .gallery
-                                                .first
-                                                .filePath,
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                AppUtil.addProgressIndicator(
-                                                    size:100),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
-                                          ).round(10))
-                                      .ripple(() {
-                                      Get.to(() => Posts(
-                                            posts:
-                                                List.from(postController.posts),
-                                            index: index,
-                                            source: PostSource.posts,
-                                            page:
-                                                postController.postsCurrentPage,
-                                            totalPages:
-                                                postController.totalPages,
-                                          ));
-                                    }),
+                              PostCard(
+                                      model: postController.posts[index],
+                                      removePostHandler: () {},
+                                      blockUserHandler: () {},
+                                      viewInsightHandler: () {})
+                                  .ripple(() {
+                            Get.to(() => Posts(
+                                  posts: List.from(postController.posts),
+                                  index: index,
+                                  page: postController.postsCurrentPage,
+                                  totalPages: postController.totalPages,
+                                ));
+                          }),
                         ).hP16
                       : SizedBox(
                           height: MediaQuery.of(context).size.height * 0.5,
                           child: emptyPost(
-                              title: LocalizationString.noPostFound,
-                              subTitle: ''),
+                              title: noPostFoundString.tr, subTitle: ''),
                         ));
         });
   }

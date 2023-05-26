@@ -39,13 +39,13 @@ class VerifyPhoneLoginOTPState extends State<VerifyPhoneLoginOTP> {
             height: 50,
           ),
           Heading4Text(
-            LocalizationString.otpVerification,
+            otpVerificationString.tr,
             weight: TextWeight.bold,
             color: AppColorConstants.themeColor,
             textAlign: TextAlign.start,
           ),
           BodyLargeText(
-            LocalizationString.pleaseEnterOneTimePasswordPhoneNumberChange,
+            pleaseEnterOneTimePasswordPhoneNumberChangeString.tr,
             textAlign: TextAlign.center,
           ).setPadding(top: 43, bottom: 35),
           Obx(() => PinCodeTextField(
@@ -84,11 +84,11 @@ class VerifyPhoneLoginOTPState extends State<VerifyPhoneLoginOTP> {
           Obx(() => Row(
                 children: [
                   BodyLargeText(
-                    LocalizationString.didntReceivedCode,
+                    didntReceivedCodeString.tr,
                   ),
                   const SizedBox(width: 5,),
                   BodyLargeText(
-                    LocalizationString.resendOTP,
+                    resendOTPString.tr,
                     weight: TextWeight.bold,
                     color: loginController.canResendOTP.value == false
                         ? AppColorConstants.disabledColor
@@ -96,7 +96,7 @@ class VerifyPhoneLoginOTPState extends State<VerifyPhoneLoginOTP> {
                   ).ripple(() {
                     if (loginController.canResendOTP.value == true) {
                       loginController.resendOTP(
-                          token: widget.token, context: context);
+                          token: widget.token);
                     }
                   }),
                   loginController.canResendOTP.value == false
@@ -140,7 +140,7 @@ class VerifyPhoneLoginOTPState extends State<VerifyPhoneLoginOTP> {
           token: widget.token,
         );
       },
-      text: LocalizationString.verify,
+      text: verifyString.tr,
     );
   }
 }

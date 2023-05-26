@@ -1,9 +1,6 @@
 import 'package:foap/screens/settings_menu/support_requests_screen.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import '../../universal_components/rounded_input_field.dart';
 import 'help_support_contorller.dart';
-import 'package:get/get.dart';
 
 class HelpScreen extends StatefulWidget {
   const HelpScreen({Key? key}) : super(key: key);
@@ -26,17 +23,14 @@ class _HelpScreenState extends State<HelpScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(
-              height: 50,
-            ),
+
             backNavigationBarWithIcon(
-                context: context,
-                title: LocalizationString.help,
+                title: helpString.tr,
                 icon: ThemeIcon.card,
                 iconBtnClicked: () {
                   Get.to(() => const SupportRequestsScreen());
                 }),
-            divider(context: context).tP8,
+            divider().tP8,
             SingleChildScrollView(
               child: GestureDetector(
                 onTap: () {
@@ -48,43 +42,31 @@ class _HelpScreenState extends State<HelpScreen> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.01,
                     ),
-                    InputField(
+                    AppTextField(
                       controller: nameController,
-                      showBorder: true,
-                      showDivider: false,
-                      hintText: LocalizationString.name,
-                      cornerRadius: 5,
+                      hintText: nameString.tr,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.025,
                     ),
-                    InputField(
+                    AppTextField(
                       controller: emailController,
-                      showBorder: true,
-                      showDivider: false,
-                      hintText: LocalizationString.email,
-                      cornerRadius: 5,
+                      hintText: emailString.tr,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.025,
                     ),
-                    InputField(
+                    AppTextField(
                       controller: phoneController,
-                      showBorder: true,
-                      showDivider: false,
-                      hintText: LocalizationString.phoneNumber,
-                      cornerRadius: 5,
+                      hintText: phoneNumberString.tr,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.025,
                     ),
-                    InputField(
+                    AppTextField(
                       controller: messageController,
                       maxLines: 5,
-                      showBorder: true,
-                      showDivider: false,
-                      hintText: LocalizationString.message,
-                      cornerRadius: 5,
+                      hintText: messageString.tr,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.04,
@@ -109,7 +91,7 @@ class _HelpScreenState extends State<HelpScreen> {
             phone: phoneController.text,
             message: messageController.text);
       },
-      text: LocalizationString.submit,
+      text: submitString.tr,
     );
   }
 }

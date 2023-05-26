@@ -147,7 +147,7 @@ class GalleryGridViewState extends State<GalleryGridView> {
         if (asset.videoDuration >
             Duration(seconds: int.parse(settingsController.setting.value!.maximumVideoDurationAllowed!))) {
           AppUtil.showToast(
-              message: LocalizationString.maxVideoLengthMessage,
+              message: maxVideoLengthMessageString.tr,
               isSuccess: false);
         } else {
           widget.onAssetItemClick?.call(asset, index);

@@ -22,11 +22,9 @@ class _EventGalleryState extends State<EventGallery> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 55,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.gallery),
+               title: galleryString.tr),
           const SizedBox(height: 20),
           Expanded(
             child: GridView.builder(

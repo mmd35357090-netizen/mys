@@ -15,7 +15,7 @@
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: BackNavigationBar(
-//         title: LocalizationString.trendingAtTwitter,
+//         title: trendingAtTwitter,
 //         centerTitle: true,
 //       ),
 //       backgroundColor: AppTheme().secondaryBackgroundColor,

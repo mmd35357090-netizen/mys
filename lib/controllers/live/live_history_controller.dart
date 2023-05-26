@@ -1,4 +1,5 @@
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/live_streaming_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/live_model.dart';
 import 'package:foap/util/app_util.dart';
@@ -19,23 +20,18 @@ class LiveHistoryController extends GetxController {
 
   getLiveHistory() {
     if (canLoadMore == true) {
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          isLoading = true;
-          ApiController().getLiveHistory().then((response) {
-            lives.addAll(response.lives);
+      isLoading = true;
+
+      LiveStreamingApi.getLiveHistory(
+          page: currentPage,
+          resultCallback: (result, metadata) {
+            lives.addAll(result);
             isLoading = false;
             currentPage += 1;
+            canLoadMore = result.length >= metadata.perPage;
 
-            if (response.posts.length == response.metaData?.pageCount) {
-              canLoadMore = true;
-            } else {
-              canLoadMore = false;
-            }
             update();
           });
-        }
-      });
     }
   }
 }

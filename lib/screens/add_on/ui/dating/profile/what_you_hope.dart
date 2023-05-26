@@ -129,7 +129,7 @@ class _WhatYouHopeState extends State<WhatYouHope> {
                 child: AppThemeButton(
                     enabledBackgroundColor: Colors.white,
                     cornerRadius: 25,
-                    text: LocalizationString.next,
+                    text: nextString.tr,
                     onPress: () {
                       Get.to(() =>
                           ChooseWhomToDate(isFromSignup: widget.isFromSignup));

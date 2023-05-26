@@ -46,7 +46,7 @@ class _SearchProfileState extends State<SearchProfile> {
                 }),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: SearchBar(
+                  child: SFSearchBar(
                       showSearchIcon: true,
                       iconColor: AppColorConstants.themeColor,
                       onSearchChanged: (value) {
@@ -132,7 +132,7 @@ class _SearchProfileState extends State<SearchProfile> {
             : SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: emptyUser(
-                    title: LocalizationString.noUserFound,
+                    title: noUserFoundString.tr,
                     subTitle: ''),
               );
   }

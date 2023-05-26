@@ -8,22 +8,19 @@ class AppConfigConstants {
   static String currentVersion = '1.7';
   static const liveAppLink = 'https://www.google.com/';
 
-
   static String appTagline = 'Share your day activity with friends';
   static const googleMapApiKey = 'add your google map api key';
   static const razorpayKey = 'rzp_test_jDl2SjSKYlghAD';
 
+  // static const restApiBaseUrl =
+  //     'https://product.fwdtechnology.co/socialified/api/web/v1/';
 
   static const restApiBaseUrl =
       'https://development.fwdtechnology.co/media_selling/api/web/v1/';
 
-
-  // static const restApiBaseUrl =
-  //     'https://fwdtechnology.co/media_selling/api/web/v1/';
   // Socket api url
-  // static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
-  static const socketApiBaseUrl = "http://development.fwdtechnology.co:3000/";
-
+  static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
+  // static const socketApiBaseUrl = "http://product.fwdtechnology.co:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';
@@ -113,7 +110,6 @@ class AppColorConstants {
 
   static Color get grayscale100 =>
       isDarkMode ? const Color(0xFF424242) : const Color(0xFFF5F5F5);
-
 }
 
 class DatingProfileConstants {

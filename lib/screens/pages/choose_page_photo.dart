@@ -23,10 +23,10 @@
 //             height: 50,
 //           ),
 //           backNavigationBar(
-//             context: context,
-//             title: LocalizationString.addClubCoverPhoto,
+//
+//             title: addClubCoverPhoto,
 //           ),
-//           divider(context: context).tP8,
+//           divider().tP8,
 //           const SizedBox(
 //             height: 20,
 //           ),
@@ -70,7 +70,7 @@
 //                             color: ColorConstants.iconColor,
 //                           ),
 //                           BodyLargeText(
-//                             LocalizationString.edit,
+//                             edit,
 //                           )
 //                         ],
 //                       ).setPadding(left: 8, right: 8, top: 4, bottom: 4),
@@ -100,7 +100,7 @@
 //           ),
 //           const Spacer(),
 //           AppThemeButton(
-//               text: LocalizationString.next,
+//               text: next,
 //               onPress: () {
 //                 Get.to(() => const ClubDescription());
 //                 // NavigationService.instance.navigateToRoute(

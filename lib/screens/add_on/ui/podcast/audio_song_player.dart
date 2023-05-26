@@ -266,7 +266,8 @@ class _AudioSongPlayerState extends State<AudioSongPlayer> {
         duration: const Duration(milliseconds: 500),
         child: _showList
             ? MediaQuery.removePadding(
-                context: context,
+            context: context,
+
                 removeTop: true,
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height / 2 - 100,

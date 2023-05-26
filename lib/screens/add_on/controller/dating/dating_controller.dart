@@ -1,8 +1,7 @@
-import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/dating_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/model/preference_model.dart';
 import 'package:get/get.dart';
-
 
 class DatingController extends GetxController {
   RxList<InterestModel> interests = <InterestModel>[].obs;
@@ -20,33 +19,32 @@ class DatingController extends GetxController {
   }
 
   getInterests() {
-    ApiController().getInterests().then((response) {
-      interests.value = response.interests;
+    DatingApi.getInterests(resultCallback: (result) {
+      interests.value = result;
       interests.refresh();
       update();
     });
   }
 
-  setPreferencesApi(AddPreferenceModel selectedPreferences) {
-    EasyLoading.show(status: LocalizationString.loading);
-    ApiController().addUserPreference(selectedPreferences).then((response) {
-      EasyLoading.dismiss();
-      update();
-    });
+  setPreferencesApi(AddPreferenceModel selectedPreferences) async {
+    EasyLoading.show(status: loadingString.tr);
+    await DatingApi.addUserPreference(selectedPreferences);
+
+    EasyLoading.dismiss();
+    update();
   }
 
   updateDatingProfile(AddDatingDataModel dataModel, Function(String) handler) {
-    EasyLoading.show(status: LocalizationString.loading);
-    ApiController().updateDatingProfile(dataModel).then((response) {
-      EasyLoading.dismiss();
-      update();
-      handler(response.message);
-    });
+    EasyLoading.show(status: loadingString.tr);
+    DatingApi.updateDatingProfile(dataModel);
+
+    EasyLoading.dismiss();
+    update();
   }
 
   getUserPreference(VoidCallback handler) {
-    ApiController().getUserPreferenceApi().then((response) {
-      preferenceModel = response.preference;
+    DatingApi.getUserPreferenceApi(resultCallback: (result) {
+      preferenceModel = result;
       update();
       handler();
     });
@@ -54,44 +52,46 @@ class DatingController extends GetxController {
 
   getDatingProfiles() {
     isLoading.value = true;
-    ApiController().getDatingProfilesApi().then((response) {
+    DatingApi.getDatingProfilesApi(resultCallback: (result) {
       isLoading.value = false;
-      datingUsers.value = response.datingUsers;
+      datingUsers.value = result;
       update();
     });
   }
 
   getLanguages() {
-    ApiController().getLanguages().then((response) {
-      languages.value = response.languages;
+    DatingApi.getLanguages(resultCallback: (result) {
+      languages.value = result;
       update();
     });
   }
 
   likeUnlikeProfile(DatingActions like, String profileId) {
-    ApiController().likeUnlikeDatingProfile(like, profileId).then((response) {
-      update();
-    });
+    DatingApi.likeUnlikeDatingProfile(
+        action: like,
+        profileId: profileId,
+        resultCallback: () {
+          update();
+        });
   }
 
   getMatchedProfilesApi() {
     isLoading.value = true;
-    ApiController().getMatchedProfilesApi().then((response) {
+    DatingApi.getMatchedProfilesApi(resultCallback: (result) {
       isLoading.value = false;
-      matchedUsers.value = response.matchedUsers;
+      matchedUsers.value = result;
       update();
     });
   }
 
   getLikeProfilesApi() {
     isLoading.value = true;
-    ApiController().getLikeProfilesApi().then((response) {
+    DatingApi.getLikeProfilesApi(resultCallback: (result) {
       isLoading.value = false;
-      likeUsers.value = response.likeUsers;
+      likeUsers.value = result;
       update();
     });
   }
-
 }
 
 enum DatingActions {

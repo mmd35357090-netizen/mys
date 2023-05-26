@@ -118,12 +118,10 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 50),
           backNavigationBar(
-            context: context,
-            title: LocalizationString.preferences,
+            title: preferencesString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           GetBuilder<DatingController>(
               init: datingController,
               builder: (ctx) {
@@ -132,19 +130,18 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                        addHeader(LocalizationString.gender)
-                            .setPadding(bottom: 8),
+                        addHeader(genderString.tr).setPadding(bottom: 8),
                         SegmentedControl(
                             segments: [
-                              LocalizationString.male,
-                              LocalizationString.female,
-                              LocalizationString.other
+                              maleString.tr,
+                              femaleString.tr,
+                              otherString.tr
                             ],
                             value: selectedGender,
                             onValueChanged: (value) {
                               setState(() => selectedGender = value);
                             }),
-                        addHeader(LocalizationString.age).setPadding(top: 30),
+                        addHeader(ageString.tr).setPadding(top: 30),
                         SfRangeSlider(
                           min: 16.0,
                           max: 100.0,
@@ -167,8 +164,7 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
                             return '${actualValue.round()}Y';
                           },
                         ),
-                        addHeader(LocalizationString.height)
-                            .setPadding(top: 30),
+                        addHeader(heightString.tr).setPadding(top: 30),
                         SfRangeSlider(
                           min: 121.0,
                           max: 243.0,
@@ -191,11 +187,11 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
                             return '${actualValue.round()} cm';
                           },
                         ),
-                        addHeader(LocalizationString.interests)
+                        addHeader(interestsString.tr)
                             .setPadding(top: 30, bottom: 8),
                         addInputField(
                             interestsController, () => openInterestsPopup()),
-                        addHeader(LocalizationString.color)
+                        addHeader(colorString.tr)
                             .setPadding(top: 30, bottom: 8),
                         SegmentedControl(
                             segments: colors,
@@ -203,11 +199,11 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
                             onValueChanged: (value) {
                               setState(() => selectedColor = value);
                             }),
-                        addHeader(LocalizationString.religion)
+                        addHeader(religionString.tr)
                             .setPadding(top: 30, bottom: 8),
                         addInputField(
                             religionController, () => openReligionPopup()),
-                        addHeader(LocalizationString.status)
+                        addHeader(statusString.tr)
                             .setPadding(top: 30, bottom: 8),
                         SegmentedControl(
                             segments: maritalStatus,
@@ -215,22 +211,19 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
                             onValueChanged: (value) {
                               setState(() => selectedMaritalStatus = value);
                             }),
-                        addHeader(LocalizationString.language)
+                        addHeader(languageString.tr)
                             .setPadding(top: 30, bottom: 8),
                         addInputField(
                             languageController, () => openLanguagePopup()),
-                        addHeader(LocalizationString.smokingHabit)
+                        addHeader(smokingHabitString.tr)
                             .setPadding(top: 30, bottom: 8),
                         SegmentedControl(
-                            segments: [
-                              LocalizationString.yes,
-                              LocalizationString.no
-                            ],
+                            segments: [yesString.tr, noString.tr],
                             value: smoke,
                             onValueChanged: (value) {
                               setState(() => smoke = value);
                             }),
-                        addHeader(LocalizationString.drinkingHabit)
+                        addHeader(drinkingHabitString.tr)
                             .setPadding(top: 30, bottom: 8),
                         addInputField(drinkHabitController,
                             () => openDrinkHabitListPopup()),
@@ -240,7 +233,7 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
                               width: MediaQuery.of(context).size.width - 50,
                               child: AppThemeButton(
                                   cornerRadius: 25,
-                                  text: LocalizationString.set,
+                                  text: setString.tr,
                                   onPress: () {
                                     setPref();
                                   })),
@@ -259,7 +252,7 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
 
   addInputField(TextEditingController controller, VoidCallback? onTap) {
     return DropdownBorderedField(
-      hintText: LocalizationString.select,
+      hintText: selectString.tr,
       controller: controller,
       showBorder: true,
       borderColor: AppColorConstants.disabledColor,
@@ -274,7 +267,7 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
   void openInterestsPopup() {
     // showModalBottomSheet(
     //     backgroundColor: Colors.transparent,
-    //     context: context,
+    //
     //     isScrollControlled: true,
     //     builder: (context) => const FractionallySizedBox(
     //         heightFactor: 0.42, child: ChatMediaSharingOptionPopup()));

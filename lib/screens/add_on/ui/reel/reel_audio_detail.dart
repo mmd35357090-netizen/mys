@@ -42,11 +42,9 @@ class _ReelAudioDetailState extends State<ReelAudioDetail> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(context: context, title: LocalizationString.audio),
-          divider(context: context).tP8,
+
+          backNavigationBar( title: audioString.tr),
+          divider().tP8,
           Row(
             children: [
               CachedNetworkImage(
@@ -70,7 +68,7 @@ class _ReelAudioDetailState extends State<ReelAudioDetail> {
                     height: 5,
                   ),
                   BodyMediumText(
-                    '${widget.audio.numberOfReelsMade.formatNumber} ${LocalizationString.reels}',
+                    '${widget.audio.numberOfReelsMade.formatNumber} ${reelsString.tr}',
                     weight: TextWeight.regular,
                   )
                 ],

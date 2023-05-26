@@ -1,4 +1,5 @@
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/tv_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/model/category_model.dart';
@@ -43,6 +44,14 @@ class TvStreamingController extends GetxController {
   int subscribedTvsCurrentPage = 1;
   bool canLoadMoreSubscribedTvs = true;
 
+  bool isLoadingTvs = false;
+  int tvsCurrentPage = 1;
+  bool canLoadMoreTvs = true;
+
+  bool isLoadingLiveTvs = false;
+  int liveTvsCurrentPage = 1;
+  bool canLoadMoreLiveTvs = true;
+
   clearCategories() {
     categories.clear();
     update();
@@ -52,10 +61,6 @@ class TvStreamingController extends GetxController {
     tvs.clear();
     currentViewingTv.value = null;
 
-    // isLoadingLiveTvs = false;
-    // liveTvsCurrentPage = 1;
-    // canLoadMoreLiveTvs = true;
-
     isLoadingFavTvs = false;
     favTvsCurrentPage = 1;
     canLoadMoreFavTvs = true;
@@ -64,11 +69,13 @@ class TvStreamingController extends GetxController {
     subscribedTvsCurrentPage = 1;
     canLoadMoreSubscribedTvs = true;
 
-    // isLoadingSearchedLiveTvs = false;
-    // searchedLiveTvsCurrentPage = 1;
-    // canLoadMoreSearchedLiveTvs = true;
+    isLoadingTvs = false;
+    tvsCurrentPage = 1;
+    canLoadMoreTvs = true;
 
-    // update();
+    isLoadingLiveTvs = false;
+    liveTvsCurrentPage = 1;
+    canLoadMoreLiveTvs = true;
   }
 
   setCurrentViewingTv(TvModel tvModel) {
@@ -89,53 +96,69 @@ class TvStreamingController extends GetxController {
   }
 
   getTvCategories() {
-    ApiController().getTVCategories().then((response) {
-      categories.value = response.tvCategories
-          .where((element) => element.tvs.isNotEmpty)
-          .toList();
+    TVModuleApi.getTVCategories(resultCallback: (result) {
+      categories.value =
+          result.where((element) => element.tvs.isNotEmpty).toList();
       categories.refresh();
       update();
     });
   }
 
   getTvBanners() {
-    ApiController().getTvBanners().then((response) {
-      banners.value = response.tvBanners;
+    TVModuleApi.getTvBanners(resultCallback: (result) {
+      banners.value = result;
       update();
     });
   }
 
-  getLiveTv() {
-    ApiController().getTvs(isLive: true).then((response) {
-      tvs.value = response.tvs;
-      update();
-    });
+  getLiveTv({required VoidCallback callback}) {
+    if (canLoadMoreLiveTvs) {
+      TVModuleApi.getTvs(
+          page: liveTvsCurrentPage,
+          resultCallback: (result, metaData) {
+            tvs.addAll(result) ;
+            canLoadMoreLiveTvs = tvs.length >= metaData.perPage;
+            if (canLoadMoreLiveTvs) {
+              liveTvsCurrentPage += 1;
+            }
+            update();
+          });
+    }
   }
 
-  getTvs({int? categoryId, String? name}) {
-    ApiController().getTvs(categoryId: categoryId, name: name).then((response) {
-      tvs.value = response.tvs;
-      update();
-    });
+  getTvs({int? categoryId, String? name, required VoidCallback callback}) {
+    if (canLoadMoreTvs) {
+      TVModuleApi.getTvs(
+          page: tvsCurrentPage,
+          categoryId: categoryId,
+          name: name,
+          resultCallback: (result, metaData) {
+            tvs.addAll(result) ;
+
+            canLoadMoreTvs = tvs.length >= metaData.perPage;
+            if (canLoadMoreTvs) {
+              tvsCurrentPage += 1;
+            }
+            update();
+          });
+    }
   }
 
   getFavTvs() {
     if (canLoadMoreFavTvs == true) {
       isLoadingFavTvs = true;
 
-      ApiController().getFavLiveTvs().then((response) {
-        tvs.addAll(response.tvs);
+      TVModuleApi.getFavLiveTvs(
+          page: favTvsCurrentPage,
+          resultCallback: (result, metadata) {
+            tvs.addAll(result);
 
-        isLoadingFavTvs = false;
-        favTvsCurrentPage += 1;
+            canLoadMoreFavTvs = tvs.length >= metadata.perPage;
+            isLoadingFavTvs = false;
+            favTvsCurrentPage += 1;
 
-        if (response.tvs.length == response.metaData?.pageCount) {
-          canLoadMoreFavTvs = true;
-        } else {
-          canLoadMoreFavTvs = false;
-        }
-        update();
-      });
+            update();
+          });
     }
   }
 
@@ -143,56 +166,58 @@ class TvStreamingController extends GetxController {
     if (canLoadMoreSubscribedTvs == true) {
       isLoadingSubscribedTvs = true;
 
-      ApiController().getSubscribedLiveTvs().then((response) {
-        tvs.addAll(response.tvs);
+      TVModuleApi.getSubscribedLiveTvs(
+          page: subscribedTvsCurrentPage,
+          resultCallback: (result, metadata) {
+            tvs.addAll(result);
 
-        isLoadingSubscribedTvs = false;
-        subscribedTvsCurrentPage += 1;
+            isLoadingSubscribedTvs = false;
+            subscribedTvsCurrentPage += 1;
+            canLoadMoreSubscribedTvs = tvs.length >= metadata.perPage;
 
-        if (response.tvs.length == response.metaData?.pageCount) {
-          canLoadMoreSubscribedTvs = true;
-          // totalPages = response.metaData!.pageCount;
-        } else {
-          canLoadMoreSubscribedTvs = false;
-        }
-        update();
-      });
+            update();
+          });
     }
   }
 
   getTvShows({int? liveTvId, String? name}) {
-    ApiController().getTVShows(liveTvId: liveTvId, name: name).then((response) {
-      tvShows.value = response.tvShows;
+    TVModuleApi.getTVShows(resultCallback: (result) {
+      tvShows.value = result;
       tvShows.refresh();
       update();
     });
   }
 
   getTvShowById(int showId, Function() completionCallBack) {
-    ApiController().getTVShowById(showId: showId).then((response) {
-      showDetail.value = response.tvShowDetail;
-      update();
-      completionCallBack();
-    });
+    TVModuleApi.getTVShowById(
+        showId: showId,
+        resultCallback: (result) {
+          showDetail.value = result;
+          update();
+          completionCallBack();
+        });
   }
 
   getTvChannelById(int tvId, Function() completionCallBack) {
-    ApiController().getTVChannelById(tvId: tvId).then((response) {
-      tvChannelDetail.value = response.tvChannelDetail;
-      update();
-      completionCallBack();
-    });
+    TVModuleApi.getTVChannelById(
+        tvId: tvId,
+        resultCallback: (result) {
+          tvChannelDetail.value = result;
+          update();
+          completionCallBack();
+        });
   }
 
   getTvShowEpisodes({int? showId, String? name}) {
-    ApiController()
-        .getTVShowEpisodes(showId: showId, name: name)
-        .then((response) {
-      tvEpisodes.value = response.tvEpisodes;
-      tvEpisodes.refresh();
-      playEpisode(tvEpisodes.first);
-      update();
-    });
+    TVModuleApi.getTVShowEpisodes(
+        showId: showId,
+        name: name,
+        resultCallback: (result) {
+          tvEpisodes.value = result;
+          tvEpisodes.refresh();
+          playEpisode(tvEpisodes.first);
+          update();
+        });
   }
 
   playEpisode(TVShowEpisodeModel episode) {
@@ -204,9 +229,8 @@ class TvStreamingController extends GetxController {
     getTvChannelById(tvModel.id, () {
       if (_userProfileManager.user.value!.coins >=
           tvChannelDetail.value!.coinsNeededToUnlock) {
-        ApiController().subscribeTv(tvModel: tvModel).then((response) {
-          completionCallBack(response.success);
-        });
+        TVModuleApi.subscribeTv(
+            tvModel: tvModel, resultCallback: completionCallBack);
       } else {
         Get.to(() => const PackagesScreen());
       }
@@ -214,9 +238,8 @@ class TvStreamingController extends GetxController {
   }
 
   stopWatchingTv(TvModel tvModel, Function(bool) completionCallBack) {
-    ApiController().stopWatchingTv(tvModel: tvModel).then((response) {
-      completionCallBack(response.success);
-    });
+    TVModuleApi.stopWatchingTv(
+        tvModel: tvModel, resultCallback: completionCallBack);
   }
 
   joinTv(int id) {
@@ -256,10 +279,8 @@ class TvStreamingController extends GetxController {
 
     // update();
 
-    ApiController()
-        .likeUnlikeTv(currentViewingTv.value?.isFav == 1 ? true : false,
-        currentViewingTv.value!.id)
-        .then((response) {});
+    TVModuleApi.likeUnlikeTv(currentViewingTv.value?.isFav == 1 ? true : false,
+        currentViewingTv.value!.id);
   }
 
   hideMessagesView() {
@@ -303,7 +324,7 @@ class TvStreamingController extends GetxController {
     ChatMessageModel localMessageModel = ChatMessageModel();
     localMessageModel.localMessageId = localMessageId;
     localMessageModel.roomId = id;
-    localMessageModel.userName = LocalizationString.you;
+    localMessageModel.userName = youString.tr;
     localMessageModel.senderId = _userProfileManager.user.value!.id;
     localMessageModel.messageType = messageTypeId(MessageContentType.text);
     localMessageModel.messageContent = messageText;

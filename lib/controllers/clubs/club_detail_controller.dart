@@ -1,7 +1,9 @@
+import 'package:foap/apiHandler/apis/club_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/post_api.dart';
 import '../../manager/db_manager.dart';
 import '../../model/club_join_request.dart';
 import '../../model/club_model.dart';
@@ -51,30 +53,24 @@ class ClubDetailController extends GetxController {
       postSearchQuery.clubId = clubId;
       isLoading.value = true;
 
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          ApiController()
-              .getPosts(
-                  userId: postSearchQuery.userId,
-                  isPopular: postSearchQuery.isPopular,
-                  isFollowing: postSearchQuery.isFollowing,
-                  isSold: postSearchQuery.isSold,
-                  isMine: postSearchQuery.isMine,
-                  isRecent: postSearchQuery.isRecent,
-                  title: postSearchQuery.title,
-                  hashtag: postSearchQuery.hashTag,
-                  clubId: postSearchQuery.clubId,
-                  page: postsPage)
-              .then((response) async {
-            posts.addAll(response.success
-                ? response.posts
-                    .where((element) => element.gallery.isNotEmpty)
-                    .toList()
-                : []);
+      PostApi.getPosts(
+          userId: postSearchQuery.userId,
+          isPopular: postSearchQuery.isPopular,
+          isFollowing: postSearchQuery.isFollowing,
+          isSold: postSearchQuery.isSold,
+          isMine: postSearchQuery.isMine,
+          isRecent: postSearchQuery.isRecent,
+          title: postSearchQuery.title,
+          hashtag: postSearchQuery.hashTag,
+          clubId: postSearchQuery.clubId,
+          page: postsPage,
+          resultCallback: (result, metadata) {
+            posts.addAll(
+                result.where((element) => element.gallery.isNotEmpty).toList());
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             isLoading.value = false;
 
-            if (postsPage >= response.metaData!.pageCount) {
+            if (postsPage >= metadata.pageCount) {
               canLoadMorePosts = false;
             } else {
               canLoadMorePosts = true;
@@ -83,8 +79,6 @@ class ClubDetailController extends GetxController {
 
             callback();
           });
-        }
-      });
     }
   }
 
@@ -92,24 +86,20 @@ class ClubDetailController extends GetxController {
     if (canLoadMoreJoinRequests == true) {
       isLoading.value = true;
 
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          ApiController()
-              .getClubJoinRequests(clubId: clubId, page: jonRequestsPage)
-              .then((response) async {
-            joinRequests.addAll(
-                response.success ? response.clubJoinRequests.toList() : []);
+      ClubApi.getClubJoinRequests(
+          clubId: clubId,
+          page: jonRequestsPage,
+          resultCallback: (result, metadata) {
+            joinRequests.addAll(result);
             isLoading.value = false;
 
-            if (jonRequestsPage >= response.metaData!.pageCount) {
+            if (jonRequestsPage >= metadata.pageCount) {
               canLoadMoreJoinRequests = false;
             } else {
               canLoadMoreJoinRequests = true;
             }
             jonRequestsPage += 1;
           });
-        }
-      });
     }
   }
 
@@ -117,7 +107,6 @@ class ClubDetailController extends GetxController {
     if (text.startsWith('#')) {
       Get.to(() => Posts(
                 hashTag: text.replaceAll('#', ''),
-                source: PostSource.posts,
               ))!
           .then((value) {
         getPosts(clubId: postSearchQuery.clubId!, callback: () {});
@@ -153,38 +142,39 @@ class ClubDetailController extends GetxController {
     if (club.value!.isRequestBased == true) {
       club.value!.isRequested = true;
       club.refresh();
-      ApiController()
-          .sendClubJoinRequest(clubId: club.value!.id!)
-          .then((response) {});
+
+      ClubApi.sendClubJoinRequest(clubId: club.value!.id!);
     } else {
       club.value!.isJoined = true;
       club.refresh();
-      ApiController().joinClub(clubId: club.value!.id!).then((response) {
-        if (response.success) {
-          if (club.value!.enableChat == 1) {
-            _chatDetailController.getRoomDetail(club.value!.chatRoomId!,
-                (chatRoom) {
-              getIt<DBManager>().saveRooms([chatRoom]);
-            });
-          }
-        }
-      });
+
+      ClubApi.joinClub(
+          clubId: club.value!.id!,
+          resultCallback: () {
+            if (club.value!.enableChat == 1) {
+              _chatDetailController.getRoomDetail(club.value!.chatRoomId!,
+                  (chatRoom) {
+                getIt<DBManager>().saveRooms([chatRoom]);
+              });
+            }
+          });
     }
   }
 
   leaveClub() {
     club.value!.isJoined = false;
     club.refresh();
-    ApiController().leaveClub(clubId: club.value!.id!).then((response) {});
+
+    ClubApi.leaveClub(clubId: club.value!.id!);
   }
 
   acceptClubJoinRequest(ClubJoinRequest request) {
     joinRequests.remove(request);
     joinRequests.refresh();
     update();
-    ApiController()
-        .acceptDeclineClubJoinRequest(requestId: request.id!, replyStatus: 10)
-        .then((response) {});
+
+    ClubApi.acceptDeclineClubJoinRequest(
+        requestId: request.id!, replyStatus: 10);
   }
 
   declineClubJoinRequest(ClubJoinRequest request) {
@@ -192,8 +182,7 @@ class ClubDetailController extends GetxController {
     joinRequests.refresh();
     update();
 
-    ApiController()
-        .acceptDeclineClubJoinRequest(requestId: request.id!, replyStatus: 3)
-        .then((response) {});
+    ClubApi.acceptDeclineClubJoinRequest(
+        requestId: request.id!, replyStatus: 3);
   }
 }

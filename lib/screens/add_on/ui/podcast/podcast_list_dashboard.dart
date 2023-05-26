@@ -53,9 +53,9 @@ class _PodcastListDashboardState extends State<PodcastListDashboard> {
           mainAxisSize: MainAxisSize.min,
           children: [
             backNavigationBar(
-                    context: context, title: LocalizationString.podcast)
-                .tp(50),
-            divider(context: context).tP8,
+                     title: podcastString.tr)
+                ,
+            divider().tP8,
             Expanded(
                 child: GetBuilder<PodcastStreamingController>(
                     init: _podcastStreamingController,
@@ -67,7 +67,7 @@ class _PodcastListDashboardState extends State<PodcastListDashboard> {
                             banner(),
                           _podcastStreamingController.categories.isEmpty
                               ? emptyData(
-                                  title: LocalizationString.noData,
+                                  title: noDataString.tr,
                                   subTitle: '')
                               : ListView.builder(
                                   physics: const NeverScrollableScrollPhysics(),

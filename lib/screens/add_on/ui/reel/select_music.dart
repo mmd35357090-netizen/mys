@@ -62,7 +62,7 @@ class _SelectMusicState extends State<SelectMusic> {
                     width: 10,
                   ),
                   Expanded(
-                    child: SearchBar(
+                    child: SFSearchBar(
                         showSearchIcon: true,
                         iconColor: AppColorConstants.themeColor,
                         onSearchChanged: (value) {
@@ -104,7 +104,7 @@ class _SelectMusicState extends State<SelectMusic> {
                         children: [
                           const SizedBox(height: 20),
                           segmentView(),
-                          divider(context: context, height: 0.2).tP25,
+                          divider(height: 0.2).tP25,
                           musicListView()
                           // searchedResult(segment: exploreController.selectedSegment),
                         ],

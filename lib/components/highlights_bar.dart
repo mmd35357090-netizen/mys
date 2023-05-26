@@ -38,7 +38,7 @@ class HighlightsBar extends StatelessWidget {
                       ),
                     ).borderWithRadius( value: 2, radius: 20),
                     const Spacer(),
-                    BodySmallText(LocalizationString.add,
+                    BodySmallText(addString.tr,
                         weight:TextWeight.medium),
                   ],
                 ).ripple(() {

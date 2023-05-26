@@ -145,7 +145,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                           // width: Get.width * 0.5,
                           child: BodyLargeText(
                             widget.reel.audio == null
-                                ? LocalizationString.originalAudio
+                                ? originalAudioString.tr
                                 : widget.reel.audio!.name,
                               weight: TextWeight.medium
                           ),
@@ -171,7 +171,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                     Obx(() => InkWell(
                         onTap: () {
                           _reelsController.likeUnlikeReel(
-                              post: widget.reel, context: context);
+                              post: widget.reel);
                           // widget.likeTapHandler();
                         },
                         child: ThemeIconWidget(

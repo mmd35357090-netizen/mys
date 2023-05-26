@@ -109,10 +109,10 @@ class CompetitionModel {
     model.isWinner = json['winner_id'] != null;
 
     if (model.isOngoing) {
-      model.timeLeft = '${getCompetitionTimeString(DateTime.now(), endDate)} ${LocalizationString.left}';
+      model.timeLeft = '${getCompetitionTimeString(DateTime.now(), endDate)} ${leftString.tr}';
     } else if (model.isPast) {
       model.timeLeft =
-          '${LocalizationString.ended} ${getCompetitionTimeString(endDate, DateTime.now())} ${LocalizationString.ago}';
+          '${endedString.tr} ${getCompetitionTimeString(endDate, DateTime.now())} ${agoString.tr}';
     }
 
     model.winnerId =
@@ -160,12 +160,12 @@ String getCompetitionTimeString(DateTime date1, DateTime date2) {
     if (hours == 0) {
       final minutes = latest.difference(earliest).inMinutes;
       return minutes == 0
-          ? LocalizationString.feMinutes
-          : '$minutes ${LocalizationString.minutes}';
+          ? feMinutesString.tr
+          : '$minutes ${minutesString.tr}';
     } else {
-      return '$hours ${LocalizationString.hours}';
+      return '$hours ${hoursString.tr}';
     }
   } else {
-    return '$days ${LocalizationString.days}';
+    return '$days ${daysString.tr}';
   }
 }

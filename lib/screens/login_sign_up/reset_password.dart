@@ -1,8 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
-
-import '../../universal_components/rounded_password_field.dart';
+import '../../universal_components/rounded_input_field.dart';
 import '../profile/password_changed_popup.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -57,7 +55,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
               // )),
 
               Heading2Text(
-                LocalizationString.resetPwd,
+                resetPwdString.tr,
                 weight: TextWeight.bold,
                 color: AppColorConstants.themeColor,
                 textAlign: TextAlign.start,
@@ -65,9 +63,8 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(
                 height: 40,
               ),
-              addTextField(newPassword, LocalizationString.newPassword),
-              addTextField(confirmPassword, LocalizationString.confirmPassword)
-                  .tP25,
+              addTextField(newPassword, newPasswordString.tr),
+              addTextField(confirmPassword, confirmPasswordString.tr).tP25,
               const Spacer(),
               addSubmitBtn(),
               const SizedBox(
@@ -79,14 +76,14 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 builder: (ctx) {
                   return controller.passwordReset == true
                       ? Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: PasswordChangedPopup(dismissHandler: () {
-                        controller.passwordReset = false;
-                        _userProfileManager.logout();
-                      }))
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: PasswordChangedPopup(dismissHandler: () {
+                            controller.passwordReset = false;
+                            _userProfileManager.logout();
+                          }))
                       : Container();
                 })
           ],
@@ -105,24 +102,22 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         hintText: hint,
       ),
     ).vP8.borderWithRadius(
-      value: 1,
-      radius: 5,
-      color: AppColorConstants.dividerColor,
-    );
+          value: 1,
+          radius: 5,
+          color: AppColorConstants.dividerColor,
+        );
   }
 
   addSubmitBtn() {
     return AppThemeButton(
       onPress: () {
         controller.resetPassword(
-          context: context,
           newPassword: newPassword.text.trim(),
           confirmPassword: confirmPassword.text.trim(),
           token: token,
         );
       },
-      text: LocalizationString.changePwd,
-
+      text: changePwdString.tr,
     );
   }
 }

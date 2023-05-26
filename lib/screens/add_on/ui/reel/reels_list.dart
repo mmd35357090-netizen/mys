@@ -117,9 +117,9 @@ class _ReelsListState extends State<ReelsList> {
                   Positioned(
                       left: 0,
                       right: 0,
-                      top: 50,
+                      top: 0,
                       child: backNavigationBar(
-                          context: context, title: LocalizationString.reels))
+                           title: reelsString.tr))
                 ],
               ),
             ),
@@ -130,7 +130,7 @@ class _ReelsListState extends State<ReelsList> {
                 alignment: Alignment.centerLeft,
                 child: SizedBox(
                   height: 50,
-                  child: Text(LocalizationString.addComment),
+                  child: Text(addCommentString.tr),
                 ).hP16,
               ),
             ).ripple(() {})

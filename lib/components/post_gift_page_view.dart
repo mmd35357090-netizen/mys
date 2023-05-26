@@ -1,15 +1,13 @@
 import 'package:foap/components/reply_chat_cells/post_gift_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../model/post_gift_model.dart';
 import '../screens/settings_menu/coin_packages_widget.dart';
 
 class PostGiftPageView extends StatefulWidget {
   final Function(PostGiftModel) giftSelectedCompletion;
-  final int? postId;
 
-  const PostGiftPageView(
-      {Key? key, required this.giftSelectedCompletion, this.postId})
+  const PostGiftPageView({Key? key, required this.giftSelectedCompletion})
       : super(key: key);
 
   @override
@@ -18,6 +16,7 @@ class PostGiftPageView extends StatefulWidget {
 
 class _PostGiftPageViewState extends State<PostGiftPageView> {
   final UserProfileManager _userProfileManager = Get.find();
+
   int currentView = 0;
   List<Widget> pages = [];
 
@@ -26,7 +25,6 @@ class _PostGiftPageViewState extends State<PostGiftPageView> {
     pages = [
       GiftsListing(
         giftSelectedCompletion: widget.giftSelectedCompletion,
-        postId: widget.postId,
       ),
       coinPackages(),
     ];
@@ -50,7 +48,7 @@ class _PostGiftPageViewState extends State<PostGiftPageView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     BodyLargeText(
-                      '${LocalizationString.availableCoins} : ',
+                      '${availableCoinsString.tr} : ',
                       color: Colors.white,
                     ),
                     ThemeIconWidget(
@@ -71,7 +69,7 @@ class _PostGiftPageViewState extends State<PostGiftPageView> {
                     ? Container(
                             color: AppColorConstants.themeColor,
                             child: BodyLargeText(
-                              LocalizationString.coins,
+                              coinsString.tr,
                               weight: TextWeight.semiBold,
                             ).setPadding(
                                 left: 10, right: 10, top: 5, bottom: 5))
@@ -105,10 +103,8 @@ class _PostGiftPageViewState extends State<PostGiftPageView> {
 
 class GiftsListing extends StatefulWidget {
   final Function(PostGiftModel) giftSelectedCompletion;
-  final int? postId;
 
-  const GiftsListing(
-      {Key? key, required this.giftSelectedCompletion, this.postId})
+  const GiftsListing({Key? key, required this.giftSelectedCompletion})
       : super(key: key);
 
   @override
@@ -120,17 +116,17 @@ class _GiftsListingState extends State<GiftsListing> {
 
   @override
   void initState() {
-    if (widget.postId != null) {
-      _postGiftController.fetchPostGift(widget.postId!);
-    } else {
-      _postGiftController.fetchTimelinePostGift();
-    }
-
+    loadData();
     super.initState();
+  }
+
+  loadData() {
+    _postGiftController.fetchTimelinePostGift();
   }
 
   @override
   void dispose() {
+    _postGiftController.clear();
     super.dispose();
   }
 
@@ -215,12 +211,17 @@ class PostGiftsReceived extends StatefulWidget {
 
 class _PostGiftsReceivedState extends State<PostGiftsReceived> {
   final PostGiftController _postGiftController = Get.find();
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
-    _postGiftController.fetchPostGift(widget.postId);
-
+    loadData();
     super.initState();
+  }
+
+  loadData() {
+    _postGiftController.fetchReceivedTimelineGift(widget.postId);
   }
 
   @override
@@ -231,16 +232,15 @@ class _PostGiftsReceivedState extends State<PostGiftsReceived> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColorConstants.backgroundColor.darken(),
+      color: AppColorConstants.cardColor,
       child: Column(
         children: [
           const SizedBox(
             height: 20,
           ),
           Heading6Text(
-            LocalizationString.giftsReceived,
+            giftsReceivedString.tr,
             weight: TextWeight.semiBold,
-            color: Colors.white,
           ),
           const SizedBox(
             height: 20,
@@ -261,7 +261,14 @@ class _PostGiftsReceivedState extends State<PostGiftsReceived> {
                     return const SizedBox(
                       height: 25,
                     );
-                  });
+                  }).addPullToRefresh(
+                  refreshController: _refreshController,
+                  onRefresh: () {},
+                  onLoading: () {
+                    loadData();
+                  },
+                  enablePullUp: true,
+                  enablePullDown: false);
             }),
           ),
         ],

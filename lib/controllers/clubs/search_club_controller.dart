@@ -1,3 +1,4 @@
+import 'package:foap/apiHandler/apis/club_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/club_imports.dart';
 
@@ -34,29 +35,25 @@ class SearchClubsController extends GetxController {
       bool? refresh}) {
     if (canLoadMoreClubs) {
       isLoadingClubs.value = true;
-      ApiController()
-          .getClubs(
-              name: name,
-              categoryId: categoryId,
-              userId: userId,
-              isJoined: isJoined,
-              page: clubsPage)
-          .then((response) {
-        if (refresh == true) {
-          clubs.value = response.clubs;
-        } else {
-          clubs.addAll(response.clubs);
-        }
-        isLoadingClubs.value = false;
+      ClubApi.getClubs(
+          name: name,
+          categoryId: categoryId,
+          userId: userId,
+          isJoined: isJoined,
+          page: clubsPage,
+          resultCallback: (result, metadata) {
+            if (refresh == true) {
+              clubs.value = result;
+            } else {
+              clubs.addAll(result);
+            }
+            isLoadingClubs.value = false;
 
-        clubsPage += 1;
-        if (response.clubs.length == response.metaData?.perPage) {
-          canLoadMoreClubs = true;
-        } else {
-          canLoadMoreClubs = false;
-        }
-        update();
-      });
+            clubsPage += 1;
+            canLoadMoreClubs = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
@@ -74,7 +71,7 @@ class SearchClubsController extends GetxController {
     }).toList();
 
     clubs.refresh();
-    ApiController().joinClub(clubId: club.id!).then((response) {});
+    ClubApi.joinClub(clubId: club.id!, resultCallback: (){});
   }
 
   leaveClub(ClubModel club) {
@@ -86,6 +83,6 @@ class SearchClubsController extends GetxController {
     }).toList();
 
     clubs.refresh();
-    ApiController().leaveClub(clubId: club.id!).then((response) {});
+    ClubApi.leaveClub(clubId: club.id!);
   }
 }

@@ -1,7 +1,9 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
+import 'package:get/get.dart';
 
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/users_api.dart';
 
 class CompetitionCard extends StatefulWidget {
   final CompetitionModel model;
@@ -101,8 +103,8 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                       color: AppColorConstants.themeColor)
                   : BodyLargeText(
                       model.awardType == 2
-                          ? '${LocalizationString.prize} : ${model.totalAwardValue()} ${LocalizationString.coins}'
-                          : '${LocalizationString.prize} : \$${model.totalAwardValue()}',
+                          ? '${prizeString.tr} : ${model.totalAwardValue()} ${coinsString.tr}'
+                          : '${prizeString.tr} : \$${model.totalAwardValue()}',
                       weight: TextWeight.bold,
                       color: AppColorConstants.themeColor,
                     ),
@@ -114,15 +116,15 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                           UserModel? user = snapshot.data as UserModel?;
 
                           return user == null
-                              ? BodyLargeText(LocalizationString.loading)
+                              ? BodyLargeText(loadingString.tr)
                               : BodyLargeText(
                                   user.isMe
-                                      ? LocalizationString.you
+                                      ? youString.tr
                                       : user.userName,
                                   weight: TextWeight.bold,
                                   color: AppColorConstants.themeColor);
                         } else {
-                          return BodyLargeText(LocalizationString.loading,
+                          return BodyLargeText(loadingString.tr,
                               color: AppColorConstants.themeColor);
                         }
                       },
@@ -131,7 +133,7 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                     )
                   : BodyLargeText(
                       model.isPast
-                          ? LocalizationString.completed
+                          ? completedString.tr
                           : model.timeLeft,
                       weight: TextWeight.bold,
                       color: AppColorConstants.themeColor)
@@ -146,11 +148,11 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
 
   Future<UserModel?> getOtherUserDetailApi(String userId) async {
     UserModel? user;
-    await ApiController().getOtherUser(userId).then((response) async {
-      if (response.success) {
-        user = response.user!;
-      }
-    });
+    await UsersApi.getOtherUser(
+        userId: int.parse(userId),
+        resultCallback: (result) {
+          user = result;
+        });
 
     return user;
   }

@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/semantics.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
 import 'package:video_player/video_player.dart';
 
@@ -255,7 +256,7 @@ class CameraPickerViewerState extends State<CameraPickerViewer> {
           width: MediaQuery.of(context).size.width * 0.45,
           child: AppThemeBorderButton(
               backgroundColor: AppColorConstants.backgroundColor,
-              text: LocalizationString.back,
+              text: backString.tr,
               onPress: () {
                 if (previewFile.existsSync()) {
                   previewFile.delete();

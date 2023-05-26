@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+import 'package:foap/apiHandler/apis/auth_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/login_sign_up/phone_login.dart';
 import 'package:foap/screens/login_sign_up/set_user_name.dart';
@@ -70,7 +71,7 @@ class _SocialLoginState extends State<SocialLogin> {
                   height: 20,
                   width: 20,
                   color: Colors.white,
-                ))).circular.ripple(() {
+                ))).round(10).ripple(() {
                 Get.offAll(() => const PhoneLoginScreen());
               })
             : Container(
@@ -83,7 +84,7 @@ class _SocialLoginState extends State<SocialLogin> {
                   height: 20,
                   width: 20,
                   color: Colors.white,
-                ))).circular.ripple(() {
+                ))).round(10).ripple(() {
                 Get.offAll(() => const LoginScreen());
               }),
         Container(
@@ -95,7 +96,7 @@ class _SocialLoginState extends State<SocialLogin> {
               'assets/google.png',
               height: 20,
               width: 20,
-            ))).circular.ripple(() {
+            ))).round(10).ripple(() {
           signInWithGoogle();
         }),
         Platform.isIOS
@@ -108,7 +109,8 @@ class _SocialLoginState extends State<SocialLogin> {
                   'assets/apple.png',
                   height: 20,
                   width: 20,
-                ))).circular.ripple(() {
+                  color: Colors.white,
+                ))).round(10).ripple(() {
                 //signInWithGoogle();
                 _handleAppleSignIn();
                 // Get.to(() => const InstagramView());
@@ -123,7 +125,7 @@ class _SocialLoginState extends State<SocialLogin> {
               'assets/facebook.png',
               height: 20,
               width: 20,
-            ))).circular.ripple(() {
+            ))).round(10).ripple(() {
           fbSignInAction();
         }),
       ],
@@ -134,8 +136,7 @@ class _SocialLoginState extends State<SocialLogin> {
     try {
       await _googleSignIn.signIn();
     } catch (error) {
-      AppUtil.showToast(
-          message: LocalizationString.errorMessage, isSuccess: false);
+      AppUtil.showToast(message: errorMessageString.tr, isSuccess: false);
     }
   }
 
@@ -158,7 +159,7 @@ class _SocialLoginState extends State<SocialLogin> {
 
         AppUtil.checkInternet().then((value) {
           if (value) {
-            // EasyLoading.show(status: LocalizationString.loading);
+            // EasyLoading.show(status: loadingString.tr);
 
             socialLogin('fb', socialId, name, email!);
 
@@ -178,21 +179,19 @@ class _SocialLoginState extends State<SocialLogin> {
             //     getIt<SocketManager>().connect();
             //   } else {
             //     AppUtil.showToast(
-            //         context: context,
+            //
             //         message: response.message,
             //         isSuccess: false);
             //   }
             // });
           } else {
-            AppUtil.showToast(
-                message: LocalizationString.noInternet, isSuccess: false);
+            AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
           }
         });
 
         break;
       case FacebookLoginStatus.cancel:
-        AppUtil.showToast(
-            message: LocalizationString.cancelledByUser, isSuccess: false);
+        AppUtil.showToast(message: cancelledByUserString.tr, isSuccess: false);
         break;
       case FacebookLoginStatus.error:
         AppUtil.showToast(
@@ -202,40 +201,33 @@ class _SocialLoginState extends State<SocialLogin> {
   }
 
   void socialLogin(String type, String userId, String name, String email) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController()
-            .socialLogin(name, type, userId, email)
-            .then((response) async {
-          EasyLoading.dismiss();
-          if (response.success) {
-            SharedPrefs().setUserLoggedIn(true);
-            await SharedPrefs().setAuthorizationKey(response.authKey!);
-            await _userProfileManager.refreshProfile();
-            await _settingsController.getSettings();
+    EasyLoading.show(status: loadingString.tr);
 
-            if (_userProfileManager.user.value != null) {
-              if (_userProfileManager.user.value!.userName.isEmpty) {
-                isLoginFirstTime = true;
-                Get.offAll(() => const SetUserName());
-              } else {
-                // ask for location
-                isLoginFirstTime = false;
-                getIt<LocationManager>().postLocation();
-                Get.offAll(() => const DashboardScreen());
-              }
-              getIt<SocketManager>().connect();
+    AuthApi.socialLogin(
+        name: name,
+        socialType: type,
+        socialId: userId,
+        email: email,
+        successCallback: (authKey) async {
+          EasyLoading.dismiss();
+          SharedPrefs().setUserLoggedIn(true);
+          await SharedPrefs().setAuthorizationKey(authKey);
+          await _userProfileManager.refreshProfile();
+          await _settingsController.getSettings();
+
+          if (_userProfileManager.user.value != null) {
+            if (_userProfileManager.user.value!.userName.isEmpty) {
+              isLoginFirstTime = true;
+              Get.offAll(() => const SetUserName());
+            } else {
+              // ask for location
+              isLoginFirstTime = false;
+              getIt<LocationManager>().postLocation();
+              Get.offAll(() => const DashboardScreen());
             }
-          } else {
-            AppUtil.showToast(message: response.message, isSuccess: false);
+            getIt<SocketManager>().connect();
           }
         });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
   }
 
   Future<void> _handleAppleSignIn() async {
@@ -259,8 +251,7 @@ class _SocialLoginState extends State<SocialLogin> {
           socialLogin('apple', appleCredential.userIdentifier!, '',
               appleCredential.email ?? '');
         } else {
-          AppUtil.showToast(
-              message: LocalizationString.noInternet, isSuccess: false);
+          AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
         }
       });
     }

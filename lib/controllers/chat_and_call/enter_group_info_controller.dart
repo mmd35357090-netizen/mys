@@ -1,7 +1,9 @@
+import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/misc_api.dart';
 import '../../manager/socket_manager.dart';
 
 class EnterGroupInfoController extends GetxController {
@@ -21,27 +23,20 @@ class EnterGroupInfoController extends GetxController {
       required String image,
       required List<UserModel> users}) {
     EasyLoading.show(
-        status: LocalizationString.loading,
+        status: loadingString.tr,
         maskType: EasyLoadingMaskType.black);
 
     if (image.isEmpty) {
       publishGroup(name: name, description: description, users: users);
     } else {
-      // EasyLoading.show(status: LocalizationString.loading);
-      ApiController()
-          .uploadFile(file: image, type: UploadMediaType.chat)
-          .then((response) {
-        if (response.success) {
-          publishGroup(
-              name: name,
-              image: response.postedMediaFileName,
-              description: description,
-              users: users);
-        } else {
-          AppUtil.showToast(
-              message: response.message,
-              isSuccess: false);
-        }
+      // EasyLoading.show(status: loadingString.tr);
+      MiscApi.uploadFile(image, type: UploadMediaType.chat,
+          resultCallback: (filename, filepath) {
+        publishGroup(
+            name: name,
+            image: filename,
+            description: description,
+            users: users);
       });
     }
   }
@@ -51,56 +46,34 @@ class EnterGroupInfoController extends GetxController {
       required String name,
       required String? description,
       required String image,
-      required BuildContext context}) {
+     }) {
     EasyLoading.show(
-        status: LocalizationString.loading,
+        status: loadingString.tr,
         maskType: EasyLoadingMaskType.black);
 
     if (image.isEmpty) {
-      publishUpdatedGroup(
-          group: group, name: name, description: description, context: context);
+      publishUpdatedGroup(group: group, name: name, description: description);
     } else {
-      ApiController()
-          .uploadFile(file: image, type: UploadMediaType.chat)
-          .then((response) {
+      MiscApi.uploadFile(image, type: UploadMediaType.chat,
+          resultCallback: (filename, filepath) {
         publishUpdatedGroup(
-            group: group,
-            name: name,
-            image: response.postedMediaFileName,
-            description: description,
-            context: context);
+          group: group,
+          name: name,
+          image: filename,
+          description: description,
+        );
       });
     }
   }
 
-  publishUpdatedGroup(
-      {required ChatRoomModel group,
-      required String name,
-      required String? description,
-      String? image,
-      required BuildContext context}) {
-    ApiController()
-        .updateGroupChatRoom(group.id, name, image, description, null)
-        .then((response) {
-      if (response.success) {
-        EasyLoading.dismiss();
-        Get.close(2);
-        // ApiController().getChatRoomDetail(response.roomId).then((response) {
-        //   EasyLoading.dismiss();
-        //   Get.close(2);
-        //   AppUtil.showToast(
-        //       context: context,
-        //       message: LocalizationString.groupUpdated,
-        //       isSuccess: true);
-        //
-        //   // print('3');
-        //   // getIt<DBManager>().updateRoom(response.room!);
-        // });
-      } else {
-        AppUtil.showToast(
-             message: response.message, isSuccess: false);
-      }
-    });
+  publishUpdatedGroup({
+    required ChatRoomModel group,
+    required String name,
+    required String? description,
+    String? image,
+  }) async {
+    await ChatApi.updateGroupChatRoom(group.id, name, image, description, null);
+    Get.close(2);
   }
 
   publishGroup(
@@ -108,30 +81,27 @@ class EnterGroupInfoController extends GetxController {
       required String? description,
       String? image,
       required List<UserModel> users}) {
-    ApiController()
-        .createGroupChatRoom(name, image, description)
-        .then((response) {
-      String allUsersIds = users.map((e) => e.id.toString()).join(',');
-      allUsersIds =
-          '${_userProfileManager.user.value!.id.toString()},$allUsersIds';
+    ChatApi.createGroupChatRoom(
+        image: image,
+        description: description,
+        title: name,
+        resultCallback: (roomId) {
+          String allUsersIds = users.map((e) => e.id.toString()).join(',');
+          allUsersIds =
+              '${_userProfileManager.user.value!.id.toString()},$allUsersIds';
 
-      getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom,
-          {'userId': allUsersIds, 'room': response.roomId});
+          getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom,
+              {'userId': allUsersIds, 'room': roomId});
 
-      ApiController().getChatRoomDetail(response.roomId).then((response) async {
-        EasyLoading.dismiss();
-        if (response.room != null) {
-          Get.close(2);
-          Get.to(() => ChatDetail(chatRoom: response.room!));
+          ChatApi.getChatRoomDetail(roomId, resultCallback: (result) async {
+            Get.close(2);
+            Get.to(() => ChatDetail(chatRoom: result));
 
-          // save group in local storage
-          await getIt<DBManager>().saveRooms([response.room!]);
+            // save group in local storage
+            await getIt<DBManager>().saveRooms([result]);
 
-          _chatHistoryController.getChatRooms();
-        } else {
-          Get.back();
-        }
-      });
-    });
+            _chatHistoryController.getChatRooms();
+          });
+        });
   }
 }

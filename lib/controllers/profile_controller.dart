@@ -1,7 +1,14 @@
 import 'package:camera/camera.dart';
+import 'package:foap/apiHandler/apis/gift_api.dart';
+import 'package:foap/apiHandler/apis/profile_api.dart';
+import 'package:foap/apiHandler/apis/wallet_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/list_extension.dart';
 import 'package:foap/screens/add_on/ui/dating/profile/set_location.dart';
 import 'package:get/get.dart';
+import '../apiHandler/apis/auth_api.dart';
+import '../apiHandler/apis/post_api.dart';
+import '../apiHandler/apis/users_api.dart';
 import '../util/shared_prefs.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
@@ -42,7 +49,7 @@ class ProfileController extends GetxController {
 
   bool isLoadingReels = false;
   int reelsCurrentPage = 1;
-  bool canLoadMoreMoments = true;
+  bool canLoadMoreReels = true;
 
   RxList<PostModel> posts = <PostModel>[].obs;
   RxList<PostModel> mentions = <PostModel>[].obs;
@@ -63,7 +70,7 @@ class ProfileController extends GetxController {
 
     isLoadingReels = false;
     reelsCurrentPage = 1;
-    canLoadMoreMoments = true;
+    canLoadMoreReels = true;
 
     mentionsPostPage = 1;
     canLoadMoreMentionsPosts = true;
@@ -98,41 +105,30 @@ class ProfileController extends GetxController {
   void updateLocation(
       {required String country,
       required String city,
-      required BuildContext context}) {
+      }) {
     if (FormValidator().isTextEmpty(country)) {
-      AppUtil.showToast(
-          message: LocalizationString.pleaseEnterCountry, isSuccess: false);
+      AppUtil.showToast(message: pleaseEnterCountryString.tr, isSuccess: false);
     } else if (FormValidator().isTextEmpty(city)) {
-      AppUtil.showToast(
-          message: LocalizationString.pleaseEnterCity, isSuccess: false);
+      AppUtil.showToast(message: pleaseEnterCityString.tr, isSuccess: false);
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          _userProfileManager.user.value!.country = country;
-          _userProfileManager.user.value!.city = city;
+      EasyLoading.show(status: loadingString.tr);
 
-          ApiController()
-              .updateUserProfile(_userProfileManager.user.value!)
-              .then((response) {
-            if (response.success == true) {
-              EasyLoading.dismiss();
-              AppUtil.showToast(
-                  message: LocalizationString.profileUpdated, isSuccess: true);
-              _userProfileManager.refreshProfile();
+      ProfileApi.updateCountryCity(
+          country: country,
+          city: city,
+          resultCallback: () {
+            EasyLoading.dismiss();
+            AppUtil.showToast(
+                message: profileUpdatedString.tr, isSuccess: true);
+            _userProfileManager.refreshProfile();
 
-              user.value!.country = country;
-              user.value!.city = city;
-              update();
-              Future.delayed(const Duration(milliseconds: 1200), () {
-                Get.back();
-              });
-            } else {
-              AppUtil.showToast(message: response.message, isSuccess: false);
-            }
+            user.value!.country = country;
+            user.value!.city = city;
+            update();
+            Future.delayed(const Duration(milliseconds: 1200), () {
+              Get.back();
+            });
           });
-        }
-      });
     }
   }
 
@@ -140,210 +136,159 @@ class ProfileController extends GetxController {
       {required String oldPassword,
       required String newPassword,
       required String confirmPassword,
-      required BuildContext context}) {
+      }) {
     if (FormValidator().isTextEmpty(oldPassword)) {
-      AppUtil.showToast(
-          message: LocalizationString.enterOldPassword, isSuccess: false);
+      AppUtil.showToast(message: enterOldPasswordString.tr, isSuccess: false);
     } else if (FormValidator().isTextEmpty(newPassword)) {
-      AppUtil.showToast(
-          message: LocalizationString.enterNewPassword, isSuccess: false);
+      AppUtil.showToast(message: enterNewPasswordString.tr, isSuccess: false);
     } else if (FormValidator().isTextEmpty(confirmPassword)) {
       AppUtil.showToast(
-          message: LocalizationString.enterConfirmPassword, isSuccess: false);
+          message: enterConfirmPasswordString.tr, isSuccess: false);
     } else if (newPassword != confirmPassword) {
       AppUtil.showToast(
-          message: LocalizationString.passwordsDoesNotMatched,
-          isSuccess: false);
+          message: passwordsDoesNotMatchedString.tr, isSuccess: false);
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController()
-              .changePassword(oldPassword, newPassword)
-              .then((response) async {
+      EasyLoading.show(status: loadingString.tr);
+
+      ProfileApi.changePassword(
+          oldPassword: oldPassword,
+          newPassword: newPassword,
+          resultCallback: () {
             EasyLoading.dismiss();
-            AppUtil.showToast(message: response.message, isSuccess: true);
-            if (response.success) {
-              _userProfileManager.refreshProfile();
-              Future.delayed(const Duration(milliseconds: 500), () {
-                Get.to(() => const LoginScreen());
-              });
-            }
+            _userProfileManager.refreshProfile();
+            Future.delayed(const Duration(milliseconds: 500), () {
+              Get.to(() => const LoginScreen());
+            });
           });
-        } else {
-          AppUtil.showToast(
-              message: LocalizationString.noInternet, isSuccess: false);
-        }
-      });
     }
   }
 
-  updatePaypalId({required String paypalId, required BuildContext context}) {
+  updatePaypalId({required String paypalId}) {
     if (FormValidator().isTextEmpty(paypalId)) {
       AppUtil.showToast(
-          message: LocalizationString.pleaseEnterPaypalId, isSuccess: false);
+          message: pleaseEnterPaypalIdString.tr, isSuccess: false);
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController().updatePaymentDetails(paypalId).then((response) {
-            if (response.success == true) {
-              EasyLoading.dismiss();
-              AppUtil.showToast(
-                  message: LocalizationString.paymentDetailUpdated,
-                  isSuccess: true);
-              _userProfileManager.refreshProfile();
+      ProfileApi.updatePaymentDetails(
+          paypalId: paypalId,
+          resultCallback: () {
+            AppUtil.showToast(
+                message: paymentDetailUpdatedString.tr, isSuccess: true);
+            _userProfileManager.refreshProfile();
 
-              Future.delayed(const Duration(milliseconds: 1200), () {
-                Get.back();
-              });
-            } else {
-              AppUtil.showToast(message: response.message, isSuccess: false);
-            }
+            Future.delayed(const Duration(milliseconds: 1200), () {
+              Get.back();
+            });
           });
-        }
-      });
     }
   }
 
   void updateMobile(
       {required String countryCode,
       required String phoneNumber,
-      required BuildContext context}) {
+     }) {
     if (FormValidator().isTextEmpty(phoneNumber)) {
-      AppUtil.showToast(
-          message: LocalizationString.enterPhoneNumber, isSuccess: false);
+      AppUtil.showToast(message: enterPhoneNumberString.tr, isSuccess: false);
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController()
-              .changePhone(countryCode, phoneNumber)
-              .then((response) async {
+      EasyLoading.show(status: loadingString.tr);
+
+      ProfileApi.updatePhone(
+          countryCode: countryCode,
+          phone: phoneNumber,
+          resultCallback: (token) {
             EasyLoading.dismiss();
-            AppUtil.showToast(message: response.message, isSuccess: true);
-            if (response.success) {
-              _userProfileManager.refreshProfile();
-              Get.to(() => VerifyOTPPhoneNumberChange(
-                    token: response.token!,
-                  ));
-            }
+            _userProfileManager.refreshProfile();
+            Get.to(() => VerifyOTPPhoneNumberChange(
+                  token: token,
+                ));
           });
-        } else {
-          AppUtil.showToast(
-              message: LocalizationString.noInternet, isSuccess: false);
-        }
-      });
     }
   }
 
   updateUserName(
       {required String userName,
       required isSigningUp,
-      required BuildContext context}) {
+      }) {
     if (FormValidator().isTextEmpty(userName)) {
       AppUtil.showToast(
-          message: LocalizationString.pleaseEnterUserName, isSuccess: false);
+          message: pleaseEnterUserNameString.tr, isSuccess: false);
     } else if (userNameCheckStatus.value != 1) {
       AppUtil.showToast(
-          message: LocalizationString.pleaseEnterValidUserName,
-          isSuccess: false);
+          message: pleaseEnterValidUserNameString.tr, isSuccess: false);
     } else {
       AppUtil.checkInternet().then((value) {
         if (value) {
-          EasyLoading.show(status: LocalizationString.loading);
-          ApiController().updateUserName(userName).then((response) {
-            if (response.success == true) {
-              EasyLoading.dismiss();
-              AppUtil.showToast(
-                  message: LocalizationString.userNameIsUpdated,
-                  isSuccess: true);
-              getMyProfile();
-              if (isSigningUp == true) {
-                Get.to(() => const SetProfileCategoryType(
-                      isFromSignup: false,
-                    ));
-              } else {
-                Future.delayed(const Duration(milliseconds: 1200), () {
-                  Get.back();
-                });
-              }
-            } else {
-              EasyLoading.dismiss();
-              AppUtil.showToast(message: response.message, isSuccess: false);
-            }
-          });
+          EasyLoading.show(status: loadingString.tr);
+          ProfileApi.updateUserName(
+              userName: userName,
+              resultCallback: () {
+                EasyLoading.dismiss();
+                AppUtil.showToast(
+                    message: userNameIsUpdatedString.tr, isSuccess: true);
+                getMyProfile();
+                if (isSigningUp == true) {
+                  Get.to(() => const SetProfileCategoryType(
+                        isFromSignup: false,
+                      ));
+                } else {
+                  Future.delayed(const Duration(milliseconds: 1200), () {
+                    Get.back();
+                  });
+                }
+              });
         }
       });
     }
   }
 
-  updateProfileCategoryType(
-      {required int profileCategoryType,
-      required isSigningUp,
-      required BuildContext context}) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController()
-            .updateProfileCategoryType(profileCategoryType)
-            .then((response) {
-          if (response.success == true) {
-            EasyLoading.dismiss();
-            AppUtil.showToast(
-                message: LocalizationString.categoryTypeUpdated, isSuccess: true);
-            getMyProfile();
-            if (isSigningUp == true) {
-              if (isLoginFirstTime) {
-                Get.to(() => SetLocation(isFromSignup: isSigningUp))!
-                    .then((value) {});
-              } else {
-                isLoginFirstTime = false;
-                getIt<LocationManager>().postLocation();
-                Get.offAll(() => const DashboardScreen());
-              }
+  updateProfileCategoryType({
+    required int profileCategoryType,
+    required isSigningUp,
+  }) {
+    EasyLoading.show(status: loadingString.tr);
+
+    ProfileApi.updateProfileCategoryType(
+        categoryType: profileCategoryType,
+        resultCallback: () {
+          EasyLoading.dismiss();
+          AppUtil.showToast(
+              message: categoryTypeUpdatedString.tr, isSuccess: true);
+          getMyProfile();
+          if (isSigningUp == true) {
+            if (isLoginFirstTime) {
+              Get.to(() => SetLocation(isFromSignup: isSigningUp))!
+                  .then((value) {});
             } else {
-              Future.delayed(const Duration(milliseconds: 1200), () {
-                Get.back();
-              });
+              isLoginFirstTime = false;
+              getIt<LocationManager>().postLocation();
+              Get.offAll(() => const DashboardScreen());
             }
           } else {
-            EasyLoading.dismiss();
-            AppUtil.showToast(message: response.message, isSuccess: false);
+            Future.delayed(const Duration(milliseconds: 1200), () {
+              Get.back();
+            });
           }
         });
-      }
-    });
   }
 
   void verifyUsername({required String userName}) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        ApiController().checkUsername(userName).then((response) async {
-          if (response.success) {
-            userNameCheckStatus.value = 1;
-          } else {
-            userNameCheckStatus.value = 0;
-          }
+    AuthApi.checkUsername(
+        username: userName,
+        successCallback: () {
+          userNameCheckStatus.value = 1;
+          update();
+        },
+        failureCallback: () {
+          userNameCheckStatus.value = 0;
           update();
         });
-      } else {
-        userNameCheckStatus.value = 0;
-      }
-    });
   }
 
   void editProfileImageAction(XFile pickedFile, bool isCoverImage) async {
-    EasyLoading.show(status: LocalizationString.loading);
-
     if (isCoverImage) {
       Uint8List compressedData = await File(pickedFile.path)
           .compress(minHeight: 800, minWidth: 800, byQuality: 50);
-      ApiController()
-          .updateProfileCoverImage(compressedData)
-          .then((response) async {
-        EasyLoading.dismiss();
 
+      ProfileApi.uploadProfileCoverImage(compressedData, resultCallback: () {
         _userProfileManager.refreshProfile().then((value) {
           user.value = _userProfileManager.user.value;
           update();
@@ -352,9 +297,8 @@ class ProfileController extends GetxController {
     } else {
       Uint8List compressedData = await File(pickedFile.path)
           .compress(minHeight: 200, minWidth: 200, byQuality: 50);
-      ApiController().updateProfileImage(compressedData).then((response) async {
-        EasyLoading.dismiss();
 
+      ProfileApi.uploadProfileImage(compressedData, resultCallback: () {
         _userProfileManager.refreshProfile().then((value) {
           user.value = _userProfileManager.user.value;
           update();
@@ -366,59 +310,36 @@ class ProfileController extends GetxController {
   updateBioMetricSetting(bool value, BuildContext context) {
     user.value!.isBioMetricLoginEnabled = value == true ? 1 : 0;
     SharedPrefs().setBioMetricAuthStatus(value);
+    EasyLoading.show(status: loadingString.tr);
 
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController()
-            .updateBiometricSetting(user.value!.isBioMetricLoginEnabled ?? 0)
-            .then((response) {
-          if (response.success == true) {
-            _userProfileManager.refreshProfile();
-            EasyLoading.dismiss();
-            AppUtil.showToast(
-                message: LocalizationString.profileUpdated, isSuccess: true);
-          } else {
-            AppUtil.showToast(message: response.message, isSuccess: false);
-          }
+    ProfileApi.updateBiometricSetting(
+        setting: user.value!.isBioMetricLoginEnabled ?? 0,
+        resultCallback: () {
+          _userProfileManager.refreshProfile();
+          EasyLoading.dismiss();
+          AppUtil.showToast(message: profileUpdatedString.tr, isSuccess: true);
         });
-      }
-    });
   }
 
   //////////////********** other user profile **************/////////////////
 
   void getOtherUserDetail({required int userId}) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        ApiController().getOtherUser(userId.toString()).then((response) async {
-          if (response.success) {
-            user.value = response.user!;
-            update();
-          } else {
-            AppUtil.showToast(message: response.message, isSuccess: false);
-          }
+    UsersApi.getOtherUser(
+        userId: userId,
+        resultCallback: (result) {
+          user.value = result;
+          update();
         });
-      }
-    });
   }
 
-  void followUnFollowUserApi(
-      {required bool isFollowing, required BuildContext context}) {
+  void followUnFollowUserApi({required bool isFollowing}) {
     user.value!.isFollowing = isFollowing;
     update();
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        ApiController()
-            .followUnFollowUser(isFollowing, user.value!.id)
-            .then((response) async {
-          if (response.success) {
-            update();
-          } else {
-            AppUtil.showToast(message: response.message, isSuccess: false);
-          }
-        });
-      }
+
+    UsersApi.followUnfollowUser(
+            isFollowing: isFollowing, userId: user.value!.id)
+        .then((value) {
+      update();
     });
   }
 
@@ -426,205 +347,156 @@ class ProfileController extends GetxController {
     user.value!.isReported = true;
     update();
 
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().reportUser(user.value!.id).then((response) async {
-          EasyLoading.dismiss();
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
+    UsersApi.reportUser(userId: user.value!.id, resultCallback: () {});
   }
 
   void blockUser(BuildContext context) {
     user.value!.isReported = true;
     update();
 
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().blockUser(user.value!.id).then((response) async {
-          EasyLoading.dismiss();
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
+    UsersApi.blockUser(userId: user.value!.id, resultCallback: () {});
   }
 
 //////////////********** other user profile **************/////////////////
 
-  void withdrawalRequest() {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().performWithdrawalRequest().then((response) async {
-          getMyProfile();
-          EasyLoading.dismiss();
-          AppUtil.showToast(message: response.message, isSuccess: true);
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
+  void withdrawalRequest() async {
+    await WalletApi.performWithdrawalRequest();
+    getMyProfile();
   }
 
-  void redeemRequest(int coins, BuildContext context, VoidCallback callback) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController().redeemCoinsRequest(coins).then((response) async {
-          EasyLoading.dismiss();
-          await getMyProfile();
-          callback();
-          AppUtil.showToast(message: response.message, isSuccess: true);
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
+  void redeemRequest(int coins, VoidCallback callback) async {
+    await WalletApi.redeemCoinsRequest(coins: coins);
+    await getMyProfile();
+    callback();
   }
 
   void getWithdrawHistory() {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        ApiController().getWithdrawHistory().then((response) async {
-          if (response.success) {
-            payments.value = response.payments;
-            update();
-          }
-        });
-      }
+    WalletApi.getWithdrawHistory(resultCallback: (result) {
+      payments.value = result;
+      update();
     });
   }
 
   followUser(UserModel user) {
     user.isFollowing = true;
     update();
-    ApiController().followUnFollowUser(true, user.id).then((value) {});
+    UsersApi.followUnfollowUser(isFollowing: true, userId: user.id)
+        .then((value) {
+      update();
+    });
   }
 
   unFollowUser(UserModel user) {
     user.isFollowing = false;
 
     update();
-    ApiController().followUnFollowUser(false, user.id).then((value) {});
+    UsersApi.followUnfollowUser(isFollowing: false, userId: user.id)
+        .then((value) {
+      update();
+    });
   }
 
   //******************** Posts ****************//
 
   void getPosts(int userId) async {
     if (canLoadMorePosts == true && totalPages > postsCurrentPage) {
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          isLoadingPosts = true;
-          ApiController()
-              .getPosts(userId: userId, page: postsCurrentPage)
-              .then((response) async {
-            // posts.value = [];
-            posts.addAll(response.success
-                ? response.posts
-                    .where((element) => element.gallery.isNotEmpty)
-                    .toList()
-                : []);
+      isLoadingPosts = true;
+
+      PostApi.getPosts(
+          userId: userId,
+          page: postsCurrentPage,
+          resultCallback: (result, metadata) {
+            posts.addAll(
+                result.where((element) => element.gallery.isNotEmpty).toList());
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
+            posts.unique((e) => e.id);
+
             isLoadingPosts = false;
 
-            postsCurrentPage += 1;
-
-            if (response.posts.length == response.metaData?.perPage) {
-              canLoadMorePosts = true;
-            } else {
+            if (postsCurrentPage >= metadata.pageCount) {
               canLoadMorePosts = false;
+            } else {
+              canLoadMorePosts = true;
             }
-            totalPages = response.metaData!.pageCount;
+            postsCurrentPage += 1;
+            totalPages = metadata.pageCount;
+
             update();
           });
-        }
-      });
     }
   }
 
   void getReels(int userId) async {
-    if (canLoadMoreMoments == true) {
-      AppUtil.checkInternet().then((value) async {
-        if (value) {
-          isLoadingReels = true;
-          ApiController()
-              .getPosts(userId: userId, isReel: 1, page: reelsCurrentPage)
-              .then((response) async {
-            reels.addAll(response.success
-                ? response.posts
-                    .where((element) => element.gallery.isNotEmpty)
-                    .toList()
-                : []);
-            reels.sort((a, b) => b.createDate!.compareTo(a.createDate!));
+    if (canLoadMoreReels == true) {
+      isLoadingReels = true;
+      PostApi.getPosts(
+          userId: userId,
+          page: reelsCurrentPage,
+          resultCallback: (result, metadata) {
+            posts.addAll(
+                result.where((element) => element.gallery.isNotEmpty).toList());
+            posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
+            posts.unique((e) => e.id);
+
             isLoadingReels = false;
 
-            reelsCurrentPage += 1;
-
-            if (response.posts.length == response.metaData?.perPage) {
-              canLoadMoreMoments = true;
+            if (postsCurrentPage >= metadata.pageCount) {
+              canLoadMoreReels = false;
             } else {
-              canLoadMoreMoments = false;
+              canLoadMoreReels = true;
             }
-            // totalPages = response.metaData!.pageCount;
+            reelsCurrentPage += 1;
+            // totalPages = metadata.pageCount;
+
             update();
           });
-        }
-      });
     }
   }
 
-  void getMyMentions(int userId) {
+  void getMentionPosts(int userId) {
     if (canLoadMoreMentionsPosts && totalPages > mentionsPostPage) {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          mentionsPostsIsLoading = true;
-          ApiController().getMyMentions(userId: userId).then((response) async {
+      mentionsPostsIsLoading = true;
+
+      PostApi.getMentionedPosts(
+          userId: userId,
+          resultCallback: (result, metaData) {
             mentionsPostsIsLoading = false;
 
-            mentions.addAll(
-                response.success ? response.posts.reversed.toList() : []);
+            mentions.addAll(result.reversed.toList());
+            mentions.unique((e) => e.id);
 
             mentionsPostPage += 1;
-            if (response.posts.length == response.metaData?.perPage) {
+            if (result.length == metaData.perPage) {
               canLoadMoreMentionsPosts = true;
-              totalPages = response.metaData!.pageCount;
+              totalPages = metaData.pageCount;
             } else {
               canLoadMoreMentionsPosts = false;
             }
             update();
           });
-        }
-      });
     }
   }
 
   sendGift(GiftModel gift) {
     if (_userProfileManager.user.value!.coins > gift.coins) {
       sendingGift.value = gift;
-      ApiController()
-          .sendGift(
-              gift: gift, liveId: null, userId: user.value!.id, postId: null)
-          .then((value) {
-        Timer(const Duration(seconds: 1), () {
-          sendingGift.value = null;
-        });
+      GiftApi.sendStickerGift(
+          gift: gift,
+          liveId: null,
+          postId: null,
+          receiverId: user.value!.id,
+          resultCallback: () {
+            Timer(const Duration(seconds: 1), () {
+              sendingGift.value = null;
+            });
 
-        // refresh profile to get updated wallet info
-        _userProfileManager.refreshProfile();
-      });
+            // refresh profile to get updated wallet info
+            _userProfileManager.refreshProfile();
+          });
     } else {}
   }
 
   otherUserProfileView({required int refId, required int sourceType}) {
-    ApiController().otherUserProfileView(refId: refId, sourceType: sourceType);
+    UsersApi.otherUserProfileView(refId: refId, sourceType: sourceType);
   }
 }

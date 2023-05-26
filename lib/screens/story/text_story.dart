@@ -92,7 +92,7 @@
 //                       contentPadding:
 //                           const EdgeInsets.only(left: 10, right: 10),
 //                       counterText: "",
-//                       hintText: LocalizationString.enterTextHere,
+//                       hintText: enterTextHere,
 //                       // labelText: hintText,
 //                       labelStyle: TextStyle(fontSize: FontSizes.b2),
 //                       hintStyle: TextStyle(fontSize: FontSizes.h3),
@@ -183,7 +183,7 @@
 //                 ).setPadding(left: 5, right: 5, top: 2, bottom: 2),
 //               ),
 //             )
-//                 .borderWithRadius(context: context, value: 1, radius: 5)
+//                 .borderWithRadius( value: 1, radius: 5)
 //                 .ripple(() {
 //               _textStoryMakerController.setFont(fontsList[index]);
 //             });
@@ -221,7 +221,7 @@
 //           width: 30,
 //           color: ColorConstants.backgroundColor,
 //           child: const ThemeIconWidget(ThemeIcon.edit),
-//         ).borderWithRadius(context: context, value: 5, radius: 1).lP16,
+//         ).borderWithRadius( value: 5, radius: 1).lP16,
 //         SizedBox(
 //           width: MediaQuery.of(context).size.width - 80,
 //           height: 50,
@@ -245,7 +245,7 @@
 //           height: 30,
 //           width: 30,
 //           color: Colors.white,
-//         ).borderWithRadius(context: context, value: 5, radius: 1).lP16,
+//         ).borderWithRadius( value: 5, radius: 1).lP16,
 //         SizedBox(
 //           width: MediaQuery.of(context).size.width - 80,
 //           height: 50,
@@ -273,7 +273,7 @@
 //               : 40,
 //           color: color,
 //         ).border(
-//             context: context,
+//
 //             value: _textStoryMakerController.selectedStrokeColor.value == color
 //                 ? 5
 //                 : 0,
@@ -294,7 +294,7 @@
 //           height: 40,
 //           color: color,
 //         ).border(
-//             context: context,
+//
 //             value:
 //                 _textStoryMakerController.selectedBackgroundColor.value == color
 //                     ? 5

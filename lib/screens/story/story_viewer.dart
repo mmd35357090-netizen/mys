@@ -1,10 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
-import 'package:get/get.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:story_view/utils.dart';
 
-import '../../universal_components/rounded_input_field.dart';
 import '../profile/my_profile.dart';
 import '../profile/other_user_profile.dart';
 import '../settings_menu/settings_controller.dart';
@@ -89,31 +87,31 @@ class _StoryViewerState extends State<StoryViewer> {
     );
   }
 
-  Widget replyWidget() {
-    return FooterLayout(
-      footer: KeyboardAttachable(
-        // backgroundColor: Colors.blue,
-        child: Container(
-          height: 60,
-          color: AppColorConstants.themeColor,
-          child: Row(
-            children: [
-              Expanded(
-                child: InputField(
-                  hintText: LocalizationString.reply,
-                ),
-              ),
-              ThemeIconWidget(
-                ThemeIcon.send,
-                color: AppColorConstants.iconColor,
-              )
-            ],
-          ).hP25,
-        ),
-      ),
-      child: storyWidget(),
-    );
-  }
+  // Widget replyWidget() {
+  //   return FooterLayout(
+  //     footer: KeyboardAttachable(
+  //       // backgroundColor: Colors.blue,
+  //       child: Container(
+  //         height: 60,
+  //         color: AppColorConstants.themeColor,
+  //         child: Row(
+  //           children: [
+  //             Expanded(
+  //               child: AppTextField(
+  //                 hintText: replyString.tr,
+  //               ),
+  //             ),
+  //             ThemeIconWidget(
+  //               ThemeIcon.send,
+  //               color: AppColorConstants.iconColor,
+  //             )
+  //           ],
+  //         ).hP25,
+  //       ),
+  //     ),
+  //     child: storyWidget(),
+  //   );
+  // }
 
   Widget userProfileView() {
     return Row(
@@ -130,17 +128,12 @@ class _StoryViewerState extends State<StoryViewer> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                BodyMediumText(
-                  widget.story.userName,
-    weight: TextWeight.medium,
-    color: Colors.white
-
-                ),
+                BodyMediumText(widget.story.userName,
+                    weight: TextWeight.medium, color: Colors.white),
                 Obx(() => storyController.storyMediaModel.value != null
                     ? BodyMediumText(
                         storyController.storyMediaModel.value!.createdAt,
                         color: AppColorConstants.grayscale100,
-
                       )
                     : Container())
               ],
@@ -152,9 +145,9 @@ class _StoryViewerState extends State<StoryViewer> {
           SizedBox(
             height: 25,
             width: 40,
-            child: ThemeIconWidget(
+            child: const ThemeIconWidget(
               ThemeIcon.more,
-              color: AppColorConstants.iconColor,
+              color: Colors.white,
               size: 20,
             ).ripple(() {
               openActionPopup();
@@ -181,7 +174,7 @@ class _StoryViewerState extends State<StoryViewer> {
         builder: (context) => Wrap(
               children: [
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.deleteStory)),
+                    title: Center(child: BodyLargeText(deleteStoryString.tr)),
                     onTap: () async {
                       Get.back();
                       controller.play();
@@ -190,9 +183,9 @@ class _StoryViewerState extends State<StoryViewer> {
                         widget.storyDeleted();
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () {
                       controller.play();
                       Get.back();

@@ -2,6 +2,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/apiHandler/api_controller.dart';
 
+import '../apiHandler/apis/misc_api.dart';
+
 class NotificationSettingController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
 
@@ -19,11 +21,14 @@ class NotificationSettingController extends GetxController {
     update();
   }
 
-  updateNotificationSetting({required String section, required String title, required BuildContext context}) {
-    if (section == LocalizationString.likes) {
-      if (title == LocalizationString.off) {
+  updateNotificationSetting(
+      {required String section,
+      required String title,
+      }) {
+    if (section == likesString.tr) {
+      if (title == offString.tr) {
         likesNotificationStatus.value = 0;
-      } else if (title == LocalizationString.fromPeopleOrFollow) {
+      } else if (title == fromPeopleOrFollowString.tr) {
         likesNotificationStatus.value = 2;
         turnOfAll.value = 0;
       } else {
@@ -31,9 +36,9 @@ class NotificationSettingController extends GetxController {
         turnOfAll.value = 0;
       }
     } else {
-      if (title == LocalizationString.off) {
+      if (title == offString.tr) {
         commentNotificationStatus.value = 0;
-      } else if (title == LocalizationString.fromPeopleOrFollow) {
+      } else if (title == fromPeopleOrFollowString.tr) {
         commentNotificationStatus.value = 2;
         turnOfAll.value = 0;
       } else {
@@ -44,26 +49,11 @@ class NotificationSettingController extends GetxController {
 
     update();
 
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        EasyLoading.show(status: LocalizationString.loading);
-        ApiController()
-            .updateNotificationSettings(
-                likesNotificationStatus: likesNotificationStatus.toString(),
-                commentNotificationStatus: commentNotificationStatus.toString())
-            .then((response) {
-          EasyLoading.dismiss();
-          if (response.success == true) {
-            _userProfileManager.refreshProfile();
-            AppUtil.showToast( message: response.message, isSuccess: true);
-          } else {
-            AppUtil.showToast(message: response.message, isSuccess: false);
-          }
+    MiscApi.updateNotificationSettings(
+        likesNotificationStatus: likesNotificationStatus.toString(),
+        commentNotificationStatus: commentNotificationStatus.toString(),
+        resultCallback: () {
+          _userProfileManager.refreshProfile();
         });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet, isSuccess: false);
-      }
-    });
   }
 }

@@ -1,11 +1,8 @@
 import 'dart:io';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../components/user_card.dart';
-import '../../universal_components/rounded_input_field.dart';
+import '../../../components/user_card.dart';
 
 class EnterGroupInfo extends StatefulWidget {
   const EnterGroupInfo({Key? key}) : super(key: key);
@@ -46,8 +43,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    BodyLargeText(LocalizationString.create,
-                            weight: TextWeight.medium)
+                    BodyLargeText(createString.tr, weight: TextWeight.medium)
                         .ripple(() {
                       createGroup();
                     }),
@@ -57,14 +53,14 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                   left: 0,
                   right: 0,
                   child: Center(
-                    child: Heading5Text(LocalizationString.createGroup,
+                    child: Heading5Text(createGroupString.tr,
                         weight: TextWeight.medium),
                   ),
                 )
               ],
             ),
           ).hP16,
-          divider(context: context).tP8,
+          divider().tP8,
           SizedBox(
             height: 250,
             child: Column(
@@ -97,21 +93,17 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                       width: 10,
                     ),
                     Expanded(
-                      child: InputField(
+                      child: AppTextField(
                         controller: groupName,
-                        showDivider: true,
-                        hintText: LocalizationString.groupName,
-                        cornerRadius: 5,
+                        hintText: groupNameString.tr,
                       ),
                     )
                   ],
                 ),
-                InputField(
+                AppTextField(
                   maxLines: 5,
                   controller: groupDescription,
-                  showDivider: true,
-                  hintText: LocalizationString.describeAboutGroup,
-                  cornerRadius: 5,
+                  hintText: describeAboutGroupString.tr,
                 )
               ],
             ),
@@ -154,15 +146,14 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
   createGroup() {
     if (groupName.text.isEmpty) {
       AppUtil.showToast(
-          message: LocalizationString.pleaseEnterGroupName, isSuccess: false);
+          message: pleaseEnterGroupNameString.tr, isSuccess: false);
       return;
     }
     if (selectUserForGroupChatController.selectedFriends.isEmpty) {
-      AppUtil.showToast(
-          message: LocalizationString.pleaseSelectUsers, isSuccess: false);
+      AppUtil.showToast(message: pleaseSelectUsersString.tr, isSuccess: false);
       return;
     }
-    EasyLoading.show(status: LocalizationString.loading);
+    EasyLoading.show(status: loadingString.tr);
     enterGroupInfoController.createGroup(
         name: groupName.text,
         description: groupDescription.text,
@@ -179,12 +170,12 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                     padding: const EdgeInsets.only(
                         left: 20, right: 20, top: 20, bottom: 25),
                     child: BodyLargeText(
-                      LocalizationString.addPhoto,
+                      addPhotoString.tr,
                     )),
                 ListTile(
                     leading: Icon(Icons.camera_alt_outlined,
                         color: AppColorConstants.iconColor),
-                    title: BodyLargeText(LocalizationString.takePhoto),
+                    title: BodyLargeText(takePhotoString.tr),
                     onTap: () {
                       Get.back();
                       picker
@@ -196,11 +187,11 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                         } else {}
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading: Icon(Icons.wallpaper_outlined,
                         color: AppColorConstants.iconColor),
-                    title: BodyLargeText(LocalizationString.chooseFromGallery),
+                    title: BodyLargeText(chooseFromGalleryString.tr),
                     onTap: () async {
                       Get.back();
                       picker
@@ -212,11 +203,11 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                         } else {}
                       });
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
                     leading:
                         Icon(Icons.close, color: AppColorConstants.iconColor),
-                    title: BodyLargeText(LocalizationString.cancel),
+                    title: BodyLargeText(cancelString.tr),
                     onTap: () => Get.back()),
               ],
             ));

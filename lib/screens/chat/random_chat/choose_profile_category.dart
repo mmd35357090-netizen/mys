@@ -34,20 +34,18 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.strangerChat),
+               title: strangerChatString.tr),
           const SizedBox(
             height: 20,
           ),
-          Heading3Text(LocalizationString.setProfileCategoryType,
+          Heading5Text(setProfileCategoryTypeString.tr,
               ),
           const SizedBox(
             height: 20,
           ),
-          BodySmallText(LocalizationString.weWillSearchUserInCategory,
+          BodySmallText(weWillSearchUserInCategoryString.tr,
               textAlign: TextAlign.center,
               weight: TextWeight.medium,
              ),
@@ -65,9 +63,8 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        BodyLargeText(
                           category.name,
-                          style: TextStyle(fontSize: FontSizes.h6),
                         ),
                         const ThemeIconWidget(ThemeIcon.nextArrow)
                       ],
@@ -82,7 +79,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
                     return const SizedBox(height: 20);
                   }))),
           AppThemeButton(
-              text: LocalizationString.skip,
+              text: skipString.tr,
               onPress: () {
                 Get.to(() => FindRandomUser(isCalling: widget.isCalling));
               }).hP16,

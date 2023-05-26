@@ -36,11 +36,9 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(context: context, title: LocalizationString.post),
-          divider(context: context).tP8,
+
+          backNavigationBar( title: postString.tr),
+          divider().tP8,
           const SizedBox(
             height: 20,
           ),
@@ -51,7 +49,7 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
                         singlePostDetailController.isLoading == false
                     ? Center(
                         child: Heading3Text(
-                          LocalizationString.postDeleted,
+                          postDeletedString.tr,
                           weight: TextWeight.bold,
                           color: AppColorConstants.themeColor,
                         ),
@@ -59,11 +57,7 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
                     : singlePostDetailController.isLoading == false
                         ? PostCard(
                             model: singlePostDetailController.post.value!,
-                            textTapHandler: (text) {},
-                            // likeTapHandler: () {
-                            //   singlePostDetailController
-                            //       .likeUnlikePost(context);
-                            // },
+
                             viewInsightHandler: () {
                               Get.to(() => ViewPostInsights(
                                   post:

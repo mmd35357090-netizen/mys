@@ -41,12 +41,10 @@ class _BuyTicketState extends State<BuyTicket> {
         height: Get.height,
         child: Column(
           children: [
-            const SizedBox(
-              height: 50,
-            ),
+
             backNavigationBar(
-                context: context, title: LocalizationString.buyTicket),
-            divider(context: context).tP8,
+                 title: buyTicketString.tr),
+            divider().tP8,
             Expanded(
               child: Obx(() => Stack(
                     children: [
@@ -74,7 +72,7 @@ class _BuyTicketState extends State<BuyTicket> {
                                         // const SizedBox(
                                         //   height: 25,
                                         // ),
-                                        divider(context: context).tP8,
+                                        divider().tP8,
                                         const SizedBox(
                                           height: 25,
                                         ),
@@ -181,7 +179,7 @@ class _BuyTicketState extends State<BuyTicket> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BodyLargeText(
-            LocalizationString.giftingTo,
+            giftingToString.tr,
             weight: TextWeight.semiBold,
           ),
           const SizedBox(
@@ -215,7 +213,7 @@ class _BuyTicketState extends State<BuyTicket> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BodyLargeText(LocalizationString.ticketType,
+        BodyLargeText(ticketTypeString.tr,
                 weight: TextWeight.semiBold)
             .hP16,
         const SizedBox(
@@ -280,7 +278,7 @@ class _BuyTicketState extends State<BuyTicket> {
               Row(
                 children: [
                   Text(
-                    LocalizationString.totalSeats,
+                    totalSeatsString.tr,
                     style: TextStyle(
                         fontSize: FontSizes.b2,
                         fontWeight: TextWeight.medium,
@@ -298,7 +296,7 @@ class _BuyTicketState extends State<BuyTicket> {
               Row(
                 children: [
                   Text(
-                    LocalizationString.availableSeats,
+                    availableSeatsString.tr,
                     style: TextStyle(
                         fontSize: FontSizes.b2,
                         fontWeight: TextWeight.medium,
@@ -326,7 +324,7 @@ class _BuyTicketState extends State<BuyTicket> {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading5Text(LocalizationString.applyCoupon,
+              Heading5Text(applyCouponString.tr,
                       weight: TextWeight.medium)
                   .hP16,
               const SizedBox(
@@ -376,7 +374,7 @@ class _BuyTicketState extends State<BuyTicket> {
             children: [
               Row(
                 children: [
-                  Heading4Text('${LocalizationString.code} :',
+                  Heading4Text('${codeString.tr} :',
                       weight: TextWeight.medium),
                   const SizedBox(
                     width: 5,
@@ -388,10 +386,10 @@ class _BuyTicketState extends State<BuyTicket> {
                   ),
                 ],
               ),
-              divider(context: context, color: AppColorConstants.themeColor).vP8,
+              divider( color: AppColorConstants.themeColor).vP8,
               Row(
                 children: [
-                  BodyMediumText('${LocalizationString.discount} :',
+                  BodyMediumText('${discountString.tr} :',
                       weight: TextWeight.medium),
                   const SizedBox(
                     width: 5,
@@ -408,7 +406,7 @@ class _BuyTicketState extends State<BuyTicket> {
               ),
               Row(
                 children: [
-                  BodyMediumText('${LocalizationString.minimumOrderPrice} :',
+                  BodyMediumText('${minimumOrderPriceString.tr} :',
                       weight: TextWeight.medium),
                   const SizedBox(
                     width: 5,
@@ -438,18 +436,18 @@ class _BuyTicketState extends State<BuyTicket> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Heading5Text(LocalizationString.orderSummary,
+          Heading5Text(orderSummaryString.tr,
               weight: TextWeight.medium),
           const SizedBox(
             height: 10,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           const SizedBox(
             height: 20,
           ),
           Row(
             children: [
-              BodySmallText(LocalizationString.subTotal,
+              BodySmallText(subTotalString.tr,
                   weight: TextWeight.regular),
               const Spacer(),
               BodySmallText(
@@ -462,7 +460,7 @@ class _BuyTicketState extends State<BuyTicket> {
           ),
           Row(
             children: [
-              BodySmallText(LocalizationString.serviceFee,
+              BodySmallText(serviceFeeString.tr,
                   weight: TextWeight.regular),
               const Spacer(),
               BodySmallText(
@@ -477,7 +475,7 @@ class _BuyTicketState extends State<BuyTicket> {
             Row(
               children: [
                 BodySmallText(
-                  '${LocalizationString.couponCode} (${_buyTicketController.selectedCoupon.value!.code})',
+                  '${couponCodeString.tr} (${_buyTicketController.selectedCoupon.value!.code})',
                   weight: TextWeight.semiBold,
                   color: AppColorConstants.themeColor,
                 ),
@@ -490,13 +488,13 @@ class _BuyTicketState extends State<BuyTicket> {
           const SizedBox(
             height: 25,
           ),
-          divider(context: context),
+          divider(),
           const SizedBox(
             height: 25,
           ),
           Row(
             children: [
-              BodyLargeText(LocalizationString.total,
+              BodyLargeText(totalString.tr,
                   weight: TextWeight.regular),
               const Spacer(),
               BodyLargeText('\$${_buyTicketController.amountToBePaid}',
@@ -514,7 +512,7 @@ class _BuyTicketState extends State<BuyTicket> {
       color: AppColorConstants.themeColor,
       child: Center(
         child:
-            Heading6Text(LocalizationString.checkout, weight: TextWeight.medium)
+            Heading6Text(checkoutString.tr, weight: TextWeight.medium)
                 .hP16,
       ),
     ).round(20).ripple(() {

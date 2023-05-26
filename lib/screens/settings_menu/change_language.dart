@@ -24,12 +24,9 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
           backNavigationBar(
-              context: context, title: LocalizationString.changeLanguage),
-          divider(context: context).tP8,
+               title: changeLanguageString.tr),
+          divider().tP8,
           Expanded(
               child: GetBuilder<SettingsController>(
                   init: _settingsController,
@@ -62,7 +59,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                           });
                         },
                         separatorBuilder: (ctx, index) {
-                          return divider(context: context).vP16;
+                          return divider().vP16;
                         },
                         itemCount: _settingsController.languagesList.length);
                   }))

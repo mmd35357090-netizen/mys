@@ -166,7 +166,7 @@ class CameraPickerState extends State<CameraPicker>
     /// Hide system status bar automatically when the platform is not Android.
     /// 在非 Android 设备上自动隐藏状态栏
     if (!Platform.isAndroid) {
-      SystemChrome.setEnabledSystemUIOverlays(<SystemUiOverlay>[]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: <SystemUiOverlay>[]);
     }
 
     initCameras();
@@ -175,7 +175,7 @@ class CameraPickerState extends State<CameraPicker>
   @override
   void dispose() {
     if (!Platform.isAndroid) {
-      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
     }
     ambiguate(WidgetsBinding.instance)?.removeObserver(this);
     innerController?.dispose();
@@ -1286,7 +1286,7 @@ class CameraPickerState extends State<CameraPicker>
               sortKey: const OrdinalSortKey(2),
               hidden: innerController == null,
               child: buildCaptureActions(
-                context: context,
+                context:context,
                 constraints: constraints,
                 controller: innerController,
               ),
@@ -1306,7 +1306,7 @@ class CameraPickerState extends State<CameraPicker>
           ExcludeSemantics(
             child: buildInitializeWrapper(
               builder: (CameraValue v, Widget? w) => buildCameraPreview(
-                context: context,
+                context:context,
                 orientation: v.deviceOrientation,
                 constraints: constraints,
               ),

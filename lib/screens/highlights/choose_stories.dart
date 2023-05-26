@@ -87,8 +87,8 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                                 return _buildItem(index);
                               }).hP16
                           : emptyData(
-                              title: LocalizationString.noStoryFound,
-                              subTitle: LocalizationString.postSomeStories,
+                              title: noStoryFoundString.tr,
+                              subTitle: postSomeStoriesString.tr,
                             );
                 }).hP4,
           )

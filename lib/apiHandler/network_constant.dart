@@ -7,6 +7,8 @@ class NetworkConstantsUtil {
 
   // *************** Login and profile *************//
   static String login = 'users/login';
+  static String logout = 'users/logout';
+
   static String loginWithPhone = 'users/login-with-phonenumber';
 
   static String socialLogin = 'users/login-social';
@@ -95,7 +97,7 @@ class NetworkConstantsUtil {
   static String uploadFileImage = 'file-uploads/upload-file';
   static String addCompetitionPost = 'posts/competition-image';
   static String searchPost =
-      'posts/search-post?expand=user,user.userLiveDetail,clubDetail.createdByUser , clubDetail.totalJoinedUser';
+      'posts/search-post?expand=user,user.userLiveDetail,clubDetail.createdByUser,clubDetail.totalJoinedUser';
   static String postDetail =
       'posts/{id}?expand=user,user.userLiveDetail,clubDetail,giftSummary';
   static String mentionedPosts =
@@ -233,8 +235,8 @@ class NetworkConstantsUtil {
   static String giftTicket = 'events/gift-ticket';
 
   //***********random live and chat***********//
-  static String randomLives =
-      'chats/live-streaming-user?name=&profile_category_type=&is_following=';
+  // static String randomLives =
+  //     'chats/live-streaming-user?name=&profile_category_type=&is_following=';
   static String randomOnlineUser = 'chats/online-user?profile_category_type=';
   static String liveUsers = 'chats/live-streaming-user';
 

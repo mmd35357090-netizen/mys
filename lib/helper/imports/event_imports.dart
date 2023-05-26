@@ -20,7 +20,6 @@ export 'package:foap/screens/add_on/components/event/event_member_tile.dart';
 export 'package:foap/screens/add_on/controller/event/event_controller.dart';
 export 'package:foap/screens/add_on/controller/event/event_detail_controller.dart';
 export 'package:foap/screens/add_on/controller/event/buy_ticket_controller.dart';
-export 'package:foap/screens/add_on/controller/event/search_event_controller.dart';
 export 'package:foap/screens/add_on/controller/event/checkout_controller.dart';
 export 'package:foap/screens/add_on/controller/event/event_booking_controller.dart';
 export 'package:foap/screens/add_on/controller/event/booking_detail_controller.dart';

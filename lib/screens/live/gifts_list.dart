@@ -40,7 +40,7 @@ class _GiftsPageViewState extends State<GiftsPageView> {
         children: [
           Container(
             height: 60,
-            color: AppColorConstants.themeColor.darken(0.48),
+            color: AppColorConstants.themeColor.darken(0.2),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -48,31 +48,31 @@ class _GiftsPageViewState extends State<GiftsPageView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     BodyLargeText(
-                      '${LocalizationString.availableCoins} : ',
-                        weight: TextWeight.medium
+                      '${availableCoinsString.tr} : ',
+                      weight: TextWeight.medium,
+                      color: Colors.white,
                     ),
-                    ThemeIconWidget(
+                    const ThemeIconWidget(
                       ThemeIcon.diamond,
                       size: 20,
-                      color: AppColorConstants.themeColor,
+                      color: Colors.white,
                     ),
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(
+                    BodyLargeText(
                       _userProfileManager.user.value!.coins.toString(),
-                      style: TextStyle(
-            fontSize: FontSizes.b2),
+                      color: Colors.white,
                     ),
                   ],
                 ),
                 currentView == 0
                     ? Container(
                             color: AppColorConstants.themeColor,
-                            child: BodyLargeText(
-                              LocalizationString.coins,
-                                weight: TextWeight.semiBold
-                            ).setPadding(left: 10, right: 10, top: 5, bottom: 5))
+                            child: BodyLargeText(coinsString.tr,
+                                    weight: TextWeight.semiBold)
+                                .setPadding(
+                                    left: 10, right: 10, top: 5, bottom: 5))
                         .round(20)
                         .ripple(() {
                         setState(() {
@@ -82,6 +82,7 @@ class _GiftsPageViewState extends State<GiftsPageView> {
                     : const ThemeIconWidget(
                         ThemeIcon.close,
                         size: 20,
+                        color: Colors.white,
                       ).ripple(() {
                         setState(() {
                           currentView = 0;
@@ -144,27 +145,23 @@ class _GiftsListingState extends State<GiftsListing> {
                     .map((element) => element.name)
                     .toList(),
               )),
-          Expanded(
-            child: GetBuilder<GiftController>(
-                init: _giftController,
-                builder: (ctx) {
-                  return GridView.builder(
-                      padding: const EdgeInsets.only(top: 20, bottom: 25),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
-                              childAspectRatio: 0.6,
-                              crossAxisCount: 4),
-                      itemCount: _giftController.gifts.length,
-                      itemBuilder: (context, index) {
-                        GiftModel gift = _giftController.gifts[index];
-                        return giftBox(gift).ripple(() {
-                          widget.giftSelectedCompletion(gift);
-                        });
+          Obx(() => Expanded(
+                child: GridView.builder(
+                    padding: const EdgeInsets.only(top: 20, bottom: 25),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 5,
+                            childAspectRatio: 1,
+                            crossAxisCount: 4),
+                    itemCount: _giftController.gifts.length,
+                    itemBuilder: (context, index) {
+                      GiftModel gift = _giftController.gifts[index];
+                      return giftBox(gift).ripple(() {
+                        widget.giftSelectedCompletion(gift);
                       });
-                }),
-          ),
+                    }),
+              )),
         ],
       ),
     );
@@ -189,13 +186,13 @@ class _GiftsListingState extends State<GiftsListing> {
           children: [
             ThemeIconWidget(
               ThemeIcon.diamond,
-              size: 15,
+              size: 20,
               color: AppColorConstants.themeColor,
             ),
             const SizedBox(
               width: 5,
             ),
-            Text(gift.coins.toString()),
+            BodyMediumText(gift.coins.toString()),
           ],
         )
       ],

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:get/get.dart';
 
@@ -19,16 +20,14 @@ class ChatHistoryController extends GetxController {
   getChatRooms() async {
     isLoading = true;
     allRooms = await getIt<DBManager>().getAllRooms();
-    // for(ChatRoomModel room in allRooms){
-    //   getIt<DBManager>().deleteMessagesInRoom(room);
-    // }
+
     searchedRooms.value = allRooms;
     update();
 
-    if (allRooms.isEmpty) {
-      ApiController().getChatRooms().then((response) async {
+    // if (allRooms.isEmpty) {
+      ChatApi.getChatRooms(resultCallback: (result) async {
         isLoading = false;
-        List<ChatRoomModel> groupChatRooms = response.chatRooms
+        List<ChatRoomModel> groupChatRooms = result
             // .where((element) => element.isGroupChat == true)
             .toList();
         await getIt<DBManager>().saveRooms(groupChatRooms);
@@ -38,10 +37,9 @@ class ChatHistoryController extends GetxController {
         searchedRooms.value = allRooms;
         update();
       });
-    }
-    else{
-      isLoading = false;
-    }
+    // } else {
+    //   isLoading = false;
+    // }
   }
 
   searchTextChanged(String text) {
@@ -75,7 +73,7 @@ class ChatHistoryController extends GetxController {
     allRooms.removeWhere((element) => element.id == chatRoom.id);
     getIt<DBManager>().deleteRooms([chatRoom]);
     update();
-    ApiController().deleteChatRoom(chatRoom.id);
+    ChatApi.deleteChatRoom(chatRoom.id);
   }
 
   // ******************* updates from socket *****************//

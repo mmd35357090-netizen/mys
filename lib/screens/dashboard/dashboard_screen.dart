@@ -1,13 +1,12 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/ui/reel/reels.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../components/force_update_view.dart';
 import '../chat/chat_history.dart';
 import '../home_feed/home_feed_screen.dart';
+import '../post/add_post_screen.dart';
 import '../profile/my_profile.dart';
-import '../settings_menu/settings.dart';
 import '../settings_menu/settings_controller.dart';
 
 class DashboardController extends GetxController {
@@ -57,11 +56,12 @@ class DashboardState extends State<DashboardScreen> {
     items = [
       const HomeFeedScreen(),
       const ChatHistory(),
+      Container(),
       const Reels(),
       const MyProfile(
         showBack: false,
       ),
-      const Settings()
+      //const Settings()
     ];
 
     super.initState();
@@ -93,7 +93,7 @@ class DashboardState extends State<DashboardScreen> {
                       width: 50,
                       color: AppColorConstants.themeColor,
                       child: const ThemeIconWidget(
-                        ThemeIcon.videoCamera,
+                        ThemeIcon.plus,
                         size: 28,
                         color: Colors.white,
                       ),
@@ -114,37 +114,28 @@ class DashboardState extends State<DashboardScreen> {
                         onTap: (index) => {onTabTapped(index)},
                         items: [
                           BottomNavigationBarItem(
-                              icon: Image.asset(
-                                      _dashboardController.currentIndex.value ==
-                                              0
-                                          ? 'assets/home_selected.png'
-                                          : 'assets/home.png',
-                                      height: 20,
-                                      width: 20,
-                                      color: _dashboardController
-                                                  .currentIndex.value ==
-                                              0
-                                          ? AppColorConstants.themeColor
-                                          : AppColorConstants.iconColor)
-                                  .bP8,
-                              label: LocalizationString.home),
+                              icon: Obx(() => ThemeIconWidget(
+                                    ThemeIcon.home,
+                                    size: 28,
+                                    color: _dashboardController
+                                                .currentIndex.value ==
+                                            0
+                                        ? AppColorConstants.themeColor
+                                        : AppColorConstants.iconColor,
+                                  ).bP8),
+                              label: homeString.tr),
                           BottomNavigationBarItem(
                             icon: Obx(() => Stack(
                                   children: [
-                                    Image.asset(
-                                            _dashboardController
-                                                        .currentIndex.value ==
-                                                    1
-                                                ? 'assets/chat_selected.png'
-                                                : 'assets/chat.png',
-                                            height: 20,
-                                            width: 20,
-                                            color: _dashboardController
-                                                        .currentIndex.value ==
-                                                    1
-                                                ? AppColorConstants.themeColor
-                                                : AppColorConstants.iconColor)
-                                        .bP8,
+                                    Obx(() => ThemeIconWidget(
+                                          ThemeIcon.chat,
+                                          size: 28,
+                                          color: _dashboardController
+                                                      .currentIndex.value ==
+                                                  1
+                                              ? AppColorConstants.themeColor
+                                              : AppColorConstants.iconColor,
+                                        ).bP8),
                                     if (_dashboardController
                                             .unreadMsgCount.value >
                                         0)
@@ -158,7 +149,7 @@ class DashboardState extends State<DashboardScreen> {
                                           ).circular)
                                   ],
                                 )),
-                            label: LocalizationString.chats,
+                            label: chatsString.tr,
                           ),
                           const BottomNavigationBarItem(
                             icon: SizedBox(
@@ -168,34 +159,28 @@ class DashboardState extends State<DashboardScreen> {
                             label: '',
                           ),
                           BottomNavigationBarItem(
-                            icon: Image.asset(
-                                    _dashboardController.currentIndex.value == 3
-                                        ? 'assets/account_selected.png'
-                                        : 'assets/account.png',
-                                    height: 20,
-                                    width: 20,
-                                    color: _dashboardController
-                                                .currentIndex.value ==
-                                            3
-                                        ? AppColorConstants.themeColor
-                                        : AppColorConstants.iconColor)
-                                .bP8,
-                            label: LocalizationString.profile,
+                            icon: Obx(() => ThemeIconWidget(
+                                  ThemeIcon.videoCamera,
+                                  size: 28,
+                                  color:
+                                      _dashboardController.currentIndex.value ==
+                                              3
+                                          ? AppColorConstants.themeColor
+                                          : AppColorConstants.iconColor,
+                                ).bP8),
+                            label: reelString.tr,
                           ),
                           BottomNavigationBarItem(
-                            icon: Image.asset(
-                                    _dashboardController.currentIndex.value == 4
-                                        ? 'assets/more_selected.png'
-                                        : 'assets/more.png',
-                                    height: 20,
-                                    width: 20,
-                                    color: _dashboardController
-                                                .currentIndex.value ==
-                                            4
-                                        ? AppColorConstants.themeColor
-                                        : AppColorConstants.iconColor)
-                                .bP8,
-                            label: LocalizationString.more,
+                            icon: Obx(() => ThemeIconWidget(
+                                  ThemeIcon.account,
+                                  size: 28,
+                                  color:
+                                      _dashboardController.currentIndex.value ==
+                                              4
+                                          ? AppColorConstants.themeColor
+                                          : AppColorConstants.iconColor,
+                                ).bP8),
+                            label: accountString.tr,
                           ),
                         ],
                       ),
@@ -203,7 +188,19 @@ class DashboardState extends State<DashboardScreen> {
   }
 
   void onTabTapped(int index) async {
-    Future.delayed(
-        Duration.zero, () => _dashboardController.indexChanged(index));
+    if (index == 2) {
+      Future.delayed(
+        Duration.zero,
+        () => showGeneralDialog(
+            context: context,
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const AddPostScreen(
+                  postType: PostType.basic,
+                )),
+      );
+    } else {
+      Future.delayed(
+          Duration.zero, () => _dashboardController.indexChanged(index));
+    }
   }
 }

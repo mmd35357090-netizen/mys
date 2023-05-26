@@ -1,8 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../controllers/profile_controller.dart';
-import '../../universal_components/rounded_input_field.dart';
 
 class ChangeUserName extends StatefulWidget {
   const ChangeUserName({Key? key}) : super(key: key);
@@ -32,30 +29,28 @@ class _ChangeUserNameState extends State<ChangeUserName> {
             height: 50,
           ),
           profileScreensNavigationBar(
-              context: context,
-              title: LocalizationString.changeUserName,
-              rightBtnTitle: LocalizationString.done,
+
+              title: changeUserNameString.tr,
+              rightBtnTitle: doneString.tr,
               completion: () {
                 profileController.updateUserName(
                     userName: userName.text,
                     isSigningUp: false,
-                    context: context);
+                    );
               }),
-          divider(context: context).vP8,
+          divider().vP8,
           const SizedBox(
             height: 20,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading6Text(LocalizationString.userName,
+              Heading6Text(userNameString.tr,
                   weight: TextWeight.medium),
               Stack(
                 children: [
-                  InputField(
+                  AppTextField(
                     controller: userName,
-                    showDivider: true,
-
                     onChanged: (value) {
                       if (value.length > 3) {
                         profileController.verifyUsername(userName: value);

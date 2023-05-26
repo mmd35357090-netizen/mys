@@ -19,39 +19,6 @@ class SupportRequestsResponse {
 }
 
 class SupportRequest {
-  List<Items>? items;
-  Links? lLinks;
-  Meta? mMeta;
-
-  SupportRequest({items, lLinks, mMeta});
-
-  SupportRequest.fromJson(Map<String, dynamic> json) {
-    if (json['items'] != null) {
-      items = <Items>[];
-      json['items'].forEach((v) {
-        items!.add(Items.fromJson(v));
-      });
-    }
-    lLinks = json['_links'] != null ? Links.fromJson(json['_links']) : null;
-    mMeta = json['_meta'] != null ? Meta.fromJson(json['_meta']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (items != null) {
-      data['items'] = items!.map((v) => v.toJson()).toList();
-    }
-    if (lLinks != null) {
-      data['_links'] = lLinks!.toJson();
-    }
-    if (mMeta != null) {
-      data['_meta'] = mMeta!.toJson();
-    }
-    return data;
-  }
-}
-
-class Items {
   int? id;
   int? userId;
   String? name;
@@ -66,7 +33,7 @@ class Items {
   int? updatedAt;
   int? updatedBy;
 
-  Items(
+  SupportRequest(
       {id,
       userId,
       name,
@@ -81,7 +48,7 @@ class Items {
       updatedAt,
       updatedBy});
 
-  Items.fromJson(Map<String, dynamic> json) {
+  SupportRequest.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
     name = json['name'];

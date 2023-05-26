@@ -36,12 +36,6 @@ class UpdateProfileState extends State<UpdateProfile> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          // const SizedBox(
-          //   height: 50,
-          // ),
-          // backNavigationBar(
-          //     context: context, title: LocalizationString.editProfile),
-          // divider(context: context).vP8,
           addProfileView(),
           const SizedBox(
             height: 40,
@@ -54,7 +48,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                   Row(
                     children: [
                       BodyLargeText(
-                        LocalizationString.userName,
+                        userNameString.tr,
                         weight: TextWeight.medium,
                       ),
                       const Spacer(),
@@ -77,17 +71,18 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
                       BodyLargeText(
-                        LocalizationString.category,
+                        categoryString.tr,
                         weight: TextWeight.medium,
                       ),
                       const Spacer(),
                       Obx(() => profileController.user.value != null
                           ? BodyMediumText(
-                              profileController.user.value!.category,
+                              profileController
+                                  .user.value!.profileCategoryTypeName,
                             )
                           : Container()),
                       const SizedBox(
@@ -107,11 +102,11 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
                       BodyLargeText(
-                        LocalizationString.password,
+                        passwordString.tr,
                         weight: TextWeight.medium,
                       ),
                       const Spacer(),
@@ -130,11 +125,11 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
                       BodyLargeText(
-                        LocalizationString.phoneNumber,
+                        phoneNumberString.tr,
                         weight: TextWeight.medium,
                       ),
                       const Spacer(),
@@ -157,10 +152,10 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.paymentDetail,
+                      BodyLargeText(paymentDetailString.tr,
                           weight: TextWeight.medium),
                       const Spacer(),
                       Obx(() => profileController.user.value != null
@@ -182,10 +177,10 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.location,
+                      BodyLargeText(locationString.tr,
                           weight: TextWeight.medium),
                       const Spacer(),
                       Obx(() => BodyMediumText(
@@ -205,10 +200,10 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   // Row(
                   //   children: [
-                  //     BodyLargeText(LocalizationString.currentLocation,
+                  //     BodyLargeText(currentLocation,
                   //         weight: TextWeight.medium),
                   //     const Spacer(),
                   //     ThemeIconWidget(
@@ -223,12 +218,17 @@ class UpdateProfileState extends State<UpdateProfile> {
                   //     })
                   //   ],
                   // ),
-                  // divider(context: context).vP16,
+                  // divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.name,
-                          weight: TextWeight.medium),
+                      BodyLargeText(nameString.tr, weight: TextWeight.medium),
                       const Spacer(),
+                      Obx(() => BodyMediumText(
+                            profileController.user.value?.name ?? '',
+                          )),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
@@ -241,12 +241,17 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.dob,
-                          weight: TextWeight.medium),
+                      BodyLargeText(dobString.tr, weight: TextWeight.medium),
                       const Spacer(),
+                      Obx(() => BodyMediumText(
+                            profileController.user.value?.dob ?? '',
+                          )),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
@@ -259,12 +264,23 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.gender,
-                          weight: TextWeight.medium),
+                      BodyLargeText(genderString.tr, weight: TextWeight.medium),
                       const Spacer(),
+                      Obx(() => BodyMediumText(
+                            profileController.user.value?.genderType ==
+                                    GenderType.male
+                                ? 'Male'
+                                : profileController.user.value?.genderType ==
+                                        GenderType.female
+                                    ? 'Female'
+                                    : 'Other',
+                          )),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       ThemeIconWidget(
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
@@ -277,10 +293,10 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.personalDetails,
+                      BodyLargeText(personalDetailsString.tr,
                           weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
@@ -296,10 +312,10 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.interests,
+                      BodyLargeText(interestsString.tr,
                           weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
@@ -316,10 +332,10 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(LocalizationString.professional,
+                      BodyLargeText(professionalString.tr,
                           weight: TextWeight.medium),
                       const Spacer(),
                       ThemeIconWidget(
@@ -335,7 +351,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                       })
                     ],
                   ),
-                  divider(context: context).vP16,
+                  divider().vP16,
                 ],
               ).hP16,
             ),
@@ -350,7 +366,7 @@ class UpdateProfileState extends State<UpdateProfile> {
         init: profileController,
         builder: (ctx) {
           return SizedBox(
-            height: 270,
+            height: 400,
             child: profileController.user.value != null
                 ? Stack(
                     children: [
@@ -366,70 +382,72 @@ class UpdateProfileState extends State<UpdateProfile> {
                                             imageUrl: profileController
                                                 .user.value!.coverImage!)
                                         .overlay(Colors.black26)
-                                        .bottomRounded(20)
+                                        .bottomRounded(40)
                                     : Container(
                                         width: Get.width,
                                         height: 250,
                                         color: AppColorConstants.themeColor
                                             .withOpacity(0.2),
-                                      ).bottomRounded(20),
+                                      ).bottomRounded(40),
                           ),
                           Positioned(
                               bottom: 10,
                               right: 16,
                               child: Container(
                                 color: AppColorConstants.cardColor,
-                                child: BodyLargeText(
-                                        LocalizationString.editProfileCover)
+                                child: BodyLargeText(editProfileCoverString.tr)
                                     .setPadding(
                                         left: 10, right: 10, top: 8, bottom: 8),
                               ).circular.ripple(() {
                                 openImagePickingPopup(isCoverImage: true);
                               })),
-                          Container(
-                            color: Colors.black26,
-                          ).bottomRounded(20)
                         ],
                       ),
-                      Column(children: [
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        UserAvatarView(
-                                user: profileController.user.value!,
-                                size: 65,
-                                onTapHandler: () {})
-                            .ripple(() {
-                          openImagePickingPopup(isCoverImage: false);
-                        }),
-                        BodyMediumText(
-                          LocalizationString.editProfilePicture,
-                        ).vP4.ripple(() {
-                          openImagePickingPopup(isCoverImage: false);
-                        }),
-                        Heading5Text(
-                          profileController.user.value!.userName,
-                          weight: TextWeight.medium,
-                          color: Colors.white,
-                        ).setPadding(bottom: 4),
-                        profileController.user.value?.email != null
-                            ? BodyMediumText(
-                                '${profileController.user.value!.email}',
-                                color: Colors.white70,
-                              )
-                            : Container(),
-                        profileController.user.value?.country != null
-                            ? BodyMediumText(
-                                '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
-                                color: Colors.white70,
-                              ).vP4
-                            : Container(),
-                      ]).p8,
+                      SizedBox(
+                        width: Get.width,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 100,
+                              ),
+                              UserAvatarView(
+                                      user: profileController.user.value!,
+                                      size: 85,
+                                      onTapHandler: () {})
+                                  .ripple(() {
+                                openImagePickingPopup(isCoverImage: false);
+                              }),
+                              BodyMediumText(
+                                editProfilePictureString.tr,
+                                color: Colors.white,
+                              ).vP4.ripple(() {
+                                openImagePickingPopup(isCoverImage: false);
+                              }),
+                              Heading5Text(
+                                profileController.user.value!.userName,
+                                weight: TextWeight.medium,
+                                color: Colors.white,
+                              ).setPadding(bottom: 4),
+                              profileController.user.value?.email != null
+                                  ? BodyMediumText(
+                                      '${profileController.user.value!.email}',
+                                      color: Colors.white70,
+                                    )
+                                  : Container(),
+                              profileController.user.value?.country != null
+                                  ? BodyMediumText(
+                                      '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
+                                      color: Colors.white70,
+                                    ).vP4
+                                  : Container(),
+                            ]).p8,
+                      ),
                       Positioned(
-                          top: 50,
+                          top: 0,
                           left: 0,
                           right: 0,
-                          child: backNavigationBar(context: context, title: ''))
+                          child: backNavigationBar(title: ''))
                     ],
                   )
                 : Container(),
@@ -440,21 +458,22 @@ class UpdateProfileState extends State<UpdateProfile> {
   void openImagePickingPopup({required bool isCoverImage}) {
     showModalBottomSheet(
         context: context,
+        backgroundColor: Colors.transparent,
         builder: (context) => Container(
-              color: AppColorConstants.cardColor,
+              color: AppColorConstants.backgroundColor,
               child: Wrap(
                 children: [
                   Padding(
                       padding: const EdgeInsets.only(
                           left: 20, right: 20, top: 20, bottom: 25),
                       child: Heading5Text(
-                        LocalizationString.addPhoto,
+                        addPhotoString.tr,
                         weight: TextWeight.bold,
                       )),
                   ListTile(
                       leading: Icon(Icons.camera_alt_outlined,
                           color: AppColorConstants.iconColor),
-                      title: BodyLargeText(LocalizationString.takePhoto),
+                      title: BodyLargeText(takePhotoString.tr),
                       onTap: () {
                         Get.back();
                         picker
@@ -466,12 +485,11 @@ class UpdateProfileState extends State<UpdateProfile> {
                           } else {}
                         });
                       }),
-                  divider(context: context),
+                  divider(),
                   ListTile(
                       leading: Icon(Icons.wallpaper_outlined,
                           color: AppColorConstants.iconColor),
-                      title:
-                          BodyLargeText(LocalizationString.chooseFromGallery),
+                      title: BodyLargeText(chooseFromGalleryString.tr),
                       onTap: () async {
                         Get.back();
                         picker
@@ -483,14 +501,14 @@ class UpdateProfileState extends State<UpdateProfile> {
                           } else {}
                         });
                       }),
-                  divider(context: context),
+                  divider(),
                   ListTile(
                       leading:
                           Icon(Icons.close, color: AppColorConstants.iconColor),
-                      title: BodyLargeText(LocalizationString.cancel),
+                      title: BodyLargeText(cancelString.tr),
                       onTap: () => Get.back()),
                 ],
               ),
-            ));
+            ).topRounded(20));
   }
 }

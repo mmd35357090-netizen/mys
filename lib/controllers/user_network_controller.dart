@@ -3,6 +3,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/user_model.dart';
 import 'package:get/get.dart';
 
+import '../apiHandler/apis/users_api.dart';
+
 class UserNetworkController extends GetxController {
   RxList<UserModel> followers = <UserModel>[].obs;
   RxList<UserModel> following = <UserModel>[].obs;
@@ -24,40 +26,38 @@ class UserNetworkController extends GetxController {
   getFollowers(int userId) {
     if (canLoadMore) {
       isLoading.value = true;
-      ApiController()
-          .getFollowerUsers(page: page, userId: userId)
-          .then((response) {
-        isLoading.value = false;
-        followers.addAll(response.users);
 
-        page += 1;
-        if (response.users.length == response.metaData?.perPage) {
-          canLoadMore = true;
-        } else {
-          canLoadMore = false;
-        }
-        update();
-      });
+      UsersApi.getFollowerUsers(
+          userId: userId,
+          page: page,
+          resultCallback: (result, metadata) {
+            isLoading.value = false;
+            followers.addAll(result);
+
+            page += 1;
+            canLoadMore =  result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
   getFollowingUsers(int userId) {
     if (canLoadMore) {
       isLoading.value = true;
-      ApiController()
-          .getFollowingUsers(page: page, userId: userId)
-          .then((response) {
-        isLoading.value = false;
-        following.addAll(response.users);
 
-        page += 1;
-        if (response.users.length == response.metaData?.perPage) {
-          canLoadMore = true;
-        } else {
-          canLoadMore = false;
-        }
-        update();
-      });
+      UsersApi.getFollowingUsers(
+          page: page,
+          userId: userId,
+          resultCallback: (result, metadata) {
+            isLoading.value = false;
+            following.addAll(result);
+
+            page += 1;
+            canLoadMore = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
@@ -72,7 +72,10 @@ class UserNetworkController extends GetxController {
           user;
     }
     update();
-    ApiController().followUnFollowUser(true, user.id).then((value) {});
+    UsersApi.followUnfollowUser(isFollowing: true, userId: user.id)
+        .then((value) {
+      update();
+    });
   }
 
   unFollowUser(UserModel user) {
@@ -86,6 +89,9 @@ class UserNetworkController extends GetxController {
           user;
     }
     update();
-    ApiController().followUnFollowUser(false, user.id).then((value) {});
+    UsersApi.followUnfollowUser(isFollowing: false, userId: user.id)
+        .then((value) {
+      update();
+    });
   }
 }

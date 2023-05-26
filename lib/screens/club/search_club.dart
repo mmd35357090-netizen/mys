@@ -48,8 +48,8 @@ class SearchClubsListingState extends State<SearchClubsListing> {
                 width: 10,
               ),
               Expanded(
-                child: SearchBar(
-                    hintText: LocalizationString.search,
+                child: SFSearchBar(
+                    hintText: searchString.tr,
                     showSearchIcon: true,
                     iconColor: AppColorConstants.themeColor,
                     onSearchChanged: (value) {
@@ -62,7 +62,7 @@ class SearchClubsListingState extends State<SearchClubsListing> {
               ),
             ],
           ).setPadding(left: 16, right: 16, top: 25, bottom: 20),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -122,8 +122,7 @@ class SearchClubsListingState extends State<SearchClubsListing> {
                                                 deleteCallback: (club) {
                                                   AppUtil.showToast(
                                                       message:
-                                                          LocalizationString
-                                                              .clubIsDeleted,
+                                                          clubIsDeletedString.tr,
                                                       isSuccess: true);
                                                   _searchClubsController
                                                       .clubDeleted(club);

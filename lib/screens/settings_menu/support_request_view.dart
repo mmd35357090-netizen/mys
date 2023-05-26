@@ -11,7 +11,7 @@ class SupportRequestView extends StatefulWidget {
 }
 
 class _SupportRequestViewState extends State<SupportRequestView> {
-  final item = Get.arguments as Items;
+  final item = Get.arguments as SupportRequest;
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +20,10 @@ class _SupportRequestViewState extends State<SupportRequestView> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.supportRequests),
-          divider(context: context).tP8,
+               title: supportRequestsString.tr),
+          divider().tP8,
           SingleChildScrollView(
             child: GestureDetector(
               onTap: () {

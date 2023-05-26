@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/post_api.dart';
 import '../../model/post_model.dart';
 import '../home_feed/comments_screen.dart';
 import '../home_feed/enlarge_image_view.dart';
@@ -34,7 +35,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
           centerTitle: true,
           elevation: 0.0,
           title: Heading5Text(
-            LocalizationString.winner,
+            winnerString.tr,
             color: AppColorConstants.themeColor,
           ),
           leading: InkWell(
@@ -93,7 +94,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                                   size: 25)),
                           model.totalLike > 0
                               ? BodyLargeText(
-                                  '${model.totalLike} ${LocalizationString.likes}',
+                                  '${model.totalLike} ${likesString.tr}',
                                   weight: TextWeight.medium,
                                   color: AppColorConstants.backgroundColor,
                                 )
@@ -110,7 +111,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                             onTap: () => openComments(),
                             child: model.totalComment > 0
                                 ? BodyLargeText(
-                                    '${model.totalComment} ${LocalizationString.comments}',
+                                    '${model.totalComment} ${commentsString.tr}',
                                     weight: TextWeight.medium,
                                     color: AppColorConstants.backgroundColor,
                                   )
@@ -160,17 +161,8 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
       model.totalLike =
           model.isLike ? model.totalLike + 1 : model.totalLike - 1;
     });
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController()
-            .likeUnlike(!model.isLike, model.id)
-            .then((response) async {});
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet,
-            isSuccess: false);
-      }
-    });
+
+    PostApi.likeUnlikePost(like: !model.isLike, postId: model.id);
   }
 
   void openComments() {

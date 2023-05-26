@@ -1,48 +1,49 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
-import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/chat_api.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/controllers/agora_call_controller.dart';
-import 'package:foap/controllers/agora_live_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/chat/chat_detail.dart';
-import 'package:foap/screens/competitions/competition_detail_screen.dart';
-import 'package:foap/screens/home_feed/comments_screen.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
-// import 'package:push/push.dart';
-import 'package:get/get.dart';
 import 'package:overlay_support/overlay_support.dart';
-
+import '../screens/home_feed/comments_screen.dart';
 import '../util/shared_prefs.dart';
+import 'package:logging/logging.dart';
 
+final logger = Logger('ExampleLogger');
+final file = File('${Directory.systemTemp.path}/najem_app.log');
 
 class FCM {
   final _firebaseMessaging = FirebaseMessaging.instance;
 
-  final streamCtlr = StreamController<String>.broadcast();
-  final titleCtlr = StreamController<String>.broadcast();
-  final bodyCtlr = StreamController<String>.broadcast();
+  // final streamCtlr = StreamController<String>.broadcast();
+  // final titleCtlr = StreamController<String>.broadcast();
+  // final bodyCtlr = StreamController<String>.broadcast();
 
-  setNotifications() {
+  setNotifications() async {
     FirebaseMessaging.onMessage.listen(
       (message) async {
-        if (message.data.containsKey('data')) {
-          // Handle data message
-          streamCtlr.sink.add(message.data['data']);
-        }
-        if (message.data.containsKey('notification')) {
-          // Handle notification message
-          streamCtlr.sink.add(message.data['notification']);
-        }
-        // Or do other work.
-        titleCtlr.sink.add(message.notification!.title!);
-        bodyCtlr.sink.add(message.notification!.body!);
+        NotificationManager().parseNotificationMessage(message);
       },
     );
+
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) async {
+        Future.delayed(const Duration(seconds: 0), () {
+          // handle app opened from notification
+          NotificationManager().parseNotificationMessage(message);
+          // add your custom code here
+        });
+      },
+    );
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
     // With this token you can test it easily on your phone
     _firebaseMessaging.getToken().then((fcmToken) {
       if (fcmToken != null) {
@@ -55,11 +56,19 @@ class FCM {
     }).onError((err) {});
   }
 
-  dispose() {
-    streamCtlr.close();
-    bodyCtlr.close();
-    titleCtlr.close();
-  }
+// dispose() {
+//   streamCtlr.close();
+//   bodyCtlr.close();
+//   titleCtlr.close();
+// }
+}
+
+@pragma("vm:entry-point")
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  // await Firebase.initializeApp();
+  NotificationManager().parseNotificationMessage(message);
 }
 
 class NotificationManager {
@@ -70,6 +79,9 @@ class NotificationManager {
   }
 
   NotificationManager._internal();
+
+  String? voipToken;
+  String? fcmToken;
 
   initialize() {
     // flutterLocalNotificationsPlugin.initialize(const InitializationSettings());
@@ -95,7 +107,8 @@ class NotificationManager {
     // notificationHandlers();
   }
 
-  actionOnCall(Map<String, String?> data, bool accept) {
+  performActionOnCallNotificationBanner(
+      Map<String, String?> data, bool accept) {
     final AgoraCallController agoraCallController = Get.find();
     String channelName = data['channelName'] as String;
     String token = data['token'] as String;
@@ -104,42 +117,27 @@ class NotificationManager {
     String uuid = data['uuid'] as String;
     String callerId = data['callerId'] as String;
 
-    ApiController().getOtherUser(callerId).then((response) {
-      Call call = Call(
-          uuid: uuid,
-          channelName: channelName,
-          isOutGoing: true,
-          opponent: response.user!,
-          token: token,
-          callType: int.parse(callType),
-          callId: int.parse(id));
+    UsersApi.getOtherUser(
+        userId: int.parse(callerId),
+        resultCallback: (user) {
+          Call call = Call(
+              uuid: uuid,
+              channelName: channelName,
+              isOutGoing: true,
+              opponent: user,
+              token: token,
+              callType: int.parse(callType),
+              callId: int.parse(id));
 
-      if (accept) {
-        agoraCallController.acceptCall(call: call);
-      } else {
-        agoraCallController.declineCall(call: call);
-      }
-    });
-  }
-
-  parseNotificationMessage(RemoteMessage message) {
-    String? callType = message.data['callType'] as String?;
-
-    if (callType != null) {
-      handleCallNotification(message.data);
-    } else {
-      if (Platform.isAndroid) {
-        handleAndroidNotifications(message.data);
-      } else {
-        FGBGEvents.stream.listen((event) {
-          parseNotificationData(
-              message.data, event == FGBGType.foreground ? true : false);
+          if (accept) {
+            agoraCallController.initiateAcceptCall(call: call);
+          } else {
+            agoraCallController.declineCall(call: call);
+          }
         });
-      }
-    }
   }
 
-  handleAndroidNotifications(Map<String?, Object?> data) {
+  createNotificationBannerForAndroid(Map<String?, Object?> data) {
     String message = data['body'] as String;
     int notificationType = int.parse(data['notification_type'] as String);
 
@@ -176,14 +174,14 @@ class NotificationManager {
     );
   }
 
-  handleCallNotification(Map<String?, Object?> data) {
+  createNotificationBannerForCall(Map<String?, Object?> data) {
     int notificationType = int.parse(data['notification_type'] as String);
 
     if (notificationType == 104) {
       //call cancelled by caller
       AwesomeNotifications().dismissAllNotifications();
     } else {
-      // new call
+      // new call, show the notification banner to user
       String channelName = data['channelName'] as String;
       String token = data['token'] as String;
       String id = data['callType'] as String;
@@ -228,9 +226,29 @@ class NotificationManager {
     }
   }
 
-  parseNotificationData(dynamic data, bool isInForeground) {
-    final AgoraLiveController agoraLiveController = Get.find();
+  parseNotificationMessage(RemoteMessage message) {
+    String? callType = message.data['callType'] as String?;
 
+    file.writeAsStringSync('${message.data.toString()} \n',
+        mode: FileMode.append);
+
+    print('file path ${file.path}');
+
+    if (callType != null) {
+      createNotificationBannerForCall(message.data);
+    } else {
+      if (Platform.isAndroid) {
+        createNotificationBannerForAndroid(message.data);
+      } else {
+        FGBGEvents.stream.listen((event) {
+          parseAndSwitchToCorrespondingScreen(
+              message.data, event == FGBGType.foreground ? true : false);
+        });
+      }
+    }
+  }
+
+  parseAndSwitchToCorrespondingScreen(dynamic data, bool isInForeground) {
     int notificationType =
         int.parse(data['notification_type'] as String? ?? '0');
 
@@ -241,34 +259,36 @@ class NotificationManager {
         String message = data['body'];
 
         // following notification
-        ApiController().getOtherUser(referenceId.toString()).then((response) {
-          showOverlayNotification((context) {
-            return Container(
-              color: Colors.transparent,
-              child: Card(
-                color: AppColorConstants.cardColor,
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                child: ListTile(
-                  leading: UserAvatarView(
-                    size: 40,
-                    user: response.user!,
-                  ),
-                  title: Heading5Text(
-                    LocalizationString.newFollower,
-                    weight: TextWeight.bold,
-                    color: AppColorConstants.themeColor,
-                  ),
-                  subtitle: Heading6Text(
-                    message,
-                  ),
-                ).vp(12).ripple(() {
-                  OverlaySupportEntry.of(context)!.dismiss();
-                  Get.to(() => OtherUserProfile(userId: referenceId));
-                }),
-              ).setPadding(top: 50, left: 8, right: 8).round(10),
-            );
-          }, duration: const Duration(milliseconds: 4000));
-        });
+        UsersApi.getOtherUser(
+            userId: referenceId,
+            resultCallback: (user) {
+              showOverlayNotification((context) {
+                return Container(
+                  color: Colors.transparent,
+                  child: Card(
+                    color: AppColorConstants.cardColor,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    child: ListTile(
+                      leading: UserAvatarView(
+                        size: 40,
+                        user: user,
+                      ),
+                      title: Heading5Text(
+                        newFollowerString,
+                        weight: TextWeight.bold,
+                        color: AppColorConstants.themeColor,
+                      ),
+                      subtitle: Heading6Text(
+                        message,
+                      ),
+                    ).vp(12).ripple(() {
+                      OverlaySupportEntry.of(context)!.dismiss();
+                      Get.to(() => OtherUserProfile(userId: referenceId));
+                    }),
+                  ).setPadding(top: 50, left: 8, right: 8).round(10),
+                );
+              }, duration: const Duration(milliseconds: 4000));
+            });
       } else if (notificationType == 2) {
         int referenceId = int.parse(data['reference_id'] as String);
         String message = data['title'];
@@ -282,7 +302,7 @@ class NotificationManager {
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: ListTile(
                 title: Heading5Text(
-                  LocalizationString.newComment,
+                  newCommentString,
                   weight: TextWeight.bold,
                   color: AppColorConstants.themeColor,
                 ),
@@ -304,49 +324,50 @@ class NotificationManager {
         // new competition added notification
       } else if (notificationType == 100) {
       } else if (notificationType == 101) {
-        int liveId = int.parse(data['liveCallId'] as String);
-        String channelName = data['channelName'];
-        String agoraToken = data['token'];
+        // int liveId = int.parse(data['liveCallId'] as String);
+        // String channelName = data['channelName'];
+        // String agoraToken = data['token'];
         int userId = int.parse(data['userId'] as String);
         String body = data['body'];
 
-        ApiController().getOtherUser(userId.toString()).then((response) {
-          // live notification
-          showOverlayNotification((context) {
-            return Container(
-              color: Colors.transparent,
-              child: Card(
-                color: AppColorConstants.cardColor,
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                child: ListTile(
-                  leading: UserAvatarView(
-                    size: 40,
-                    user: response.user!,
-                  ),
-                  title: Heading5Text(
-                    LocalizationString.live,
-                    weight: TextWeight.bold,
-                    color: AppColorConstants.themeColor,
-                  ),
-                  subtitle: Heading6Text(
-                    body,
-                  ),
-                ).vp(12).ripple(() {
-                  OverlaySupportEntry.of(context)!.dismiss();
+        UsersApi.getOtherUser(
+            userId: userId,
+            resultCallback: (user) {
+              showOverlayNotification((context) {
+                return Container(
+                  color: Colors.transparent,
+                  child: Card(
+                    color: AppColorConstants.cardColor,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    child: ListTile(
+                      leading: UserAvatarView(
+                        size: 40,
+                        user: user,
+                      ),
+                      title: Heading5Text(
+                        liveString,
+                        weight: TextWeight.bold,
+                        color: AppColorConstants.themeColor,
+                      ),
+                      subtitle: Heading6Text(
+                        body,
+                      ),
+                    ).vp(12).ripple(() {
+                      OverlaySupportEntry.of(context)!.dismiss();
 
-                  Live live = Live(
-                      channelName: channelName,
-                      isHosting: false,
-                      host: response.user!,
-                      token: agoraToken,
-                      liveId: liveId);
+                      // Live live = Live(
+                      //     channelName: channelName,
+                      //     isHosting: false,
+                      //     host: response.user!,
+                      //     token: agoraToken,
+                      //     liveId: liveId);
 
-                  agoraLiveController.joinAsAudience(live: live);
-                }),
-              ).setPadding(top: 50, left: 8, right: 8).round(10),
-            );
-          }, duration: const Duration(milliseconds: 4000));
-        });
+                      // agoraLiveController.joinAsAudience(live: live);
+                    }),
+                  ).setPadding(top: 50, left: 8, right: 8).round(10),
+                );
+              }, duration: const Duration(milliseconds: 4000));
+            });
       }
     } else {
       // go to screen
@@ -365,102 +386,22 @@ class NotificationManager {
       } else if (notificationType == 4) {
         int referenceId = int.parse(data['reference_id'] as String);
         // new competition added notification
-        Get.to(() => CompetitionDetailScreen(
-              competitionId: referenceId,
-              refreshPreviousScreen: () {},
-            ));
+        // Get.to(() => CompetitionDetailsScreen(competitionId: referenceId));
       } else if (notificationType == 100) {
         // print(data);
         int? roomId = data['room'] as int?;
         if (roomId != null) {
-          ApiController().getChatRoomDetail(roomId).then((response) {
-            if (response.room != null) {
-              Get.to(() => ChatDetail(chatRoom: response.room!));
-            }
+          ChatApi.getChatRoomDetail(roomId, resultCallback: (room) {
+            Get.to(() => ChatDetail(chatRoom: room));
           });
         }
       } else if (notificationType == 101) {
-        int liveId = int.parse(data['liveCallId'] as String);
-        String channelName = data['channelName'];
-        String agoraToken = data['token'];
+        // int liveId = int.parse(data['liveCallId'] as String);
+        // String channelName = data['channelName'];
+        // String agoraToken = data['token'];
         int userId = int.parse(data['userId'] as String);
-
-        ApiController().getOtherUser(userId.toString()).then((response) {
-          Live live = Live(
-              channelName: channelName,
-              isHosting: false,
-              host: response.user!,
-              token: agoraToken,
-              liveId: liveId);
-
-          agoraLiveController.joinAsAudience(live: live);
-        });
       }
     }
-
-    // notificationHandlers() {
-    //   Push.instance.onNewToken.listen((token) {
-    //     print('Push.instance.onNewToken');
-    //     // print("Just got a new FCM registration token: $token");
-    //     SharedPrefs().setFCMToken(token);
-    //   });
-    //
-    //   // Handle notification launching app from terminated state
-    //   Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
-    //     if (data == null) {
-    //       // print("App was not launched by tapping a notification");
-    //     } else {
-    //       // print('Notification tap launched app from terminated state:\n'
-    //       //     'RemoteMessage: ${data} \n');
-    //       String? callType = data['callType'] as String?;
-    //
-    //       if (callType != null) {
-    //         handleCallNotification(data);
-    //       } else {
-    //         parseNotificationData(data, true);
-    //       }
-    //     }
-    //   });
-    //
-    //   // Handle notification taps
-    //   Push.instance.onNotificationTap.listen((data) {
-    //     String? callType = data['callType'] as String?;
-    //
-    //     if (callType != null) {
-    //       handleCallNotification(data);
-    //     } else {
-    //       parseNotificationData(data, true);
-    //     }
-    //   });
-    //
-    //   // Handle push notifications
-    //   Push.instance.onMessage.listen((message) {
-    //     // print('Push.instance.onMessage');
-    //     //
-    //     // String? callType = message.data?['callType'] as String?;
-    //     //
-    //     // if (callType != null) {
-    //     //   handleCallNotification(message.data!);
-    //     // } else {
-    //     //   parseNotificationData(message.data, true);
-    //     // }
-    //   });
-    //
-    //   // Handle push notifications
-    //   Push.instance.onBackgroundMessage.listen((message) async {
-    //     print('Push.instance.onBackgroundMessage');
-    //
-    //     // String? callType = message.data?['callType'] as String?;
-    //     //
-    //     // if (callType != null) {
-    //     //   handleCallNotification(message.data!);
-    //     // } else {
-    //     //   if (Platform.isAndroid) {
-    //     //     handleAndroidNotifications(message.data!);
-    //     //   }
-    //     // }
-    //   });
-    // }
   }
 }
 
@@ -496,9 +437,11 @@ class AwesomeNotificationController {
 
     AwesomeNotifications().dismissAllNotifications();
     if (receivedAction.buttonKeyPressed == "answer") {
-      NotificationManager().actionOnCall(receivedAction.payload!, true);
+      NotificationManager()
+          .performActionOnCallNotificationBanner(receivedAction.payload!, true);
     } else if (receivedAction.buttonKeyPressed == "decline") {
-      NotificationManager().actionOnCall(receivedAction.payload!, false);
+      NotificationManager().performActionOnCallNotificationBanner(
+          receivedAction.payload!, false);
     }
   }
 }

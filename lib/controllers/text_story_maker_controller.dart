@@ -3,6 +3,9 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/theme/theme.dart';
 import 'package:get/get.dart';
+
+import '../apiHandler/apis/story_api.dart';
+
 class TextStoryMakerController extends GetxController {
   Rx<Color> selectedStrokeColor = Colors.black.obs;
   Rx<Color?> selectedBackgroundColor = Colors.white.obs;
@@ -43,18 +46,15 @@ class TextStoryMakerController extends GetxController {
   }
 
   postTextStory({required String text, required String backgroundColor}) {
-    ApiController().postStory(
-      gallery: [
-        {
-          'image': '',
-          'video': '',
-          'type': '1',
-          'description': text,
-          'background_color': backgroundColor,
-        }
-      ],
-    ).then((response) async {
-      Get.offAll(const DashboardScreen());
-    });
+    StoryApi.postStory(gallery: [
+      {
+        'image': '',
+        'video': '',
+        'type': '1',
+        'description': text,
+        'background_color': backgroundColor,
+      }
+    ]);
+    Get.offAll(const DashboardScreen());
   }
 }

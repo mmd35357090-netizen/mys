@@ -28,14 +28,10 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: [
-          const SizedBox(
-            height: 50,
-          ),
           backNavigationBar(
-            context: context,
-            title: LocalizationString.bookings,
+            title: bookingsString.tr,
           ),
-          divider(context: context).vP16,
+          divider().vP16,
           segmentView(),
           Expanded(
               child: GetBuilder<EventBookingsController>(
@@ -59,9 +55,9 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
                         ? const EventBookingShimmerWidget()
                         : bookings.isEmpty
                             ? emptyData(
-                                title: LocalizationString.noBookingFound,
-                                subTitle: LocalizationString.goToEventAndBook,
-                               )
+                                title: noBookingFoundString.tr,
+                                subTitle: goToEventAndBookString.tr,
+                              )
                             : ListView.separated(
                                 padding: const EdgeInsets.only(
                                     top: 16, left: 16, right: 16, bottom: 16),
@@ -95,10 +91,10 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
           _eventBookingsController.changeSegment(segment);
         },
         segments: [
-          LocalizationString.upcoming,
-          LocalizationString.completed,
-          LocalizationString.cancelled,
-          // LocalizationString.locations,
+          upcomingString.tr,
+          completedString.tr,
+          cancelledString.tr,
+          // locations,
         ]);
   }
 }

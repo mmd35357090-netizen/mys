@@ -1,48 +1,36 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/misc_api.dart';
 import '../../model/support_request_response.dart';
 
 class HelpSupportController extends GetxController {
-  RxList<Items> list = <Items>[].obs;
+  RxList<SupportRequest> list = <SupportRequest>[].obs;
 
   void getSupportRequests() {
     AppUtil.checkInternet().then((value) {
-      ApiController().getSupportMessages().then((response) {
-        ApiResponseModel model = response;
-        if (model.supportRequestReponse?.supportRequest?.items != null) {
-          list.value.clear();
-          list.addAll(model.supportRequestReponse!.supportRequest!.items!);
-        }
+      MiscApi.getSupportMessages(resultCallback: (result, metadata) {
+        list.clear();
+        list.addAll(result);
       });
     });
   }
 
   void submitSupportRequest(
-      {String? name, String? email, String? phone, String? message}) {
-    AppUtil.checkInternet().then((value) {
-      if (name!.isNotEmpty &&
-          email!.isNotEmpty &&
-          phone!.isNotEmpty &&
-          message!.isNotEmpty) {
-        ApiController()
-            .sendSupportRequest(name, email, phone, message)
-            .then((response) {
-          AppUtil.showToast(
-              message: LocalizationString.supportRequests, isSuccess: true);
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.fillForm, isSuccess: false);
-      }
-    });
+      {required String? name,
+      required String? email,
+      required String? phone,
+      required String? message}) {
+    if (name!.isNotEmpty &&
+        email!.isNotEmpty &&
+        phone!.isNotEmpty &&
+        message!.isNotEmpty) {
+      MiscApi.sendSupportRequest(
+          name: name, email: email, phone: phone, message: message);
+    }
   }
 
   void getSupportRequestView(int id) {
-    AppUtil.checkInternet().then((value) {
-      ApiController().getSupportMessageView(id).then((response) {
-        print('getSupportRequestView : $response');
-      });
-    });
+    MiscApi.getSupportMessageView(id);
   }
 }

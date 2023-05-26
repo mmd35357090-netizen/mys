@@ -51,11 +51,9 @@ class _WallpaperForChatBackgroundState
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 55,
-          ),
+
         backNavigationBar(
-            context: context, title: LocalizationString.wallpaper),
+             title: wallpaperString.tr),
           const SizedBox(height: 20),
           Expanded(
             child: GridView.builder(

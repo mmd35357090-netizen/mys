@@ -1,8 +1,10 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../apiHandler/api_controller.dart';
+import '../../apiHandler/apis/users_api.dart';
 import '../home_feed/enlarge_image_view.dart';
 import '../post/single_post_detail.dart';
 import '../profile/other_user_profile.dart';
@@ -43,19 +45,23 @@ class CompletedCompetitionDetailState
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBarWithIcon(
-              context: context,
               icon: ThemeIcon.privacyPolicy,
-              title: LocalizationString.competition,
-              iconBtnClicked: () {
-                Get.to(() => WebViewScreen(
-                    header: LocalizationString.disclaimer,
-                    url: settingsController.setting.value!.disclaimerUrl!));
+              title: competitionString.tr,
+              iconBtnClicked: () async {
+                if (await canLaunchUrl(Uri.parse(
+                    settingsController.setting.value!.disclaimerUrl!))) {
+                  await launchUrl(Uri.parse(
+                      settingsController.setting.value!.disclaimerUrl!));
+                } else {
+                  // throw 'Could not launch $url';
+                }
+                // Get.to(() => WebViewScreen(
+                //     header: disclaimerString.tr,
+                //     url: ));
               }),
-          // divider(context: context).tP16,
+          // divider().tP16,
           Expanded(
             child: Stack(children: [
               Obx(() {
@@ -78,7 +84,7 @@ class CompletedCompetitionDetailState
                                       width: MediaQuery.of(context).size.width,
                                       placeholder: (context, url) =>
                                           AppUtil.addProgressIndicator(
-                                              size:100),
+                                              size: 100),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
                                     )),
@@ -140,9 +146,9 @@ class CompletedCompetitionDetailState
           return SizedBox(
               width: MediaQuery.of(context).size.width - 32,
               child: Center(
-                child:
-                    Heading6Text('Loading...', color: AppColorConstants.themeColor)
-                        .vP25,
+                child: Heading6Text('Loading...',
+                        color: AppColorConstants.themeColor)
+                    .vP25,
               )).backgroundCard().p16;
         }
       },
@@ -179,8 +185,7 @@ class CompletedCompetitionDetailState
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  BodyLargeText('${LocalizationString.user} :',
-                          weight: TextWeight.medium)
+                  BodyLargeText('${userString.tr} :', weight: TextWeight.medium)
                       .hP4,
                   BodyLargeText(winner.userName,
                           weight: TextWeight.bold,
@@ -193,13 +198,13 @@ class CompletedCompetitionDetailState
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  BodyLargeText('${LocalizationString.prize}: ',
+                  BodyLargeText('${prizeString.tr}: ',
                           weight: TextWeight.medium)
                       .hP4,
                   BodyLargeText(
                     competition.awardType == 2
-                        ? '${competition.awardedValueForUser(winner.id)} ${LocalizationString.coins}'
-                        : '\$${competition.awardedValueForUser(winner.id)} ${LocalizationString.inRewards}',
+                        ? '${competition.awardedValueForUser(winner.id)} ${coinsString.tr}'
+                        : '\$${competition.awardedValueForUser(winner.id)} ${inRewardsString.tr}',
                   ),
                 ],
               )
@@ -224,7 +229,7 @@ class CompletedCompetitionDetailState
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       competition.posts.isNotEmpty
           ? Heading3Text(
-              LocalizationString.submittedPhotos,
+              submittedPhotosString.tr,
               weight: FontWeight.bold,
               color: AppColorConstants.themeColor,
             ).tP16
@@ -257,7 +262,7 @@ class CompletedCompetitionDetailState
                                   .posts[index].gallery.first.filePath,
                               fit: BoxFit.cover,
                               placeholder: (context, url) =>
-                                  AppUtil.addProgressIndicator(size:100),
+                                  AppUtil.addProgressIndicator(size: 100),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
                             ).round(10)
@@ -305,8 +310,8 @@ class CompletedCompetitionDetailState
             child: Center(
               child: BodyLargeText(
                   competition.winnerId == ''
-                      ? LocalizationString.winnerAnnouncementPending
-                      : LocalizationString.viewWinner,
+                      ? winnerAnnouncementPendingString.tr
+                      : viewWinnerString.tr,
                   weight: TextWeight.medium,
                   color: AppColorConstants.themeColor),
             ),
@@ -315,13 +320,13 @@ class CompletedCompetitionDetailState
   }
 
   Future<UserModel?> getOtherUserDetailApi(String userId) async {
-    UserModel? data;
-    await ApiController().getOtherUser(userId).then((response) async {
-      if (response.success) {
-        data = response.user;
-      } else {}
-    });
+    UserModel? user;
+    await UsersApi.getOtherUser(
+        userId: int.parse(userId),
+        resultCallback: (result) {
+          user = result;
+        });
 
-    return data;
+    return user;
   }
 }

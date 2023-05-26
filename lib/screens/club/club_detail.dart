@@ -1,16 +1,12 @@
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/post_imports.dart';
 import 'package:foap/helper/number_extension.dart';
-import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../components/actionSheets/action_sheet1.dart';
-import '../../components/post_card.dart';
 import '../../controllers/chat_and_call/chat_detail_controller.dart';
 import '../../model/generic_item.dart';
-import '../../model/post_model.dart';
 import '../chat/chat_detail.dart';
-import '../post/select_media.dart';
 import '../post/view_post_insight.dart';
 
 class ClubDetail extends StatefulWidget {
@@ -34,6 +30,7 @@ class ClubDetailState extends State<ClubDetail> {
   final ChatDetailController _chatDetailController = Get.find();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  final PostController _postController = Get.find();
 
   final _controller = ScrollController();
 
@@ -52,11 +49,19 @@ class ClubDetailState extends State<ClubDetail> {
   }
 
   refreshPosts() {
-    _clubDetailController.getPosts(
-        clubId: widget.club.id!,
+    PostSearchQuery query = PostSearchQuery();
+    query.clubId = widget.club.id!;
+
+    _postController.setPostSearchQuery(
+        query: query,
         callback: () {
           _refreshController.refreshCompleted();
         });
+    // _clubDetailController.getPosts(
+    //     clubId: ,
+    //     callback: () {
+    //       _refreshController.refreshCompleted();
+    //     });
   }
 
   @override
@@ -79,7 +84,8 @@ class ClubDetailState extends State<ClubDetail> {
                     () => showGeneralDialog(
                         context: context,
                         pageBuilder: (context, animation, secondaryAnimation) =>
-                            SelectMedia(
+                            AddPostScreen(
+                                postType: PostType.club,
                                 clubId: _clubDetailController.club.value!.id!)),
                   );
                 })
@@ -127,7 +133,7 @@ class ClubDetailState extends State<ClubDetail> {
                             size: 8,
                           ).hP8,
                           BodyMediumText(
-                                  '${_clubDetailController.club.value!.totalMembers!.formatNumber} ${LocalizationString.clubMembers}',
+                                  '${_clubDetailController.club.value!.totalMembers!.formatNumber} ${clubMembersString.tr}',
                                   weight: TextWeight.regular)
                               .ripple(() {
                             Get.to(() => ClubMembers(
@@ -151,7 +157,6 @@ class ClubDetailState extends State<ClubDetail> {
                           itemBuilder: (BuildContext context, index) {
                             return PostCard(
                               model: _clubDetailController.posts[index],
-                              textTapHandler: (text) {},
                               // likeTapHandler: () {},
                               removePostHandler: () {},
                               blockUserHandler: () {
@@ -197,6 +202,8 @@ class ClubDetailState extends State<ClubDetail> {
                         _clubDetailController.club.value!.isJoined == true
                             ? Icons.exit_to_app
                             : Icons.add,
+                        color: AppColorConstants.iconColor,
+
                         size: 15,
                       ),
                       const SizedBox(
@@ -205,14 +212,14 @@ class ClubDetailState extends State<ClubDetail> {
                       BodyLargeText(_clubDetailController
                                   .club.value!.isJoined ==
                               true
-                          ? LocalizationString.joined
+                          ? joinedString.tr
                           : _clubDetailController.club.value!.isRequestBased ==
                                   true
                               ? _clubDetailController.club.value!.isRequested ==
                                       true
-                                  ? LocalizationString.requested
-                                  : LocalizationString.requestJoin
-                              : LocalizationString.join)
+                                  ? requestedString.tr
+                                  : requestJoinString.tr
+                              : joinString.tr)
                     ],
                   ).hP8)
               .round(5)
@@ -233,19 +240,20 @@ class ClubDetailState extends State<ClubDetail> {
                   color: AppColorConstants.themeColor.withOpacity(0.2),
                   child: Row(
                     children: [
-                      const Icon(
+                       Icon(
                         Icons.chat,
                         size: 15,
+                        color: AppColorConstants.iconColor,
                       ),
                       const SizedBox(
                         width: 5,
                       ),
-                      BodyLargeText(LocalizationString.chat)
+                      BodyLargeText(chatString.tr)
                     ],
                   ).hP8)
               .round(5)
               .ripple(() {
-            EasyLoading.show(status: LocalizationString.loading);
+            EasyLoading.show(status: loadingString.tr);
             _chatDetailController.getRoomDetail(
                 _clubDetailController.club.value!.chatRoomId!, (room) {
               EasyLoading.dismiss();
@@ -269,7 +277,7 @@ class ClubDetailState extends State<ClubDetail> {
                       const SizedBox(
                         width: 5,
                       ),
-                      BodyLargeText(LocalizationString.invite)
+                      BodyLargeText(inviteString.tr)
                     ],
                   ).hP8)
               .round(5)
@@ -377,10 +385,7 @@ class ClubDetailState extends State<ClubDetail> {
 
                 return PostCard(
                   model: model,
-                  textTapHandler: (text) {
-                    _clubDetailController.postTextTapHandler(
-                        post: model, text: text);
-                  },
+
                   removePostHandler: () {
                     _clubDetailController.removePostFromList(model);
                   },
@@ -407,6 +412,7 @@ class ClubDetailState extends State<ClubDetail> {
           .addPullToRefresh(
               refreshController: _refreshController,
               enablePullUp: false,
+              enablePullDown: true,
               onRefresh: refreshPosts,
               onLoading: () {});
     });
@@ -419,17 +425,11 @@ class ClubDetailState extends State<ClubDetail> {
         builder: (context) => ActionSheet1(
               items: [
                 GenericItem(
-                    id: '1',
-                    title: LocalizationString.share,
-                    icon: ThemeIcon.share),
+                    id: '1', title: shareString.tr, icon: ThemeIcon.share),
                 GenericItem(
-                    id: '2',
-                    title: LocalizationString.report,
-                    icon: ThemeIcon.report),
+                    id: '2', title: reportString.tr, icon: ThemeIcon.report),
                 GenericItem(
-                    id: '3',
-                    title: LocalizationString.hide,
-                    icon: ThemeIcon.hide),
+                    id: '3', title: hideString.tr, icon: ThemeIcon.hide),
               ],
               itemCallBack: (item) {},
             ));

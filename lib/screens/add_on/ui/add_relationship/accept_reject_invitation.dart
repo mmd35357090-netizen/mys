@@ -36,8 +36,8 @@ class _AcceptRejectInvitationState extends State<AcceptRejectInvitation> {
             height: 50,
           ),
           backNavigationBar(
-              context: context, title: LocalizationString.invites),
-          divider(context: context).vP16,
+               title: invitesString.tr),
+          divider().vP16,
           Expanded(
             child: GetBuilder<RelationshipController>(
                 init: _relationshipController,
@@ -59,7 +59,7 @@ class _AcceptRejectInvitationState extends State<AcceptRejectInvitation> {
                           height: MediaQuery.of(context).size.height * 0.5,
                           width: MediaQuery.of(context).size.height * 0.5,
                           child: emptyUser(
-                              title: LocalizationString.noInvitationRequest,
+                              title: noInvitationRequestString.tr,
                               subTitle: ''),
                         );
                 }),
@@ -99,7 +99,7 @@ class _AcceptRejectInvitationState extends State<AcceptRejectInvitation> {
                         color: AppColorConstants.grayscale100),
                   ),
                   Text(
-                    "${LocalizationString.claimsToBe} ${_relationshipController.myInvitations[i].relationShip?.name}",
+                    "${claimsToBeString.tr} ${_relationshipController.myInvitations[i].relationShip?.name}",
                     style: TextStyle(
                         fontSize: FontSizes.h6,
                         fontWeight: TextWeight.regular,
@@ -113,7 +113,7 @@ class _AcceptRejectInvitationState extends State<AcceptRejectInvitation> {
             Expanded(
                 flex: 1, // you can play with this value, by default it is 1
                 child: AppThemeBorderButton(
-                    text: LocalizationString.approve,
+                    text: approveString.tr,
                     height: 40,
                     textStyle: TextStyle(
                         fontSize: FontSizes.b2,
@@ -133,8 +133,7 @@ class _AcceptRejectInvitationState extends State<AcceptRejectInvitation> {
               flex: 1, // you can play with this value, by default it is 1
               child: AppThemeButton(
                   height: 40,
-
-                  text: LocalizationString.reject,
+                  text: rejectString.tr,
                   onPress: () {
                     _relationshipController.acceptRejectInvitation(
                         _relationshipController.myInvitations[i].id ?? 0, 3,

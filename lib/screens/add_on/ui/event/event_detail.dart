@@ -89,11 +89,11 @@ class EventDetailState extends State<EventDetail> {
                                 height: 20,
                               ),
                               attendingUsersList(),
-                              divider(context: context).vp(20),
+                              divider().vp(20),
                               eventInfo(),
-                              divider(context: context).vp(20),
+                              divider().vp(20),
                               eventOrganiserWidget(),
-                              divider(context: context).vp(20),
+                              divider().vp(20),
                               eventGallery(),
                               const SizedBox(
                                 height: 24,
@@ -172,7 +172,7 @@ class EventDetailState extends State<EventDetail> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BodyLargeText(LocalizationString.location,
+                BodyLargeText(locationString.tr,
                     weight: TextWeight.medium),
                 const SizedBox(
                   height: 5,
@@ -200,7 +200,7 @@ class EventDetailState extends State<EventDetail> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BodyLargeText(LocalizationString.price,
+                  BodyLargeText(priceString.tr,
                       weight: TextWeight.medium),
                   const SizedBox(
                     height: 5,
@@ -242,7 +242,7 @@ class EventDetailState extends State<EventDetail> {
                             children: [
                               BodyLargeText(sponsor.name,
                                   weight: TextWeight.regular),
-                              BodySmallText(LocalizationString.organizer,
+                              BodySmallText(organizerString.tr,
                                   weight: TextWeight.regular),
                             ],
                           )
@@ -255,7 +255,7 @@ class EventDetailState extends State<EventDetail> {
         const SizedBox(
           height: 25,
         ),
-        Heading6Text(LocalizationString.about, weight: TextWeight.medium),
+        Heading6Text(aboutString.tr, weight: TextWeight.medium),
         const SizedBox(
           height: 10,
         ),
@@ -271,7 +271,7 @@ class EventDetailState extends State<EventDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Heading6Text(LocalizationString.location, weight: TextWeight.medium),
+        Heading6Text(locationString.tr, weight: TextWeight.medium),
         const SizedBox(
           height: 10,
         ),
@@ -312,7 +312,7 @@ class EventDetailState extends State<EventDetail> {
               ),
               Expanded(
                   child: Text(
-                LocalizationString.eventIsSoldOut,
+                eventIsSoldOutString.tr,
                 style: TextStyle(fontSize: FontSizes.b2),
               )),
             ],
@@ -336,14 +336,14 @@ class EventDetailState extends State<EventDetail> {
         //           width: 20,
         //           height: 20,
         //           fit: BoxFit.cover,
-        //         ).borderWithRadius(context: context, value: 1, radius: 10),
+        //         ).borderWithRadius( value: 1, radius: 10),
         //       );
         //     },
         //     itemCount: min(widget.event.gallery.length, 5),
         //   ),
         // ),
         BodySmallText(
-            '${widget.event.totalMembers} ${LocalizationString.going.toLowerCase()}',
+            '${widget.event.totalMembers} ${goingString.tr.toLowerCase()}',
             weight: TextWeight.regular),
         const Spacer()
       ],
@@ -372,7 +372,7 @@ class EventDetailState extends State<EventDetail> {
               ),
               Expanded(
                 child: Text(
-                  LocalizationString.ticketWillBeAvailableSoon,
+                  ticketWillBeAvailableSoonString.tr,
                   style: TextStyle(fontSize: FontSizes.b2),
                 ),
               ),
@@ -408,7 +408,7 @@ class EventDetailState extends State<EventDetail> {
                         width: 10,
                       ),
                       Heading6Text(
-                        LocalizationString.giftTicket,
+                        giftTicketString.tr,
                         color: AppColorConstants.themeColor,
                       )
                     ],
@@ -419,14 +419,14 @@ class EventDetailState extends State<EventDetail> {
                     ));
                   })).round(5),
               Text(
-                LocalizationString.or,
+                orString.tr,
                 style: TextStyle(fontSize: FontSizes.b2),
               ).hP16,
               SizedBox(
                 height: 40,
                 width: Get.width * 0.3,
                 child: AppThemeButton(
-                  text: LocalizationString.buyTicket,
+                  text: buyTicketString.tr,
                   onPress: () {
                     Get.to(() => BuyTicket(
                           event: _eventDetailController.event.value!,
@@ -445,10 +445,10 @@ class EventDetailState extends State<EventDetail> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Heading6Text(LocalizationString.eventGallery,
+                Heading6Text(eventGalleryString.tr,
                     weight: TextWeight.medium),
                 BodyLargeText(
-                  LocalizationString.seeAll,
+                  seeAllString.tr,
                   color: AppColorConstants.themeColor,
                 ).ripple(() {
                   Get.to(() => EventGallery(event: widget.event));
@@ -502,7 +502,7 @@ class EventDetailState extends State<EventDetail> {
                       );
                     },
                     title: Heading5Text(
-                      '${LocalizationString.openIn} ${map.mapName}',
+                      '${openInString.tr} ${map.mapName}',
                     ),
                     leading: SvgPicture.asset(
                       map.icon,

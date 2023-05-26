@@ -101,7 +101,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                             })),
                       ],
                     ).setPadding(left: 16, right: 16, top: 8, bottom: 16),
-                    divider(context: context).tP8,
+                    divider().tP8,
                   ],
                 ),
               SocialifiedVideoPlayer(
@@ -134,17 +134,16 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
     return Column(
       children: [
         Container(
-          height: 70,
+          height: 80,
           color: AppColorConstants.cardColor,
           child: Row(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Heading4Text(LocalizationString.liveChat,
-                      weight: TextWeight.semiBold),
+                  Heading4Text(liveChatString.tr, weight: TextWeight.semiBold),
                   BodySmallText(
-                    '${widget.tvModel.totalViewer.formatNumber} ${LocalizationString.users}',
+                    '${widget.tvModel.totalViewer.formatNumber} ${usersString.tr}',
                   )
                 ],
               ),
@@ -233,7 +232,8 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                     controller: messageTextField,
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontSize: FontSizes.b2, color: AppColorConstants.grayscale100),
+                        fontSize: FontSizes.b2,
+                        color: AppColorConstants.grayscale900),
                     maxLines: 50,
                     decoration: InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -246,7 +246,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                         hintStyle: TextStyle(
                             fontSize: FontSizes.b2,
                             color: AppColorConstants.themeColor),
-                        hintText: LocalizationString.pleaseEnterMessage),
+                        hintText: pleaseEnterMessageString.tr),
                   ),
                 ).round(10),
               ),
@@ -254,7 +254,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                 width: 10,
               ),
               BodyLargeText(
-                LocalizationString.send,
+                sendString.tr,
                 weight: TextWeight.medium,
                 color: AppColorConstants.themeColor,
               ).ripple(() {

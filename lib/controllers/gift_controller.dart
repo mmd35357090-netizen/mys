@@ -1,3 +1,4 @@
+import 'package:foap/apiHandler/apis/gift_api.dart';
 import 'package:get/get.dart';
 
 import '../apiHandler/api_controller.dart';
@@ -19,23 +20,23 @@ class GiftController extends GetxController {
   loadGiftCategories() {
     gifts.clear();
     update();
-    ApiController().getGiftCategories().then((response) {
-      giftsCategories.value = response.giftCategories;
+    GiftApi.getStickerGiftCategories(resultCallback: (result) {
+      giftsCategories.value = result;
       loadGifts(giftsCategories.first.id);
     });
   }
 
   loadMostUsedGifts() {
-    ApiController().getMostUsedGifts().then((response) {
-      topGifts.value = response.gifts;
+    GiftApi.getMostUsedStickerGifts(resultCallback: (result) {
+      topGifts.value = result;
 
       update();
     });
   }
 
   loadGifts(int categoryId) {
-    ApiController().getGiftsByCategory(categoryId).then((response) {
-      gifts.value = response.gifts;
+    GiftApi.getStickerGiftsByCategory(categoryId, resultCallback: (result) {
+      gifts.value = result;
 
       update();
     });

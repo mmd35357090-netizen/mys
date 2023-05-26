@@ -63,7 +63,7 @@ class ChatHistoryTile extends StatelessWidget {
                         ),
                         model.whoIsTyping.isNotEmpty
                             ? BodyMediumText(
-                                '${model.whoIsTyping.join(',')} ${LocalizationString.typing}',
+                                '${model.whoIsTyping.join(',')} ${typingString.tr}',
                               )
                             : model.lastMessage == null
                                 ? Container()

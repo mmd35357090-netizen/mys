@@ -31,12 +31,10 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 55,
-          ),
+
           backNavigationBar(
-              context: context, title: LocalizationString.insights),
-          divider(context: context),
+               title: insightsString.tr),
+          divider(),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.only(top: 20, bottom: 100),
@@ -59,7 +57,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                   children: [
                     Column(
                       children: [
-                        ThemeIconWidget(ThemeIcon.message),
+                        const ThemeIconWidget(ThemeIcon.message),
                         const SizedBox(
                           height: 5,
                         ),
@@ -70,7 +68,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     ),
                     Column(
                       children: [
-                        ThemeIconWidget(ThemeIcon.favFilled),
+                        const ThemeIconWidget(ThemeIcon.favFilled),
                         const SizedBox(
                           height: 5,
                         ),
@@ -103,15 +101,15 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     // )
                   ],
                 ).hp(50),
-                divider(context: context).vP25,
+                divider().vP25,
                 overView(),
-                divider(context: context).vP25,
+                divider().vP25,
                 viewByNetwork(),
-                divider(context: context).vP25,
+                divider().vP25,
                 postInteraction(),
-                divider(context: context).vP25,
+                divider().vP25,
                 profileActivity(),
-                divider(context: context).vP25,
+                divider().vP25,
                 viewByGender()
               ],
             ),
@@ -128,7 +126,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BodyLargeText(
-                LocalizationString.overview,
+                overviewString.tr,
                 weight: TextWeight.semiBold,
               ),
               const SizedBox(
@@ -138,7 +136,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.accountsReached,
+                    accountsReachedString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(
@@ -152,7 +150,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
               //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
               //   children: [
               //     BodyMediumText(
-              //       LocalizationString.accountsEngaged,
+              //       accountsEngaged,
               //       weight: TextWeight.medium,
               //     ),
               //     BodyMediumText(_postController.insight.value!.totalView.toString()),
@@ -164,7 +162,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BodyMediumText(LocalizationString.views,
+                  BodyMediumText(viewsString.tr,
                       weight: TextWeight.medium),
                   BodyMediumText(
                       _postController.insight.value!.totalView.toString()),
@@ -181,7 +179,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BodyLargeText(
-                LocalizationString.postInteractions,
+                postInteractionsString.tr,
                 weight: TextWeight.bold,
               ),
               const SizedBox(
@@ -191,7 +189,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.profileVisits,
+                    profileVisitsString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(_postController
@@ -206,7 +204,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.follows,
+                    followsString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(
@@ -224,7 +222,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BodyLargeText(
-                LocalizationString.gender,
+                genderString.tr,
                 weight: TextWeight.bold,
               ),
               const SizedBox(
@@ -234,7 +232,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.male,
+                    maleString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(
@@ -248,7 +246,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.female,
+                    femaleString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(
@@ -262,7 +260,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.other,
+                    otherString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(
@@ -276,7 +274,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.noSpecified,
+                    noSpecifiedString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(_postController
@@ -295,7 +293,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BodyLargeText(
-                LocalizationString.network,
+                networkString.tr,
                 weight: TextWeight.bold,
               ),
               const SizedBox(
@@ -305,7 +303,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.followers,
+                    followersString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(_postController
@@ -320,7 +318,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BodyMediumText(
-                    LocalizationString.nonFollowers,
+                    nonFollowersString.tr,
                     weight: TextWeight.medium,
                   ),
                   BodyMediumText(_postController
@@ -337,7 +335,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BodyLargeText(
-          LocalizationString.profileActivity,
+          profileActivityString.tr,
           weight: TextWeight.bold,
         ),
         const SizedBox(
@@ -347,7 +345,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BodyMediumText(
-              LocalizationString.comments,
+              commentsString.tr,
               weight: TextWeight.medium,
             ),
             BodyMediumText(widget.post.totalComment.toString()),
@@ -360,7 +358,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BodyMediumText(
-              LocalizationString.likes,
+              likesString.tr,
               weight: TextWeight.medium,
             ),
             BodyMediumText(widget.post.totalLike.toString()),
@@ -373,7 +371,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
         //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
         //   children: [
         //     BodyMediumText(
-        //       LocalizationString.saved,
+        //       saved,
         //       weight: TextWeight.medium,
         //     ),
         //     BodyMediumText('20'),

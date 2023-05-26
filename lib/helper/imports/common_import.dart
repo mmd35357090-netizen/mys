@@ -17,6 +17,8 @@ export 'package:foap/model/user_model.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:foap/helper/user_profile_manager.dart';
 export 'package:foap/manager/service_locator.dart';
+export 'package:get/get.dart';
+export 'package:foap/components/app_text_field.dart';
 
 // export 'package:flutter/material.dart';
 // export 'package:flutter/services.dart';

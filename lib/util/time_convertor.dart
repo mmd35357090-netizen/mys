@@ -12,42 +12,42 @@ class TimeAgo {
         int years = (days / 365).round();
 
         return years >= 2
-            ? '$years ${LocalizationString.monthsAgo}'
-            : '$years ${LocalizationString.monthAgo}';
+            ? '$years ${monthsAgoString.tr}'
+            : '$years ${monthAgoString.tr}';
       } else if (days > 30) {
         int months = (days / 30).round();
         return months >= 2
-            ? '$months ${LocalizationString.monthsAgo}'
-            : '$months ${LocalizationString.monthAgo}';
+            ? '$months ${monthsAgoString.tr}'
+            : '$months ${monthAgoString.tr}';
       } else {
-        return '${(difference.inDays / 7).floor()} ${LocalizationString.weekAgo}';
+        return '${(difference.inDays / 7).floor()} ${weekAgoString.tr}';
       }
     } else if ((difference.inDays / 7).floor() >= 1) {
       return (numericDates)
-          ? '1 ${LocalizationString.weekAgo}'
-          : LocalizationString.lastWeek;
+          ? '1 ${weekAgoString.tr}'
+          : lastWeekString.tr;
     } else if (difference.inDays >= 2) {
-      return '${difference.inDays} ${LocalizationString.daysAgo}';
+      return '${difference.inDays} ${daysAgoString.tr}';
     } else if (difference.inDays >= 1) {
       return (numericDates)
-          ? '1 ${LocalizationString.dayAgo}'
-          : LocalizationString.yesterday;
+          ? '1 ${dayAgoString.tr}'
+          : yesterdayString.tr;
     } else if (difference.inHours >= 2) {
-      return '${difference.inHours} ${LocalizationString.hoursAgo}';
+      return '${difference.inHours} ${hoursAgoString.tr}';
     } else if (difference.inHours >= 1) {
       return (numericDates)
-          ? '1 ${LocalizationString.hoursAgo}'
-          : LocalizationString.anHourAgo;
+          ? '1 ${hoursAgoString.tr}'
+          : anHourAgoString.tr;
     } else if (difference.inMinutes >= 2) {
-      return '${difference.inMinutes} ${LocalizationString.minutesAgo}';
+      return '${difference.inMinutes} ${minutesAgoString.tr}';
     } else if (difference.inMinutes >= 1) {
       return (numericDates)
-          ? '1 ${LocalizationString.minutesAgo}'
-          : LocalizationString.aMinuteAgo;
+          ? '1 ${minutesAgoString.tr}'
+          : aMinuteAgoString.tr;
     } else if (difference.inSeconds >= 3) {
-      return '${difference.inSeconds} ${LocalizationString.secondsAgo}';
+      return '${difference.inSeconds} ${secondsAgoString.tr}';
     } else {
-      return LocalizationString.justNow;
+      return justNowString.tr;
     }
   }
 }

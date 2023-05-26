@@ -1,8 +1,14 @@
 import 'dart:math';
 import 'package:currency_picker/currency_picker.dart';
+import 'package:foap/helper/extension.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:foap/helper/imports/common_import.dart';
+import 'package:flutter/material.dart';
+
+import '../components/custom_texts.dart';
+import '../helper/localization_strings.dart';
+import '../theme/theme_icon.dart';
+import '../util/app_config_constants.dart';
 
 class InputField extends StatefulWidget {
   final String? label;
@@ -17,19 +23,17 @@ class InputField extends StatefulWidget {
   final bool? showDivider;
   final Color? iconColor;
   final bool? isDisabled;
-  final bool? startedEditing;
+  bool? startedEditing;
   final bool? isError;
   final bool? iconOnRightSide;
   final Color? backgroundColor;
   final bool? showBorder;
   final Color? borderColor;
   final double? cornerRadius;
-  final bool? isEnable;
 
   final Color? cursorColor;
-  final TextStyle? textStyle;
 
-  const InputField({
+  InputField({
     Key? key,
     this.label,
     this.showLabelInNewLine = true,
@@ -49,10 +53,8 @@ class InputField extends StatefulWidget {
     this.backgroundColor,
     this.showBorder = false,
     this.borderColor,
-    this.cornerRadius = 0,
+    this.cornerRadius = 12,
     this.cursorColor,
-    this.textStyle,
-    this.isEnable
   }) : super(key: key);
 
   @override
@@ -60,501 +62,90 @@ class InputField extends StatefulWidget {
 }
 
 class _InputFieldState extends State<InputField> {
-  late String? label;
-  late bool? showLabelInNewLine;
-
-  late String? hintText;
-  late String? defaultText;
-  late TextEditingController? controller;
-  late ValueChanged<String>? onChanged;
-  late ValueChanged<String>? onSubmitted;
-  late ThemeIcon? icon;
-  late int? maxLines;
-  late bool? showDivider;
-  late Color? iconColor;
-  late bool isDisabled;
-  late bool? startedEditing;
-  late bool? isError;
-  late bool? iconOnRightSide;
-  late Color? backgroundColor;
-  late bool? showBorder;
-  late Color? borderColor;
-  late double? cornerRadius;
-  late bool? isEnable;
-  late Color cursorColor;
-
   @override
   void initState() {
-    label = widget.label;
-    showLabelInNewLine = widget.showLabelInNewLine;
-    hintText = widget.hintText;
-    defaultText = widget.defaultText;
-    controller = widget.controller;
-    onChanged = widget.onChanged;
-    onSubmitted = widget.onSubmitted;
-    icon = widget.icon;
-    maxLines = widget.maxLines;
-    showDivider = widget.showDivider;
-    iconColor = widget.iconColor;
-    isDisabled = widget.isDisabled ?? false;
-    startedEditing = widget.startedEditing;
-    isError = widget.isError;
-    iconOnRightSide = widget.iconOnRightSide;
-    backgroundColor = widget.backgroundColor;
-    showBorder = widget.showBorder;
-    borderColor = widget.borderColor;
-    cornerRadius = widget.cornerRadius;
-    isEnable = widget.isEnable;
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    cursorColor = widget.cursorColor ?? AppColorConstants.iconColor;
-
     return Container(
-      decoration: BoxDecoration(
-        color: isError == false
-            ? backgroundColor
-            : (showDivider == false && showBorder == false)
-                ? AppColorConstants.red
-                : backgroundColor,
-        borderRadius: BorderRadius.circular(cornerRadius ?? 0),
-        border: showBorder == true
-            ? Border.all(
-                width: 0.5,
-                color: isError == true
-                    ? AppColorConstants.red
-                    : borderColor ?? AppColorConstants.dividerColor)
-            : null,
-      ),
-      // margin: EdgeInsets.symmetric(vertical: 5),
-      // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      height: maxLines != null
-          ? (min(maxLines!, 10) * 20) + 45
-          : label != null
-              ? 70
-              : 60,
+      height: widget.maxLines != null
+          ? (min(widget.maxLines!, 10) * 20) + 45
+          : widget.label != null
+          ? 70
+          : 60,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          (label != null && showLabelInNewLine == true)
-              ? BodyMediumText(label!, weight: TextWeight.medium).bP4
+          (widget.label != null && widget.showLabelInNewLine == true)
+              ? BodySmallText(
+            widget.label!,
+          ).bP8
               : Container(),
-          Row(
-            children: [
-              (label != null && showLabelInNewLine == false)
-                  ? BodyMediumText(label!, weight: TextWeight.medium).bP4
-                  : Container(),
-              iconOnRightSide == false ? iconView() : Container(),
-              Expanded(
-                child: Focus(
-                  child: TextField(
-                    enabled: isEnable,
-                    controller: controller,
-                    keyboardType: hintText == hintText
-                        ? TextInputType.emailAddress
-                        : TextInputType.text,
-                    textAlign: TextAlign.left,
-                    style: widget.textStyle ??
-                        TextStyle(
-                            fontSize: FontSizes.h6,
-                            color: AppColorConstants.grayscale900),
-                    onChanged: widget.onChanged,
-                    maxLines: maxLines,
-                    decoration: InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        border: InputBorder.none,
-                        contentPadding:
-                            const EdgeInsets.only(left: 10, right: 10),
-                        counterText: "",
-                        // labelText: hintText,
-                        labelStyle: TextStyle(
-                            fontSize: FontSizes.b2,
-                            color: AppColorConstants.grayscale700),
-                        hintStyle: TextStyle(
-                            fontSize: FontSizes.h6,
-                            color: AppColorConstants.grayscale500),
-                        hintText: hintText),
-                  ),
-                  onFocusChange: (hasFocus) {
-                    startedEditing = hasFocus;
-                    setState(() {});
-                  },
-                ),
-              ),
-              iconOnRightSide == true ? iconView() : Container(),
-            ],
-          ),
-          line()
-        ],
-      ),
-    );
-  }
-
-  Widget line() {
-    return showDivider == true
-        ? Container(
-            height: 0.5,
-            color: startedEditing == true
-                ? AppColorConstants.themeColor
-                : isError == true
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: widget.isError == false
+                    ? widget.backgroundColor
+                    : (widget.showDivider == false &&
+                    widget.showBorder == false)
                     ? AppColorConstants.red
-                    : AppColorConstants.dividerColor)
-        : Container();
-  }
-
-  Widget iconView() {
-    return icon != null
-        ? ThemeIconWidget(icon!,
-                color: iconColor ?? AppColorConstants.themeColor, size: 20)
-            .rP16
-        : Container();
-  }
-}
-
-class InputPriceField extends StatefulWidget {
-  final String? label;
-  final String? hintText;
-  final String? currencyText;
-  final String? currencyFlag;
-  final bool? disableCurrencySelection;
-  final TextEditingController? controller;
-  final ValueChanged<String>? onChanged;
-  final ValueChanged<String>? onCurrencyValueChanged;
-
-  const InputPriceField({
-    Key? key,
-    this.label,
-    this.hintText,
-    this.currencyText,
-    this.currencyFlag,
-    this.controller,
-    this.onChanged,
-    this.onCurrencyValueChanged,
-    this.disableCurrencySelection,
-  }) : super(key: key);
-
-  @override
-  State<InputPriceField> createState() => _InputPriceFieldState();
-}
-
-class _InputPriceFieldState extends State<InputPriceField> {
-  late String? currencyText;
-  late String? currencyFlag;
-
-  @override
-  void initState() {
-    currencyText = widget.currencyText;
-    currencyFlag = widget.currencyFlag;
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColorConstants.backgroundColor,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      height: 80,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          widget.label != null
-              ? BodyMediumText(
-                  widget.label!,
-                  weight: TextWeight.medium,
-                ).bP8
-              : Container(),
-          Row(
-            children: [
-              Row(
+                    : widget.backgroundColor,
+                borderRadius: BorderRadius.circular(widget.cornerRadius!),
+                border: widget.showBorder == true
+                    ? Border.all(
+                    width: 0.5,
+                    color: widget.isError == true
+                        ? AppColorConstants.red
+                        : widget.borderColor ??
+                        AppColorConstants.dividerColor)
+                    : null,
+              ),
+              child: Row(
                 children: [
-                  BodyLargeText(widget.currencyText ?? "+1",
-                          weight: TextWeight.bold)
-                      .hP8
-                      .ripple(() {
-                    showCurrencyPicker(
-                      context: context,
-                      showFlag: true,
-                      showCurrencyName: true,
-                      showCurrencyCode: true,
-                      onSelect: (Currency currency) {
-                        setState(() {
-                          currencyFlag = currency.flag;
-                          currencyText = currency.symbol;
-                          widget.onCurrencyValueChanged!(widget.currencyText!);
-                        });
+                  (widget.label != null && widget.showLabelInNewLine == false)
+                      ? BodySmallText(
+                    widget.label!,
+                  ).bP4
+                      : Container(),
+                  widget.iconOnRightSide == false
+                      ? iconView().lP16
+                      : Container(),
+                  Expanded(
+                    child: Focus(
+                      child: TextField(
+                        controller: widget.controller,
+                        keyboardType: TextInputType.text,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontSize: FontSizes.b3,
+                            color: AppColorConstants.inputFieldTextColor),
+                        onChanged: widget.onChanged,
+                        maxLines: widget.maxLines,
+                        decoration: InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            border: InputBorder.none,
+                            counterText: "",
+                            // labelText: hintText,
+                            hintStyle: TextStyle(
+                                fontSize: FontSizes.b3,
+                                color: AppColorConstants
+                                    .inputFieldPlaceholderTextColor),
+                            hintText: widget.hintText),
+                      ),
+                      onFocusChange: (hasFocus) {
+                        widget.startedEditing = hasFocus;
+                        setState(() {});
                       },
-                    );
-                  }),
+                    ),
+                  ),
+                  widget.iconOnRightSide == true ? iconView() : Container(),
                 ],
               ),
-              Container(
-                width: 1,
-                height: 20,
-                color: AppColorConstants.dividerColor,
-              ).hP16,
-              Expanded(
-                  child: TextField(
-                style: TextStyle(fontSize: FontSizes.b3),
-                controller: widget.controller,
-                onChanged: widget.onChanged,
-                keyboardType: TextInputType.number,
-                cursorColor: AppColorConstants.iconColor,
-                decoration: InputDecoration(
-                  hintStyle: TextStyle(fontSize: FontSizes.b3),
-                  hintText: widget.hintText,
-                  border: InputBorder.none,
-                ),
-              ))
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class DropDownField extends StatefulWidget {
-  final String? label;
-  final String? hintText;
-  final bool? disable;
-  final TextEditingController? controller;
-  final VoidCallback? onTap;
-  final Color? backgroundColor;
-
-  const DropDownField({
-    Key? key,
-    this.label,
-    this.hintText,
-    this.disable,
-    this.controller,
-    this.onTap,
-    this.backgroundColor,
-  }) : super(key: key);
-
-  @override
-  State<DropDownField> createState() => _DropDownFieldState();
-}
-
-class _DropDownFieldState extends State<DropDownField> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: widget.backgroundColor ?? AppColorConstants.backgroundColor,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      height: 60,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          widget.label != null
-              ? BodyMediumText(widget.label!, weight: TextWeight.medium).bP8
-              : Container(),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: AbsorbPointer(
-                absorbing: true,
-                child: TextField(
-                  readOnly: true,
-                  style: TextStyle(fontSize: FontSizes.b3),
-                  controller: widget.controller,
-                  keyboardType: TextInputType.number,
-                  cursorColor: AppColorConstants.iconColor,
-                  decoration: InputDecoration(
-                    hintStyle: TextStyle(fontSize: FontSizes.b3),
-                    hintText: widget.hintText,
-                    border: InputBorder.none,
-                  ),
-                ),
-              )),
-              ThemeIconWidget(
-                ThemeIcon.downArrow,
-                color: AppColorConstants.iconColor,
-                size: 25,
-              ),
-              const SizedBox(
-                width: 10,
-              )
-            ],
+            ),
           ),
-        ],
-      ),
-    ).ripple(() {
-      widget.onTap!();
-    });
-  }
-}
-
-class InputMobileNumberField extends StatefulWidget {
-  final String? label;
-  final String? hintText;
-  final String? phoneCodeText;
-  final TextEditingController? controller;
-  final ValueChanged<String>? onChanged;
-  final ValueChanged<String>? phoneCodeValueChanged;
-  final bool? showDivider;
-  final Color? cursorColor;
-  final TextStyle? textStyle;
-  final bool? isError;
-  final bool? showBorder;
-  final Color? backgroundColor;
-  final Color? borderColor;
-  final double? cornerRadius;
-
-  const InputMobileNumberField({
-    Key? key,
-    this.label,
-    this.hintText,
-    this.showDivider,
-    required this.phoneCodeText,
-    this.controller,
-    required this.onChanged,
-    required this.phoneCodeValueChanged,
-    this.cursorColor,
-    this.textStyle,
-    this.isError,
-    this.showBorder,
-    this.borderColor,
-    this.cornerRadius,
-    this.backgroundColor,
-  }) : super(key: key);
-
-  @override
-  State<InputMobileNumberField> createState() => _InputMobileNumberFieldState();
-}
-
-class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
-  late Color? cursorColor;
-  late TextStyle? textStyle;
-  bool? startedEditing;
-  late bool? isError;
-  late String? phoneCodeText;
-  late TextEditingController controller;
-  late String? hintText;
-  late bool? showBorder;
-  late Color? backgroundColor;
-  late bool? showDivider;
-  late Color? borderColor;
-  late double? cornerRadius;
-
-  @override
-  void initState() {
-    isError = widget.isError;
-    controller = widget.controller!;
-    hintText = widget.hintText;
-    showBorder = widget.showBorder;
-    backgroundColor = widget.backgroundColor;
-    showDivider = widget.showDivider;
-    borderColor = widget.borderColor;
-    cornerRadius = widget.cornerRadius;
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    cursorColor = widget.cursorColor ?? AppColorConstants.iconColor;
-    // textStyle = widget.textStyle ?? TextStyle(fontSize: FontSizes.h5);
-    return Container(
-      // color:Colors.red,
-      // margin: EdgeInsets.symmetric(vertical: 5),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: isError == false
-            ? backgroundColor
-            : (showDivider == false && showBorder == false)
-                ? AppColorConstants.red
-                : backgroundColor,
-        borderRadius: BorderRadius.circular(cornerRadius ?? 0),
-        border: showBorder == true
-            ? Border.all(
-                width: 0.5,
-                color: isError == true
-                    ? AppColorConstants.red
-                    : borderColor ?? AppColorConstants.dividerColor)
-            : null,
-      ),
-      height: widget.label != null ? 72 : 60,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          widget.label != null
-              ? BodyMediumText(widget.label!, weight: TextWeight.medium)
-              : Container(),
-          Row(children: [
-            BodyLargeText(
-              '${widget.phoneCodeText}',
-            ).hP8.ripple(() {
-              showCountryPicker(
-                context: context,
-                showPhoneCode: true,
-                // optional. Shows phone code before the country name.
-                onSelect: (Country country) {
-                  setState(() {
-                    phoneCodeText = '+${country.phoneCode}';
-                    widget.phoneCodeValueChanged!(phoneCodeText!);
-                  });
-                },
-              );
-            }),
-            Container(
-              width: 0.5,
-              height: 20,
-              color: AppColorConstants.dividerColor,
-            ).hP8,
-            Expanded(
-              child: SizedBox(
-                  height: 46,
-                  child: Focus(
-                    child: TextField(
-                      controller: controller,
-                      keyboardType: TextInputType.phone,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontSize: FontSizes.h6,
-                          color: AppColorConstants.grayscale900),
-                      onChanged: widget.onChanged,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding:
-                              const EdgeInsets.only(left: 10, right: 10),
-                          counterText: "",
-                          // labelText: hintText,
-                          // labelStyle: TextStyle(fontSize: FontSizes.b2)!.copyWith(color: ColorConstants.themeColor),
-                          hintStyle: TextStyle(
-                              fontSize: FontSizes.h6,
-                              color: AppColorConstants.grayscale600),
-                          hintText: hintText),
-                    ),
-                    onFocusChange: (hasFocus) {
-                      startedEditing = hasFocus;
-                      setState(() {});
-                    },
-                  )),
-            )
-          ]),
           line()
         ],
       ),
@@ -564,119 +155,795 @@ class _InputMobileNumberFieldState extends State<InputMobileNumberField> {
   Widget line() {
     return widget.showDivider == true
         ? Container(
-            height: 0.5,
-            color: startedEditing == true
-                ? AppColorConstants.themeColor
-                : isError == true
-                    ? AppColorConstants.red
-                    : AppColorConstants.dividerColor)
+        height: 0.5,
+        color: widget.startedEditing == true
+            ? AppColorConstants.themeColor
+            : widget.isError == true
+            ? AppColorConstants.red
+            : AppColorConstants.red)
+        : Container();
+  }
+
+  Widget iconView() {
+    return widget.icon != null
+        ? ThemeIconWidget(widget.icon!,
+        color: widget.iconColor ?? AppColorConstants.iconColor,
+        size: 20)
+        .rP16
         : Container();
   }
 }
 
-class InputDateField extends StatefulWidget {
-  final String? label;
+class PasswordField extends StatefulWidget {
   final String? hintText;
-  final String? defaultText;
-  final ValueChanged<TimeOfDay>? onChanged;
+  final ValueChanged<String> onChanged;
+  final TextEditingController? controller;
+  final Color? backgroundColor;
+  final String? label;
+  final bool? showDivider;
+  final bool? iconOnRightSide;
+  final ThemeIcon? icon;
+  final Color? iconColor;
+  final bool? showRevealPasswordIcon;
+  final bool? showLabelInNewLine;
+  final bool? showBorder;
+  final Color? borderColor;
+  final bool? isError;
+  bool? startedEditing;
+  final double? cornerRadius;
 
-  const InputDateField({
+  final Color? cursorColor;
+
+  PasswordField({
     Key? key,
+    required this.onChanged,
+    this.controller,
     this.label,
     this.hintText,
-    this.defaultText,
-    this.onChanged,
+    this.showDivider = false,
+    this.backgroundColor,
+    this.iconOnRightSide,
+    this.iconColor,
+    this.icon,
+    this.showLabelInNewLine = true,
+    this.showRevealPasswordIcon = false,
+    this.showBorder = false,
+    this.borderColor,
+    this.isError = false,
+    this.startedEditing = false,
+    this.cornerRadius = 12,
+    this.cursorColor,
   }) : super(key: key);
 
   @override
-  State<InputDateField> createState() => _InputDateFieldState();
+  State<PasswordField> createState() => _PasswordFieldState();
 }
 
-class _InputDateFieldState extends State<InputDateField> {
-  String? label;
-  String? hintText;
-  String? defaultText;
-  TextEditingController controller = TextEditingController();
-  ValueChanged<TimeOfDay>? onChanged;
+class _PasswordFieldState extends State<PasswordField> {
+  bool showPassword = false;
 
   @override
   void initState() {
-    hintText = widget.label;
-    hintText = widget.hintText;
-    defaultText = widget.defaultText;
-    onChanged = widget.onChanged;
-
-    controller.text = defaultText ?? '';
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 80,
+      // margin: EdgeInsets.symmetric(vertical: 5),
+      height: widget.label != null ? 70 : 60,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          widget.label != null
-              ? BodyMediumText(widget.label!, weight: TextWeight.medium).bP8
+          (widget.label != null && widget.showLabelInNewLine == true)
+              ? BodySmallText(
+            widget.label!,
+          ).bP8
               : Container(),
-          Container(
-            width: 80,
-            height: 50,
-            color: AppColorConstants.backgroundColor,
-            child: TextField(
-              style: TextStyle(fontSize: FontSizes.b3),
-              textAlign: TextAlign.center,
-              controller: controller,
-              // onChanged: onChanged,
-              cursorColor: AppColorConstants.iconColor,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: TextStyle(fontSize: FontSizes.b3),
-                border: InputBorder.none,
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: widget.isError == false
+                    ? widget.backgroundColor
+                    : (widget.showDivider == false &&
+                    widget.showBorder == false)
+                    ? AppColorConstants.red
+                    : widget.backgroundColor,
+                borderRadius: BorderRadius.circular(widget.cornerRadius!),
+                border: widget.showBorder == true
+                    ? Border.all(
+                    width: 0.5,
+                    color: widget.isError == true
+                        ? AppColorConstants.red
+                        : widget.borderColor ??
+                        AppColorConstants.dividerColor)
+                    : null,
               ),
-              readOnly: true,
-              //set it true, so that user will not able to edit text
-              onTap: () async {
-                TimeOfDay initialTime = TimeOfDay.now();
-                TimeOfDay? pickedTime = await showTimePicker(
-                  context: context,
-                  initialTime: initialTime,
-                );
-
-                if (pickedTime != null) {
-                  //print(pickedTime.minute); //pickedDate output format => 2021-03-10 00:00:00.000
-                  // String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-                  // print(formattedDate); //formatted date output using intl package =>  2021-03-16
-                  //you can implement different kind of Date Format here according to your requirement
-                  onChanged!(pickedTime);
-                  setState(() {
-                    controller.text = pickedTime
-                        .format(context); //set output date to TextField value.
-                  });
-                } else {}
-              },
-            ).hP4,
-          ).round(25),
+              child: Row(
+                children: [
+                  (widget.label != null && widget.showLabelInNewLine == false)
+                      ? BodySmallText(
+                    widget.label!,
+                  ).bP4
+                      : Container(),
+                  iconView().lP16,
+                  Expanded(
+                      child: Focus(
+                        child: TextField(
+                            style: TextStyle(
+                                fontSize: FontSizes.b3,
+                                color: AppColorConstants.inputFieldTextColor),
+                            controller: widget.controller,
+                            onChanged: widget.onChanged,
+                            cursorColor: AppColorConstants.themeColor,
+                            obscureText: !showPassword,
+                            decoration: InputDecoration(
+                              hintText: widget.hintText,
+                              hintStyle: TextStyle(
+                                  fontSize: FontSizes.b3,
+                                  color: AppColorConstants
+                                      .inputFieldPlaceholderTextColor),
+                              border: InputBorder.none,
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
+                            )),
+                        onFocusChange: (hasFocus) {
+                          widget.startedEditing = hasFocus;
+                          setState(() {});
+                        },
+                      )),
+                  revealPasswordIcon()
+                ],
+              ),
+            ),
+          ),
+          line()
         ],
       ),
     );
+  }
+
+  Widget revealPasswordIcon() {
+    return widget.showRevealPasswordIcon == true
+        ? Row(
+      children: [
+        ThemeIconWidget(
+          showPassword == false ? ThemeIcon.showPwd : ThemeIcon.hide,
+          color: AppColorConstants.iconColor,
+          size: 20,
+        ).ripple(() {
+          setState(() {
+            showPassword = !showPassword;
+          });
+        }),
+        const SizedBox(
+          width: 16,
+        )
+      ],
+    )
+        : Container();
+  }
+
+  Widget line() {
+    return widget.showDivider == true
+        ? Container(
+        height: 0.5,
+        color: widget.startedEditing == true
+            ? AppColorConstants.themeColor
+            : widget.isError == true
+            ? AppColorConstants.red
+            : AppColorConstants.dividerColor)
+        : Container();
+  }
+
+  Widget iconView() {
+    return widget.icon != null
+        ? ThemeIconWidget(
+      widget.icon!,
+      color: widget.iconColor ?? AppColorConstants.themeColor,
+      size: 20,
+    ).rP16
+        : Container();
+  }
+}
+
+class RoundedInputMobileNumberField extends StatefulWidget {
+  final String? label;
+  final bool? showLabelInNewLine;
+  final String? hintText;
+  final String? defaultText;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final ThemeIcon? icon;
+  final int? maxLines;
+  final bool? showDivider;
+  final Color? iconColor;
+  final bool? isDisabled;
+  bool? startedEditing;
+  final bool? isError;
+  final bool? iconOnRightSide;
+  final Color? backgroundColor;
+  final bool? showBorder;
+  final Color? borderColor;
+  final double? cornerRadius;
+
+  final Color? cursorColor;
+  final TextStyle? textStyle;
+
+  String? countryCodeText;
+
+  final ValueChanged<String>? countrycodeValueChanged;
+
+  RoundedInputMobileNumberField({
+    Key? key,
+    this.label,
+    this.showLabelInNewLine = true,
+    this.hintText,
+    this.defaultText,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+    this.icon,
+    this.maxLines,
+    this.showDivider = false,
+    this.iconColor,
+    this.isDisabled,
+    this.startedEditing = false,
+    this.isError = false,
+    this.iconOnRightSide = false,
+    this.backgroundColor,
+    this.showBorder = false,
+    this.borderColor,
+    this.cornerRadius = 12,
+    this.cursorColor,
+    this.textStyle,
+    this.countryCodeText,
+    this.countrycodeValueChanged,
+  }) : super(key: key);
+
+  @override
+  State<RoundedInputMobileNumberField> createState() =>
+      _RoundedInputMobileNumberFieldState();
+}
+
+class _RoundedInputMobileNumberFieldState
+    extends State<RoundedInputMobileNumberField> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      // margin: EdgeInsets.symmetric(vertical: 5),
+      // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      height: widget.maxLines != null
+          ? (min(widget.maxLines!, 10) * 20) + 45
+          : widget.label != null
+          ? 70
+          : 60,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          (widget.label != null && widget.showLabelInNewLine == true)
+              ? BodySmallText(
+            widget.label!,
+          ).bP4
+              : Container(),
+          Container(
+            decoration: BoxDecoration(
+              color: widget.isError == false
+                  ? widget.backgroundColor
+                  : (widget.showDivider == false && widget.showBorder == false)
+                  ? AppColorConstants.red
+                  : widget.backgroundColor,
+              borderRadius: BorderRadius.circular(widget.cornerRadius!),
+              border: widget.showBorder == true
+                  ? Border.all(
+                  width: 0.5,
+                  color: widget.isError == true
+                      ? AppColorConstants.red
+                      : widget.borderColor ??
+                      AppColorConstants.dividerColor)
+                  : null,
+            ),
+            child: Row(
+              children: [
+                SizedBox(
+                    width: 80,
+                    // height: 55,
+                    // color: AppColorConstants.grey.withOpacity(0.2),
+                    child: InkWell(
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            BodyMediumText(
+                              widget.countryCodeText ?? "+1",
+                              // style: TextStyles.body,
+                            ).lP8,
+                            const Icon(Icons.arrow_drop_down)
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        showCountryPicker(
+                          context: context,
+                          showPhoneCode: true,
+                          // optional. Shows phone code before the country name.
+                          onSelect: (Country country) {
+                            setState(() {
+                              widget.countryCodeText = '+${country.phoneCode}';
+                              widget.countrycodeValueChanged!(
+                                  widget.countryCodeText!);
+                            });
+                          },
+                        );
+                      },
+                    )).rP16,
+                (widget.label != null && widget.showLabelInNewLine == false)
+                    ? BodySmallText(
+                  widget.label!,
+                ).bP4
+                    : Container(),
+                widget.iconOnRightSide == false ? iconView().lP16 : Container(),
+                Expanded(
+                  child: Focus(
+                    child: TextField(
+                      controller: widget.controller,
+                      keyboardType: TextInputType.text,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontSize: FontSizes.b3,
+                          color: AppColorConstants.inputFieldTextColor),
+                      onChanged: widget.onChanged,
+                      maxLines: widget.maxLines,
+                      decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          border: InputBorder.none,
+                          counterText: "",
+                          // labelText: hintText,
+                          hintStyle: TextStyle(
+                              fontSize: FontSizes.b3,
+                              color: AppColorConstants
+                                  .inputFieldPlaceholderTextColor),
+                          hintText: widget.hintText),
+                    ),
+                    onFocusChange: (hasFocus) {
+                      widget.startedEditing = hasFocus;
+                      setState(() {});
+                    },
+                  ),
+                ),
+                widget.iconOnRightSide == true ? iconView() : Container(),
+              ],
+            ),
+          ),
+          line()
+        ],
+      ),
+    );
+  }
+
+  Widget line() {
+    return widget.showDivider == true
+        ? Container(
+        height: 0.5,
+        color: widget.startedEditing == true
+            ? AppColorConstants.themeColor
+            : widget.isError == true
+            ? AppColorConstants.red
+            : AppColorConstants.red)
+        : Container();
+  }
+
+  Widget iconView() {
+    return widget.icon != null
+        ? ThemeIconWidget(widget.icon!,
+        color: widget.iconColor ?? AppColorConstants.iconColor,
+        size: 20)
+        .rP16
+        : Container();
+  }
+}
+
+class RoundedInputDateField extends StatefulWidget {
+  final String? label;
+  final bool? showLabelInNewLine;
+  final String? hintText;
+  String? defaultText;
+
+  // final TextEditingController? controller;
+  final ValueChanged<TimeOfDay>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final ThemeIcon? icon;
+  final bool? showDivider;
+  final Color? iconColor;
+  final bool? isDisabled;
+  bool? startedEditing;
+  final bool? isError;
+  final bool? iconOnRightSide;
+  final Color? backgroundColor;
+  final bool? showBorder;
+  final Color? borderColor;
+  final double? cornerRadius;
+
+  final Color? cursorColor;
+  final TextStyle? textStyle;
+
+  final DateTime? minDate;
+  final DateTime? maxDate;
+
+  RoundedInputDateField({
+    Key? key,
+    this.label,
+    this.showLabelInNewLine = true,
+    this.hintText,
+    this.defaultText,
+    // this.controller,
+    this.onChanged,
+    this.onSubmitted,
+    this.icon,
+    this.showDivider = false,
+    this.iconColor,
+    this.isDisabled,
+    this.startedEditing = false,
+    this.isError = false,
+    this.iconOnRightSide = false,
+    this.backgroundColor,
+    this.showBorder = false,
+    this.borderColor,
+    this.cornerRadius = 12,
+    this.cursorColor,
+    this.textStyle,
+    this.minDate,
+    this.maxDate,
+  }) : super(key: key);
+
+  @override
+  State<RoundedInputDateField> createState() => _RoundedInputDateFieldState();
+}
+
+class _RoundedInputDateFieldState extends State<RoundedInputDateField> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      // margin: EdgeInsets.symmetric(vertical: 5),
+      // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      height: widget.label != null ? 70 : 60,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          (widget.label != null && widget.showLabelInNewLine == true)
+              ? BodySmallText(
+            widget.label!,
+          ).bP8
+              : Container(),
+          Container(
+            decoration: BoxDecoration(
+              // color: widget.isError == false
+              //     ? widget.backgroundColor
+              //     : (widget.showDivider == false && widget.showBorder == false)
+              //         ? AppColorConstants.red
+              //         : widget.backgroundColor,
+              borderRadius: BorderRadius.circular(widget.cornerRadius!),
+              border: widget.showBorder == true
+                  ? Border.all(
+                  width: 0.5,
+                  color: widget.isError == true
+                      ? AppColorConstants.red
+                      : widget.borderColor ??
+                      AppColorConstants.dividerColor)
+                  : null,
+            ),
+            child: Row(
+              children: [
+                if (widget.label != null && widget.showLabelInNewLine == false)
+                  BodySmallText(
+                    widget.label!,
+                    textAlign: TextAlign.center,
+                  ),
+                if (widget.icon != null && widget.iconOnRightSide == false)
+                  iconView().lP16,
+                Expanded(
+                  child: BodySmallText(
+                      widget.defaultText ?? widget.hintText ?? '',
+                      textAlign: TextAlign.center,
+                      color: widget.defaultText == null
+                          ? AppColorConstants.inputFieldPlaceholderTextColor
+                          : AppColorConstants.inputFieldTextColor)
+                      .ripple(() async {
+                    TimeOfDay initialTime = TimeOfDay.now();
+                    TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: initialTime,
+                    );
+
+                    if (pickedTime != null) {
+                      widget.onChanged!(pickedTime);
+                      setState(() {
+                        widget.defaultText = pickedTime.format(
+                            context); //set output date to TextField value.
+                      });
+                    } else {}
+                  }),
+                ),
+                widget.iconOnRightSide == true ? iconView() : Container(),
+              ],
+            ),
+          ),
+          line()
+        ],
+      ),
+    );
+  }
+
+  Widget line() {
+    return widget.showDivider == true
+        ? Container(
+        height: 0.5,
+        color: widget.startedEditing == true
+            ? AppColorConstants.themeColor
+            : widget.isError == true
+            ? AppColorConstants.red
+            : AppColorConstants.red)
+        : Container();
+  }
+
+  Widget iconView() {
+    return widget.icon != null
+        ? ThemeIconWidget(widget.icon!,
+        color: widget.iconColor ?? AppColorConstants.iconColor,
+        size: 20)
+        .rP16
+        : Container();
+  }
+}
+
+class RoundedInputPriceField extends StatefulWidget {
+  final String? label;
+  final bool? showLabelInNewLine;
+  final String? hintText;
+  String? currency;
+
+  final String? defaultText;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? currencyValueChanged;
+
+  final ThemeIcon? icon;
+  final int? maxLines;
+  final bool? showDivider;
+  final Color? iconColor;
+  final bool? isDisabled;
+  bool? startedEditing;
+  final bool? isError;
+  final bool? iconOnRightSide;
+  final Color? backgroundColor;
+  final bool? showBorder;
+  final Color? borderColor;
+  final double? cornerRadius;
+  final bool? disable;
+
+  final Color? cursorColor;
+  final TextStyle? textStyle;
+
+  RoundedInputPriceField({
+    Key? key,
+    this.label,
+    this.showLabelInNewLine = true,
+    this.hintText,
+    this.disable,
+    this.currency,
+    this.defaultText,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+    this.currencyValueChanged,
+    this.icon,
+    this.maxLines,
+    this.showDivider = false,
+    this.iconColor,
+    this.isDisabled,
+    this.startedEditing = false,
+    this.isError = false,
+    this.iconOnRightSide = false,
+    this.backgroundColor,
+    this.showBorder = false,
+    this.borderColor,
+    this.cornerRadius = 12,
+    this.cursorColor,
+    this.textStyle,
+  }) : super(key: key);
+
+  @override
+  State<RoundedInputPriceField> createState() => _RoundedInputPriceFieldState();
+}
+
+class _RoundedInputPriceFieldState extends State<RoundedInputPriceField> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.maxLines != null
+          ? (min(widget.maxLines!, 10) * 20) + 45
+          : widget.label != null
+          ? 70
+          : 60,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          (widget.label != null && widget.showLabelInNewLine == true)
+              ? BodySmallText(
+            widget.label!,
+          ).bP8
+              : Container(),
+          Container(
+            decoration: BoxDecoration(
+              color: widget.isError == false
+                  ? widget.backgroundColor
+                  : (widget.showDivider == false && widget.showBorder == false)
+                  ? AppColorConstants.red
+                  : widget.backgroundColor,
+              borderRadius: BorderRadius.circular(widget.cornerRadius!),
+              border: widget.showBorder == true
+                  ? Border.all(
+                  width: 0.5,
+                  color: widget.isError == true
+                      ? AppColorConstants.red
+                      : widget.borderColor ??
+                      AppColorConstants.dividerColor)
+                  : null,
+            ),
+            child: Row(
+              children: [
+                (widget.label != null && widget.showLabelInNewLine == false)
+                    ? BodySmallText(
+                  widget.label!,
+                ).bP4
+                    : Container(),
+                widget.iconOnRightSide == false ? iconView().lP16 : Container(),
+                SizedBox(
+                  width: 80,
+                  // height: 50,
+                  // color: AppColorConstants.grey.withOpacity(0.2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      BodyMediumText(
+                        widget.currency ?? "\$",
+                        // style: TextStyles.body,
+                      ).lP8,
+                      const Icon(Icons.arrow_drop_down)
+                    ],
+                  ).ripple(() {
+                    if (widget.disable == false) {
+                      showCurrencyPicker(
+                        context: context,
+                        showFlag: true,
+                        showCurrencyName: true,
+                        showCurrencyCode: true,
+                        onSelect: (Currency currency) {
+                          setState(() {
+                            widget.currency = currency.code;
+                            widget.currencyValueChanged!(widget.currency!);
+                          });
+                        },
+                      );
+                    }
+                  }),
+                ).rP16,
+                Expanded(
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    // style: TextStyles.body,
+                    controller: widget.controller,
+                    onChanged: widget.onChanged,
+                    // cursorColor: ThemeColors.PrimaryTextColor,
+                    decoration: InputDecoration(
+                      hintText: widget.hintText,
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                widget.iconOnRightSide == true ? iconView() : Container(),
+              ],
+            ),
+          ),
+          line()
+        ],
+      ),
+    );
+  }
+
+  Widget line() {
+    return widget.showDivider == true
+        ? Container(
+        height: 0.5,
+        color: widget.startedEditing == true
+            ? AppColorConstants.themeColor
+            : widget.isError == true
+            ? AppColorConstants.red
+            : AppColorConstants.red)
+        : Container();
+  }
+
+  Widget iconView() {
+    return widget.icon != null
+        ? ThemeIconWidget(widget.icon!,
+        color: widget.iconColor ?? AppColorConstants.iconColor,
+        size: 20)
+        .rP16
+        : Container();
   }
 }
 
 class RoundedInputDateTimeField extends StatefulWidget {
   final String? label;
+  final bool? showLabelInNewLine;
   final String? hintText;
   final String? defaultText;
+  final TextEditingController? controller;
   final ValueChanged<DateTime>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final ThemeIcon? icon;
+  final int? maxLines;
+  final bool? showDivider;
+  final Color? iconColor;
+  final bool? isDisabled;
+  bool? startedEditing;
+  final bool? isError;
+  final bool? iconOnRightSide;
+  final Color? backgroundColor;
+  final bool? showBorder;
+  final Color? borderColor;
+  final double? cornerRadius;
 
-  const RoundedInputDateTimeField({
+  final Color? cursorColor;
+  final TextStyle? textStyle;
+
+  final DateTime? minDate;
+  final DateTime? maxDate;
+
+  RoundedInputDateTimeField({
     Key? key,
     this.label,
+    this.showLabelInNewLine = true,
     this.hintText,
     this.defaultText,
+    this.controller,
     this.onChanged,
+    this.onSubmitted,
+    this.icon,
+    this.maxLines,
+    this.showDivider = false,
+    this.iconColor,
+    this.isDisabled,
+    this.startedEditing = false,
+    this.isError = false,
+    this.iconOnRightSide = false,
+    this.backgroundColor,
+    this.showBorder = false,
+    this.borderColor,
+    this.cornerRadius = 12,
+    this.cursorColor,
+    this.textStyle,
+    this.minDate,
+    this.maxDate,
   }) : super(key: key);
 
   @override
@@ -685,70 +952,271 @@ class RoundedInputDateTimeField extends StatefulWidget {
 }
 
 class _RoundedInputDateTimeFieldState extends State<RoundedInputDateTimeField> {
-  String? label;
-  String? hintText;
-  String? defaultText;
-  TextEditingController controller = TextEditingController();
-  ValueChanged<DateTime>? onChanged;
-
   @override
   void initState() {
-    label = widget.label;
-    hintText = widget.hintText;
-    defaultText = widget.defaultText;
-    onChanged = widget.onChanged;
-
-    controller.text = defaultText ?? '';
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 80,
+      // margin: EdgeInsets.symmetric(vertical: 5),
+      // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      height: widget.maxLines != null
+          ? (min(widget.maxLines!, 10) * 20) + 45
+          : widget.label != null
+          ? 70
+          : 60,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          widget.label != null
-              ? BodyMediumText(widget.label!, weight: TextWeight.medium).bP8
+          (widget.label != null && widget.showLabelInNewLine == true)
+              ? BodySmallText(
+            widget.label!,
+          ).bP8
               : Container(),
           Container(
-            color: AppColorConstants.backgroundColor,
-            child: Center(
-              child: TextField(
-                style: TextStyle(fontSize: FontSizes.b3),
-                textAlign: TextAlign.left,
-                controller: controller,
-                // onChanged: onChanged,
-                cursorColor: AppColorConstants.iconColor,
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  hintStyle: TextStyle(fontSize: FontSizes.b3),
-                  border: InputBorder.none,
-                ),
-                readOnly: true,
-                //set it true, so that user will not able to edit text
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime(1960),
-                      initialDate: DateTime.now(),
-                      lastDate: DateTime(2100));
-                  if (pickedDate != null) {
-                    onChanged!(pickedDate);
-                    setState(() {
-                      String formattedDate =
-                          DateFormat('dd-MMM-yyyy').format(pickedDate);
-                      controller.text =
-                          formattedDate; //set output date to TextField value.
-                    });
-                  } else {}
-                },
-              ).hP16,
+            decoration: BoxDecoration(
+              color: widget.isError == false
+                  ? widget.backgroundColor
+                  : (widget.showDivider == false && widget.showBorder == false)
+                  ? AppColorConstants.red
+                  : widget.backgroundColor,
+              borderRadius: BorderRadius.circular(widget.cornerRadius!),
+              border: widget.showBorder == true
+                  ? Border.all(
+                  width: 0.5,
+                  color: widget.isError == true
+                      ? AppColorConstants.red
+                      : widget.borderColor ??
+                      AppColorConstants.dividerColor)
+                  : null,
             ),
-          ).round(25),
+            child: Row(
+              children: [
+                (widget.label != null && widget.showLabelInNewLine == false)
+                    ? BodySmallText(
+                  widget.label!,
+                ).bP4
+                    : Container(),
+                widget.iconOnRightSide == false ? iconView().lP16 : Container(),
+                Expanded(
+                  child: Focus(
+                    child: TextField(
+                      controller: widget.controller,
+                      keyboardType: TextInputType.text,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontSize: FontSizes.b3,
+                          color: AppColorConstants.inputFieldTextColor),
+                      // onChanged: widget.onChanged,
+                      maxLines: widget.maxLines,
+                      readOnly: true,
+                      //set it true, so that user will not able to edit text
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            firstDate: widget.minDate ?? DateTime(1960),
+                            initialDate: DateTime.now(),
+                            lastDate: widget.maxDate ?? DateTime(2100));
+                        if (pickedDate != null) {
+                          widget.onChanged!(pickedDate);
+                          setState(() {
+                            String formattedDate =
+                            DateFormat('dd-MMM-yyyy').format(pickedDate);
+                            widget.controller!.text =
+                                formattedDate; //set output date to TextField value.
+                          });
+                        } else {}
+                      },
+                      decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          border: InputBorder.none,
+                          counterText: "",
+                          // labelText: hintText,
+                          hintStyle: TextStyle(
+                              fontSize: FontSizes.b3,
+                              color: AppColorConstants
+                                  .inputFieldPlaceholderTextColor),
+                          hintText: widget.hintText),
+                    ),
+                    onFocusChange: (hasFocus) {
+                      widget.startedEditing = hasFocus;
+                      setState(() {});
+                    },
+                  ),
+                ),
+                widget.iconOnRightSide == true ? iconView() : Container(),
+              ],
+            ),
+          ),
+          line()
         ],
       ),
     );
+  }
+
+  Widget line() {
+    return widget.showDivider == true
+        ? Container(
+        height: 0.5,
+        color: widget.startedEditing == true
+            ? AppColorConstants.themeColor
+            : widget.isError == true
+            ? AppColorConstants.red
+            : AppColorConstants.red)
+        : Container();
+  }
+
+  Widget iconView() {
+    return widget.icon != null
+        ? ThemeIconWidget(widget.icon!,
+        color: widget.iconColor ?? AppColorConstants.iconColor,
+        size: 20)
+        .rP16
+        : Container();
+  }
+}
+
+class RoundedDropdownField extends StatefulWidget {
+  final String? label;
+  final bool? showLabelInNewLine;
+  final String? hintText;
+  final String? value;
+  final ValueChanged<String> onChanged;
+  final ThemeIcon? icon;
+  final bool? showDivider;
+  final Color? iconColor;
+  final bool? isDisabled;
+  final bool? isError;
+  final bool? iconOnRightSide;
+  final Color? backgroundColor;
+  final bool? showBorder;
+  final Color? borderColor;
+  final double? cornerRadius;
+
+  final TextStyle? textStyle;
+  final List<String> options;
+
+  const RoundedDropdownField(
+      {Key? key,
+        this.label,
+        this.showLabelInNewLine = true,
+        this.hintText,
+        this.value,
+        required this.onChanged,
+        this.icon,
+        this.showDivider = false,
+        this.iconColor,
+        this.isDisabled,
+        this.isError = false,
+        this.iconOnRightSide = false,
+        this.backgroundColor,
+        this.showBorder = false,
+        this.borderColor,
+        this.cornerRadius = 12,
+        this.textStyle,
+        required this.options})
+      : super(key: key);
+
+  @override
+  State<RoundedDropdownField> createState() => _RoundedDropdownFieldState();
+}
+
+class _RoundedDropdownFieldState extends State<RoundedDropdownField> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      // margin: EdgeInsets.symmetric(vertical: 5),
+      // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      height: widget.label != null ? 70 : 60,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          (widget.label != null && widget.showLabelInNewLine == true)
+              ? BodySmallText(
+            widget.label!,
+          ).bP8
+              : Container(),
+          Container(
+            decoration: BoxDecoration(
+              color: widget.isError == false
+                  ? widget.backgroundColor
+                  : (widget.showDivider == false && widget.showBorder == false)
+                  ? AppColorConstants.red
+                  : widget.backgroundColor,
+              borderRadius: BorderRadius.circular(widget.cornerRadius!),
+              border: widget.showBorder == true
+                  ? Border.all(
+                  width: 0.5,
+                  color: widget.isError == true
+                      ? AppColorConstants.red
+                      : widget.borderColor ??
+                      AppColorConstants.dividerColor)
+                  : null,
+            ),
+            child: Row(
+              children: [
+                (widget.label != null && widget.showLabelInNewLine == false)
+                    ? BodySmallText(
+                  widget.label!,
+                ).bP4
+                    : Container(),
+                widget.iconOnRightSide == false ? iconView().lP16 : Container(),
+                Expanded(
+                  child: DropdownButton<String>(
+                    dropdownColor: AppColorConstants.cardColor,
+                    isExpanded: true,
+                    hint: Text(
+                      widget.value ??
+                          widget.hintText ??
+                          selectString,
+                      style: TextStyle(
+                          fontSize: FontSizes.b3,
+                          color: widget.value == null
+                              ? AppColorConstants.inputFieldPlaceholderTextColor
+                              : AppColorConstants.inputFieldTextColor),
+                    ),
+                    underline: Container(),
+                    items: widget.options.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                              fontSize: FontSizes.b3,
+                              color: AppColorConstants.inputFieldTextColor),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      widget.onChanged(value!);
+                    },
+                  ).rP8,
+                ),
+                widget.iconOnRightSide == true ? iconView() : Container(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget iconView() {
+    return widget.icon != null
+        ? ThemeIconWidget(widget.icon!,
+        color: widget.iconColor ?? AppColorConstants.iconColor,
+        size: 20)
+        .rP16
+        : Container();
   }
 }
 
@@ -768,17 +1236,17 @@ class DropdownBorderedField extends StatefulWidget {
 
   const DropdownBorderedField(
       {Key? key,
-      this.hintText,
-      this.controller,
-      this.icon,
-      this.iconColor,
-      this.iconOnRightSide = false,
-      this.backgroundColor,
-      this.showBorder = false,
-      this.borderColor,
-      this.cornerRadius = 0,
-      this.textStyle,
-      this.onTap})
+        this.hintText,
+        this.controller,
+        this.icon,
+        this.iconColor,
+        this.iconOnRightSide = false,
+        this.backgroundColor,
+        this.showBorder = false,
+        this.borderColor,
+        this.cornerRadius = 0,
+        this.textStyle,
+        this.onTap})
       : super(key: key);
 
   @override
@@ -818,8 +1286,8 @@ class _DropdownBorderedState extends State<DropdownBorderedField> {
         borderRadius: BorderRadius.circular(cornerRadius ?? 0),
         border: showBorder == true
             ? Border.all(
-                width: 0.5,
-                color: borderColor ?? AppColorConstants.dividerColor)
+            width: 0.5,
+            color: borderColor ?? AppColorConstants.dividerColor)
             : null,
       ),
       height: 60,
@@ -864,8 +1332,8 @@ class _DropdownBorderedState extends State<DropdownBorderedField> {
   Widget iconView() {
     return icon != null
         ? ThemeIconWidget(icon!,
-                color: iconColor ?? AppColorConstants.themeColor, size: 20)
-            .rP16
+        color: iconColor ?? AppColorConstants.themeColor, size: 20)
+        .rP16
         : Container();
   }
 }

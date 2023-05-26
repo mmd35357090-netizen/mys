@@ -38,11 +38,8 @@ class _FindRandomUserState extends State<FindRandomUser> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(context: context, title: 'Finding...'),
-          divider(context: context).tP8,
+          backNavigationBar( title: 'Finding...'),
+          divider().tP8,
           const Spacer(),
           Obx(() => _randomChatAndCallController.randomOnlineUser.value == null
               ? Column(
@@ -63,7 +60,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
                       height: 150,
                     ),
                     Heading3Text(
-                      LocalizationString.findingPerfectUserToChat,
+                      findingPerfectUserToChatString.tr,
                       weight: TextWeight.regular,
                       textAlign: TextAlign.center,
                     ).hP25,
@@ -92,10 +89,10 @@ class _FindRandomUserState extends State<FindRandomUser> {
                             height: 50,
                             width: 250,
                             child: AppThemeButton(
-                                text: LocalizationString.chat,
+                                text: chatString.tr,
                                 onPress: () {
                                   EasyLoading.show(
-                                      status: LocalizationString.loading);
+                                      status: loadingString.tr);
 
                                   _chatDetailController.getChatRoomWithUser(
                                       userId: _randomChatAndCallController
@@ -134,7 +131,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
                 height: 5,
               ),
               BodyMediumText(
-                LocalizationString.audio,
+                audioString.tr,
                   weight: TextWeight.medium
               ),
             ],
@@ -156,7 +153,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
                 height: 5,
               ),
               BodyMediumText(
-                LocalizationString.video,
+                videoString.tr,
                   weight: TextWeight.medium
               ),
             ],

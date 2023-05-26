@@ -68,12 +68,9 @@ class SelectUserToGiftEventTicketState
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            const SizedBox(
-              height: 25,
-            ),
-            backNavigationBar(
-                context: context, title: LocalizationString.selectUser),
-            divider(context: context).tP8,
+
+            backNavigationBar(title: selectUserString.tr),
+            divider().tP8,
             Expanded(
               child: GetBuilder<UserNetworkController>(
                   init: _userNetworkController,

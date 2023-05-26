@@ -22,14 +22,10 @@ class _CategoriesListState extends State<CategoriesList> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
           backNavigationBar(
-            context: context,
-            title: LocalizationString.categories,
+            title: categoriesString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
               child: GetBuilder<ClubsController>(
                   init: widget.clubsController,

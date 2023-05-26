@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:foap/apiHandler/apis/highlights_api.dart';
+import 'package:foap/apiHandler/apis/misc_api.dart';
+import 'package:foap/apiHandler/apis/story_api.dart';
 import 'package:foap/components/custom_gallery_picker.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/highlights_imports.dart';
@@ -27,7 +30,7 @@ class HighlightsController extends GetxController {
 
   bool isLoading = true;
 
-  clear(){
+  clear() {
     selectedStoriesMedia.clear();
   }
 
@@ -52,25 +55,24 @@ class HighlightsController extends GetxController {
   }
 
   void getHighlights({required int userId}) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        isLoading = true;
-        update();
-        ApiController().getHighlights(userId: userId).then((response) async {
+    isLoading = true;
+    update();
+
+    HighlightsApi.getHighlights(
+        userId: userId,
+        resultCallback: (result) {
           isLoading = false;
-          highlights.value = response.success ? response.highlights : [];
+          highlights.value = result;
           update();
         });
-      }
-    });
   }
 
   getAllStories() {
     isLoading = true;
     update();
-    ApiController().getMyStories().then((response) {
+    StoryApi.getMyStories(resultCallback: (result) {
       isLoading = false;
-      stories.value = response.myStories;
+      stories.value = result;
       update();
     });
   }
@@ -80,37 +82,30 @@ class HighlightsController extends GetxController {
       await uploadCoverImage();
     }
 
-    EasyLoading.show(status: LocalizationString.loading);
-    ApiController()
-        .createHighlight(
-            name: name,
-            image: coverImageName,
-            stories: selectedStoriesMedia
-                .map((element) => element.id.toString())
-                .toList()
-                .join(','))
-        .then((value) async {
-      getHighlights(userId: _userProfileManager.user.value!.id);
-      EasyLoading.dismiss();
+    HighlightsApi.createHighlights(
+        name: name,
+        image: coverImageName,
+        stories: selectedStoriesMedia
+            .map((element) => element.id.toString())
+            .toList()
+            .join(','),
+        resultCallback: () {
+          getHighlights(userId: _userProfileManager.user.value!.id);
 
-      Get.close(2);
-      // Get.offAll(const DashboardScreen(selectedTab: 4));
-    });
+          Get.close(2);
+        });
   }
 
   Future uploadCoverImage() async {
     Uint8List compressedData = await pickedImage!.compress();
     File file = File.fromRawPath(compressedData);
-    await ApiController()
-        .uploadFile(file: file.path, type: UploadMediaType.storyOrHighlights)
-        .then((response) async {
-      coverImageName = response.postedMediaFileName!;
+    await MiscApi.uploadFile(file.path, type: UploadMediaType.storyOrHighlights,
+        resultCallback: (fileName, filePath) {
+      coverImageName = fileName;
     });
   }
 
   deleteStoryFromHighlight() async {
-    await ApiController()
-        .deleteStoryFromHighlights(id: storyMediaModel.value!.id)
-        .then((response) async {});
+    await HighlightsApi.deleteStoryFromHighlights(storyMediaModel.value!.id);
   }
 }

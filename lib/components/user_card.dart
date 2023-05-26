@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 
-import '../controllers/agora_live_controller.dart';
+import '../controllers/live/agora_live_controller.dart';
 import '../controllers/profile_controller.dart';
 import '../model/call_model.dart';
 import '../model/club_join_request.dart';
@@ -265,8 +265,8 @@ class UserTile extends StatelessWidget {
                 ? AppThemeBorderButton(
                     // icon: ThemeIcon.message,
                     text: profile.isFollower == true
-                        ? LocalizationString.followBack
-                        : LocalizationString.follow,
+                        ? followBackString.tr
+                        : followString.tr,
                     textStyle: TextStyle(
                         fontSize: FontSizes.b2,
                         fontWeight: TextWeight.medium,
@@ -277,7 +277,7 @@ class UserTile extends StatelessWidget {
                       }
                     })
                 : AppThemeButton(
-                    text: LocalizationString.unFollow,
+                    text: unFollowString.tr,
                     onPress: () {
                       if (unFollowCallback != null) {
                         unFollowCallback!();
@@ -316,18 +316,18 @@ class UserTile extends StatelessWidget {
             width: 80,
             child: ProgressButton.icon(iconedButtons: {
               ButtonState.idle: IconedButton(
-                  text: LocalizationString.send,
+                  text: sendString.tr,
                   icon: const Icon(Icons.send, color: Colors.white),
                   color: Colors.deepPurple.shade500),
               ButtonState.loading: IconedButton(
-                  text: LocalizationString.loading,
+                  text: loadingString.tr,
                   color: Colors.deepPurple.shade700),
               ButtonState.fail: IconedButton(
-                  text: LocalizationString.failed,
+                  text: failedString.tr,
                   icon: const Icon(Icons.cancel, color: Colors.white),
                   color: Colors.red.shade300),
               ButtonState.success: IconedButton(
-                  text: LocalizationString.sent,
+                  text: sentString.tr,
                   icon: const Icon(
                     Icons.check_circle,
                     color: Colors.white,
@@ -415,7 +415,7 @@ class RelationUserTile extends StatelessWidget {
             width: 120,
             child: AppThemeBorderButton(
                 // icon: ThemeIcon.message,
-                text: LocalizationString.invite,
+                text: inviteString.tr,
                 textStyle: TextStyle(
                     fontSize: FontSizes.b2,
                     fontWeight: TextWeight.medium,
@@ -497,7 +497,7 @@ class ClubMemberTile extends StatelessWidget {
                 width: 120,
                 child: Center(
                   child: BodyLargeText(
-                    LocalizationString.admin,
+                    adminString.tr,
                     weight: TextWeight.medium,
                     color: AppColorConstants.themeColor,
                   ),
@@ -509,7 +509,7 @@ class ClubMemberTile extends StatelessWidget {
                     width: 120,
                     child: AppThemeButton(
                         // icon: ThemeIcon.message,
-                        text: LocalizationString.remove,
+                        text: removeString.tr,
                         onPress: () {
                           if (removeBtnCallback != null) {
                             removeBtnCallback!();
@@ -564,7 +564,7 @@ class SendMessageUserTile extends StatelessWidget {
                       textStyle: TextStyle(fontSize: FontSizes.b2),
                       iconedButtons: {
                         ButtonState.idle: IconedButton(
-                            text: LocalizationString.send,
+                            text: sendString.tr,
                             icon: const Icon(
                               Icons.send,
                               color: Colors.white,
@@ -572,15 +572,15 @@ class SendMessageUserTile extends StatelessWidget {
                             ),
                             color: AppColorConstants.themeColor.lighten(0.1)),
                         ButtonState.loading: IconedButton(
-                            text: LocalizationString.loading,
+                            text: loadingString.tr,
                             color: Colors.white),
                         ButtonState.fail: IconedButton(
-                            text: LocalizationString.failed,
+                            text: failedString.tr,
                             icon: const Icon(Icons.cancel,
                                 color: Colors.white, size: 15),
                             color: AppColorConstants.red),
                         ButtonState.success: IconedButton(
-                            text: LocalizationString.sent,
+                            text: sentString.tr,
                             icon: const Icon(Icons.check_circle,
                                 color: Colors.white, size: 15),
                             color: AppColorConstants.themeColor.darken())
@@ -616,7 +616,7 @@ class BlockedUserTile extends StatelessWidget {
             width: 110,
             child: AppThemeBorderButton(
                 // icon: ThemeIcon.message,
-                text: LocalizationString.unblock,
+                text: unblockString.tr,
                 textStyle: TextStyle(
                     fontSize: FontSizes.b2,
                     fontWeight: TextWeight.medium,
@@ -723,7 +723,7 @@ class ClubJoinRequestTile extends StatelessWidget {
                 width: 120,
                 child: AppThemeButton(
                     // icon: ThemeIcon.message,
-                    text: LocalizationString.accept,
+                    text: acceptString.tr,
                     onPress: () {
                       acceptBtnClicked();
                     })),
@@ -735,7 +735,7 @@ class ClubJoinRequestTile extends StatelessWidget {
                 width: 120,
                 child: AppThemeBorderButton(
                     // icon: ThemeIcon.message,
-                    text: LocalizationString.decline,
+                    text: declineString.tr,
                     textStyle: TextStyle(
                         fontSize: FontSizes.b2,
                         fontWeight: TextWeight.medium,

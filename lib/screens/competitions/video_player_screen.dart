@@ -67,7 +67,7 @@ import '../../model/post_gallery.dart';
 //                 }),
 //               ],
 //             ).hP16,
-//             divider(context: context).vP8,
+//             divider().vP8,
 //             Expanded(
 //               child: Center(
 //                 child: _controller.value.isInitialized
@@ -157,11 +157,9 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
-          backNavigationBar(context: context, title: ''),
-          divider(context: context).tP16,
+
+          backNavigationBar( title: ''),
+          divider().tP16,
           Expanded(
             child: Center(
               child: Stack(

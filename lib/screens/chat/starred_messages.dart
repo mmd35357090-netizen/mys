@@ -44,7 +44,7 @@ class _StarredMessagesState extends State<StarredMessages> {
               height: 50,
             ),
             appBar(),
-            divider(context: context).tP8,
+            divider().tP8,
             Expanded(child: messagesListView()),
             Obx(() {
               return _chatDetailController.actionMode.value ==
@@ -74,7 +74,7 @@ class _StarredMessagesState extends State<StarredMessages> {
             }),
             const Spacer(),
             BodyLargeText(
-              LocalizationString.edit,
+              editString.tr,
                 weight: TextWeight.medium
             ).p8.ripple(() {
               _chatDetailController.setToActionMode(
@@ -87,7 +87,7 @@ class _StarredMessagesState extends State<StarredMessages> {
             right: 0,
             child: Center(
               child: BodyLargeText(
-                LocalizationString.starredMessages,
+                starredMessagesString.tr,
               ),
             ))
       ],
@@ -102,19 +102,19 @@ class _StarredMessagesState extends State<StarredMessages> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           BodyLargeText(
-            LocalizationString.delete,
+            deleteString.tr,
               weight: TextWeight.bold
           ).ripple(() {
             deleteMessageActionPopup();
           }),
           BodyLargeText(
-            LocalizationString.forward,
+            forwardString.tr,
               weight: TextWeight.bold
           ).ripple(() {
             selectUserForMessageForward();
           }),
           BodyLargeText(
-            LocalizationString.unStar,
+            unStarString.tr,
               weight: TextWeight.bold
           ).ripple(() {
             _chatRoomDetailController.unStarMessages();
@@ -122,7 +122,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                 mode: ChatMessageActionMode.none);
           }),
           BodyLargeText(
-            LocalizationString.cancel,
+            cancelString.tr,
               weight: TextWeight.bold
           ).ripple(() {
             _chatDetailController.setToActionMode(
@@ -228,7 +228,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                           title: title,
                         ),
                         title: Heading5Text(
-                          '${LocalizationString.openIn} ${map.mapName}',
+                          '${openInString.tr} ${map.mapName}',
                         ),
                         leading: SvgPicture.asset(
                           map.icon,
@@ -251,6 +251,7 @@ class _StarredMessagesState extends State<StarredMessages> {
   void openActionPopupForContact(Contact contact) {
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 ListTile(
@@ -260,19 +261,19 @@ class _StarredMessagesState extends State<StarredMessages> {
                             weight: TextWeight.bold
                     )),
                     onTap: () async {}),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.saveContact)),
+                    title: Center(child: BodyLargeText(saveContactString.tr)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.addNewContact(contact);
                       AppUtil.showToast(
-                          message: LocalizationString.contactSaved,
+                          message: contactSavedString.tr,
                           isSuccess: false);
                     }),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
               ],
             ));
@@ -282,6 +283,7 @@ class _StarredMessagesState extends State<StarredMessages> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
+
         builder: (context) =>
             SelectFollowingUserForMessageSending(sendToUserCallback: (user) {
               _chatDetailController.getChatRoomWithUser(
@@ -303,31 +305,32 @@ class _StarredMessagesState extends State<StarredMessages> {
 
     showModalBottomSheet(
         context: context,
+
         builder: (context) => Wrap(
               children: [
                 ListTile(
                     title: Center(
-                        child: Text(LocalizationString.deleteMessageForMe)),
+                        child: Text(deleteMessageForMeString.tr)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.deleteMessage(deleteScope: 1);
                       // postCardController.reportPost(widget.model);
                     }),
-                divider(context: context),
+                divider(),
                 ifAnyMessageByOpponent == false
                     ? ListTile(
                         title: Center(
                             child:
-                            BodyLargeText(LocalizationString.deleteMessageForAll)),
+                            BodyLargeText(deleteMessageForAllString.tr)),
                         onTap: () async {
                           Get.back();
                           _chatDetailController.deleteMessage(deleteScope: 2);
                           // postCardController.blockUser(widget.model.user.id);
                         })
                     : Container(),
-                divider(context: context),
+                divider(),
                 ListTile(
-                    title: Center(child: BodyLargeText(LocalizationString.cancel)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
               ],
             ));

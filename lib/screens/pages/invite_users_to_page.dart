@@ -42,7 +42,7 @@
 //                       Navigator.of(context).pop();
 //                     }),
 //                     Heading5Text(
-//                       LocalizationString.create,
+//                       create,
 //                         weight: TextWeight.medium
 //                     ).ripple(() {
 //
@@ -56,13 +56,13 @@
 //                     mainAxisAlignment: MainAxisAlignment.center,
 //                     children: [
 //                       Heading5Text(
-//                         LocalizationString.invite,
+//                         invite,
 //                           weight: TextWeight.medium
 //                       ),
 //                       Obx(() => selectUserForGroupChatController
 //                           .selectedFriends.isNotEmpty
 //                           ? Heading5Text(
-//                         '${selectUserForGroupChatController.selectedFriends.length} ${LocalizationString.friendsSelected}',
+//                         '${selectUserForGroupChatController.selectedFriends.length} ${friendsSelected}',
 //                           weight: TextWeight.bold
 //                       )
 //                           : Container())
@@ -72,7 +72,7 @@
 //               ],
 //             ),
 //           ).hP16,
-//           divider(context: context).tP8,
+//           divider().tP8,
 //           GetBuilder<SelectUserForGroupChatController>(
 //             init: selectUserForGroupChatController,
 //             builder: (ctx) {
@@ -142,7 +142,7 @@
 //               },
 //               onSearchCompleted: (searchTerm) {})
 //               .p16,
-//           divider(context: context).tP16,
+//           divider().tP16,
 //           Expanded(
 //             child: GetBuilder<SelectUserForGroupChatController>(
 //                 init: selectUserForGroupChatController,

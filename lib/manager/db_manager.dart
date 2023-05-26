@@ -138,10 +138,11 @@ class DBManager {
     var batch = database.batch();
 
     for (ChatRoomModel chatRoom in chatRooms) {
+      print('saving room${chatRoom.name}');
       ChatRoomModel? room = await getRoomById(chatRoom.id);
       if (room == null) {
         batch.rawInsert(
-            'INSERT INTO ChatRooms(id, title, status,type,is_chat_user_online,created_by,created_at,updated_at,imageUrl,description,chat_access_group) VALUES(${chatRoom.id},"${chatRoom.name}", ${chatRoom.status},${chatRoom.type}, ${chatRoom.isOnline == true ? 1 :0},${chatRoom.createdBy},${chatRoom.createdAt},${chatRoom.createdAt},"${chatRoom.image}","${chatRoom.description}",${chatRoom.groupAccess})');
+            'INSERT INTO ChatRooms(id, title, status,type,is_chat_user_online,created_by,created_at,updated_at,imageUrl,description,chat_access_group) VALUES(${chatRoom.id},"${chatRoom.name}", ${chatRoom.status},${chatRoom.type}, ${chatRoom.isOnline == true ? 1 : 0},${chatRoom.createdBy},${chatRoom.createdAt},${chatRoom.createdAt},"${chatRoom.image}","${chatRoom.description}",${chatRoom.groupAccess})');
 
         for (ChatRoomMember member in chatRoom.roomMembers) {
           batch.rawDelete(
@@ -174,21 +175,35 @@ class DBManager {
   Future updateRoom(ChatRoomModel chatRoom) async {
     // ChatRoomModel? room = await getRoomById(chatRoom.id);
     ChatMessageModel? lastMessage = chatRoom.lastMessage;
-    int? updateAt = chatRoom.updatedAt ?? DateTime.now().millisecondsSinceEpoch;
+    int? updateAt = chatRoom.updatedAt;
     var batch = database.batch();
 
     // await database.transaction((txn) async {
-    batch.rawUpdate('UPDATE ChatRooms '
-        'SET title = "${chatRoom.name}",'
-        'status = ${chatRoom.status},'
-        'type = ${chatRoom.type},'
-        'is_chat_user_online = ${chatRoom.isOnline == true ? 1 :0},'
-        'updated_at = $updateAt,'
-        'imageUrl = "${chatRoom.image}",'
-        'description = "${chatRoom.description}",'
-        'chat_access_group = ${chatRoom.groupAccess},'
-        'last_message_id = "${lastMessage?.localMessageId}" '
-        'WHERE id = ${chatRoom.id}');
+
+    if (updateAt != null) {
+      batch.rawUpdate('UPDATE ChatRooms '
+          'SET title = "${chatRoom.name}",'
+          'status = ${chatRoom.status},'
+          'type = ${chatRoom.type},'
+          'is_chat_user_online = ${chatRoom.isOnline == true ? 1 : 0},'
+          'updated_at = $updateAt,'
+          'imageUrl = "${chatRoom.image}",'
+          'description = "${chatRoom.description}",'
+          'chat_access_group = ${chatRoom.groupAccess},'
+          'last_message_id = "${lastMessage?.localMessageId}" '
+          'WHERE id = ${chatRoom.id}');
+    } else {
+      batch.rawUpdate('UPDATE ChatRooms '
+          'SET title = "${chatRoom.name}",'
+          'status = ${chatRoom.status},'
+          'type = ${chatRoom.type},'
+          'is_chat_user_online = ${chatRoom.isOnline == true ? 1 : 0},'
+          'imageUrl = "${chatRoom.image}",'
+          'description = "${chatRoom.description}",'
+          'chat_access_group = ${chatRoom.groupAccess},'
+          'last_message_id = "${lastMessage?.localMessageId}" '
+          'WHERE id = ${chatRoom.id}');
+    }
 
     batch.rawDelete(
         'DELETE  FROM ChatRoomMembers WHERE room_id = ${chatRoom.id}');
@@ -335,6 +350,7 @@ class DBManager {
         List<Map> userData = await txn.rawQuery(
             'SELECT * FROM UsersCache WHERE id = ${roomJson["created_by"]}');
 
+        print('roomJson ${roomJson['title']}');
         Map<String, dynamic> updateAbleRoomJson =
             Map<String, dynamic>.from(roomJson);
 
@@ -381,7 +397,7 @@ class DBManager {
           'SELECT * FROM UsersCache WHERE id = ${roomJson["created_by"]}');
 
       Map<String, dynamic> updatedRoomJson =
-      Map<String, dynamic>.from(roomJson);
+          Map<String, dynamic>.from(roomJson);
 
       if (userData.isNotEmpty) {
         updatedRoomJson['createdByUser'] = userData.first;
@@ -412,6 +428,10 @@ class DBManager {
       if (chatMessage.isMineMessage) {
         chatMessage.viewedAt = DateTime.now().millisecondsSinceEpoch;
       }
+
+      batch.rawDelete(
+          'DELETE FROM Messages WHERE local_message_id = "${chatMessage.localMessageId}"');
+
       batch.rawInsert('INSERT INTO Messages(local_message_id, '
           'id,'
           'is_encrypted,'
@@ -513,8 +533,7 @@ class DBManager {
             messagesToUpdate.add(message);
           }
 
-          if (timeDifference <
-              _userProfileManager.user.value!.chatDeleteTime) {
+          if (timeDifference < _userProfileManager.user.value!.chatDeleteTime) {
             messages.add(message);
           } else {
             messagesToDelete.add(message);

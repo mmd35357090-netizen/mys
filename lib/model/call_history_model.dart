@@ -70,7 +70,7 @@ class CallHistoryModel {
     int today = int.parse(DateFormat('d').format(DateTime.now()));
 
     if (callStartDay - today == 1 || callStartDay - today == -1) {
-      return LocalizationString.yesterday;
+      return yesterdayString.tr;
     } else if (DateTime.now().difference(callStartTime).inDays < 7) {
       return DateFormat('EEEE').format(callStartTime);
     }

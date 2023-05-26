@@ -46,14 +46,11 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
+
           backNavigationBar(
-            context: context,
             title: widget.category.name,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -74,9 +71,9 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
                               selectedIndex:
                                   _clubsController.segmentIndex.value,
                               menus: [
-                                LocalizationString.all,
-                                LocalizationString.joined,
-                                LocalizationString.myClub,
+                                allString.tr,
+                                joinedString.tr,
+                                myClubString.tr,
                               ]),
                         ],
                       )),
@@ -121,8 +118,8 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
                                                 deleteCallback: (club) {
                                                   AppUtil.showToast(
                                                       message:
-                                                          LocalizationString
-                                                              .clubIsDeleted,
+                                                          clubIsDeletedString
+                                                              .tr,
                                                       isSuccess: true);
                                                   _clubsController
                                                       .clubDeleted(club);
@@ -157,17 +154,11 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
         builder: (context) => ActionSheet1(
               items: [
                 GenericItem(
-                    id: '1',
-                    title: LocalizationString.share,
-                    icon: ThemeIcon.share),
+                    id: '1', title: shareString.tr, icon: ThemeIcon.share),
                 GenericItem(
-                    id: '2',
-                    title: LocalizationString.report,
-                    icon: ThemeIcon.report),
+                    id: '2', title: reportString.tr, icon: ThemeIcon.report),
                 GenericItem(
-                    id: '3',
-                    title: LocalizationString.hide,
-                    icon: ThemeIcon.hide),
+                    id: '3', title: hideString.tr, icon: ThemeIcon.hide),
               ],
               itemCallBack: (item) {},
             ));

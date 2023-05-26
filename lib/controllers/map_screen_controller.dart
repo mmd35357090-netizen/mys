@@ -3,16 +3,20 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/models.dart';
+import 'package:foap/manager/location_manager.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as google_map;
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
 
 class MapScreenController extends GetxController {
   RxList<UserModel> users = <UserModel>[].obs;
   RxSet<google_map.Marker> markers = <google_map.Marker>{}.obs;
-  Rx<LocationData?> currentLocation = Rx<LocationData?>(null);
+  Rx<LocationModel?> currentLocation = Rx<LocationModel?>(null);
+  final LocationManager _locationManager = Get.find();
 
   clear() {
     users.clear();
@@ -20,16 +24,19 @@ class MapScreenController extends GetxController {
   }
 
   getLocation() {
-    Location().getLocation().then((locationData) {
+    _locationManager.getLocation(locationCallback: (locationData){
       currentLocation.value = locationData;
       update();
       queryFollowers();
-    }).catchError((error) {});
+    });
+    // Location().getLocation().then((locationData) {
+    //
+    // }).catchError((error) {});
   }
 
   Future<List<UserModel>> queryFollowers() async {
-    await ApiController().getFollowingUsers().then((response) {
-      users.value = response.users;
+    await UsersApi.getFollowingUsers(resultCallback: (result, metadata) {
+      users.value = result;
       createMarkers();
     });
 
@@ -73,7 +80,6 @@ class MapScreenController extends GetxController {
   }
 
   getMarkers(UserModel userModel, google_map.BitmapDescriptor icon) async {
-
     markers.add(google_map.Marker(
       //add first marker
       markerId: google_map.MarkerId(userModel.id.toString()),

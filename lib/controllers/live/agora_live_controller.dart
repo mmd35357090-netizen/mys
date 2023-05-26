@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:foap/apiHandler/apis/gift_api.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/controllers/subscription_packages_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/live_imports.dart';
 import 'package:foap/helper/string_extension.dart';
-import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock/wakelock.dart';
 
-import '../apiHandler/api_controller.dart';
-import '../helper/permission_utils.dart';
-import '../manager/socket_manager.dart';
-import '../model/call_model.dart';
-import '../model/chat_message_model.dart';
-import '../model/gift_model.dart';
-import '../model/package_model.dart';
-import '../screens/settings_menu/settings_controller.dart';
-import '../util/ad_helper.dart';
-import '../util/constant_util.dart';
+import '../../helper/permission_utils.dart';
+import '../../manager/socket_manager.dart';
+import '../../model/call_model.dart';
+import '../../model/chat_message_model.dart';
+import '../../model/gift_model.dart';
+import '../../model/package_model.dart';
+import '../../screens/settings_menu/settings_controller.dart';
+import '../../util/ad_helper.dart';
+import '../../util/constant_util.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 
 class AgoraLiveController extends GetxController {
   final SubscriptionPackageController packageController = Get.find();
@@ -34,7 +34,7 @@ class AgoraLiveController extends GetxController {
   Rx<GiftModel?> sendingGift = Rx<GiftModel?>(null);
 
   RxList<String> infoStrings = <String>[].obs;
-  late RtcEngine _engine;
+  RtcEngine? engine;
   late int liveId;
   late String localLiveId;
 
@@ -58,6 +58,10 @@ class AgoraLiveController extends GetxController {
   DateTime? liveStartTime;
   DateTime? liveEndTime;
   final SettingsController _settingsController = Get.find();
+
+  int giftsPage = 1;
+  bool canLoadMoreGifts = true;
+  RxBool isLoadingGifts = false.obs;
 
   String get liveTime {
     int totalSeconds = liveEndTime!.difference(liveStartTime!).inSeconds;
@@ -103,24 +107,27 @@ class AgoraLiveController extends GetxController {
     giftsReceived.clear();
 
     askLiveEndConformation.value = false;
+
+    giftsPage = 1;
+    canLoadMoreGifts = true;
+    isLoadingGifts.value = false;
   }
 
-  checkFeasibilityToLive(
-      {required BuildContext context, required bool isOpenSettings}) {
+  checkFeasibilityToLive({required bool isOpenSettings}) {
     AppUtil.checkInternet().then((value) {
       Timer(const Duration(seconds: 2), () {
         if (value) {
           PermissionUtils.requestPermission(
-              [Permission.camera, Permission.microphone], context,
+              [Permission.camera, Permission.microphone],
               isOpenSettings: isOpenSettings, permissionGrant: () async {
             canLive.value = 1;
             errorMessage = null;
           }, permissionDenied: () {
             canLive.value = -1;
-            errorMessage = LocalizationString.pleaseAllowAccessToCameraForLive;
+            errorMessage = pleaseAllowAccessToCameraForLiveString.tr;
           }, permissionNotAskAgain: () {
             canLive.value = -1;
-            errorMessage = LocalizationString.pleaseAllowAccessToCameraForLive;
+            errorMessage = pleaseAllowAccessToCameraForLiveString.tr;
           });
         } else {
           canLive.value = value == true ? 1 : -1;
@@ -151,15 +158,12 @@ class AgoraLiveController extends GetxController {
     //   host = hostUser;
     // } else {
 
-    print('finding host');
+    await UsersApi.getOtherUser(
+        userId: live.host.id,
+        resultCallback: (result) {
+          host = result;
+        });
 
-    await ApiController()
-        .getOtherUser(live.host.id.toString())
-        .then((response) {
-      print('host user found');
-      host = response.user;
-    });
-    // }
     liveId = live.liveId;
     remoteUserId.value = live.host.id;
     getIt<SocketManager>().emit(SocketConstants.joinLive, {
@@ -186,19 +190,23 @@ class AgoraLiveController extends GetxController {
     Future.delayed(Duration.zero, () async {
       await _initAgoraRtcEngine();
       _addAgoraEventHandlers();
-      var configuration = VideoEncoderConfiguration();
-      configuration.dimensions =
-          const VideoDimensions(width: 1920, height: 1080);
-      configuration.orientationMode = VideoOutputOrientationMode.Adaptative;
-      _engine.leaveChannel();
-      await _engine.setVideoEncoderConfiguration(configuration);
-      await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+      var configuration = const VideoEncoderConfiguration(
+          dimensions: VideoDimensions(width: 1920, height: 1080),
+          orientationMode: OrientationMode.orientationModeAdaptive);
+      engine?.leaveChannel();
+      await engine?.setVideoEncoderConfiguration(configuration);
+      await engine?.setChannelProfile(ChannelProfileType.channelProfileLiveBroadcasting);
 
       live.isHosting
-          ? await _engine.setClientRole(ClientRole.Broadcaster)
-          : await _engine.setClientRole(ClientRole.Audience);
-      await _engine.joinChannel(live.token, live.channelName, null,
-          _userProfileManager.user.value!.id);
+          ? await engine?.setClientRole(
+              role: ClientRoleType.clientRoleBroadcaster)
+          : await engine?.setClientRole(role: ClientRoleType.clientRoleAudience);
+      await engine?.joinChannel(
+        token: live.token,
+        channelId: live.channelName,
+        uid: _userProfileManager.user.value!.id,
+        options: const ChannelMediaOptions(),
+      );
 
       liveStartTime = DateTime.now();
 
@@ -210,14 +218,20 @@ class AgoraLiveController extends GetxController {
 
   //Initialize Agora RTC Engine
   Future<void> _initAgoraRtcEngine() async {
-    _engine =
-        await RtcEngine.create(_settingsController.setting.value!.agoraApiKey!);
-    await _engine.enableVideo();
+    engine = createAgoraRtcEngine();
+
+    await engine?.initialize(RtcEngineContext(
+      appId: _settingsController.setting.value!.agoraApiKey!,
+      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+    ));
+    // engine =
+    //     await RtcEngine.create(_settingsController.setting.value!.agoraApiKey!);
+    await engine?.enableVideo();
   }
 
   //Switch Camera
   onToggleCamera() {
-    _engine.switchCamera().then((value) {
+    engine?.switchCamera().then((value) {
       isFront.value = !isFront.value;
     }).catchError((err) {});
   }
@@ -225,62 +239,61 @@ class AgoraLiveController extends GetxController {
   //Audio On / Off
   void onToggleMuteAudio() {
     mutedAudio.value = !mutedAudio.value;
-    _engine.muteLocalAudioStream(mutedAudio.value);
+    engine?.muteLocalAudioStream(mutedAudio.value);
   }
 
   //Video On / Off
   void onToggleMuteVideo() {
     mutedVideo.value = !mutedVideo.value;
-    _engine.muteLocalVideoStream(mutedVideo.value);
+    engine?.muteLocalVideoStream(mutedVideo.value);
   }
 
   //Agora Events Handler To Implement Ui/UX Based On Your Requirements
   void _addAgoraEventHandlers() {
-    _engine.setEventHandler(RtcEngineEventHandler(
-      error: (code) {
-        final info = 'onError:$code ${code.index}';
-        infoStrings.add(info);
-      },
-      joinChannelSuccess: (channel, uid, elapsed) {
-        final info = 'onJoinChannel: $channel, uid: $uid';
-        infoStrings.add(info);
-        // joinedUsers.add(_userProfileManager.user.value!);
-      },
-      leaveChannel: (stats) {
-        infoStrings.add('onLeaveChannel');
-      },
-      userJoined: (uid, elapsed) {
-        final info = 'userJoined: $uid';
-        infoStrings.add(info);
-      },
-      userOffline: (uid, elapsed) async {
-        if (elapsed == UserOfflineReason.Dropped) {
-          Wakelock.disable();
-        } else {
-          final info = 'userOffline: $uid';
-          infoStrings.add(info);
-          // _timerKey.currentState?.cancelTimer();
-        }
-      },
-      firstRemoteVideoFrame: (uid, width, height, elapsed) {
-        final info = 'firstRemoteVideo: $uid ${width}x $height';
-        infoStrings.add(info);
-      },
-      connectionStateChanged: (type, reason) async {
-        if (type == ConnectionStateType.Connected) {
+    engine?.registerEventHandler(
+      RtcEngineEventHandler(
+          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+        debugPrint("local user ${connection.localUid} joined");
+      }, onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+        debugPrint("remote user $remoteUid joined");
+        update();
+      }, onUserOffline: (RtcConnection connection, int remoteUid,
+              UserOfflineReasonType reason) {
+        debugPrint("remote user $remoteUid left channel");
+        // if (elapsed == UserOfflineReason.Dropped) {
+        //   Wakelock.disable();
+        // } else {
+        // final info = 'userOffline: $uid';
+        remoteUserId.value = 0;
+        update();
+        // _timerKey.currentState?.cancelTimer();
+        // }
+      }, onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
+        debugPrint(
+            '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
+      }, onConnectionStateChanged: (RtcConnection connection,
+              ConnectionStateType state,
+              ConnectionChangedReasonType reason) async {
+        if (state == ConnectionStateType.connectionStateConnected) {
           reConnectingRemoteView.value = false;
-        } else if (type == ConnectionStateType.Reconnecting) {
+        } else if (state == ConnectionStateType.connectionStateReconnecting ||
+            state == ConnectionStateType.connectionStateConnecting) {
           reConnectingRemoteView.value = true;
         }
-      },
-      remoteVideoStats: (remoteVideoStats) {
-        if (remoteVideoStats.receivedBitrate == 0) {
+      }, onRemoteVideoStateChanged: (RtcConnection connection,
+              int remoteUid,
+              RemoteVideoState state,
+              RemoteVideoStateReason reason,
+              int elapsed) async {
+        if (state == RemoteVideoState.remoteVideoStateFailed ||
+            state == RemoteVideoState.remoteVideoStateStopped ||
+            state == RemoteVideoState.remoteVideoStateFrozen) {
           videoPaused.value = true;
         } else {
           videoPaused.value = false;
         }
-      },
-    ));
+      }),
+    );
   }
 
   dontEndLiveCall() {
@@ -293,8 +306,8 @@ class AgoraLiveController extends GetxController {
 
   //Use This Method To End Call
   void onCallEnd({required bool isHost}) async {
-    _engine.leaveChannel();
-    _engine.destroy();
+    engine?.leaveChannel();
+    // engine.destroy();
     Wakelock.disable(); // Turn off wakelock feature after call end
     // Emit End live Event Into Socket
 
@@ -351,8 +364,8 @@ class AgoraLiveController extends GetxController {
     ChatMessageModel localMessageModel = ChatMessageModel();
     localMessageModel.localMessageId = localMessageId;
     localMessageModel.roomId = liveId;
-    // localMessageModel.messageTime = LocalizationString.justNow;
-    localMessageModel.userName = LocalizationString.you;
+    // localMessageModel.messageTime = justNow;
+    localMessageModel.userName = youString.tr;
     // localMessageModel.userPicture = _userProfileManager.user.value!.picture;
     localMessageModel.senderId = _userProfileManager.user.value!.id;
     localMessageModel.messageType = messageTypeId(MessageContentType.text);
@@ -390,8 +403,8 @@ class AgoraLiveController extends GetxController {
     ChatMessageModel localMessageModel = ChatMessageModel();
     localMessageModel.localMessageId = localMessageId;
     localMessageModel.roomId = liveId;
-    // localMessageModel.messageTime = LocalizationString.justNow;
-    localMessageModel.userName = LocalizationString.you;
+    // localMessageModel.messageTime = justNow;
+    localMessageModel.userName = youString.tr;
     // localMessageModel.userPicture = _userProfileManager.user.value!.picture;
     localMessageModel.senderId = _userProfileManager.user.value!.id;
     localMessageModel.messageType = messageTypeId(MessageContentType.gift);
@@ -405,39 +418,43 @@ class AgoraLiveController extends GetxController {
     update();
   }
 
-  sendGift(GiftModel gift, BuildContext context) {
+  sendGift(GiftModel gift) {
     if (_userProfileManager.user.value!.coins > gift.coins) {
       sendingGift.value = gift;
-      ApiController()
-          .sendGift(gift: gift, liveId: liveId, userId: host!.id, postId: null)
-          .then((value) {
-        Timer(const Duration(seconds: 1), () {
-          sendingGift.value = null;
-        });
 
-        //send gift message
-        sendGiftMessage(gift.logo, gift.coins);
+      GiftApi.sendStickerGift(
+          gift: gift,
+          liveId: liveId,
+          postId: null,
+          receiverId: host!.id,
+          resultCallback: () {
+            Timer(const Duration(seconds: 1), () {
+              sendingGift.value = null;
+            });
 
-        // refresh profile to get updated wallet info
-        _userProfileManager.refreshProfile();
-      });
+            //send gift message
+            sendGiftMessage(gift.logo, gift.coins);
+
+            // refresh profile to get updated wallet info
+            _userProfileManager.refreshProfile();
+          });
     } else {
       List<PackageModel> availablePackages = packageController.packages
           .where((package) => package.coin >= gift.coins)
           .toList();
       PackageModel package = availablePackages.first;
-      buyPackage(package, context);
+      buyPackage(package);
     }
   }
 
-  buyPackage(PackageModel package, BuildContext context) {
+  buyPackage(PackageModel package) {
     if (AppConfigConstants.isDemoApp) {
       AppUtil.showDemoAppConfirmationAlert(
           title: 'Demo app',
           subTitle:
               'This is demo app so you can not make payment to test it, but still you will get some coins',
           okHandler: () {
-            packageController.subscribeToDummyPackage(context, randomId());
+            packageController.subscribeToDummyPackage(randomId());
           });
       return;
     }
@@ -459,11 +476,11 @@ class AgoraLiveController extends GetxController {
             autoConsume: packageController.kAutoConsume || Platform.isIOS);
       } else {
         AppUtil.showToast(
-            message: LocalizationString.noProductAvailable, isSuccess: false);
+            message: noProductAvailableString.tr, isSuccess: false);
       }
     } else {
       AppUtil.showToast(
-          message: LocalizationString.storeIsNotAvailable, isSuccess: false);
+          message: storeIsNotAvailableString.tr, isSuccess: false);
     }
   }
 
@@ -483,8 +500,8 @@ class AgoraLiveController extends GetxController {
   }
 
   onLiveEnd(int liveId) {
-    _engine.leaveChannel();
-    _engine.destroy();
+    engine?.leaveChannel();
+    // engine.destroy();
     Wakelock.disable();
 
     currentJoinedUsers.clear();
@@ -547,12 +564,18 @@ class AgoraLiveController extends GetxController {
   // gifts
 
   loadGiftsReceived() {
-    ApiController()
-        .receivedGifts(sendOnType: 1, liveId: liveId, postId: null)
-        .then((response) {
-      giftsReceived.value = response.giftReceived;
-
-      update();
-    });
+    if (canLoadMoreGifts) {
+      GiftApi.getReceivedStickerGifts(
+          page: giftsPage,
+          sendOnType: 1,
+          postId: null,
+          liveId: liveId,
+          resultCallback: (result, metadata) {
+            giftsReceived.addAll(result);
+            canLoadMoreGifts = result.length >= metadata.perPage;
+            giftsPage += 1;
+            update();
+          });
+    }
   }
 }

@@ -38,15 +38,15 @@ class _SetYourGenderState extends State<SetYourGender> {
         body: Column(children: [
           const SizedBox(height: 50),
           profileScreensNavigationBar(
-              context: context,
+              
               rightBtnTitle:
-                  widget.isFromSignup ? LocalizationString.skip : null,
-              title: LocalizationString.genderMainHeader,
+                  widget.isFromSignup ? skipString.tr : null,
+              title: genderMainHeaderString.tr,
               completion: () {
                 Get.to(
                     () => AddPersonalInfo(isFromSignup: widget.isFromSignup));
               }),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
               child: SingleChildScrollView(
             child: Column(
@@ -54,10 +54,10 @@ class _SetYourGenderState extends State<SetYourGender> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Heading2Text(
-                  LocalizationString.genderMainHeader,
+                  genderMainHeaderString.tr,
                 ).setPadding(top: 20),
                 Heading6Text(
-                  LocalizationString.genderHeader,
+                  genderHeaderString.tr,
                 ).setPadding(top: 20),
                 ListView.builder(
                   itemCount: 3,
@@ -72,7 +72,7 @@ class _SetYourGenderState extends State<SetYourGender> {
                       width: MediaQuery.of(context).size.width - 50,
                       child: AppThemeButton(
                           cornerRadius: 25,
-                          text: LocalizationString.submit,
+                          text: submitString.tr,
                           onPress: () {
                             if (selectedGender != null) {
                               AddDatingDataModel dataModel =

@@ -21,38 +21,41 @@ class _LiveJoinedUsersState extends State<LiveJoinedUsers> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        Heading6Text(
-          LocalizationString.joinedUsers,
-            weight: TextWeight.bold
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        divider(context: context),
-        Expanded(
-          child: GetBuilder<AgoraLiveController>(
-              init: agoraLiveController,
-              builder: (ctx) {
-                return ListView.separated(
-                    padding: const EdgeInsets.only(top: 20),
-                    itemBuilder: (ctx, index) {
-                      return UserTile(
-                          profile: agoraLiveController.currentJoinedUsers[index]);
-                    },
-                    separatorBuilder: (ctx, index) {
-                      return const SizedBox(
-                        height: 20,
-                      );
-                    },
-                    itemCount: agoraLiveController.currentJoinedUsers.length);
-              }),
-        ),
-      ],
-    ).hP16;
+    return Container(
+      color: AppColorConstants.cardColor,
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Heading6Text(
+            joinedUsersString.tr,
+              weight: TextWeight.bold
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          divider(),
+          Expanded(
+            child: GetBuilder<AgoraLiveController>(
+                init: agoraLiveController,
+                builder: (ctx) {
+                  return ListView.separated(
+                      padding: const EdgeInsets.only(top: 20),
+                      itemBuilder: (ctx, index) {
+                        return UserTile(
+                            profile: agoraLiveController.currentJoinedUsers[index]);
+                      },
+                      separatorBuilder: (ctx, index) {
+                        return const SizedBox(
+                          height: 20,
+                        );
+                      },
+                      itemCount: agoraLiveController.currentJoinedUsers.length);
+                }),
+          ),
+        ],
+      ).hP16,
+    );
   }
 }

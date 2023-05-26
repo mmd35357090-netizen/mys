@@ -1,9 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
 
 import '../../universal_components/rounded_input_field.dart';
-import '../../universal_components/rounded_password_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -37,41 +35,32 @@ class LoginScreenState extends State<LoginScreen> {
             child: SizedBox(
               height: MediaQuery.of(context).size.height,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.08,
                     ),
-                    Heading3Text(LocalizationString.welcome,
-                        weight: TextWeight.bold),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.01,
-                    ),
-                    Heading3Text(LocalizationString.signInMessage,
+                    Heading3Text(signInMessageString.tr,
                         weight: TextWeight.medium),
 
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.1,
+                      height: MediaQuery.of(context).size.height * 0.05,
                     ),
-                    InputField(
+                    AppTextField(
                       controller: email,
-                      showDivider: true,
-                      hintText: LocalizationString.emailOrUsername,
-                      cornerRadius: 5,
+                      hintText: emailOrUsernameString.tr,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.025,
                     ),
-                    PasswordField(
-                      onChanged: (value) {},
-                      showDivider: true,
+                    AppPasswordTextField(
+                      // onChanged: (value) {},
+                      // showDivider: true,
                       controller: password,
-                      cornerRadius: 5,
-                      hintText: LocalizationString.password,
-                      showRevealPasswordIcon: true,
-                      textStyle: TextStyle(
-                          fontSize: FontSizes.h6,
-                          color: AppColorConstants.themeColor),
+                      // cornerRadius: 5,
+                      hintText: passwordString.tr,
+                      // showRevealPasswordIcon: true,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.04,
@@ -85,10 +74,9 @@ class LoginScreenState extends State<LoginScreen> {
                         Get.to(() => const ForgotPasswordScreen());
                       },
                       child: Center(
-                        child: BodyMediumText(
-                          LocalizationString.forgotPwd,
+                        child: BodySmallText(
+                          forgotPwdString.tr,
                           weight: TextWeight.bold,
-                          color: AppColorConstants.themeColor,
                         ),
                       ),
                     ),
@@ -104,7 +92,7 @@ class LoginScreenState extends State<LoginScreen> {
                           color: AppColorConstants.themeColor,
                         ),
                         Heading6Text(
-                          LocalizationString.or,
+                          orString.tr,
                         ),
                         Container(
                           height: 1,
@@ -116,23 +104,9 @@ class LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.04,
                     ),
-                    const SocialLogin(hidePhoneLogin: false).setPadding(left: 65, right: 65),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Heading6Text(
-                          LocalizationString.dontHaveAccount,
-                        ),
-                        Heading6Text(
-                          LocalizationString.signUp,
-                          weight: TextWeight.medium,
-                          color: AppColorConstants.themeColor,
-                        ).ripple(() {
-                          Get.to(() => const SignUpScreen());
-                        }),
-                      ],
-                    ),
+                    const SocialLogin(hidePhoneLogin: false)
+                        .setPadding(left: 65, right: 65),
+
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.05,
                     ),
@@ -149,7 +123,7 @@ class LoginScreenState extends State<LoginScreen> {
       onPress: () {
         controller.login(email.text.trim(), password.text.trim());
       },
-      text: LocalizationString.signIn,
+      text: signInString.tr,
     );
   }
 }

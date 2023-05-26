@@ -54,12 +54,12 @@ class VoipController {
   listenerSetup() {
     callkit.FlutterCallkitIncoming.onEvent.listen((event) {
       switch (event!.event) {
-        case call_event.Event.ACTION_CALL_INCOMING:
+        case call_event.Event.actionCallIncoming:
           //getIt<SocketManager>().connect();
           break;
-        case call_event.Event.ACTION_CALL_START:
+        case call_event.Event.actionCallStart:
           break;
-        case call_event.Event.ACTION_CALL_ACCEPT:
+        case call_event.Event.actionCallAccept:
           CallData callData = CallData.fromJson(event.body);
 
           UserModel opponent = UserModel();
@@ -77,7 +77,7 @@ class VoipController {
               opponent: opponent);
           agoraCallController.acceptCall(call: call);
           break;
-        case call_event.Event.ACTION_CALL_DECLINE:
+        case call_event.Event.actionCallDecline:
           Call call = Call(
               uuid: event.body['id'],
               channelName: '',
@@ -89,7 +89,7 @@ class VoipController {
           //endCall(call);
           agoraCallController.declineCall(call: call);
           break;
-        case call_event.Event.ACTION_CALL_ENDED:
+        case call_event.Event.actionCallEnded:
           // print('call ended == ${event.body}');
           // CallData callData = CallData.fromJson(event.body);
           Call call = Call(
@@ -104,7 +104,7 @@ class VoipController {
           callkit.FlutterCallkitIncoming.endCall(event.body['id']);
           agoraCallController.endCall(call);
           break;
-        case call_event.Event.ACTION_CALL_TIMEOUT:
+        case call_event.Event.actionCallTimeout:
           CallData callData = CallData.fromJson(event.body);
           if (callData.callerId != _userProfileManager.user.value?.id &&
               _userProfileManager.user.value?.id != null) {
@@ -122,26 +122,26 @@ class VoipController {
           }
 
           break;
-        case call_event.Event.ACTION_CALL_CALLBACK:
+        case call_event.Event.actionCallCallback:
           break;
-        case call_event.Event.ACTION_CALL_TOGGLE_HOLD:
+        case call_event.Event.actionCallToggleHold:
           // TODO: only iOS
           break;
-        case call_event.Event.ACTION_CALL_TOGGLE_MUTE:
+        case call_event.Event.actionCallToggleMute:
           // TODO: only iOS
           break;
-        case call_event.Event.ACTION_CALL_TOGGLE_DMTF:
+        case call_event.Event.actionCallToggleDmtf:
           // TODO: only iOS
           break;
-        case call_event.Event.ACTION_CALL_TOGGLE_GROUP:
+        case call_event.Event.actionCallToggleGroup:
           // TODO: only iOS
           break;
-        case call_event.Event.ACTION_CALL_TOGGLE_AUDIO_SESSION:
+        case call_event.Event.actionCallToggleAudioSession:
           // TODO: only iOS
           break;
-        case call_event.Event.ACTION_DID_UPDATE_DEVICE_PUSH_TOKEN_VOIP:
-          // TODO: only iOS
-          break;
+        // case call_event.Event.ACTION_DID_UPDATE_DEVICE_PUSH_TOKEN_VOIP:
+        //   // TODO: only iOS
+        //   break;
         default:
           break;
       }

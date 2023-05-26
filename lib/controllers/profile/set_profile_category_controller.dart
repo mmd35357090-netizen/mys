@@ -1,4 +1,5 @@
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/misc_api.dart';
 import 'package:get/get.dart';
 import '../../model/category_model.dart';
 
@@ -7,8 +8,8 @@ class SetProfileCategoryController extends GetxController {
   RxInt profileCategoryType = (-1).obs;
 
   getProfileTypeCategories() {
-    ApiController().getProfileCategoryType().then((response) {
-      categories.value = response.categories;
+    MiscApi.getProfileCategoryType(resultCallback: (result) {
+      categories.value = result;
     });
   }
 
@@ -16,5 +17,4 @@ class SetProfileCategoryController extends GetxController {
     profileCategoryType.value = categoryType;
     update();
   }
-
 }

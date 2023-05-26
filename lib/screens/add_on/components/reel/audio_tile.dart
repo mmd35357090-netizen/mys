@@ -60,7 +60,7 @@ class AudioTile extends StatelessWidget {
                     color: AppColorConstants.dividerColor,
                   ).circular.hP8,
                   BodySmallText(
-                    '${audio.numberOfReelsMade.formatNumber} ${LocalizationString.reels}',
+                    '${audio.numberOfReelsMade.formatNumber} ${reelsString.tr}',
                     weight: TextWeight.medium,
                     color: AppColorConstants.dividerColor.darken(),
                   ),

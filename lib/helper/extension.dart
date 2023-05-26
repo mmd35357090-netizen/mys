@@ -376,9 +376,11 @@ extension PulltoRefresh on Widget {
     required VoidCallback onRefresh,
     required VoidCallback onLoading,
     required bool enablePullUp,
+    required bool enablePullDown,
+
   }) =>
       SmartRefresher(
-        enablePullDown: true,
+        enablePullDown: enablePullDown,
         enablePullUp: enablePullUp,
         header: const WaterDropHeader(),
         controller: refreshController,

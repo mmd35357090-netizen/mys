@@ -51,7 +51,7 @@ class AppThemeButton extends StatelessWidget {
           trailing != null ? trailing!.hP4 : Container()
         ],
       ),
-    ).round(cornerRadius ?? 15).ripple(() {
+    ).ripple(() {
       onPress!();
     });
   }

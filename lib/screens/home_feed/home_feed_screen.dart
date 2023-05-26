@@ -1,17 +1,15 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_polls/flutter_polls.dart';
 
 import '../../components/post_card.dart';
 import '../../controllers/add_post_controller.dart';
-import '../../controllers/agora_live_controller.dart';
+import '../../controllers/live/agora_live_controller.dart';
 import '../../controllers/home_controller.dart';
 import '../../model/call_model.dart';
 import '../../model/post_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
 import '../dashboard/explore.dart';
-import '../post/select_media.dart';
 import '../post/view_post_insight.dart';
 import '../settings_menu/settings_controller.dart';
 import '../story/choose_media_for_story.dart';
@@ -86,6 +84,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
 
   void loadData({required bool? isRecent}) {
     loadPosts(isRecent);
+    _homeController.getPolls();
     _homeController.getStories();
   }
 
@@ -99,23 +98,24 @@ class HomeFeedState extends State<HomeFeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
-        floatingActionButton: Container(
-          height: 50,
-          width: 50,
-          color: AppColorConstants.themeColor,
-          child: const ThemeIconWidget(
-            ThemeIcon.edit,
-            size: 25,
-          ),
-        ).circular.ripple(() {
-          Future.delayed(
-            Duration.zero,
-            () => showGeneralDialog(
-                context: context,
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    const SelectMedia()),
-          );
-        }),
+        // floatingActionButton: Container(
+        //   height: 50,
+        //   width: 50,
+        //   color: AppColorConstants.themeColor,
+        //   child: const ThemeIconWidget(
+        //     ThemeIcon.edit,
+        //     size: 25,
+        //     color: Colors.white,
+        //   ),
+        // ).circular.ripple(() {
+        //   Future.delayed(
+        //     Duration.zero,
+        //     () => showGeneralDialog(
+        //         context: context,
+        //         pageBuilder: (context, animation, secondaryAnimation) =>
+        //             const SelectMedia()),
+        //   );
+        // }),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -171,9 +171,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
                     })),
               ],
             ).hp(20),
-            // const SizedBox(
-            //   height: 10,
-            // ),
+            const SizedBox(
+              height: 20,
+            ),
             Expanded(
               child: postsView(),
             ),
@@ -200,26 +200,28 @@ class HomeFeedState extends State<HomeFeedScreen> {
             color: AppColorConstants.cardColor,
             child: Row(
               children: [
-                Image.memory(
-                  _addPostController.postingMedia.first.thumbnail!,
-                  fit: BoxFit.cover,
-                  width: 40,
-                  height: 40,
-                ).round(5),
+                _addPostController.postingMedia.isNotEmpty
+                    ? Image.memory(
+                        _addPostController.postingMedia.first.thumbnail!,
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                      ).round(5)
+                    : BodyLargeText(_addPostController.postingTitle),
                 const SizedBox(
                   width: 10,
                 ),
                 Heading5Text(
                   _addPostController.isErrorInPosting.value
-                      ? LocalizationString.postFailed
-                      : LocalizationString.posting,
+                      ? postFailedString.tr
+                      : postingString.tr,
                 ),
                 const Spacer(),
                 _addPostController.isErrorInPosting.value
                     ? Row(
                         children: [
                           Heading5Text(
-                            LocalizationString.discard,
+                            discardString.tr,
                             weight: TextWeight.medium,
                           ).ripple(() {
                             _addPostController.discardFailedPost();
@@ -228,10 +230,10 @@ class HomeFeedState extends State<HomeFeedScreen> {
                             width: 20,
                           ),
                           Heading5Text(
-                            LocalizationString.retry,
+                            retryString.tr,
                             weight: TextWeight.medium,
                           ).ripple(() {
-                            _addPostController.retryPublish(context);
+                            _addPostController.retryPublish();
                           }),
                         ],
                       )
@@ -313,11 +315,11 @@ class HomeFeedState extends State<HomeFeedScreen> {
                               selectedIndex:
                                   _homeController.categoryIndex.value,
                               menus: [
-                                LocalizationString.all,
-                                LocalizationString.following,
-                                // LocalizationString.trending,
-                                LocalizationString.recent,
-                                LocalizationString.your,
+                                allString.tr,
+                                followingString.tr,
+                                // trending,
+                                // recentString.tr,
+                                // yourString.tr,
                               ]),
                           _homeController.isRefreshingPosts.value == true
                               ? SizedBox(
@@ -330,9 +332,10 @@ class HomeFeedState extends State<HomeFeedScreen> {
                                           MediaQuery.of(context).size.height *
                                               0.5,
                                       child: emptyPost(
-                                          title: LocalizationString.noPostFound,
-                                          subTitle: LocalizationString
-                                              .followFriendsToSeeUpdates),
+                                          title: noPostFoundString.tr,
+                                          subTitle:
+                                              followFriendsToSeeUpdatesString
+                                                  .tr),
                                     )
                                   : Container()
                         ],
@@ -342,10 +345,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
 
                   return PostCard(
                     model: model,
-                    textTapHandler: (text) {
-                      _homeController.postTextTapHandler(
-                          post: model, text: text);
-                    },
+
                     viewInsightHandler: () {
                       Get.to(() => ViewPostInsights(post: model));
                     },
@@ -362,7 +362,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 }
               },
               separatorBuilder: (context, index) {
-                if (_settingsController.setting.value!.enablePolls) {
+                if (_settingsController.setting.value?.enablePolls == true) {
                   return polls(index);
                 } else {
                   return const SizedBox(
@@ -373,6 +373,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
           .addPullToRefresh(
               refreshController: _refreshController,
               enablePullUp: false,
+              enablePullDown: true,
               onRefresh: refreshData,
               onLoading: () {});
     });
@@ -394,9 +395,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
             onVoted: (PollOption pollOption, int newTotalVotes) async {
               await Future.delayed(const Duration(seconds: 1));
               _homeController.postPollAnswer(
-                  _homeController.polls[pollIndex].pollId,
-                  _homeController.polls[pollIndex].id,
-                  pollOption.id);
+                  _homeController.polls[pollIndex].pollId!,
+                  _homeController.polls[pollIndex].id!,
+                  pollOption.id!);
 
               /// If HTTP status is success, return true else false
               return true;

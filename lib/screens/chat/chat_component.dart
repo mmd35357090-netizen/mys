@@ -29,7 +29,7 @@ Widget messageTypeShortInfoFromType({
                   ThemeIcon.camera,
                   size: 12,
                 ).rP4,
-                BodyMediumText(LocalizationString.photo,
+                BodyMediumText(photoString.tr,
                     maxLines: 1, weight: TextWeight.regular),
               ],
             )
@@ -37,7 +37,7 @@ Widget messageTypeShortInfoFromType({
               ? Row(
                   children: [
                     const ThemeIconWidget(ThemeIcon.videoPost, size: 15).rP4,
-                    BodyMediumText(LocalizationString.video,
+                    BodyMediumText(videoString.tr,
                         maxLines: 1, weight: TextWeight.regular),
                   ],
                 )
@@ -46,7 +46,7 @@ Widget messageTypeShortInfoFromType({
                   ? Row(
                       children: [
                         const ThemeIconWidget(ThemeIcon.gif, size: 15).rP4,
-                        BodyMediumText(LocalizationString.gif,
+                        BodyMediumText(gifString.tr,
                             maxLines: 1, weight: TextWeight.regular),
                       ],
                     )
@@ -57,7 +57,7 @@ Widget messageTypeShortInfoFromType({
                               ThemeIcon.camera,
                               size: 15,
                             ).rP4,
-                            BodyMediumText(LocalizationString.post,
+                            BodyMediumText(postString.tr,
                                 maxLines: 1, weight: TextWeight.regular),
                           ],
                         )
@@ -66,7 +66,7 @@ Widget messageTypeShortInfoFromType({
                               children: [
                                 const ThemeIconWidget(ThemeIcon.mic, size: 15)
                                     .rP4,
-                                BodyMediumText(LocalizationString.audio,
+                                BodyMediumText(audioString.tr,
                                     maxLines: 1, weight: TextWeight.regular),
                               ],
                             )
@@ -77,7 +77,7 @@ Widget messageTypeShortInfoFromType({
                                             size: 15)
                                         .rP4,
                                     BodyMediumText(
-                                      LocalizationString.contact,
+                                      contactString.tr,
                                       maxLines: 1,
                                       weight: TextWeight.regular,
                                     ),
@@ -91,7 +91,7 @@ Widget messageTypeShortInfoFromType({
                                                 size: 15)
                                             .rP4,
                                         BodyMediumText(
-                                            LocalizationString.location,
+                                            locationString.tr,
                                             maxLines: 1,
                                             weight: TextWeight.regular),
                                       ],
@@ -104,7 +104,7 @@ Widget messageTypeShortInfoFromType({
                                                     size: 15)
                                                 .rP4,
                                             BodyMediumText(
-                                                LocalizationString.file,
+                                                fileString.tr,
                                                 maxLines: 1,
                                                 weight: TextWeight.regular),
                                           ],
@@ -117,7 +117,7 @@ Widget messageTypeShortInfoFromType({
                                                         size: 15)
                                                     .rP4,
                                                 BodyMediumText(
-                                                    LocalizationString.profile,
+                                                    profileString.tr,
                                                     maxLines: 1,
                                                     weight: TextWeight.regular),
                                               ],

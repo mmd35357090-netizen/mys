@@ -1,7 +1,8 @@
 import 'dart:isolate';
 import 'dart:ui';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:background_downloader/background_downloader.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/number_extension.dart';
@@ -18,18 +19,20 @@ class FileChatTile extends StatefulWidget {
 }
 
 class _FileChatTileState extends State<FileChatTile> {
-  late TaskInfo _task;
+  late TaskInfo taskInfo;
   late String _localPath;
   final ReceivePort _port = ReceivePort();
 
   @override
   void initState() {
     if (widget.message.isMineMessage == false) {
-      _task = TaskInfo(name: '', link: widget.message.mediaContent.file!.path);
-
-      _bindBackgroundIsolate();
+      taskInfo = TaskInfo(
+          task: DownloadTask(
+              url: widget.message.mediaContent.file!.path,
+              filename: 'testfile.txt'));
+      // _bindBackgroundIsolate();
       _prepareSaveDir();
-      FlutterDownloader.registerCallback(downloadCallback, step: 1);
+      // FlutterDownloader.registerCallback(downloadCallback, step: 1);
     }
 
     super.initState();
@@ -50,23 +53,17 @@ class _FileChatTileState extends State<FileChatTile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Heading5Text(
-                LocalizationString.file,
+                fileString.tr,
                 weight: TextWeight.bold,
               ),
               const SizedBox(
                 height: 5,
               ),
               widget.message.media != null
-                  ? BodyLargeText(
-                      widget.message.media!.title!,
-                  weight: TextWeight.semiBold
-
-              )
-                  : BodyLargeText(
-                      widget.message.mediaContent.file!.name,
-                  weight: TextWeight.semiBold
-
-              ),
+                  ? BodyLargeText(widget.message.media!.title!,
+                      weight: TextWeight.semiBold)
+                  : BodyLargeText(widget.message.mediaContent.file!.name,
+                      weight: TextWeight.semiBold),
               const SizedBox(
                 height: 5,
               ),
@@ -105,16 +102,25 @@ class _FileChatTileState extends State<FileChatTile> {
     ).bP8;
   }
 
+  // Widget downloadButton() {
+  //   return IconButton(
+  //     onPressed: () => onActionTap(),
+  //     constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+  //     icon: const Icon(Icons.file_download),
+  //     tooltip: 'Start',
+  //   );
+  // }
+
   Widget _buildTrailing() {
-    if (_task.status == DownloadTaskStatus.running) {
+    if (taskInfo.status == TaskStatus.running) {
       return Row(
         children: [
-          Text('${(_task.progress ?? 0) / 100}%'),
+          Text('${(taskInfo.progress ?? 0) / 100}%'),
           CircularPercentIndicator(
             radius: 20.0,
             lineWidth: 5.0,
-            percent: ((_task.progress ?? 0) / 100).toDouble(),
-            center: Text('${_task.progress}%'),
+            percent: ((taskInfo.progress ?? 0) / 100).toDouble(),
+            center: Text('${taskInfo.progress}%'),
             progressColor: Colors.green,
           ),
           IconButton(
@@ -125,10 +131,10 @@ class _FileChatTileState extends State<FileChatTile> {
           ),
         ],
       );
-    } else if (_task.status == DownloadTaskStatus.paused) {
+    } else if (taskInfo.status == TaskStatus.paused) {
       return Row(
         children: [
-          Text('${_task.progress}%'),
+          Text('${taskInfo.progress}%'),
           IconButton(
             onPressed: () => onActionTap(),
             constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
@@ -137,10 +143,9 @@ class _FileChatTileState extends State<FileChatTile> {
           ),
           IconButton(
             onPressed: () => () async {
-              await FlutterDownloader.remove(
-                taskId: _task.taskId!,
-                shouldDeleteContent: true,
-              );
+              setState(() {
+                FileDownloader().cancelTaskWithId(taskInfo.task.taskId);
+              });
             },
             constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
             icon: const Icon(Icons.cancel, color: Colors.red),
@@ -148,7 +153,7 @@ class _FileChatTileState extends State<FileChatTile> {
           ),
         ],
       );
-    } else if (_task.status == DownloadTaskStatus.complete) {
+    } else if (taskInfo.status == TaskStatus.complete) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
@@ -162,7 +167,7 @@ class _FileChatTileState extends State<FileChatTile> {
           )
         ],
       );
-    } else if (_task.status == DownloadTaskStatus.canceled) {
+    } else if (taskInfo.status == TaskStatus.canceled) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
@@ -176,7 +181,7 @@ class _FileChatTileState extends State<FileChatTile> {
           )
         ],
       );
-    } else if (_task.status == DownloadTaskStatus.failed) {
+    } else if (taskInfo.status == TaskStatus.failed) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
@@ -190,7 +195,7 @@ class _FileChatTileState extends State<FileChatTile> {
           )
         ],
       );
-    } else if (_task.status == DownloadTaskStatus.enqueued) {
+    } else if (taskInfo.status == TaskStatus.enqueued) {
       return const Text('Pending', style: TextStyle(color: Colors.orange));
     } else {
       return IconButton(
@@ -202,18 +207,31 @@ class _FileChatTileState extends State<FileChatTile> {
     }
   }
 
-  onActionTap() {
-    if (_task.status == DownloadTaskStatus.undefined) {
-      _requestDownload(_task);
-    } else if (_task.status == DownloadTaskStatus.running) {
-      _pauseDownload(_task);
-    } else if (_task.status == DownloadTaskStatus.paused) {
-      _resumeDownload(_task);
-    } else if (_task.status == DownloadTaskStatus.complete ||
-        _task.status == DownloadTaskStatus.canceled) {
-      _delete(_task);
-    } else if (_task.status == DownloadTaskStatus.failed) {
-      _retryDownload(_task);
+  onActionTap() async {
+    if (taskInfo.status == TaskStatus.notFound) {
+      await FileDownloader().download(taskInfo.task, onProgress: (progress) {
+        setState(() {});
+      }, onStatus: (status) {
+        setState(() {});
+      });
+    } else if (taskInfo.status == TaskStatus.running) {
+      await FileDownloader().pause(taskInfo.task);
+      setState(() {});
+    } else if (taskInfo.status == TaskStatus.paused) {
+      await FileDownloader().resume(taskInfo.task);
+      setState(() {});
+    } else if (taskInfo.status == TaskStatus.complete ||
+        taskInfo.status == TaskStatus.canceled) {
+      // _delete(_task);
+      await FileDownloader().resume(taskInfo.task);
+      setState(() {});
+    } else if (taskInfo.status == TaskStatus.failed) {
+      // _retryDownload(_task);
+      await FileDownloader().download(taskInfo.task, onProgress: (progress) {
+        setState(() {});
+      }, onStatus: (status) {
+        setState(() {});
+      });
     }
   }
 
@@ -222,86 +240,74 @@ class _FileChatTileState extends State<FileChatTile> {
         widget.message.localMessageId, widget.message.roomId);
   }
 
-  Future<void> _requestDownload(TaskInfo task) async {
-    String extension = p.extension(task.link!);
-    task.taskId = await FlutterDownloader.enqueue(
-        url: task.link!,
-        headers: {'auth': 'test_for_sql_encoding'},
-        savedDir: _localPath,
-        saveInPublicStorage: true,
-        fileName: '${widget.message.localMessageId.toString()}$extension');
-  }
-
-  Future<void> _pauseDownload(TaskInfo task) async {
-    await FlutterDownloader.pause(taskId: task.taskId!);
-  }
-
-  Future<void> _resumeDownload(TaskInfo task) async {
-    final newTaskId = await FlutterDownloader.resume(taskId: task.taskId!);
-    task.taskId = newTaskId;
-  }
-
-  Future<void> _retryDownload(TaskInfo task) async {
-    final newTaskId = await FlutterDownloader.retry(taskId: task.taskId!);
-    task.taskId = newTaskId;
-  }
-
-  // Future<bool> _openDownloadedFile(TaskInfo? task) {
-  //   if (task != null) {
-  //     return FlutterDownloader.open(taskId: task.taskId!);
-  //   } else {
-  //     return Future.value(false);
-  //   }
+  // Future<void> _requestDownload(TaskInfo task) async {
+  //   String extension = p.extension(task.link!);
+  //   task.taskId = await FlutterDownloader.enqueue(
+  //       url: task.link!,
+  //       headers: {'auth': 'test_for_sql_encoding'},
+  //       savedDir: _localPath,
+  //       saveInPublicStorage: true,
+  //       fileName: '${widget.message.localMessageId.toString()}$extension');
   // }
-
-  Future<void> _delete(TaskInfo task) async {
-    await FlutterDownloader.remove(
-      taskId: task.taskId!,
-      shouldDeleteContent: true,
-    );
-  }
-
-  @pragma('vm:entry-point')
-  static void downloadCallback(
-    String id,
-    DownloadTaskStatus status,
-    int progress,
-  ) {
-// print(
-//   'Callback on background isolate: '
-//   'task ($id) is in status ($status) and process ($progress)',
-// );
-
-    IsolateNameServer.lookupPortByName('downloader_send_port')
-        ?.send([id, status, progress]);
-  }
-
-  void _bindBackgroundIsolate() {
-    final isSuccess = IsolateNameServer.registerPortWithName(
-      _port.sendPort,
-      'downloader_send_port',
-    );
-    if (!isSuccess) {
-      _unbindBackgroundIsolate();
-      _bindBackgroundIsolate();
-      return;
-    }
-    _port.listen((dynamic data) {
-      // final taskId = (data as List<dynamic>)[0] as String;
-      final status = data[1] as DownloadTaskStatus;
-      final progress = data[2] as int;
-
-      // print(
-      //   'Callback on UI isolate: '
-      //   'task ($taskId) is in status ($status) and process ($progress)',
-      // );
-
-      setState(() {
-        _task.status = status;
-        _task.progress = progress;
-      });
-    });
-  }
+  //
+  // Future<void> _pauseDownload(TaskInfo task) async {
+  //   await FlutterDownloader.pause(taskId: task.taskId!);
+  // }
+  //
+  // Future<void> _resumeDownload(TaskInfo task) async {
+  //   final newTaskId = await FlutterDownloader.resume(taskId: task.taskId!);
+  //   task.taskId = newTaskId;
+  // }
+  //
+  // Future<void> _retryDownload(TaskInfo task) async {
+  //   final newTaskId = await FlutterDownloader.retry(taskId: task.taskId!);
+  //   task.taskId = newTaskId;
+  // }
+  //
+  // Future<void> _delete(TaskInfo task) async {
+  //   await FlutterDownloader.remove(
+  //     taskId: task.taskId!,
+  //     shouldDeleteContent: true,
+  //   );
+  // }
+  //
+  // @pragma('vm:entry-point')
+  // static void downloadCallback(
+  //   String id,
+  //   DownloadTaskStatus status,
+  //   int progress,
+  // ) {
+  //
+  //   IsolateNameServer.lookupPortByName('downloader_send_port')
+  //       ?.send([id, status, progress]);
+  // }
+  //
+  // void _bindBackgroundIsolate() {
+  //   final isSuccess = IsolateNameServer.registerPortWithName(
+  //     _port.sendPort,
+  //     'downloader_send_port',
+  //   );
+  //   if (!isSuccess) {
+  //     _unbindBackgroundIsolate();
+  //     _bindBackgroundIsolate();
+  //     return;
+  //   }
+  //   _port.listen((dynamic data) {
+  //     // final taskId = (data as List<dynamic>)[0] as String;
+  //     final status = data[1] as DownloadTaskStatus;
+  //     final progress = data[2] as int;
+  //
+  //     // print(
+  //     //   'Callback on UI isolate: '
+  //     //   'task ($taskId) is in status ($status) and process ($progress)',
+  //     // );
+  //
+  //     setState(() {
+  //       _task.status = status;
+  //       _task.progress = progress;
+  //     });
+  //   });
+  // }
 
   void _unbindBackgroundIsolate() {
     IsolateNameServer.removePortNameMapping('downloader_send_port');
@@ -316,12 +322,10 @@ class ItemHolder {
 }
 
 class TaskInfo {
-  TaskInfo({this.name, this.link});
+  TaskInfo({required this.task});
 
-  final String? name;
-  final String? link;
-
-  String? taskId;
+  String? id;
   int? progress = 0;
-  DownloadTaskStatus? status = DownloadTaskStatus.undefined;
+  DownloadTask task;
+  TaskStatus? status = TaskStatus.notFound;
 }

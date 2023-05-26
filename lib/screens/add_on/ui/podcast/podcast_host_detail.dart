@@ -43,9 +43,9 @@ class _PodcastHostDetailState extends State<PodcastHostDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             backNavigationBar(
-                    context: context, title: widget.podcastModel?.name ?? "")
-                .tp(50),
-            divider(context: context).tP8,
+                     title: widget.podcastModel?.name ?? "")
+                ,
+            divider().tP8,
             Expanded(
               child: ListView(
                   padding: EdgeInsets.zero,
@@ -76,9 +76,9 @@ class _PodcastHostDetailState extends State<PodcastHostDetail> {
                                   trimMode: read_more.TrimMode.Line,
                                   colorClickableText: Colors.white,
                                   trimCollapsedText:
-                                      LocalizationString.showMore,
+                                      showMoreString.tr,
                                   trimExpandedText:
-                                      '    ${LocalizationString.showLess}',
+                                      '    ${showLessString.tr}',
                                   moreStyle: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold),
@@ -87,7 +87,7 @@ class _PodcastHostDetailState extends State<PodcastHostDetail> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Heading6Text(
-                                  LocalizationString.albums,
+                                  albumsString.tr,
                                   color: AppColorConstants.themeColor,
                                   weight: TextWeight.bold,
                                 ).setPadding(top: 15)

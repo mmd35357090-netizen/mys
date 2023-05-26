@@ -4,6 +4,7 @@ import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:foap/apiHandler/api_controller.dart';
+import 'package:foap/apiHandler/apis/reel_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/manager/player_manager.dart';
 import 'package:foap/model/category_model.dart';
@@ -12,8 +13,11 @@ import 'package:foap/screens/add_on/ui/reel/preview_reel_screen.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart' as path;
-import 'package:simple_downloader/simple_downloader.dart';
+
+// import 'package:simple_downloader/simple_downloader.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
 
 class CreateReelController extends GetxController {
   final PlayerManager _playerManager = Get.find();
@@ -43,7 +47,7 @@ class CreateReelController extends GetxController {
   RxInt recordingLength = 15.obs;
 
   RxDouble currentProgressValue = (0.0).obs;
-  late SimpleDownloader _downloader;
+  // late SimpleDownloader _downloader;
 
   void turnOnFlash() {
     flashSetting.value = true;
@@ -91,8 +95,8 @@ class CreateReelController extends GetxController {
 
   getReelCategories() {
     isLoadingAudios.value = true;
-    ApiController().getReelCategories().then((result) {
-      categories.value = result.categories;
+    ReelApi.getReelCategories(resultCallback: (result) {
+      categories.value = result;
       getReelAudios();
       update();
     });
@@ -103,25 +107,23 @@ class CreateReelController extends GetxController {
 
     if (canLoadMoreAudios == true) {
       isLoadingAudios.value = true;
-
-      ApiController()
-          .getAudios(
+      ReelApi.getAudios(
           categoryId: category.id,
-          title: searchText.value.isNotEmpty ? searchText.value : null)
-          .then((response) {
-        isLoadingAudios.value = false;
-        audios.value = response.audios;
+          title: searchText.value.isNotEmpty ? searchText.value : null,
+          resultCallback: (result, metadata) {
+            isLoadingAudios.value = false;
+            audios.value = result;
 
-        audiosCurrentPage += 1;
+            audiosCurrentPage += 1;
 
-        if (response.posts.length == response.metaData?.pageCount) {
-          canLoadMoreAudios = true;
-        } else {
-          canLoadMoreAudios = false;
-        }
+            if (result.length == metadata.pageCount) {
+              canLoadMoreAudios = true;
+            } else {
+              canLoadMoreAudios = false;
+            }
 
-        update();
-      });
+            update();
+          });
     }
   }
 
@@ -201,7 +203,7 @@ class CreateReelController extends GetxController {
           "-shortest ${finalFile.path}";
       FFmpegKit.executeAsync(
         command,
-            (session) async {
+        (session) async {
           final returnCode = await session.getReturnCode();
 
           if (ReturnCode.isSuccess(returnCode)) {
@@ -212,11 +214,11 @@ class CreateReelController extends GetxController {
             //     message: 'Reel Created successfully',
             //     isSuccess: true);
             Get.to(() => PreviewReelsScreen(
-              reel: finalFile,
-              audioId: selectedAudio.value?.id,
-              audioStartTime: audioStartTime,
-              audioEndTime: audioEndTime,
-            ));
+                  reel: finalFile,
+                  audioId: selectedAudio.value?.id,
+                  audioStartTime: audioStartTime,
+                  audioEndTime: audioEndTime,
+                ));
             /* final route = MaterialPageRoute(
               fullscreenDialog: true,
               builder: (_) => VideoPage(filePath: file.path),
@@ -239,41 +241,52 @@ class CreateReelController extends GetxController {
       //     message: 'Reel Created without Audio',
       //     isSuccess: true);
       Get.to(() => PreviewReelsScreen(
-        reel: finalFile,
-      ));
+            reel: finalFile,
+          ));
     }
   }
 
   downloadAudio(Function(bool) callback) async {
-    // **** Download the audio file *******//
-    DownloaderTask task = DownloaderTask(
-      url: selectedAudio.value!.url,
-      fileName: "${selectedAudio.value!.id}.mp3",
-      bufferSize:
-      1024, // if bufferSize value not set, default value is 64 ( 64 Kb )
-    );
+    final response = await http.get(Uri.parse(selectedAudio.value!.url));
+    final bytes = response.bodyBytes;
 
-    final pathFile = (await path.getTemporaryDirectory()).path;
-    // if (!mounted) return;
-
-    task = task.copyWith(
-      downloadPath: pathFile,
-    );
-
-    _downloader = SimpleDownloader.init(task: task);
-    _downloader.download();
-    _downloader.callback.addListener(() {
-      if (_downloader.callback.status == DownloadStatus.completed) {
-        croppedAudioFile = File("$pathFile/${selectedAudio.value!.id}.mp3");
-
-        callback(true);
-      } else if (_downloader.callback.status == DownloadStatus.failed ||
-          _downloader.callback.status == DownloadStatus.canceled ||
-          _downloader.callback.status == DownloadStatus.deleted) {
-        callback(false);
-      }
-    });
+    final dir = await Directory.systemTemp.createTemp();
+    final file = File('${dir.path}/${selectedAudio.value!.id}.mp3');
+    await file.writeAsBytes(bytes);
+    croppedAudioFile = file;
+    callback(true);
   }
+
+  // downloadAudio(Function(bool) callback) async {
+  //   // **** Download the audio file *******//
+  //   DownloaderTask task = DownloaderTask(
+  //     url: selectedAudio.value!.url,
+  //     fileName: "${selectedAudio.value!.id}.mp3",
+  //     bufferSize:
+  //         1024, // if bufferSize value not set, default value is 64 ( 64 Kb )
+  //   );
+  //
+  //   final pathFile = (await path.getTemporaryDirectory()).path;
+  //   // if (!mounted) return;
+  //
+  //   task = task.copyWith(
+  //     downloadPath: pathFile,
+  //   );
+  //
+  //   _downloader = SimpleDownloader.init(task: task);
+  //   _downloader.download();
+  //   _downloader.callback.addListener(() {
+  //     if (_downloader.callback.status == DownloadStatus.completed) {
+  //       croppedAudioFile = File("$pathFile/${selectedAudio.value!.id}.mp3");
+  //
+  //       callback(true);
+  //     } else if (_downloader.callback.status == DownloadStatus.failed ||
+  //         _downloader.callback.status == DownloadStatus.canceled ||
+  //         _downloader.callback.status == DownloadStatus.deleted) {
+  //       callback(false);
+  //     }
+  //   });
+  // }
 
   void trimAudio() async {
     if ((audioEndTime ?? 0 - (audioStartTime ?? 0)) <
@@ -284,7 +297,7 @@ class CreateReelController extends GetxController {
       return;
     }
 
-    EasyLoading.showToast(LocalizationString.loading);
+    EasyLoading.showToast(loadingString.tr);
     downloadAudio((status) async {
       if (status) {
         if (croppedAudioFile != null) {
@@ -299,7 +312,7 @@ class CreateReelController extends GetxController {
               '-ss ${audioStartTime!} -i ${croppedAudioFile!.path} -t $duration -c copy ${finalAudioFile.path}';
           FFmpegKit.executeAsync(
             audioTrimCommand,
-                (session) async {
+            (session) async {
               final returnCode = await session.getReturnCode();
 
               EasyLoading.dismiss();

@@ -1,13 +1,10 @@
 import 'package:foap/components/top_navigation_bar.dart';
 import 'package:foap/helper/common_components.dart';
 import 'package:foap/helper/extension.dart';
-import 'package:foap/screens/add_on/controller/event/event_controller.dart';
 import 'package:foap/util/app_config_constants.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
 import 'package:flutter/material.dart';
-
-import 'event_detail.dart';
 
 class CategoryEventsListing extends StatefulWidget {
   final EventCategoryModel category;
@@ -45,14 +42,10 @@ class CategoryEventsListingState extends State<CategoryEventsListing> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(
-            height: 50,
-          ),
           backNavigationBar(
-            context: context,
             title: widget.category.name,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           Expanded(
             child: Obx(() {
               ScrollController scrollController = ScrollController();
@@ -83,8 +76,7 @@ class CategoryEventsListingState extends State<CategoryEventsListing> {
                               leaveBtnClicked: () {
                                 _eventsController.leaveEvent(events[index]);
                               },
-                              previewBtnClicked: () {
-                              },
+                              previewBtnClicked: () {},
                             ).ripple(() {
                               Get.to(() => EventDetail(
                                     event: events[index],
@@ -107,6 +99,4 @@ class CategoryEventsListingState extends State<CategoryEventsListing> {
       ),
     );
   }
-
-
 }

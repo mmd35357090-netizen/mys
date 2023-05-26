@@ -38,7 +38,7 @@ class UsersListState extends State<UsersList> {
                     color: AppColorConstants.iconColor)),
             Center(
                 child: Heading5Text(
-              LocalizationString.friendsNearBy,
+              friendsNearByString.tr,
               color: AppColorConstants.themeColor,
 
             )),

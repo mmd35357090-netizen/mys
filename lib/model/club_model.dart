@@ -71,11 +71,11 @@ class ClubModel {
   String get groupType {
     if (privacyType == 1) {
       if (isRequestBased == true) {
-        return LocalizationString.onRequest;
+        return onRequestString.tr;
       }
-      return LocalizationString.public;
+      return publicString.tr;
     }
-    return LocalizationString.private;
+    return privateString.tr;
   }
 
   AccessLevel get accessLevel {

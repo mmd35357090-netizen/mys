@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
+import '../../components/app_text_field.dart';
 import '../../controllers/profile_controller.dart';
 import '../../universal_components/rounded_input_field.dart';
 
@@ -39,23 +40,23 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
               height: 55,
             ),
             profileScreensNavigationBar(
-                context: context,
-                title: LocalizationString.changePhoneNumber,
-                rightBtnTitle: LocalizationString.done,
+                
+                title: changePhoneNumberString.tr,
+                rightBtnTitle: doneString.tr,
                 completion: () {
                   profileController.updateMobile(
                       countryCode: countryCode,
                       phoneNumber: phoneNumber.text,
-                      context: context);
+                      );
                 }),
-            divider(context: context).vP8,
+            divider().vP8,
             const SizedBox(
               height: 20,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BodyLargeText(LocalizationString.phoneNumber,
+                BodyLargeText(phoneNumberString.tr,
                     weight: TextWeight.medium),
                 const SizedBox(
                   height: 8,
@@ -70,15 +71,13 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
   addTextField() {
     return SizedBox(
       height: 50,
-      child: InputMobileNumberField(
+      child: AppMobileTextField(
         onChanged: (value) {},
-        phoneCodeText: countryCode,
-        phoneCodeValueChanged: (value) {
+        countryCodeValueChanged: (value) {
           countryCode = value;
           setState(() {});
         },
         controller: phoneNumber,
-        showDivider: true,
         hintText: '123456789',
       ),
     ).vP8;

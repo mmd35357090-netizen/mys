@@ -20,7 +20,7 @@ class PackagesScreenState extends State<PackagesScreen> {
     super.initState();
 
     settingsController.getSettings();
-    packageController.initiate(context);
+    packageController.initiate();
   }
 
   @override
@@ -34,11 +34,9 @@ class PackagesScreenState extends State<PackagesScreen> {
     return Scaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const SizedBox(
-          height: 50,
-        ),
-        backNavigationBar(context: context, title: LocalizationString.packages),
-        divider(context: context).tP8,
+
+        backNavigationBar( title: packagesString.tr),
+        divider().tP8,
         const Expanded(child: CoinPackagesWidget()),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,14 +44,14 @@ class PackagesScreenState extends State<PackagesScreen> {
             const SizedBox(
               height: 10,
             ),
-            BodyLargeText(LocalizationString.watchAds,
+            BodyLargeText(watchAdsString.tr,
                 weight: TextWeight.bold, color: AppColorConstants.themeColor),
             const SizedBox(height: 10),
             Obx(() => BodyMediumText(
                   settingsController.setting.value == null
-                      ? LocalizationString.watchAdsReward
-                          .replaceAll('coins_value', LocalizationString.loading)
-                      : LocalizationString.watchAdsReward.replaceAll(
+                      ? watchAdsRewardString.tr
+                          .replaceAll('coins_value', loadingString.tr)
+                      : watchAdsRewardString.tr.replaceAll(
                           'coins_value',
                           settingsController
                               .setting.value!.watchVideoRewardCoins
@@ -64,7 +62,7 @@ class PackagesScreenState extends State<PackagesScreen> {
               child: SizedBox(
                 height: 45,
                 child: AppThemeButton(
-                    text: LocalizationString.watchAds,
+                    text: watchAdsString.tr,
                     onPress: () {
                       packageController.showRewardedAds();
                     }),

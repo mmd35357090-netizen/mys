@@ -27,8 +27,10 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
       child: GetBuilder<SubscriptionPackageController>(
           init: packageController,
           builder: (ctx) {
+            print(
+                'packageController.packages ${packageController.packages.length}');
             return ListView.separated(
-                padding: const EdgeInsets.only(top: 20,bottom: 70),
+                padding: const EdgeInsets.only(top: 20, bottom: 70),
                 itemBuilder: (ctx, index) {
                   return PackageTile(
                     package: packageController.packages[index],
@@ -40,7 +42,7 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
                   );
                 },
                 separatorBuilder: (ctx, index) {
-                  return divider(context: context).vP16;
+                  return divider().vP16;
                 },
                 itemCount: packageController.packages.length);
           }).hP16,
@@ -54,7 +56,7 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
           subTitle:
               'This is demo app so you can not make payment to test it, but still you will get some coins',
           okHandler: () {
-            packageController.subscribeToDummyPackage(context, randomId());
+            packageController.subscribeToDummyPackage(randomId());
           });
       return;
     }
@@ -77,13 +79,11 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
             autoConsume: packageController.kAutoConsume || Platform.isIOS);
       } else {
         AppUtil.showToast(
-            message: LocalizationString.noProductAvailable,
-            isSuccess: false);
+            message: noProductAvailableString.tr, isSuccess: false);
       }
     } else {
       AppUtil.showToast(
-          message: LocalizationString.storeIsNotAvailable,
-          isSuccess: false);
+          message: storeIsNotAvailableString.tr, isSuccess: false);
     }
   }
 }

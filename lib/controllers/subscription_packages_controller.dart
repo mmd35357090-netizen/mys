@@ -1,3 +1,4 @@
+import 'package:foap/apiHandler/apis/wallet_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -24,23 +25,17 @@ class SubscriptionPackageController extends GetxController {
   RxBool isAvailable = false.obs;
   RxString selectedPurchaseId = ''.obs;
 
-  initiate(BuildContext context) {
-    AppUtil.checkInternet().then((value) {
-      if (value) {
-        ApiController().getAllPackages().then((value) {
-          if (value.success) {
-            packages.value = value.packages;
-            initStoreInfo();
-            update();
-          }
-        });
-      }
+  initiate() {
+    WalletApi.getAllPackages(resultCallback: (result) {
+      packages.value = result;
+      initStoreInfo();
+      update();
     });
 
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchase.instance.purchaseStream;
     subscription = purchaseUpdated.listen((purchaseDetailsList) {
-      _listenToPurchaseUpdated(purchaseDetailsList, context);
+      _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
       subscription.cancel();
     }, onError: (error) {
@@ -67,17 +62,14 @@ class SubscriptionPackageController extends GetxController {
   }
 
   showRewardedAds() {
-    RewardedInterstitialAds().show(() {
-      ApiController().rewardCoins().then((response) {
-        if (response.success == true) {
-          _userProfileManager.refreshProfile();
-        } else {}
-      });
+    RewardedInterstitialAds().show(() async {
+      await WalletApi.rewardCoins();
+      _userProfileManager.refreshProfile();
     });
   }
 
   void _listenToPurchaseUpdated(
-      List<PurchaseDetails> purchaseDetailsList, BuildContext context) {
+      List<PurchaseDetails> purchaseDetailsList) {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
       if (purchaseDetails.status == PurchaseStatus.pending) {
         //showPending error
@@ -85,14 +77,13 @@ class SubscriptionPackageController extends GetxController {
         if (purchaseDetails.status == PurchaseStatus.error) {
           //show error
           AppUtil.showToast(
-              message: LocalizationString.purchaseError,
-              isSuccess: false);
+              message: purchaseErrorString.tr, isSuccess: false);
         } else if (purchaseDetails.status == PurchaseStatus.purchased) {
           //show success
 
           AppUtil.checkInternet().then((value) {
             if (value) {
-              subscribeToPackage(context, purchaseDetails.purchaseID!);
+              subscribeToPackage(purchaseDetails.purchaseID!);
               // ApiController()
               //     .subscribePackage(
               //         packages[selectedPackage.value].id.toString(),
@@ -100,8 +91,8 @@ class SubscriptionPackageController extends GetxController {
               //         packages[selectedPackage.value].price.toString())
               //     .then((response) {
               //   AppUtil.showToast(
-              //       context: context,
-              //       message: LocalizationString.coinsAdded,
+              //       
+              //       message: coinsAdded,
               //       isSuccess: true);
               //   _userProfileManager.refreshProfile();
               //   if (response.success) {
@@ -127,7 +118,7 @@ class SubscriptionPackageController extends GetxController {
     });
   }
 
-  subscribeToPackage(BuildContext context, String purchaseId) {
+  subscribeToPackage( String purchaseId) {
     List<PackageModel> boughtPackages = packages.where((package) {
       if (Platform.isIOS) {
         if (package.inAppPurchaseIdIOS == purchaseId) {
@@ -146,32 +137,28 @@ class SubscriptionPackageController extends GetxController {
 
     PackageModel boughtPackage = boughtPackages.first;
 
-    ApiController()
-        .subscribePackage(boughtPackage.id.toString(), purchaseId,
-            boughtPackage.price.toString())
-        .then((response) {
-      AppUtil.showToast(
-          message: LocalizationString.coinsAdded,
-          isSuccess: true);
-      _userProfileManager.refreshProfile();
-      if (response.success) {
-        user.value.coins = boughtPackage.coin;
-      }
-    });
+    WalletApi.subscribePackage(
+        packageId: boughtPackage.id.toString(),
+        transactionId: purchaseId,
+        amount: boughtPackage.price.toString(),
+        resultCallback: () {
+          AppUtil.showToast(
+              message: coinsAddedString.tr, isSuccess: true);
+          _userProfileManager.refreshProfile();
+          user.value.coins = boughtPackage.coin;
+        });
   }
 
-  subscribeToDummyPackage(BuildContext context, String purchaseId) {
-    ApiController()
-        .subscribePackage(
-            packages[0].id.toString(), purchaseId, packages[0].price.toString())
-        .then((response) {
-      AppUtil.showToast(
-          message: '${packages[0].coin} ${LocalizationString.coinsAdded}',
-          isSuccess: true);
-      _userProfileManager.refreshProfile();
-      if (response.success) {
-        user.value.coins = packages[0].coin;
-      }
-    });
+  subscribeToDummyPackage(String purchaseId) {
+    WalletApi.subscribePackage(
+        packageId: packages[0].id.toString(),
+        transactionId: purchaseId,
+        amount: packages[0].price.toString(),
+        resultCallback: () {
+          AppUtil.showToast(
+              message: coinsAddedString.tr, isSuccess: true);
+          _userProfileManager.refreshProfile();
+          user.value.coins = packages[0].coin;
+        });
   }
 }

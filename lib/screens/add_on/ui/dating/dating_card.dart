@@ -16,12 +16,10 @@ class DatingCardState extends State<DatingCard> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          const SizedBox(height: 50),
           backNavigationBar(
-            context: context,
-            title: LocalizationString.dating,
+            title: datingString.tr,
           ),
-          divider(context: context).tP8,
+          divider().tP8,
           const Expanded(child: CardsStackWidget()),
         ],
       ),
@@ -71,8 +69,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
               ? const CardsStackShimmerWidget()
               : datingController.datingUsers.isEmpty
                   ? emptyData(
-                      title: LocalizationString.noDatingProfilesFound,
-                      subTitle: LocalizationString.datingExplore,
+                      title: noDatingProfilesFoundString.tr,
+                      subTitle: datingExploreString.tr,
                     )
                   : Stack(
                       clipBehavior: Clip.none,
@@ -136,7 +134,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                                   );
                                 } else {
                                   return DragWidget(
-                                    profile: datingController.datingUsers[index],
+                                    profile:
+                                        datingController.datingUsers[index],
                                     index: index,
                                     swipeNotifier: swipeNotifier,
                                   );
@@ -301,7 +300,7 @@ class _DragWidgetState extends State<DragWidget> {
                               child: Transform.rotate(
                                 angle: 12,
                                 child: TagWidget(
-                                  text: LocalizationString.like.toLowerCase(),
+                                  text: likeString.tr.toLowerCase(),
                                   color: Colors.green[400]!,
                                 ),
                               ),
@@ -312,8 +311,7 @@ class _DragWidgetState extends State<DragWidget> {
                               child: Transform.rotate(
                                 angle: -12,
                                 child: TagWidget(
-                                  text:
-                                      LocalizationString.disLike.toUpperCase(),
+                                  text: disLikeString.tr.toUpperCase(),
                                   color: Colors.red[400]!,
                                 ),
                               ),
@@ -362,7 +360,7 @@ class _DragWidgetState extends State<DragWidget> {
                             child: Transform.rotate(
                               angle: 12,
                               child: TagWidget(
-                                text: LocalizationString.like.toUpperCase(),
+                                text: likeString.tr.toUpperCase(),
                                 color: Colors.green[400]!,
                               ),
                             ),
@@ -373,7 +371,7 @@ class _DragWidgetState extends State<DragWidget> {
                             child: Transform.rotate(
                               angle: -12,
                               child: TagWidget(
-                                text: LocalizationString.disLike.toUpperCase(),
+                                text: disLikeString.tr.toUpperCase(),
                                 color: Colors.red[400]!,
                               ),
                             ),
@@ -484,10 +482,10 @@ class ProfileCard extends StatelessWidget {
                   ),
                   // BodyLargeText(
                   //   profile.genderType == GenderType.female
-                  //       ? LocalizationString.female
+                  //       ? female
                   //       : profile.genderType == GenderType.other
-                  //           ? LocalizationString.other
-                  //           : LocalizationString.male,
+                  //           ? other
+                  //           : male,
                   //   color: AppColorConstants.grayscale500,
                   // ),
                 ],

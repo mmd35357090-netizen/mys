@@ -1,3 +1,4 @@
+import 'package:foap/apiHandler/apis/events_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
 
@@ -20,44 +21,42 @@ class EventDetailController extends GetxController {
 
   eventDetail() {
     isLoading.value = true;
-    ApiController().getEventDetail(eventId: event.value!.id).then((response) {
-      if (response.success) {
-        event.value = response.event;
-        isLoading.value = false;
+    EventApi.getEventDetail(
+        eventId: event.value!.id,
+        resultCallback: (result) {
+          event.value = result;
+          isLoading.value = false;
 
-        List<EventTicketType> ticketTypes = event.value!.tickets;
-        ticketTypes.sort((a, b) => a.price.compareTo(b.price));
+          List<EventTicketType> ticketTypes = event.value!.tickets;
+          ticketTypes.sort((a, b) => a.price.compareTo(b.price));
 
-        if (!event.value!.isFree) {
-          minTicketPrice = ticketTypes.first.price;
-          maxTicketPrice = ticketTypes.last.price;
-        }
+          if (!event.value!.isFree) {
+            minTicketPrice = ticketTypes.first.price;
+            maxTicketPrice = ticketTypes.last.price;
+          }
 
-        update();
-      }
-    });
+          update();
+        });
   }
 
   loadEventCoupons(int eventId) {
-    ApiController().getEventCoupons(eventId: eventId).then((response) {
-      if (response.success) {
-        coupons.value = response.eventCoupons;
-        update();
-      }
-    });
+    EventApi.getEventCoupons(
+        eventId: eventId,
+        resultCallback: (result) {
+          coupons.value = result;
+          update();
+        });
   }
 
   joinEvent() {
     event.value!.isJoined = true;
     event.refresh();
-    ApiController().joinEvent(eventId: event.value!.id).then((response) {
-      if (response.success) {}
-    });
+    EventApi.joinEvent(eventId: event.value!.id);
   }
 
   leaveEvent() {
     event.value!.isJoined = false;
     event.refresh();
-    ApiController().leaveEvent(eventId: event.value!.id).then((response) {});
+    EventApi.leaveEvent(eventId: event.value!.id);
   }
 }

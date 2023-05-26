@@ -58,8 +58,8 @@
 //       completion(mediaList);
 //     } else {
 //       AppUtil.showToast(
-//           context: context,
-//           message: LocalizationString.noPhotosFound,
+//           
+//           message: noPhotosFound,
 //           isSuccess: false);
 //       // Limited(iOS) or Rejected, use `==` for more precise judgements.
 //       // You can call `PhotoManager.openSetting()` to open settings for further steps.

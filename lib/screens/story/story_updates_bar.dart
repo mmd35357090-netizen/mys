@@ -51,7 +51,7 @@ class StoryUpdatesBar extends StatelessWidget {
                           const SizedBox(
                             height: 5,
                           ),
-                          BodySmallText(LocalizationString.yourStory.tr,
+                          BodySmallText(yourStoryString.tr,
                               weight: TextWeight.medium)
                         ],
                       )
@@ -69,7 +69,7 @@ class StoryUpdatesBar extends StatelessWidget {
                             height: 5,
                           ),
                           Expanded(
-                            child: BodySmallText(LocalizationString.yourStory.tr,
+                            child: BodySmallText(yourStoryString.tr,
                                 maxLines: 1,
                                 weight: TextWeight.medium),
                           )

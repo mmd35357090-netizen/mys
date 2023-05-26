@@ -1,10 +1,10 @@
+import 'package:foap/apiHandler/apis/club_api.dart';
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../apiHandler/api_controller.dart';
 import '../../model/category_model.dart';
-
 
 class ClubsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
@@ -57,7 +57,6 @@ class ClubsController extends GetxController {
   }
 
   selectedSegmentIndex({required int index, required bool forceRefresh}) {
-
     if (isLoadingClubs.value == true) {
       return;
     }
@@ -87,52 +86,43 @@ class ClubsController extends GetxController {
       int? userId,
       int? isJoined,
       required bool isStartOver}) {
-
     if (canLoadMoreClubs) {
       if (isStartOver == true) {
         isLoadingClubs.value = true;
       }
-      ApiController()
-          .getClubs(
-              name: name,
-              categoryId: categoryId,
-              userId: userId,
-              isJoined: isJoined,
-              page: clubsPage)
-          .then((response) {
+      ClubApi.getClubs(
+          name: name,
+          categoryId: categoryId,
+          userId: userId,
+          isJoined: isJoined,
+          page: clubsPage,
+          resultCallback: (result, metadata) {
+            clubs.addAll(result);
+            clubs.value = clubs.toSet().toList();
+            isLoadingClubs.value = false;
 
-        clubs.addAll(response.clubs);
-        clubs.value = clubs.toSet().toList();
-        isLoadingClubs.value = false;
+            canLoadMoreClubs = result.length >= metadata.perPage;
 
-        if (response.clubs.length == response.metaData?.perPage) {
-          canLoadMoreClubs = true;
-        } else {
-          canLoadMoreClubs = false;
-        }
-        clubsPage += 1;
-        update();
-      });
+            clubsPage += 1;
+            update();
+          });
     }
   }
 
   getClubInvitations() {
     if (canLoadMoreInvitations) {
       isLoadingInvitations.value = true;
-      ApiController()
-          .getClubInvitations(page: invitationsPage)
-          .then((response) {
-        invitations.addAll(response.clubInvitations);
-        isLoadingInvitations.value = false;
+      ClubApi.getClubInvitations(
+          page: invitationsPage,
+          resultCallback: (result, metadata) {
+            invitations.addAll(result);
+            isLoadingInvitations.value = false;
 
-        invitationsPage += 1;
-        if (response.clubInvitations.length == response.metaData?.perPage) {
-          canLoadMoreInvitations = true;
-        } else {
-          canLoadMoreInvitations = false;
-        }
-        update();
-      });
+            invitationsPage += 1;
+            canLoadMoreInvitations = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
@@ -144,27 +134,25 @@ class ClubsController extends GetxController {
   getMembers({int? clubId}) {
     if (canLoadMoreMembers) {
       isLoadingMembers = true;
-      ApiController()
-          .getClubMembers(clubId: clubId, page: membersPage)
-          .then((response) {
-        members.addAll(response.clubMembers);
-        isLoadingMembers = false;
+      ClubApi.getClubMembers(
+          clubId: clubId,
+          page: membersPage,
+          resultCallback: (result, metadata) {
+            members.addAll(result);
+            isLoadingMembers = false;
 
-        membersPage += 1;
-        if (response.clubMembers.length == response.metaData?.perPage) {
-          canLoadMoreMembers = true;
-        } else {
-          canLoadMoreMembers = false;
-        }
-        update();
-      });
+            membersPage += 1;
+            canLoadMoreMembers = result.length >= metadata.perPage;
+
+            update();
+          });
     }
   }
 
   getCategories() {
     isLoadingCategories.value = true;
-    ApiController().getClubCategories().then((response) {
-      categories.value = response.categories;
+    ClubApi.getClubCategories(resultCallback: (result) {
+      categories.value = result;
       isLoadingCategories.value = false;
 
       update();
@@ -182,7 +170,7 @@ class ClubsController extends GetxController {
 
       clubs.refresh();
 
-      ApiController().sendClubJoinRequest(clubId: club.id!).then((response) {});
+      ClubApi.sendClubJoinRequest(clubId: club.id!);
     } else {
       clubs.value = clubs.map((element) {
         if (element.id == club.id) {
@@ -193,7 +181,7 @@ class ClubsController extends GetxController {
 
       clubs.refresh();
 
-      ApiController().joinClub(clubId: club.id!).then((response) {});
+      ClubApi.joinClub(clubId: club.id!, resultCallback: () {});
     }
   }
 
@@ -206,47 +194,36 @@ class ClubsController extends GetxController {
     }).toList();
 
     clubs.refresh();
-    ApiController().leaveClub(clubId: club.id!).then((response) {});
+    ClubApi.leaveClub(clubId: club.id!);
   }
 
   acceptClubInvitation(ClubInvitation invitation) {
     invitations.remove(invitation);
     invitations.refresh();
-    ApiController()
-        .acceptDeclineClubInvitation(
-            invitationId: invitation.id!, replyStatus: 10)
-        .then((response) {});
+    ClubApi.acceptDeclineClubInvitation(
+        invitationId: invitation.id!, replyStatus: 10);
   }
 
   declineClubInvitation(ClubInvitation invitation) {
     invitations.remove(invitation);
     invitations.refresh();
-    ApiController()
-        .acceptDeclineClubInvitation(
-            invitationId: invitation.id!, replyStatus: 3)
-        .then((response) {});
+    ClubApi.acceptDeclineClubInvitation(
+        invitationId: invitation.id!, replyStatus: 3);
   }
 
   removeMemberFromClub(ClubModel club, ClubMemberModel member) {
     members.remove(member);
     update();
 
-    ApiController()
-        .removeMemberFromClub(clubId: club.id!, userId: member.id)
-        .then((response) {});
+    ClubApi.removeMemberFromClub(clubId: club.id!, userId: member.id);
   }
 
   deleteClub({required ClubModel club, required VoidCallback callback}) {
-    EasyLoading.show(status: LocalizationString.loading);
-
-    ApiController()
-        .deleteClub(
+    ClubApi.deleteClub(
       club.id!,
-    )
-        .then((response) {
-      EasyLoading.dismiss();
-      Get.back();
-      callback();
-    });
+    );
+    Get.back();
+    callback();
+    ;
   }
 }

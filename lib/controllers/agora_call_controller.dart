@@ -1,24 +1,22 @@
 import 'dart:io';
-
-import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:foap/controllers/voip_controller.dart';
 import 'package:foap/helper/imports/call_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:wakelock/wakelock.dart';
-
+import 'package:permission_handler/permission_handler.dart';
+import '../helper/permission_utils.dart';
 import '../manager/socket_manager.dart';
 import '../screens/settings_menu/settings_controller.dart';
 import '../util/ad_helper.dart';
 import '../util/constant_util.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 
 class AgoraCallController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
 
   RxInt remoteUserId = 0.obs;
 
-  RtcEngine? _engine;
+  RtcEngine? engine;
 
   RxBool isFront = false.obs;
   RxBool reConnectingRemoteView = false.obs;
@@ -80,15 +78,19 @@ class AgoraCallController extends GetxController {
           callType:
               call.callType == 1 ? AgoraCallType.audio : AgoraCallType.video);
       _addAgoraEventHandlers();
-      var configuration = VideoEncoderConfiguration();
-      configuration.dimensions =
-          const VideoDimensions(width: 1920, height: 1080);
-      configuration.orientationMode = VideoOutputOrientationMode.Adaptative;
-      await _engine!.setVideoEncoderConfiguration(configuration);
-      await _engine!.leaveChannel();
+      var configuration = const VideoEncoderConfiguration(
+          dimensions: VideoDimensions(width: 1920, height: 1080),
+          orientationMode: OrientationMode.orientationModeAdaptive);
 
-      await _engine!.joinChannel(call.token, call.channelName, null,
-          _userProfileManager.user.value!.id);
+      await engine!.setVideoEncoderConfiguration(configuration);
+      await engine!.leaveChannel();
+
+      await engine!.joinChannel(
+        token: call.token,
+        channelId: call.channelName,
+        uid: _userProfileManager.user.value!.id,
+        options: const ChannelMediaOptions(),
+      );
 
       if (call.callType == 1) {
         Get.to(() => AudioCallingScreen(call: call));
@@ -101,15 +103,24 @@ class AgoraCallController extends GetxController {
 
   //Initialize Agora RTC Engine
   Future<void> _initAgoraRtcEngine({required AgoraCallType callType}) async {
-    _engine = await RtcEngine.create(_settingsController.setting.value!.agoraApiKey!);
+    // _engine = await RtcEngine.create(_settingsController.setting.value!.agoraApiKey!);
+
+    engine = createAgoraRtcEngine();
+
+    await engine!.initialize(RtcEngineContext(
+      appId: _settingsController.setting.value!.agoraApiKey!,
+      channelProfile: ChannelProfileType.channelProfileCommunication,
+    ));
+
     if (callType == AgoraCallType.video) {
-      await _engine!.enableVideo();
+      await engine!.enableVideo();
+      await engine!.startPreview();
     }
   }
 
   //Switch Camera
   onToggleCamera() {
-    _engine!.switchCamera().then((value) {
+    engine!.switchCamera().then((value) {
       isFront.value = !isFront.value;
     }).catchError((err) {});
   }
@@ -122,64 +133,63 @@ class AgoraCallController extends GetxController {
   //Audio On / Off
   void onToggleMuteAudio() {
     mutedAudio.value = !mutedAudio.value;
-    _engine!.muteLocalAudioStream(mutedAudio.value);
+    engine!.muteLocalAudioStream(mutedAudio.value);
   }
 
   //Video On / Off
   void onToggleMuteVideo() {
     mutedVideo.value = !mutedVideo.value;
-    _engine!.muteLocalVideoStream(mutedVideo.value);
+    engine!.muteLocalVideoStream(mutedVideo.value);
   }
 
   //Agora Events Handler To Implement Ui/UX Based On Your Requirements
   void _addAgoraEventHandlers() {
-    _engine!.setEventHandler(RtcEngineEventHandler(
-      error: (code) {
-        // final info = 'onError:$code ${code.index}';
-        // print(info);
-      },
-      joinChannelSuccess: (channel, uid, elapsed) {
-        // final info = 'onJoinChannel: $channel, uid: $uid';
-        // print(info);
-      },
-      leaveChannel: (stats) {
-        // print('onLeaveChannel');
-      },
-      userJoined: (uid, elapsed) {
-        // final info = 'userJoined: $uid';
+    engine!.registerEventHandler(
+      RtcEngineEventHandler(
+          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+        debugPrint("local user ${connection.localUid} joined");
+      }, onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+        debugPrint("remote user $remoteUid joined");
         remoteJoined.value = true;
-        remoteUserId.value = uid;
+        remoteUserId.value = remoteUid;
         update();
-      },
-      userOffline: (uid, elapsed) async {
-        if (elapsed == UserOfflineReason.Dropped) {
-          Wakelock.disable();
-        } else {
-          // final info = 'userOffline: $uid';
-          remoteUserId.value = 0;
-          update();
-          // _timerKey.currentState?.cancelTimer();
-        }
-      },
-      firstRemoteVideoFrame: (uid, width, height, elapsed) {
-        // final info = 'firstRemoteVideo: $uid ${width}x $height';
-      },
-      connectionStateChanged: (type, reason) async {
-        // print('connectionStateChanged');
-        if (type == ConnectionStateType.Connected) {
+      }, onUserOffline: (RtcConnection connection, int remoteUid,
+              UserOfflineReasonType reason) {
+        debugPrint("remote user $remoteUid left channel");
+        // if (elapsed == UserOfflineReason.Dropped) {
+        //   Wakelock.disable();
+        // } else {
+        // final info = 'userOffline: $uid';
+        remoteUserId.value = 0;
+        update();
+        // _timerKey.currentState?.cancelTimer();
+        // }
+      }, onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
+        debugPrint(
+            '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
+      }, onConnectionStateChanged: (RtcConnection connection,
+              ConnectionStateType state,
+              ConnectionChangedReasonType reason) async {
+        if (state == ConnectionStateType.connectionStateConnected) {
           reConnectingRemoteView.value = false;
-        } else if (type == ConnectionStateType.Reconnecting) {
+        } else if (state == ConnectionStateType.connectionStateReconnecting ||
+            state == ConnectionStateType.connectionStateConnecting) {
           reConnectingRemoteView.value = true;
         }
-      },
-      remoteVideoStats: (remoteVideoStats) {
-        if (remoteVideoStats.receivedBitrate == 0) {
+      }, onRemoteVideoStateChanged: (RtcConnection connection,
+              int remoteUid,
+              RemoteVideoState state,
+              RemoteVideoStateReason reason,
+              int elapsed) async {
+        if (state == RemoteVideoState.remoteVideoStateFailed ||
+            state == RemoteVideoState.remoteVideoStateStopped ||
+            state == RemoteVideoState.remoteVideoStateFrozen) {
           videoPaused.value = true;
         } else {
           videoPaused.value = false;
         }
-      },
-    ));
+      }),
+    );
   }
 
   // call
@@ -202,8 +212,7 @@ class AgoraCallController extends GetxController {
         getIt<VoipController>().endCall(call);
       }
       endCall(call);
-    }
-    else if (status == 4) {
+    } else if (status == 4) {
       player.stop();
     }
   }
@@ -276,12 +285,11 @@ class AgoraCallController extends GetxController {
     }
   }
 
-  void acceptCall({required Call call}) async {
+  void acceptCall({required Call call}) {
     getIt<SocketManager>().emit(SocketConstants.onAcceptCall, {
       'uuid': call.uuid,
       'userId': _userProfileManager.user.value!.id,
       'status': 4,
-      // 'channelName': call.channelName
     });
 
     //Todo: this need to be checked
@@ -293,12 +301,36 @@ class AgoraCallController extends GetxController {
     player.stop();
   }
 
+  void initiateAcceptCall({required Call call}) async {
+    askForPermissionsForCall(call: call);
+  }
+
+  askForPermissionsForCall({required Call call}) {
+    PermissionUtils.requestPermission(
+        call.callType == 1
+            ? [Permission.microphone]
+            : [Permission.camera, Permission.microphone],
+        isOpenSettings: false, permissionGrant: () async {
+      acceptCall(call: call);
+    }, permissionDenied: () {
+      declineCall(call: call);
+      AppUtil.showToast(
+          message: pleaseAllowAccessToMicrophoneForAudioCallString,
+          isSuccess: false);
+    }, permissionNotAskAgain: () {
+      declineCall(call: call);
+      AppUtil.showToast(
+          message: pleaseAllowAccessToMicrophoneForAudioCallString,
+          isSuccess: false);
+    });
+  }
+
   //Use This Method To End Call
   void endCall(Call call) async {
     player.stop();
     if (remoteJoined.value == true) {
-      _engine?.leaveChannel();
-      _engine?.destroy();
+      engine?.leaveChannel();
+      // engine?.destroy();
 
       clear();
     }

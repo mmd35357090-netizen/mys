@@ -29,21 +29,20 @@ class _SetUserNameState extends State<SetUserName> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Heading3Text(LocalizationString.setUserName,
+          Heading3Text(setUserNameString.tr,
              weight: TextWeight.medium,),
           const SizedBox(
             height: 20,
           ),
-          BodyLargeText(LocalizationString.setUserNameSubHeading,
+          BodyLargeText(setUserNameSubHeadingString.tr,
               textAlign: TextAlign.center, weight: TextWeight.medium),
           const SizedBox(
             height: 50,
           ),
           Stack(
             children: [
-              InputField(
+              AppTextField(
                 controller: userName,
-                showDivider: true,
                 onChanged: (value) {
                   if (value.length > 3) {
                     profileController.verifyUsername(userName: value);
@@ -75,12 +74,12 @@ class _SetUserNameState extends State<SetUserName> {
             height: 50,
           ),
           AppThemeButton(
-              text: LocalizationString.submit,
+              text: submitString.tr,
               onPress: () {
                 profileController.updateUserName(
                     userName: userName.text,
                     isSigningUp: true,
-                    context: context);
+                    );
               })
         ],
       ).hP16,

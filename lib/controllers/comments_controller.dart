@@ -1,7 +1,8 @@
+import 'package:foap/apiHandler/apis/post_api.dart';
+import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
-import '../apiHandler/api_controller.dart';
+import 'package:foap/helper/list_extension.dart';
+import '../apiHandler/apis/misc_api.dart';
 import '../model/comment_model.dart';
 import '../model/hash_tag.dart';
 
@@ -30,6 +31,11 @@ class CommentsController extends GetxController {
   bool canLoadMoreAccounts = true;
   bool accountsIsLoading = false;
 
+  int commentsPage = 1;
+  bool canLoadMoreComments = true;
+
+  // bool accountsIsLoading = false;
+
   clear() {
     hashtagsPage = 1;
     canLoadMoreHashtags = true;
@@ -38,43 +44,46 @@ class CommentsController extends GetxController {
     accountsPage = 1;
     canLoadMoreAccounts = true;
     accountsIsLoading = false;
+
+    comments.clear();
+    commentsPage = 1;
+    canLoadMoreComments = true;
+
     update();
   }
 
-  void getComments(int postId, BuildContext context) {
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController().getComments(postId).then((response) async {
-          if (response.success) {
-            comments.value = response.comments;
+  void getComments(int postId, VoidCallback callback) {
+    if (canLoadMoreComments) {
+      PostApi.getComments(
+          postId: postId,
+          page: commentsPage,
+          resultCallback: (result, metadata) {
+            comments.addAll(result);
+            comments.unique((e) => e.id);
+            canLoadMoreComments = result.length >= metadata.perPage;
+            if (canLoadMoreComments) {
+              commentsPage += 1;
+            }
             update();
-            // widget.model?.totalComment = comments.length;
-          }
-        });
-      } else {
-        AppUtil.showToast(
-            message: LocalizationString.noInternet,
-            isSuccess: true);
-      }
-    });
+            callback();
+          });
+    } else {
+      callback();
+    }
   }
 
-  void postCommentsApiCall({required String comment, required int postId, required VoidCallback commentPosted}) {
+  void postCommentsApiCall(
+      {required String comment,
+      required int postId,
+      required VoidCallback commentPosted}) {
     CommentModel newMessage =
         CommentModel.fromNewMessage(comment, _userProfileManager.user.value!);
-    newMessage.commentTime = LocalizationString.justNow;
+    newMessage.commentTime = justNowString.tr;
     comments.add(newMessage);
     update();
 
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        ApiController().postComments(postId, comment).then((response) {
-          if(response.success){
-            commentPosted();
-          }
-        });
-      }
-    });
+    PostApi.postComment(
+        postId: postId, comment: comment, resultCallback: commentPosted);
   }
 
   // adding hashtag and mentions
@@ -89,25 +98,29 @@ class CommentsController extends GetxController {
     update();
   }
 
-  searchHashTags({required String text}) {
+  searchHashTags({required String text, VoidCallback? callback}) {
     if (canLoadMoreHashtags) {
       hashtagsIsLoading = true;
 
-      ApiController()
-          .searchHashtag(hashtag: text.replaceAll('#', ''))
-          .then((response) {
-        hashTags.value = response.hashtags;
+      MiscApi.searchHashtag(
+          page: hashtagsPage,
+          hashtag: text.replaceAll('#', ''),
+          resultCallback: (result, metadata) {
+            hashTags.addAll(result);
+            canLoadMoreHashtags = result.length >= metadata.perPage;
+            hashtagsIsLoading = false;
+            hashtagsPage += 1;
+            // if (response.hashtags.length == response.metaData?.perPage) {
+            //   canLoadMoreHashtags = true;
+            // } else {
+            //   canLoadMoreHashtags = false;
+            // }
 
-        hashtagsIsLoading = false;
-        hashtagsPage += 1;
-        if (response.hashtags.length == response.metaData?.perPage) {
-          canLoadMoreHashtags = true;
-        } else {
-          canLoadMoreHashtags = false;
-        }
-
-        update();
-      });
+            if (callback != null) {
+              callback();
+            }
+            update();
+          });
     }
   }
 
@@ -140,23 +153,24 @@ class CommentsController extends GetxController {
     update();
   }
 
-  searchUsers(String text) {
+  searchUsers({required String text, VoidCallback? callback}) {
     if (canLoadMoreAccounts) {
       accountsIsLoading = true;
-      ApiController()
-          .findFriends(isExactMatch: 0, searchText: text.replaceAll('@', ''))
-          .then((response) {
-        searchedUsers.value = response.users;
-        accountsIsLoading = false;
+      UsersApi.searchUsers(
+          page: accountsPage,
+          isExactMatch: 0,
+          searchText: text,
+          resultCallback: (result, metadata) {
+            searchedUsers.addAll(result);
+            accountsIsLoading = false;
+            canLoadMoreAccounts = result.length >= metadata.perPage;
+            accountsPage += 1;
 
-        accountsPage += 1;
-        if (response.topUsers.length == response.metaData?.perPage) {
-          canLoadMoreAccounts = true;
-        } else {
-          canLoadMoreAccounts = false;
-        }
-        update();
-      });
+            if (callback != null) {
+              callback();
+            }
+            update();
+          });
     }
   }
 
@@ -185,7 +199,7 @@ class CommentsController extends GetxController {
         currentUpdateAbleStartOffset = position;
       }
       if (lastPart.length > 1) {
-        searchUsers(lastPart);
+        searchUsers(text: lastPart);
         currentUpdateAbleEndOffset = position;
       }
     } else {
