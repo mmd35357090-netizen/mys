@@ -16,7 +16,7 @@ class AppConfigConstants {
   //     'https://product.fwdtechnology.co/socialified/api/web/v1/';
 
   static const restApiBaseUrl =
-      'https://development.fwdtechnology.co/media_selling/api/web/v1/';
+      'https://product.fwdtechnology.co/social_media_backend/api/web/v1';
 
   // Socket api url
   static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
