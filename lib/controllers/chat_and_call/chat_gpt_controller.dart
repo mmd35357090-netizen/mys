@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import '../../apiHandler/api_controller.dart';
 import 'package:http/http.dart' as http;
-
 import '../../screens/settings_menu/settings_controller.dart';
-import '../../util/app_config_constants.dart';
 
 class ChatGPTMessage {
   String content;

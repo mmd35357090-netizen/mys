@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
-import '../../../controllers/request_verification_controller.dart';
+import '../../../controllers/misc/request_verification_controller.dart';
 import '../../add_on/model/verification_request_model.dart';
 
 class RequestVerificationList extends StatefulWidget {

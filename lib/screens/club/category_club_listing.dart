@@ -1,3 +1,4 @@
+import 'package:foap/screens/reuseable_widgets/club_listing.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/club_imports.dart';
@@ -19,14 +20,13 @@ class CategoryClubsListing extends StatefulWidget {
 }
 
 class CategoryClubsListingState extends State<CategoryClubsListing> {
-  final ClubsController _clubsController = ClubsController();
+  final ClubsController _clubsController = Get.find();
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _clubsController.getClubs(
-          categoryId: widget.category.id, isStartOver: true);
-      _clubsController.selectedSegmentIndex(index: 0, forceRefresh: false);
+      _clubsController.setCategoryId(widget.category.id);
+      _clubsController.selectedSegmentIndex(index: 0);
     });
 
     super.initState();
@@ -46,102 +46,33 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBar(
             title: widget.category.name,
           ),
-          divider().tP8,
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                SliverList(
-                    delegate: SliverChildListDelegate([
+          Obx(() => Column(
+                children: [
                   const SizedBox(
                     height: 20,
                   ),
-                  Obx(() => Column(
-                        children: [
-                          HorizontalMenuBar(
-                              padding:
-                                  const EdgeInsets.only(left: 16, right: 16),
-                              onSegmentChange: (segment) {
-                                _clubsController.selectedSegmentIndex(
-                                    index: segment, forceRefresh: false);
-                              },
-                              selectedIndex:
-                                  _clubsController.segmentIndex.value,
-                              menus: [
-                                allString.tr,
-                                joinedString.tr,
-                                myClubString.tr,
-                              ]),
-                        ],
-                      )),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Obx(() {
-                    List<ClubModel> clubs = _clubsController.clubs;
-
-                    return _clubsController.clubs.isEmpty
-                        ? Container()
-                        : Column(
-                            children: [
-                              SizedBox(
-                                height: clubs.length * 295,
-                                child: ListView.separated(
-                                    padding: const EdgeInsets.only(
-                                        left: 16, right: 16),
-                                    itemCount: clubs.length,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (BuildContext ctx, int index) {
-                                      return ClubCard(
-                                        club: clubs[index],
-                                        joinBtnClicked: () {
-                                          _clubsController
-                                              .joinClub(clubs[index]);
-                                        },
-                                        leaveBtnClicked: () {
-                                          _clubsController
-                                              .leaveClub(clubs[index]);
-                                        },
-                                        previewBtnClicked: () {
-                                          Get.to(() => ClubDetail(
-                                                club: clubs[index],
-                                                needRefreshCallback: () {
-                                                  _clubsController.getClubs(
-                                                      categoryId:
-                                                          widget.category.id,
-                                                      isStartOver: false);
-                                                },
-                                                deleteCallback: (club) {
-                                                  AppUtil.showToast(
-                                                      message:
-                                                          clubIsDeletedString
-                                                              .tr,
-                                                      isSuccess: true);
-                                                  _clubsController
-                                                      .clubDeleted(club);
-                                                },
-                                              ));
-                                        },
-                                      );
-                                    },
-                                    separatorBuilder:
-                                        (BuildContext ctx, int index) {
-                                      return const SizedBox(
-                                        height: 25,
-                                      );
-                                    }),
-                              ),
-                            ],
-                          ).bP16;
-                  }),
-                ]))
-              ],
-            ),
+                  HorizontalMenuBar(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      onSegmentChange: (segment) {
+                        _clubsController.selectedSegmentIndex(
+                          index: segment,
+                        );
+                      },
+                      selectedIndex: _clubsController.segmentIndex.value,
+                      menus: [
+                        allString.tr,
+                        joinedString.tr,
+                        myClubString.tr,
+                      ]),
+                ],
+              )),
+          const SizedBox(
+            height: 20,
           ),
+          Expanded(child: ClubListing())
         ],
       ),
     );

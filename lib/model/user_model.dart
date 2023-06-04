@@ -1,5 +1,6 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
+
 // import 'package:timeago/timeago.dart' as timeago;
 import 'chat_room_model.dart';
 import 'package:get/get.dart';
@@ -56,6 +57,7 @@ class UserModel {
 
   String? name;
   String userName = '';
+
   // String category = '';
 
   String? email = '';
@@ -287,7 +289,6 @@ class UserModel {
         DateTime.fromMillisecondsSinceEpoch(chatLastTimeOnline! * 1000).toUtc();
     // return '${lastSeenString.tr} ${timeago.format(dateTime)}';
     return '${lastSeenString.tr} ${dateTime.getTimeAgo}';
-
   }
 
   bool get isMe {

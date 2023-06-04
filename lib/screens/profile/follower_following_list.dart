@@ -1,8 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../components/user_card.dart';
-import '../../controllers/user_network_controller.dart';
+import '../../controllers/misc/user_network_controller.dart';
 import 'other_user_profile.dart';
 
 class FollowerFollowingList extends StatefulWidget {

@@ -1,21 +1,20 @@
+import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_polls/flutter_polls.dart';
 
 import '../../components/post_card.dart';
-import '../../controllers/add_post_controller.dart';
+import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/live/agora_live_controller.dart';
-import '../../controllers/home_controller.dart';
+import '../../controllers/home/home_controller.dart';
 import '../../model/call_model.dart';
 import '../../model/post_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
-import '../dashboard/explore.dart';
 import '../post/view_post_insight.dart';
 import '../settings_menu/settings_controller.dart';
 import '../story/choose_media_for_story.dart';
 import '../story/story_updates_bar.dart';
 import '../story/story_viewer.dart';
-import 'map_screen.dart';
 
 class HomeFeedScreen extends StatefulWidget {
   const HomeFeedScreen({Key? key}) : super(key: key);
@@ -98,24 +97,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
-        // floatingActionButton: Container(
-        //   height: 50,
-        //   width: 50,
-        //   color: AppColorConstants.themeColor,
-        //   child: const ThemeIconWidget(
-        //     ThemeIcon.edit,
-        //     size: 25,
-        //     color: Colors.white,
-        //   ),
-        // ).circular.ripple(() {
-        //   Future.delayed(
-        //     Duration.zero,
-        //     () => showGeneralDialog(
-        //         context: context,
-        //         pageBuilder: (context, animation, secondaryAnimation) =>
-        //             const SelectMedia()),
-        //   );
-        // }),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -136,39 +117,39 @@ class HomeFeedState extends State<HomeFeedScreen> {
                   ],
                 ),
                 const Spacer(),
+                // const ThemeIconWidget(
+                //   ThemeIcon.map,
+                //   // color: ColorConstants.themeColor,
+                //   size: 25,
+                // ).ripple(() {
+                //   Get.to(() => MapsUsersScreen());
+                // }),
+                // const SizedBox(
+                //   width: 20,
+                // ),
                 const ThemeIconWidget(
-                  ThemeIcon.map,
-                  // color: ColorConstants.themeColor,
+                  ThemeIcon.chat,
                   size: 25,
                 ).ripple(() {
-                  Get.to(() => MapsUsersScreen());
+                  Get.to(() => const ChatHistory());
                 }),
-                const SizedBox(
-                  width: 20,
-                ),
-                const ThemeIconWidget(
-                  ThemeIcon.search,
-                  size: 25,
-                ).ripple(() {
-                  Get.to(() => const Explore());
-                }),
-                const SizedBox(
-                  width: 20,
-                ),
-                Obx(() => Container(
-                      color: AppColorConstants.backgroundColor,
-                      height: 25,
-                      width: 25,
-                      child: ThemeIconWidget(
-                        _homeController.openQuickLinks.value == true
-                            ? ThemeIcon.close
-                            : ThemeIcon.menuIcon,
-                        // color: ColorConstants.themeColor,
-                        size: 25,
-                      ),
-                    ).ripple(() {
-                      _homeController.quickLinkSwitchToggle();
-                    })),
+                // const SizedBox(
+                //   width: 20,
+                // ),
+                // Obx(() => Container(
+                //       color: AppColorConstants.backgroundColor,
+                //       height: 25,
+                //       width: 25,
+                //       child: ThemeIconWidget(
+                //         _homeController.openQuickLinks.value == true
+                //             ? ThemeIcon.close
+                //             : ThemeIcon.menuIcon,
+                //         // color: ColorConstants.themeColor,
+                //         size: 25,
+                //       ),
+                //     ).ripple(() {
+                //       _homeController.quickLinkSwitchToggle();
+                //     })),
               ],
             ).hp(20),
             const SizedBox(
@@ -293,11 +274,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                       _homeController.isRefreshingStories.value == true
                           ? const StoryAndHighlightsShimmer()
                           : storiesView());
-                }
-                // else if (index == 1) {
-                //   return const QuickLinkWidget();
-                // }
-                else if (index == 1) {
+                } else if (index == 1) {
                   return postingView().hP16;
                 } else if (index == 2) {
                   return Obx(() => Column(
@@ -317,9 +294,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
                               menus: [
                                 allString.tr,
                                 followingString.tr,
-                                // trending,
-                                // recentString.tr,
-                                // yourString.tr,
                               ]),
                           _homeController.isRefreshingPosts.value == true
                               ? SizedBox(
@@ -345,13 +319,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
 
                   return PostCard(
                     model: model,
-
                     viewInsightHandler: () {
                       Get.to(() => ViewPostInsights(post: model));
                     },
-                    // mediaTapHandler: (post) {
-                    //   // Get.to(()=> PostMediaFullScreen(post: post));
-                    // },
                     removePostHandler: () {
                       _homeController.removePostFromList(model);
                     },
@@ -435,21 +405,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 },
               ),
             ),
-
-            // metaWidget: Row(
-            //   children: const [
-            //     SizedBox(width: 6),
-            //     Text(
-            //       '•',
-            //     ),
-            //     SizedBox(
-            //       width: 6,
-            //     ),
-            //     // Text(
-            //     //   days < 0 ? "ended" : "ends $days days",
-            //     // ),
-            //   ],
-            // ),
           ).p16,
         ).round(15).p16;
       } else {

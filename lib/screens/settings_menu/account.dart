@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/ui/add_relationship/add_relationship.dart';
 import 'package:foap/screens/profile/blocked_users.dart';
 import 'package:get/get.dart';
-import '../../controllers/request_verification_controller.dart';
+import '../../controllers/misc/request_verification_controller.dart';
 import '../live/live_history.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 

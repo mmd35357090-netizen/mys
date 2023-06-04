@@ -456,6 +456,7 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
       preferences.interests = selectedInterests;
     }
 
+    print('selectedColor $selectedColor');
     preferences.selectedColor = colors[selectedColor];
 
     if (religionController.text.isNotEmpty) {

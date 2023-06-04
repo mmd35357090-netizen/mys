@@ -6,8 +6,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/hashtag_tile.dart';
 import '../../components/user_card.dart';
 import '../../components/video_widget.dart';
-import '../../controllers/add_post_controller.dart';
-import '../../controllers/select_post_media_controller.dart';
+import '../../controllers/post/add_post_controller.dart';
+import '../../controllers/post/select_post_media_controller.dart';
 import '../chat/media.dart';
 
 class AddPostScreen extends StatefulWidget {

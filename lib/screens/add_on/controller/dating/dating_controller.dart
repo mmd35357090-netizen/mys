@@ -9,7 +9,7 @@ class DatingController extends GetxController {
   RxList<UserModel> matchedUsers = <UserModel>[].obs;
   RxList<UserModel> likeUsers = <UserModel>[].obs;
   RxList<LanguageModel> languages = <LanguageModel>[].obs;
-  Rx isLoading = false.obs;
+  RxBool isLoading = false.obs;
   AddPreferenceModel? preferenceModel;
 
   clearInterests() {
@@ -34,11 +34,14 @@ class DatingController extends GetxController {
     update();
   }
 
-  updateDatingProfile(AddDatingDataModel dataModel, Function(String) handler) {
+  updateDatingProfile(AddDatingDataModel dataModel, VoidCallback handler) {
     EasyLoading.show(status: loadingString.tr);
-    DatingApi.updateDatingProfile(dataModel);
+    DatingApi.updateDatingProfile(dataModel: dataModel, handler: (){
+      EasyLoading.dismiss();
 
-    EasyLoading.dismiss();
+      handler();
+    });
+
     update();
   }
 
@@ -55,6 +58,7 @@ class DatingController extends GetxController {
     DatingApi.getDatingProfilesApi(resultCallback: (result) {
       isLoading.value = false;
       datingUsers.value = result;
+      print('try update');
       update();
     });
   }

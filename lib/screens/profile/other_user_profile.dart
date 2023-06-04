@@ -1,14 +1,17 @@
+import 'package:foap/controllers/post/post_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/profile/user_post_media.dart';
 import '../../components/highlights_bar.dart';
 import '../../components/sm_tab_bar.dart';
 import '../../controllers/chat_and_call/chat_detail_controller.dart';
-import '../../controllers/highlights_controller.dart';
-import '../../controllers/profile_controller.dart';
+import '../../controllers/story/highlights_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
+import '../../model/post_search_query.dart';
 import '../chat/chat_detail.dart';
 import '../highlights/choose_stories.dart';
 import '../highlights/hightlights_viewer.dart';
 import '../live/gifts_list.dart';
+import '../reuseable_widgets/post_list.dart';
 import '../settings_menu/settings_controller.dart';
 import 'follower_following_list.dart';
 
@@ -27,6 +30,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
   final HighlightsController _highlightsController = HighlightsController();
   final SettingsController _settingsController = Get.find();
   final ChatDetailController _chatDetailController = Get.find();
+  final PostController _postController = Get.find();
 
   List<String> tabs = [postsString, reelsString, mentionsString];
 
@@ -57,13 +61,17 @@ class OtherUserProfileState extends State<OtherUserProfile>
   @override
   void dispose() {
     _profileController.clear();
+    _postController.clear();
     super.dispose();
   }
 
   loadData() {
     _profileController.getOtherUserDetail(userId: widget.userId);
     _profileController.getMentionPosts(widget.userId);
-    _profileController.getPosts(widget.userId);
+
+    PostSearchQuery query = PostSearchQuery();
+    query.userId = widget.userId;
+    _postController.setPostSearchQuery(query: query, callback: () {});
     _profileController.getReels(widget.userId);
     _highlightsController.getHighlights(userId: widget.userId);
   }
@@ -212,7 +220,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
         Expanded(
           child: AppThemeButton(
               height: 35,
-              enabledBackgroundColor: _profileController.user.value!.isFollowing
+              backgroundColor: _profileController.user.value!.isFollowing
                   ? AppColorConstants.themeColor
                   : AppColorConstants.themeColor.lighten(0.1),
               text: _profileController.user.value!.isFollowing
@@ -231,7 +239,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
               width: MediaQuery.of(context).size.width * 0.25,
               child: AppThemeButton(
                   height: 35,
-                  enabledBackgroundColor: AppColorConstants.disabledColor,
+                  backgroundColor: AppColorConstants.disabledColor,
                   text: chatString.tr,
                   onPress: () {
                     EasyLoading.show(status: loadingString.tr);
@@ -249,7 +257,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
               width: MediaQuery.of(context).size.width * 0.30,
               child: AppThemeButton(
                   height: 35,
-                  enabledBackgroundColor: AppColorConstants.disabledColor,
+                  backgroundColor: AppColorConstants.disabledColor,
                   text: sendGiftString.tr,
                   onPress: () {
                     showModalBottomSheet<void>(

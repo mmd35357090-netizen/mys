@@ -1,4 +1,3 @@
-import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/apiHandler/apis/events_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';

@@ -5,7 +5,7 @@ import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_state_button/progress_button.dart';
 import '../../components/user_card.dart';
-import '../../controllers/agora_call_controller.dart';
+import '../../controllers/chat_and_call/agora_call_controller.dart';
 import '../../helper/permission_utils.dart';
 import '../../model/call_model.dart';
 

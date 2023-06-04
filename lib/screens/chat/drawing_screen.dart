@@ -141,7 +141,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
                 strokeWidth
                 ? 5
                 : 0,
-            color: Theme.of(context).primaryColor,
+            color: AppColorConstants.themeColor,
             radius: strokeWidth + 5)),
       ),
     );
@@ -264,7 +264,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
         value: _drawingBoardController.selectedStrokeColor.value == color
             ? 5
             : 0,
-        color: Theme.of(context).primaryColor)).ripple(() {
+        color: AppColorConstants.themeColor)).ripple(() {
       _drawingController.setStyle(color: color);
       _drawingBoardController.setStrokeColor(color);
     });
@@ -285,7 +285,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
         _drawingBoardController.selectedBackgroundColor.value == color
             ? 5
             : 0,
-        color: Theme.of(context).primaryColor)).ripple(() {
+        color: AppColorConstants.themeColor)).ripple(() {
       // print('background color');
       _drawingBoardController.setBackgroundColor(color);
     });

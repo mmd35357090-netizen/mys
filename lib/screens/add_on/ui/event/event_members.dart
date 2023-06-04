@@ -20,7 +20,7 @@ class EventMembers extends StatefulWidget {
 }
 
 class EventMembersState extends State<EventMembers> {
-  final EventsController _eventsController = EventsController();
+  final EventsController _eventsController = Get.find();
 
   @override
   void initState() {

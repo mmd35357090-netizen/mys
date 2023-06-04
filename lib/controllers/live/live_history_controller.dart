@@ -1,9 +1,8 @@
-import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/apiHandler/apis/live_streaming_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/live_model.dart';
-import 'package:foap/util/app_util.dart';
 import 'package:get/get.dart';
+import 'package:foap/helper/list_extension.dart';
 
 class LiveHistoryController extends GetxController {
   RxList<LiveModel> lives = <LiveModel>[].obs;
@@ -26,6 +25,8 @@ class LiveHistoryController extends GetxController {
           page: currentPage,
           resultCallback: (result, metadata) {
             lives.addAll(result);
+            lives.unique((e)=> e.id);
+
             isLoading = false;
             currentPage += 1;
             canLoadMore = result.length >= metadata.perPage;

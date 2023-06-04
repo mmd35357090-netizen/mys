@@ -3,7 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/components/custom_texts.dart';
 import 'package:foap/components/empty_states.dart';
 import 'package:foap/components/top_navigation_bar.dart';
-import 'package:foap/controllers/podcast_streaming_controller.dart';
+import 'package:foap/controllers/podcast/podcast_streaming_controller.dart';
 import 'package:foap/helper/common_components.dart';
 import 'package:foap/helper/enum.dart';
 import 'package:foap/helper/extension.dart';

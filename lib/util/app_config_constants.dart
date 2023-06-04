@@ -20,6 +20,7 @@ class AppConfigConstants {
 
   // Socket api url
   static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
+
   // static const socketApiBaseUrl = "http://product.fwdtechnology.co:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS

@@ -48,7 +48,7 @@ export 'package:foap/components/reply_chat_cells/reply_chat_cell.dart';
 export 'package:foap/components/message_image.dart';
 
 
-export 'package:foap/controllers/random_chat_and_call_controller.dart';
+export 'package:foap/controllers/chat_and_call/random_chat_and_call_controller.dart';
 export 'package:foap/controllers/chat_and_call/conatcts_controller.dart';
 export 'package:foap/controllers/chat_and_call/chat_history_controller.dart';
 export 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';

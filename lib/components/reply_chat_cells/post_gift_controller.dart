@@ -1,3 +1,4 @@
+import 'package:foap/helper/list_extension.dart';
 import 'package:get/get.dart';
 import '../../apiHandler/apis/gift_api.dart';
 import '../../model/gift_model.dart';
@@ -36,6 +37,8 @@ class PostGiftController extends GetxController {
             canLoadMoreReceivedGifts = result.length >= metadata.perPage;
             receivedGiftsPage += 1;
             stickerGifts.addAll(result);
+            // stickerGifts.unique((e)=> e.giftDetail.id);
+
           },
           liveId: null);
     }
@@ -69,6 +72,8 @@ class PostGiftController extends GetxController {
             giftsPage += 1;
 
             timelineGift.addAll(result);
+            timelineGift.unique((e)=> e.id);
+
           });
     }
   }

@@ -1,7 +1,7 @@
 export 'package:foap/screens/add_on/ui/event/category_event_listing.dart';
 export 'package:foap/screens/add_on/ui/event/event_detail.dart';
 export 'package:foap/screens/add_on/ui/event/event_members.dart';
-export 'package:foap/screens/add_on/ui/event/events_listing.dart';
+export 'package:foap/screens/add_on/ui/event/explore_events.dart';
 export 'package:foap/screens/add_on/ui/event/search_events.dart';
 export 'package:foap/screens/add_on/ui/event/buy_ticket.dart';
 export 'package:foap/screens/add_on/ui/event/event_checkout.dart';

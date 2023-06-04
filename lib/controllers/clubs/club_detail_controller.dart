@@ -1,8 +1,5 @@
 import 'package:foap/apiHandler/apis/club_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
-import '../../apiHandler/api_controller.dart';
 import '../../apiHandler/apis/post_api.dart';
 import '../../manager/db_manager.dart';
 import '../../model/club_join_request.dart';
@@ -12,6 +9,7 @@ import '../../model/post_search_query.dart';
 import '../../screens/dashboard/posts.dart';
 import '../../screens/profile/other_user_profile.dart';
 import '../chat_and_call/chat_detail_controller.dart';
+import 'package:foap/helper/list_extension.dart';
 
 class ClubDetailController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();
@@ -68,6 +66,8 @@ class ClubDetailController extends GetxController {
             posts.addAll(
                 result.where((element) => element.gallery.isNotEmpty).toList());
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
+            posts.unique((e)=> e.id);
+
             isLoading.value = false;
 
             if (postsPage >= metadata.pageCount) {
@@ -91,6 +91,8 @@ class ClubDetailController extends GetxController {
           page: jonRequestsPage,
           resultCallback: (result, metadata) {
             joinRequests.addAll(result);
+            joinRequests.unique((e)=> e.id);
+
             isLoading.value = false;
 
             if (jonRequestsPage >= metadata.pageCount) {

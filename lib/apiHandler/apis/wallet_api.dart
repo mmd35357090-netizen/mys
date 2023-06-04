@@ -24,8 +24,7 @@ class WalletApi {
       required String transactionId,
       required String amount,
       required VoidCallback resultCallback}) async {
-    var url =
-        NetworkConstantsUtil.baseUrl + NetworkConstantsUtil.subscribePackage;
+    var url = NetworkConstantsUtil.subscribePackage;
 
     ApiWrapper().postApi(url: url, param: {
       "package_id": packageId,

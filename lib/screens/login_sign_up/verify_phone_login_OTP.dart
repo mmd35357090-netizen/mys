@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
 
-import '../../controllers/login_controller.dart';
+import '../../controllers/auth/login_controller.dart';
 
 class VerifyPhoneLoginOTP extends StatefulWidget {
   final String token;

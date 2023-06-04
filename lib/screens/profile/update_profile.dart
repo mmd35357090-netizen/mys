@@ -234,7 +234,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                         color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const AddName(isFromSignup: false))!
+                        Get.to(() => const AddName(isSettingProfile: false))!
                             .then((value) {
                           reloadData();
                         });
@@ -244,7 +244,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider().vP16,
                   Row(
                     children: [
-                      BodyLargeText(dobString.tr, weight: TextWeight.medium),
+                      BodyLargeText(dateOfBirthString.tr, weight: TextWeight.medium),
                       const Spacer(),
                       Obx(() => BodyMediumText(
                             profileController.user.value?.dob ?? '',
@@ -257,7 +257,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                         color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const SetDateOfBirth(isFromSignup: false))!
+                        Get.to(() => const SetDateOfBirth(isSettingProfile: false))!
                             .then((value) {
                           reloadData();
                         });
@@ -286,7 +286,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                         color: AppColorConstants.iconColor,
                         size: 15,
                       ).ripple(() {
-                        Get.to(() => const SetYourGender(isFromSignup: false))!
+                        Get.to(() => const SetYourGender(isSettingProfile: false))!
                             .then((value) {
                           reloadData();
                         });
@@ -305,7 +305,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                         size: 15,
                       ).ripple(() {
                         Get.to(() =>
-                                const AddPersonalInfo(isFromSignup: false))!
+                                const AddPersonalInfo(isSettingProfile: false))!
                             .then((value) {
                           reloadData();
                         });
@@ -324,7 +324,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const AddInterests(
-                                  isFromSignup: false,
+                                  isSettingProfile: false,
                                 ))!
                             .then((value) {
                           reloadData();
@@ -344,7 +344,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                         size: 15,
                       ).ripple(() {
                         Get.to(() => const AddProfessionalDetails(
-                                isFromSignup: false))!
+                                isSettingProfile: false))!
                             .then((value) {
                           reloadData();
                         });
@@ -366,7 +366,7 @@ class UpdateProfileState extends State<UpdateProfile> {
         init: profileController,
         builder: (ctx) {
           return SizedBox(
-            height: 400,
+            height: 280,
             child: profileController.user.value != null
                 ? Stack(
                     children: [

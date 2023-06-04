@@ -204,6 +204,70 @@ class ClubApi {
     });
   }
 
+  static getTopClubs(
+      {String? name,
+      int? categoryId,
+      int? userId,
+      int? isJoined,
+      int page = 1,
+      required Function(List<ClubModel>, APIMetaData) resultCallback}) async {
+    var url = NetworkConstantsUtil.topClubs;
+    if (userId != null) {
+      url = '$url&user_id=$userId';
+    }
+    if (categoryId != null) {
+      url = '$url&category_id=$categoryId';
+    }
+    if (name != null && name.isNotEmpty) {
+      url = '$url&name=$name';
+    }
+    if (isJoined != null) {
+      url = '$url&my_joined_club=$isJoined';
+    }
+    url = '$url&page=$page';
+
+    ApiWrapper().getApi(url: url).then((result) {
+      if (result?.success == true) {
+        var items = result!.data['club']['items'];
+        resultCallback(
+            List<ClubModel>.from(items.map((x) => ClubModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['club']['_meta']));
+      }
+    });
+  }
+
+  static getTrendingClubs(
+      {String? name,
+      int? categoryId,
+      int? userId,
+      int? isJoined,
+      int page = 1,
+      required Function(List<ClubModel>, APIMetaData) resultCallback}) async {
+    var url = NetworkConstantsUtil.trendingClubs;
+    if (userId != null) {
+      url = '$url&user_id=$userId';
+    }
+    if (categoryId != null) {
+      url = '$url&category_id=$categoryId';
+    }
+    if (name != null && name.isNotEmpty) {
+      url = '$url&name=$name';
+    }
+    if (isJoined != null) {
+      url = '$url&my_joined_club=$isJoined';
+    }
+    url = '$url&page=$page';
+
+    ApiWrapper().getApi(url: url).then((result) {
+      if (result?.success == true) {
+        var items = result!.data['club']['items'];
+        resultCallback(
+            List<ClubModel>.from(items.map((x) => ClubModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['club']['_meta']));
+      }
+    });
+  }
+
   static getClubMembers(
       {int? clubId,
       int page = 1,

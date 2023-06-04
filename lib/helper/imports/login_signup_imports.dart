@@ -10,4 +10,4 @@ export 'package:foap/screens/login_sign_up/forgot_password_screen.dart';
 export 'package:foap/screens/login_sign_up/signup_screen.dart';
 export 'package:foap/screens/login_sign_up/social_login.dart';
 
-export 'package:foap/controllers/login_controller.dart';
+export 'package:foap/controllers/auth/login_controller.dart';

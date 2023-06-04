@@ -12,7 +12,6 @@ import 'package:get/get.dart';
 import 'package:google_mlkit_smart_reply/google_mlkit_smart_reply.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:profanity_filter/profanity_filter.dart';
-import '../../apiHandler/api_controller.dart';
 import '../../components/notification_banner.dart';
 import '../../helper/permission_utils.dart';
 import '../../manager/socket_manager.dart';
@@ -22,7 +21,7 @@ import '../../model/location.dart';
 import '../../model/post_model.dart';
 import '../../util/constant_util.dart';
 import '../../util/shared_prefs.dart';
-import '../agora_call_controller.dart';
+import 'agora_call_controller.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ChatDetailController extends GetxController {

@@ -19,7 +19,7 @@ class ClubSettings extends StatefulWidget {
 }
 
 class _ClubSettingsState extends State<ClubSettings> {
-  final ClubsController _clubsController = ClubsController();
+  final ClubsController _clubsController = Get.find();
 
   @override
   Widget build(BuildContext context) {

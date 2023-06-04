@@ -3,7 +3,7 @@ import 'package:foap/apiHandler/apis/post_api.dart';
 import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:share_plus/share_plus.dart';
-import '../controllers/post_controller.dart';
+import '../controllers/post/post_controller.dart';
 import '../model/post_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';

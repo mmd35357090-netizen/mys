@@ -77,6 +77,7 @@ class ClubDetailState extends State<ClubDetail> {
                   child: const ThemeIconWidget(
                     ThemeIcon.edit,
                     size: 25,
+                    color: Colors.white,
                   ),
                 ).circular.ripple(() {
                   Future.delayed(

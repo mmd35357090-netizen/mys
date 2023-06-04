@@ -5,9 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class AddPhotos extends StatefulWidget {
-  final bool isFromSignup;
+  final bool isSettingProfile;
 
-  const AddPhotos({Key? key, required this.isFromSignup}) : super(key: key);
+  const AddPhotos({Key? key, required this.isSettingProfile}) : super(key: key);
 
   @override
   State<AddPhotos> createState() => _AddPhotosState();
@@ -26,10 +26,10 @@ class _AddPhotosState extends State<AddPhotos> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Heading3Text(
-              addPhotoHeaderString.tr,
+              addPhotosString.tr,
             ).setPadding(top: 100),
             Heading5Text(
-              addPhotoSubHeaderString.tr,
+              profileWithGoodPhotosString.tr,
             ).setPadding(top: 20),
             GridView.builder(
                 itemCount: 6,
@@ -53,7 +53,7 @@ class _AddPhotosState extends State<AddPhotos> {
                       text: nextString.tr,
                       onPress: () {
                         Get.to(() =>
-                            SetDateOfBirth(isFromSignup: widget.isFromSignup));
+                            SetDateOfBirth(isSettingProfile: widget.isSettingProfile));
                       })),
             ).setPadding(top: 110),
           ],

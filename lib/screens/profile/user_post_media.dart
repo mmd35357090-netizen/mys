@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import '../../components/highlights_bar.dart';
 import '../../components/post_card.dart';
 import '../../components/segmented_control.dart';
-import '../../controllers/highlights_controller.dart';
-import '../../controllers/profile_controller.dart';
+import '../../controllers/story/highlights_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
 import '../../helper/imports/common_import.dart';
 import '../../model/post_model.dart';
 import '../add_on/ui/reel/reels_list.dart';
@@ -41,52 +41,52 @@ class HighlightsView extends StatelessWidget {
   }
 }
 
-class PostList extends StatelessWidget {
-  final ProfileController _profileController = Get.find();
-
-  PostList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: GetBuilder<ProfileController>(
-          init: _profileController,
-          builder: (ctx) {
-            ScrollController scrollController = ScrollController();
-            scrollController.addListener(() {
-              if (scrollController.position.maxScrollExtent ==
-                  scrollController.position.pixels) {
-                _profileController.getPosts(_profileController.user.value!.id);
-              }
-            });
-
-            List<PostModel> posts = _profileController.posts;
-
-            return _profileController.isLoadingPosts
-                ? const PostBoxShimmer()
-                : ListView.builder(
-                    controller: scrollController,
-                    itemCount: posts.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) => PostCard(
-                            model: posts[index],
-                            removePostHandler: () {},
-                            blockUserHandler: () {},
-                            viewInsightHandler: () {})
-                        .ripple(() {
-                      Get.to(() => Posts(
-                          posts: List.from(posts),
-                          index: index,
-                          userId: _profileController.user.value!.id,
-                          page: _profileController.postsCurrentPage,
-                          totalPages: _profileController.totalPages));
-                    }),
-                  ).hP16;
-          }),
-    );
-  }
-}
+// class PostList extends StatelessWidget {
+//   final ProfileController _profileController = Get.find();
+//
+//   PostList({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return SingleChildScrollView(
+//       child: GetBuilder<ProfileController>(
+//           init: _profileController,
+//           builder: (ctx) {
+//             ScrollController scrollController = ScrollController();
+//             scrollController.addListener(() {
+//               if (scrollController.position.maxScrollExtent ==
+//                   scrollController.position.pixels) {
+//                 _profileController.getPosts(_profileController.user.value!.id);
+//               }
+//             });
+//
+//             List<PostModel> posts = _profileController.posts;
+//
+//             return _profileController.isLoadingPosts
+//                 ? const PostBoxShimmer()
+//                 : ListView.builder(
+//                     controller: scrollController,
+//                     itemCount: posts.length,
+//                     physics: const NeverScrollableScrollPhysics(),
+//                     shrinkWrap: true,
+//                     itemBuilder: (BuildContext context, int index) => PostCard(
+//                             model: posts[index],
+//                             removePostHandler: () {},
+//                             blockUserHandler: () {},
+//                             viewInsightHandler: () {})
+//                         .ripple(() {
+//                       Get.to(() => Posts(
+//                           posts: List.from(posts),
+//                           index: index,
+//                           userId: _profileController.user.value!.id,
+//                           page: _profileController.postsCurrentPage,
+//                           totalPages: _profileController.totalPages));
+//                     }),
+//                   ).hP16;
+//           }),
+//     );
+//   }
+// }
 
 class MentionsList extends StatelessWidget {
   final ProfileController _profileController = Get.find();

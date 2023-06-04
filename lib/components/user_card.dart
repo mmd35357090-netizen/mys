@@ -4,7 +4,7 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 
 import '../controllers/live/agora_live_controller.dart';
-import '../controllers/profile_controller.dart';
+import '../controllers/profile/profile_controller.dart';
 import '../model/call_model.dart';
 import '../model/club_join_request.dart';
 import '../model/club_member_model.dart';
@@ -211,52 +211,53 @@ class UserTile extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            UserAvatarView(
-              user: profile,
-              size: 40,
-              onTapHandler: () {
-                Live live = Live(
-                    channelName: profile.liveCallDetail!.channelName,
-                    isHosting: false,
-                    host: profile,
-                    token: profile.liveCallDetail!.token,
-                    liveId: profile.liveCallDetail!.id);
-                agoraLiveController.joinAsAudience(
-                  live: live,
-                );
-              },
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 200,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BodyLargeText(
-                    profile.userName,
-                    weight: TextWeight.bold,
-                  ).bP4,
-                  profile.country != null
-                      ? BodyMediumText(
-                          '${profile.city!}, ${profile.country!}',
-                        )
-                      : Container()
-                ],
-              ).hP16,
-            ),
-            // const Spacer(),
-          ],
-        ).ripple(() {
-          if (viewCallback == null) {
-            profileController.setUser(profile);
-            Get.to(() => OtherUserProfile(userId: profile.id));
-          } else {
-            viewCallback!();
-          }
-        }),
-        const Spacer(),
+        Expanded(
+          child: Row(
+            children: [
+              UserAvatarView(
+                user: profile,
+                size: 40,
+                onTapHandler: () {
+                  Live live = Live(
+                      channelName: profile.liveCallDetail!.channelName,
+                      isHosting: false,
+                      host: profile,
+                      token: profile.liveCallDetail!.token,
+                      liveId: profile.liveCallDetail!.id);
+                  agoraLiveController.joinAsAudience(
+                    live: live,
+                  );
+                },
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BodyLargeText(
+                      profile.userName,
+                      // weight: TextWeight.regular,
+                      maxLines: 1,
+                    ).bP4,
+                    profile.country != null
+                        ? BodyMediumText(
+                            '${profile.city!}, ${profile.country!}',
+                          )
+                        : Container()
+                  ],
+                ).hP8,
+              ),
+              // const Spacer(),
+            ],
+          ).ripple(() {
+            if (viewCallback == null) {
+              profileController.setUser(profile);
+              Get.to(() => OtherUserProfile(userId: profile.id));
+            } else {
+              viewCallback!();
+            }
+          }),
+        ),
+        // const Spacer(),
         if (followCallback != null && profile.isMe == false)
           SizedBox(
             height: 35,
@@ -320,8 +321,7 @@ class UserTile extends StatelessWidget {
                   icon: const Icon(Icons.send, color: Colors.white),
                   color: Colors.deepPurple.shade500),
               ButtonState.loading: IconedButton(
-                  text: loadingString.tr,
-                  color: Colors.deepPurple.shade700),
+                  text: loadingString.tr, color: Colors.deepPurple.shade700),
               ButtonState.fail: IconedButton(
                   text: failedString.tr,
                   icon: const Icon(Icons.cancel, color: Colors.white),
@@ -522,7 +522,6 @@ class ClubMemberTile extends StatelessWidget {
   }
 }
 
-
 class SendMessageUserTile extends StatelessWidget {
   final UserModel profile;
   final ButtonState state;
@@ -572,8 +571,7 @@ class SendMessageUserTile extends StatelessWidget {
                             ),
                             color: AppColorConstants.themeColor.lighten(0.1)),
                         ButtonState.loading: IconedButton(
-                            text: loadingString.tr,
-                            color: Colors.white),
+                            text: loadingString.tr, color: Colors.white),
                         ButtonState.fail: IconedButton(
                             text: failedString.tr,
                             icon: const Icon(Icons.cancel,

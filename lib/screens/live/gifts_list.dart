@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/gift_controller.dart';
+import '../../controllers/misc/gift_controller.dart';
 import '../../model/gift_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
 import '../settings_menu/coin_packages_widget.dart';

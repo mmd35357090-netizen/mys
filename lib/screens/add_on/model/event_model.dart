@@ -243,7 +243,7 @@ class EventOrganizer {
   factory EventOrganizer.fromJson(Map<String, dynamic> json) => EventOrganizer(
         id: json["id"],
         name: json["name"],
-        image: json["imageUrl"],
+        image: json["campaginImage"],
       );
 }
 

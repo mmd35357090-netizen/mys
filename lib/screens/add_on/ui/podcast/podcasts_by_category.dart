@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:foap/controllers/podcast_streaming_controller.dart';
+import 'package:foap/controllers/podcast/podcast_streaming_controller.dart';
 import 'package:foap/helper/extension.dart';
 import 'package:foap/model/category_model.dart';
 import 'package:foap/screens/add_on/model/podcast_model.dart';

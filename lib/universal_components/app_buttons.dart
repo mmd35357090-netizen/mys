@@ -11,8 +11,7 @@ class AppThemeButton extends StatelessWidget {
   final double? cornerRadius;
   final Widget? leading;
   final Widget? trailing;
-  final Color? enabledBackgroundColor;
-  final Color? disabledBackgroundColor;
+  final Color? backgroundColor;
 
   final VoidCallback? onPress;
 
@@ -25,8 +24,7 @@ class AppThemeButton extends StatelessWidget {
     this.cornerRadius,
     this.leading,
     this.trailing,
-    this.enabledBackgroundColor,
-    this.disabledBackgroundColor,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -34,7 +32,7 @@ class AppThemeButton extends StatelessWidget {
     return Container(
       width: width,
       height: height ?? 50,
-      color: AppColorConstants.themeColor,
+      color: backgroundColor ?? AppColorConstants.themeColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -98,7 +96,7 @@ class AppThemeBorderButton extends StatelessWidget {
     )
         .borderWithRadius(
             value: 1,
-            radius: cornerRadius ?? 15,
+            radius: 0,
             color: borderColor ?? AppColorConstants.dividerColor)
         .ripple(onPress!);
   }

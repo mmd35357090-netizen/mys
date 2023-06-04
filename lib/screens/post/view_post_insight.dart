@@ -1,4 +1,4 @@
-import 'package:foap/controllers/post_controller.dart';
+import 'package:foap/controllers/post/post_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import '../../components/post_card.dart';

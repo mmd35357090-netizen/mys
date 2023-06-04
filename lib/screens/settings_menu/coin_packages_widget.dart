@@ -3,7 +3,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../components/package_tile.dart';
-import '../../controllers/subscription_packages_controller.dart';
+import '../../controllers/misc/subscription_packages_controller.dart';
 import '../../model/package_model.dart';
 import '../../util/constant_util.dart';
 
@@ -37,7 +37,7 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
                     index: index,
                     buyPackageHandler: () {
                       // _paymentController.makePayment();
-                      // buyPackage(packageController.packages[index]);
+                      buyPackage(packageController.packages[index]);
                     },
                   );
                 },

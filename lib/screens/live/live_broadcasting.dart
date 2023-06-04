@@ -8,8 +8,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../../components/user_card.dart';
-import '../../controllers/gift_controller.dart';
-import '../../controllers/subscription_packages_controller.dart';
+import '../../controllers/misc/gift_controller.dart';
+import '../../controllers/misc/subscription_packages_controller.dart';
 import '../../model/call_model.dart';
 import '../../model/chat_message_model.dart';
 import '../../model/gift_model.dart';
@@ -120,7 +120,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                 SizedBox(
                   width: Get.width * 0.4,
                   child: AppThemeButton(
-                    enabledBackgroundColor: Colors.red,
+                    backgroundColor: Colors.red,
                     text: noString.tr,
                     onPress: () {
                       _agoraLiveController.dontEndLiveCall();

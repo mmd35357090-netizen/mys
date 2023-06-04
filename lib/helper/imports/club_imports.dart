@@ -13,7 +13,6 @@ export 'package:foap/screens/club/club_join_requests.dart';
 
 export 'package:foap/controllers/clubs/club_detail_controller.dart';
 export 'package:foap/controllers/clubs/clubs_controller.dart';
-export 'package:foap/controllers/clubs/search_club_controller.dart';
 export 'package:foap/controllers/clubs/create_club_controller.dart';
 
 export 'package:foap/model/club_member_model.dart';

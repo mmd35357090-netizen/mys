@@ -1,6 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-import '../../apiHandler/api_controller.dart';
 import '../../apiHandler/apis/post_api.dart';
 import '../../model/post_model.dart';
 import '../home_feed/comments_screen.dart';

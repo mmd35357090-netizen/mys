@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
 class ChooseGoal extends StatefulWidget {
-  final bool isFromSignup;
+  final bool isSettingProfile;
 
-  const ChooseGoal({Key? key, required this.isFromSignup}) : super(key: key);
+  const ChooseGoal({Key? key, required this.isSettingProfile}) : super(key: key);
 
   @override
   State<ChooseGoal> createState() => _ChooseGoalState();
@@ -142,12 +142,12 @@ class _ChooseGoalState extends State<ChooseGoal> {
                 height: 50,
                 width: MediaQuery.of(context).size.width - 50,
                 child: AppThemeButton(
-                    enabledBackgroundColor: Colors.white,
+                    backgroundColor: Colors.white,
                     cornerRadius: 25,
                     text: nextString.tr,
                     onPress: () {
                       Get.to(
-                          () => WhatYouHope(isFromSignup: widget.isFromSignup));
+                          () => WhatYouHope(isSettingProfile: widget.isSettingProfile));
                     })),
           ),
         ],

@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/profile/set_profile_category_controller.dart';
-import '../../controllers/profile_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
 import '../../model/category_model.dart';
 
 class SetProfileCategoryType extends StatefulWidget {

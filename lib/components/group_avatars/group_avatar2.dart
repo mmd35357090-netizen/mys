@@ -28,7 +28,6 @@ class ClubCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 270,
       color: AppColorConstants.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,51 +41,51 @@ class ClubCard extends StatelessWidget {
             }),
           ),
           const SizedBox(
-            height: 10,
+            height: 5,
           ),
-          Heading4Text(
+          BodyLargeText(
             club.name!,
-            weight: TextWeight.bold,
-          ).p8,
+            maxLines: 1,
+            weight: TextWeight.semiBold,
+          ).hP8,
           const SizedBox(
             height: 5,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              BodyLargeText(
-                '${club.totalMembers!.formatNumber} ${clubMembersString.tr}',
-              ),
-              const Spacer(),
-              if (!club.createdByUser!.isMe)
-                SizedBox(
-                    height: 40,
-                    width: 120,
-                    child: AppThemeButton(
-                        text: club.isJoined == true
-                            ? leaveClubString.tr
-                            : club.isRequested == true
-                                ? requestedString.tr
-                                : club.isRequestBased == true
-                                    ? requestJoinString.tr
-                                    : joinString.tr,
-                        onPress: () {
-                          if (club.isJoined == true) {
-                            leaveBtnClicked();
-                          } else {
-                            joinBtnClicked();
-                          }
-                        })),
-              // SizedBox(
-              //     height: 40,
-              //     width: 120,
-              //     child: AppThemeButton(
-              //         text: preview,
-              //         onPress: () {
-              //           previewBtnClicked();
-              //         }))
-            ],
-          ).setPadding(left: 12, right: 12, bottom: 20)
+          BodySmallText(
+            '${club.totalMembers!.formatNumber} ${clubMembersString.tr}',
+          ).hP8,
+          const SizedBox(
+            height: 10,
+          ),
+          !club.createdByUser!.isMe
+              ? SizedBox(
+                  height: 40,
+                  width: 120,
+                  child: AppThemeButton(
+                      text: club.isJoined == true
+                          ? leaveClubString.tr
+                          : club.isRequested == true
+                              ? requestedString.tr
+                              : club.isRequestBased == true
+                                  ? requestJoinString.tr
+                                  : joinString.tr,
+                      backgroundColor: club.isJoined == true
+                          ? AppColorConstants.red
+                          : AppColorConstants.themeColor,
+                      onPress: () {
+                        if (club.isJoined == true) {
+                          leaveBtnClicked();
+                        } else {
+                          joinBtnClicked();
+                        }
+                      }))
+              : SizedBox(
+                  height: 40,
+                  width: 120,
+                  child: AppThemeButton(
+                      text: adminString,
+                      backgroundColor: AppColorConstants.themeColor,
+                      onPress: () {})),
         ],
       ),
     ).round(15);
@@ -130,10 +129,7 @@ class ClubInvitationCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading4Text(
-                invitation.club!.name!,
-                  weight: TextWeight.bold
-              ).vP8,
+              Heading4Text(invitation.club!.name!, weight: TextWeight.bold).vP8,
               BodyLargeText(
                 '${invitation.club!.totalMembers!.formatNumber} ${clubMembersString.tr}',
               ),

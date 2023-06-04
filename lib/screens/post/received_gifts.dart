@@ -22,9 +22,6 @@ class ReceivedGiftsList extends StatelessWidget {
       color: AppColorConstants.cardColor,
       child: Column(
         children: [
-          const SizedBox(
-            height: 20,
-          ),
           backNavigationBar(title: giftsReceivedString.tr),
           Expanded(child: giftersView())
         ],

@@ -60,10 +60,10 @@ class DatingDashboardState extends State<DatingDashboard> {
                       size: 20,
                       color: _dashboardController.currentIndex.value == 0
                           ? AppColorConstants.themeColor
-                          : AppColorConstants.disabledColor),
+                          : AppColorConstants.iconColor),
                   label: ''),
               BottomNavigationBarItem(
-                  icon: ThemeIconWidget(ThemeIcon.favFilled,
+                  icon: ThemeIconWidget(ThemeIcon.fav,
                       size: 20,
                       color: _dashboardController.currentIndex.value == 1
                           ? AppColorConstants.themeColor

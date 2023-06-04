@@ -1,9 +1,6 @@
 import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:overlay_support/overlay_support.dart';
-
-import '../apiHandler/api_controller.dart';
 import '../manager/db_manager.dart';
 import '../model/chat_message_model.dart';
 import '../model/chat_room_model.dart';

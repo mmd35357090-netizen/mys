@@ -2,9 +2,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_model.dart';
 import 'package:foap/model/post_search_query.dart';
 import 'package:get/get.dart';
-import 'package:foap/apiHandler/api_controller.dart';
-
 import '../../../../apiHandler/apis/post_api.dart';
+import 'package:foap/helper/list_extension.dart';
 
 class ReelsController extends GetxController {
   RxList<PostModel> publicMoments = <PostModel>[].obs;
@@ -54,6 +53,8 @@ class ReelsController extends GetxController {
     filteredMoments.clear();
     reelsCurrentPage = startPage ?? 1;
     filteredMoments.addAll(reelsList);
+    filteredMoments.unique((e) => e.id);
+
     update();
   }
 
@@ -84,8 +85,11 @@ class ReelsController extends GetxController {
           resultCallback: (result, metadata) {
             publicMoments.addAll(
                 result.where((element) => element.gallery.isNotEmpty).toList());
+            publicMoments.unique((e) => e.id);
+
             publicMoments
                 .sort((a, b) => b.createDate!.compareTo(a.createDate!));
+
             isLoadingReels = false;
             if (reelsCurrentPage == 1 && publicMoments.isNotEmpty) {
               currentPageChanged(0, publicMoments.first);
@@ -114,6 +118,8 @@ class ReelsController extends GetxController {
           resultCallback: (result, metadata) {
             filteredMoments.addAll(
                 result.where((element) => element.gallery.isNotEmpty).toList());
+            filteredMoments.unique((e) => e.id);
+
             // reels.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             isLoadingReelsWithAudio = false;
 
@@ -133,8 +139,7 @@ class ReelsController extends GetxController {
     }
   }
 
-  void likeUnlikeReel(
-      {required PostModel post}) {
+  void likeUnlikeReel({required PostModel post}) {
     post.isLike = !post.isLike;
     if (post.isLike) {
       likedReels.add(post);

@@ -16,7 +16,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import '../../../../controllers/select_post_media_controller.dart';
+import '../../../../controllers/post/select_post_media_controller.dart';
 
 class PreviewReelsScreen extends StatefulWidget {
   final File reel;

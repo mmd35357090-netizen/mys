@@ -1,8 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-import '../../apiHandler/api_controller.dart';
 import '../../apiHandler/apis/misc_api.dart';
 import '../../model/support_request_response.dart';
+import 'package:foap/helper/list_extension.dart';
 
 class HelpSupportController extends GetxController {
   RxList<SupportRequest> list = <SupportRequest>[].obs;
@@ -12,6 +11,7 @@ class HelpSupportController extends GetxController {
       MiscApi.getSupportMessages(resultCallback: (result, metadata) {
         list.clear();
         list.addAll(result);
+        list.unique((e) => e.id);
       });
     });
   }

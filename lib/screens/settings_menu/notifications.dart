@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../components/notification_tile.dart';
-import '../../controllers/notifications_controller.dart';
+import '../../controllers/notification/notifications_controller.dart';
 import '../../model/notification_modal.dart';
 import '../competitions/competition_detail_screen.dart';
 import '../home_feed/comments_screen.dart';

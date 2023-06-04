@@ -5,7 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/comment_card.dart';
 import '../../components/hashtag_tile.dart';
 import '../../components/user_card.dart';
-import '../../controllers/comments_controller.dart';
+import '../../controllers/post/comments_controller.dart';
 import '../../model/post_model.dart';
 
 class CommentsScreen extends StatefulWidget {
@@ -125,7 +125,7 @@ class CommentsScreenState extends State<CommentsScreen> {
         children: <Widget>[
           Expanded(
               child: Obx(() {
-            commentInputField.value = TextEditingValue(
+             TextEditingValue(
                 text: _commentsController.searchText.value,
                 selection: TextSelection.fromPosition(
                     TextPosition(offset: _commentsController.position.value)));

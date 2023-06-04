@@ -1,20 +1,16 @@
+import 'dart:developer';
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:foap/helper/imports/models.dart';
-import 'package:get/get.dart';
 import 'package:latlng/latlng.dart';
 import 'package:foap/apiHandler/api_wrapper.dart';
 import '../../helper/imports/common_import.dart';
-import '../../model/user_model.dart';
-import '../../screens/add_on/model/get_relationship_model.dart';
-import '../../screens/add_on/model/my_invitation_model.dart';
-import '../../screens/add_on/model/my_relations_model.dart';
 
 class ProfileApi {
   static getMyProfile({required Function(UserModel) resultCallback}) async {
     var url = NetworkConstantsUtil.getMyProfile;
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
+        log('user profile ${result!.data['user']}');
         resultCallback(UserModel.fromJson(result!.data['user']));
       }
     });
@@ -198,9 +194,8 @@ class ProfileApi {
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var items = result!.data['invitation'];
-          resultCallback(List<MyRelationsModel>.from(
-              items.map((x) => MyRelationsModel.fromJson(x))));
-
+        resultCallback(List<MyRelationsModel>.from(
+            items.map((x) => MyRelationsModel.fromJson(x))));
       }
     });
   }

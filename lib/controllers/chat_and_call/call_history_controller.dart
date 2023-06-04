@@ -1,11 +1,12 @@
 import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/list_extension.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../helper/permission_utils.dart';
 import '../../model/call_history_model.dart';
 import '../../model/call_model.dart';
-import '../agora_call_controller.dart';
+import 'agora_call_controller.dart';
 
 class CallHistoryController extends GetxController {
   RxList<CallHistoryModel> calls = <CallHistoryModel>[].obs;
@@ -31,13 +32,12 @@ class CallHistoryController extends GetxController {
           resultCallback: (result, metadata) {
 
             calls.addAll(result);
+            calls.unique((e)=> e.id);
             isLoading = false;
 
             callHistoryPage += 1;
             canLoadMoreCalls = result.length >= metadata.perPage;
 
-            print('result.length ${result.length}');
-            print('metadata.perPage ${metadata.perPage}');
 
             update();
           });

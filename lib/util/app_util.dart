@@ -123,6 +123,69 @@ class AppUtil {
     );
   }
 
+  static void showNewConfirmationAlert(
+      {required String title,
+      required String subTitle,
+      required VoidCallback okHandler}) {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: Get.context!,
+      builder: (context) => Container(
+        height: 220,
+        width: Get.width,
+        color: AppColorConstants.backgroundColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Heading3Text(
+              title,
+              color: AppColorConstants.themeColor,
+              weight: TextWeight.bold,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            BodyLargeText(
+              subTitle,
+              weight: TextWeight.regular,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Column(
+              children: [
+                Wrap(
+                  spacing: 20,
+                  children: [
+                    BodyLargeText(
+                      okString,
+                      color: AppColorConstants.grayscale100,
+                    )
+                        .makeChip(
+                            backGroundColor: AppColorConstants.grayscale900)
+                        .ripple(() {
+                      Get.back(closeOverlays: true);
+                      okHandler();
+                    }),
+                    BodyLargeText(
+                      cancelString,
+                      color: Colors.white,
+                    )
+                        .makeChip(backGroundColor: AppColorConstants.red)
+                        .ripple(() {
+                      Get.back(closeOverlays: true);
+                    }),
+                  ],
+                ),
+              ],
+            )
+          ],
+        ).hP16,
+      ).round(20),
+    );
+  }
+
   static void showDemoAppConfirmationAlert(
       {required String title,
       required String subTitle,

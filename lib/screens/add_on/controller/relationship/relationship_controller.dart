@@ -1,9 +1,6 @@
-import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/apiHandler/apis/profile_api.dart';
-import 'package:foap/controllers/profile_controller.dart';
+import 'package:foap/controllers/profile/profile_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../model/get_relationship_model.dart';
 import '../../model/my_invitation_model.dart';
 import '../../model/my_relations_model.dart';

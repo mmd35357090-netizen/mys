@@ -1,11 +1,10 @@
-import 'package:foap/helper/extension.dart';
 import 'package:foap/screens/add_on/ui/event/search_events.dart';
 import 'package:foap/util/app_config_constants.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-
+import '../../controller/event/event_controller.dart';
 import 'event_bookings.dart';
-import 'events_listing.dart';
+import 'explore_events.dart';
 
 class EventsDashboardController extends GetxController {
   RxInt currentIndex = 0.obs;
@@ -38,7 +37,7 @@ class EventsDashboardScreenState extends State<EventsDashboardScreen> {
   @override
   void initState() {
     items = [
-      const EventsListing(),
+      const ExploreEvents(),
       const SearchEventListing(),
       const EventBookingScreen()
     ];

@@ -7,6 +7,7 @@ import 'package:foap/util/app_config_constants.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
 import 'package:flutter/material.dart';
+import '../../components/event/events_list.dart';
 
 class SearchEventListing extends StatefulWidget {
   const SearchEventListing({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class SearchEventListing extends StatefulWidget {
 }
 
 class SearchEventListingState extends State<SearchEventListing> {
-  final EventsController _eventsController = EventsController();
+  final EventsController _eventsController = Get.find();
 
   @override
   void initState() {
@@ -57,63 +58,16 @@ class SearchEventListingState extends State<SearchEventListing> {
                     showSearchIcon: true,
                     iconColor: AppColorConstants.themeColor,
                     onSearchChanged: (value) {
-                      _eventsController.searchTextChanged(value);
+                      _eventsController.searchEvents(value);
                     },
-                    onSearchStarted: () {
-                      //controller.startSearch();
-                    },
+                    onSearchStarted: () {},
                     onSearchCompleted: (searchTerm) {}),
               ),
             ],
           ).setPadding(left: 16, right: 16, top: 25, bottom: 20),
           divider().tP8,
           Expanded(
-            child: Obx(() {
-              ScrollController scrollController = ScrollController();
-              scrollController.addListener(() {
-                if (scrollController.position.maxScrollExtent ==
-                    scrollController.position.pixels) {
-                  if (!_eventsController.isLoadingEvents.value) {
-                    _eventsController.getEvents();
-                  }
-                }
-              });
-
-              List<EventModel> events = _eventsController.events;
-              return events.isEmpty
-                  ? Container()
-                  : SizedBox(
-                      height: events.length * 200,
-                      child: ListView.separated(
-                          padding: const EdgeInsets.only(
-                              left: 16, right: 16, top: 20, bottom: 50),
-                          itemCount: events.length,
-                          itemBuilder: (BuildContext ctx, int index) {
-                            return EventCard2(
-                              event: events[index],
-                              joinBtnClicked: () {
-                                _eventsController.joinEvent(events[index]);
-                              },
-                              leaveBtnClicked: () {
-                                _eventsController.leaveEvent(events[index]);
-                              },
-                              previewBtnClicked: () {
-                                Get.to(() => EventDetail(
-                                      event: events[index],
-                                      needRefreshCallback: () {
-                                        _eventsController.getEvents();
-                                      },
-                                    ));
-                              },
-                            );
-                          },
-                          separatorBuilder: (BuildContext ctx, int index) {
-                            return const SizedBox(
-                              height: 25,
-                            );
-                          }),
-                    );
-            }),
+            child: EventsList(),
           ),
         ],
       ),

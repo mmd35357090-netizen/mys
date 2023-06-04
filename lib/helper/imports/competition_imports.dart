@@ -6,5 +6,5 @@ export 'package:foap/screens/competitions/competition_card.dart';
 export 'package:foap/screens/competitions/video_player_screen.dart';
 export 'package:foap/screens/competitions/earn_coins_for_contest_popup.dart';
 
-export 'package:foap/controllers/competition_controller.dart';
+export 'package:foap/controllers/competition/competition_controller.dart';
 export 'package:foap/model/competition_model.dart';

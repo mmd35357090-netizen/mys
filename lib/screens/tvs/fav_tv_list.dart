@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/tvs/tv_channel_detail.dart';
 import 'package:foap/model/live_tv_model.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../../controllers/live_tv_streaming_controller.dart';
+import '../../controllers/tv/live_tv_streaming_controller.dart';
 
 class FavTvList extends StatefulWidget {
   const FavTvList({Key? key}) : super(key: key);

@@ -7,11 +7,9 @@ import 'package:foap/apiHandler/apis/events_api.dart';
 import 'package:foap/apiHandler/apis/payment_gateway_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/util/constant_util.dart';
-import 'package:get/get.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:foap/helper/imports/event_imports.dart';
-import 'package:foap/apiHandler/api_controller.dart';
 
 enum ProcessingPaymentStatus { inProcess, completed, failed }
 

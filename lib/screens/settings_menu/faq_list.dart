@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/faq_controller.dart';
+import '../../controllers/misc/faq_controller.dart';
 
 class FaqList extends StatefulWidget {
   const FaqList({Key? key}) : super(key: key);

@@ -7,9 +7,9 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'add_interests.dart';
 
 class AddPersonalInfo extends StatefulWidget {
-  final bool isFromSignup;
+  final bool isSettingProfile;
 
-  const AddPersonalInfo({Key? key, required this.isFromSignup})
+  const AddPersonalInfo({Key? key, required this.isSettingProfile})
       : super(key: key);
 
   @override
@@ -21,7 +21,7 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
   final UserProfileManager _userProfileManager = Get.find();
 
   List<String> colors = DatingProfileConstants.colors;
-  int? selectedColor;
+  int selectedColor = 0;
 
   double _valueForHeight = 176.0;
 
@@ -29,29 +29,23 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
   TextEditingController religionController = TextEditingController();
 
   List<String> status = DatingProfileConstants.maritalStatus;
-  int? selectedStatus;
+  int selectedStatus = 1;
 
   @override
   void initState() {
     super.initState();
-    if (!widget.isFromSignup) {
-      if (_userProfileManager.user.value!.name != null) {
-        int index =
-            colors.indexOf(_userProfileManager.user.value!.color ?? '');
-        selectedColor = index != -1 ? index : null;
-      }
-      if (_userProfileManager.user.value!.height != null) {
-        _valueForHeight =
-            double.parse(_userProfileManager.user.value!.height ?? '0');
-      }
-      if (_userProfileManager.user.value!.religion != null) {
-        religionController.text =
-            _userProfileManager.user.value!.religion ?? '';
-      }
-      if (_userProfileManager.user.value!.maritalStatus != null) {
-        selectedStatus =
-            (_userProfileManager.user.value!.maritalStatus ?? 1) - 1;
-      }
+    if (_userProfileManager.user.value!.color != null) {
+      int index = colors.indexOf(_userProfileManager.user.value!.color!);
+      selectedColor = index != -1 ? index : 0;
+    }
+    if (_userProfileManager.user.value!.height != null) {
+      _valueForHeight = double.parse(_userProfileManager.user.value!.height!);
+    }
+    if (_userProfileManager.user.value!.religion != null) {
+      religionController.text = _userProfileManager.user.value!.religion!;
+    }
+    if (_userProfileManager.user.value!.maritalStatus != null) {
+      selectedStatus = _userProfileManager.user.value!.maritalStatus!;
     }
   }
 
@@ -60,15 +54,15 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: [
-          const SizedBox(height: 50),
-          profileScreensNavigationBar(
-              
-              rightBtnTitle:
-                  widget.isFromSignup ? skipString.tr : null,
-              title: personalDetailsString.tr,
-              completion: () {
-                Get.to(() => AddInterests(isFromSignup: widget.isFromSignup));
-              }),
+          // const SizedBox(height: 50),
+          backNavigationBar(
+            // rightBtnTitle: widget.isSettingProfile ? skipString.tr : null,
+            title: personalDetailsString.tr,
+            // completion: () {
+            //   Get.to(() =>
+            //       AddInterests(isSettingProfile: widget.isSettingProfile));
+            // }
+          ),
           divider().tP8,
           Expanded(
             child: SingleChildScrollView(
@@ -77,13 +71,12 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Heading2Text(
-                    personalInfoHeaderString.tr,
+                    weNeedToKnowMoreString.tr,
                   ).setPadding(top: 20),
                   Heading6Text(
-                    personalInfoSubHeaderString.tr,
+                    beAccurateString.tr,
                   ).setPadding(top: 20),
-                  addHeader(colorString.tr)
-                      .setPadding(top: 30, bottom: 8),
+                  addHeader(colorString.tr).setPadding(top: 30, bottom: 8),
                   SegmentedControl(
                       segments: colors,
                       value: selectedColor,
@@ -105,8 +98,7 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                       });
                     },
                   ),
-                  addHeader(religionString.tr)
-                      .setPadding(top: 15, bottom: 8),
+                  addHeader(religionString.tr).setPadding(top: 15, bottom: 8),
                   DropdownBorderedField(
                     hintText: selectString.tr,
                     controller: religionController,
@@ -120,71 +112,26 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                       openReligionPopup();
                     },
                   ),
-                  addHeader(statusString.tr)
-                      .setPadding(top: 30, bottom: 8),
+                  addHeader(statusString.tr).setPadding(top: 30, bottom: 8),
                   SegmentedControl(
                       segments: status,
-                      value: selectedStatus,
+                      value: selectedStatus - 1,
                       onValueChanged: (value) {
-                        setState(() => selectedStatus = value);
+                        setState(() => selectedStatus = value + 1);
                       }),
                   Center(
                     child: SizedBox(
                         height: 50,
-                        width: MediaQuery.of(context).size.width - 50,
+                        width: Get.width - 50,
                         child: AppThemeButton(
                             cornerRadius: 25,
                             text: submitString.tr,
                             onPress: () {
-                              AddDatingDataModel dataModel =
-                                  AddDatingDataModel();
-
-                              if (selectedColor != null) {
-                                dataModel.selectedColor =
-                                    colors[selectedColor!];
-                                _userProfileManager.user.value!.color =
-                                    dataModel.selectedColor;
-                              }
-
-                              dataModel.height = _valueForHeight.toInt();
-                              _userProfileManager.user.value!.height =
-                                  dataModel.height.toString();
-
-                              if (religionController.text.isNotEmpty) {
-                                dataModel.religion = religionController.text;
-                                _userProfileManager
-                                    .user
-                                    .value!
-                                    .religion = religionController.text;
-                              }
-
-                              if (selectedStatus != null) {
-                                dataModel.status = selectedStatus! + 1;
-                                _userProfileManager
-                                    .user
-                                    .value!
-                                    .maritalStatus = dataModel.status;
-                              }
-                              datingController.updateDatingProfile(dataModel,
-                                  (msg) {
-                                if (widget.isFromSignup) {
-                                  Get.to(() => AddInterests(
-                                      isFromSignup: widget.isFromSignup));
-                                } else {
-                                  Get.back();
-                                }
-                                // if (msg != '' &&
-                                //     !isLoginFirstTime) {
-                                //   AppUtil.showToast(
-                                //       
-                                //       message: msg,
-                                //       isSuccess: true);
-                                // }
-                              });
+                              submitDetail();
                             })),
                   ).setPadding(top: 100),
                 ],
-              ).p(25),
+              ).hp(DesignConstants.horizontalPadding),
             ),
           ),
         ]));
@@ -201,7 +148,6 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -232,5 +178,33 @@ class AddPersonalInfoState extends State<AddPersonalInfo> {
                     .topRounded(40));
           });
         });
+  }
+
+  submitDetail() {
+    AddDatingDataModel dataModel = AddDatingDataModel();
+
+    if (selectedColor != null) {
+      dataModel.selectedColor = colors[selectedColor!];
+      _userProfileManager.user.value!.color = dataModel.selectedColor;
+    }
+
+    dataModel.height = _valueForHeight.toInt();
+    _userProfileManager.user.value!.height = dataModel.height.toString();
+
+    if (religionController.text.isNotEmpty) {
+      dataModel.religion = religionController.text;
+      _userProfileManager.user.value!.religion = religionController.text;
+    }
+
+    dataModel.status = selectedStatus;
+    _userProfileManager.user.value!.maritalStatus = dataModel.status;
+
+    datingController.updateDatingProfile(dataModel, () {
+      if (widget.isSettingProfile) {
+        Get.to(() => AddInterests(isSettingProfile: widget.isSettingProfile));
+      } else {
+        Get.back();
+      }
+    });
   }
 }

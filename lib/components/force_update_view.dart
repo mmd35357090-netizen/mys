@@ -51,7 +51,7 @@ class ForceUpdateView extends StatelessWidget {
                 await launchUrl(
                     Uri.parse(settingsController.setting.value!.latestAppDownloadLink!));
               },
-              enabledBackgroundColor: const Color(0xff512e98),
+              backgroundColor: const Color(0xff512e98),
             ),
           ),
           SizedBox(
@@ -111,7 +111,7 @@ class InvalidPurchaseView extends StatelessWidget {
                   await launchUrl(Uri.parse(
                       'https://codecanyon.net/item/timeline-chat-calling-live-social-media-photo-video-sharing-app-iosandroidadmin-panel/39825646'));
                 },
-                enabledBackgroundColor: const Color(0xff512e98),
+                backgroundColor: const Color(0xff512e98),
               ),
             ),
             SizedBox(

@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/notification_setting_controller.dart';
+import '../../controllers/notification/notification_setting_controller.dart';
 
 class AppNotificationSettings extends StatefulWidget {
   const AppNotificationSettings({Key? key}) : super(key: key);

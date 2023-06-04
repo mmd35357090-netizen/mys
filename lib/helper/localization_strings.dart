@@ -958,6 +958,8 @@ String preferencesString = 'Set Preferences';
 String setString = 'Set';
 String currentLocationString = 'Current location';
 String dobString = 'DOB';
+String dateOfBirthString = 'Date of birth';
+
 String genderString = 'Gender';
 String personalDetailsString = 'Personal details';
 String interestsString = 'Interests';
@@ -979,47 +981,47 @@ String datingExploreForMatchedString =
 String noLikeProfilesFoundString = 'No profiles found';
 String noLikeProfilesString = 'Explore more dating profiles';
 
-String locationMainHeaderString = 'Set location';
-String locationHeaderString = 'Set your location services';
-String locationSubHeaderString =
+String setLocationString = 'Set location';
+String setLocationServiceString = 'Set your location services';
+String weWillUseYourLoctaionString =
     'We use your location to show you potential matches in your area';
-String locationServiceString = 'Set location services';
+String setLocationServiceStrng = 'Set location services';
 
-String notificationHeaderString = 'Allow notifications';
-String notificationSubHeaderString =
+String allowNotiifcationString = 'Allow notifications';
+String weWillLetYouKnowString =
     'We\'ll let you know when you get new matches and messages';
 String allowNotificationString = 'Allow notifications';
 String notNowString = 'Not now';
 
-String nameMainHeaderString = 'Add name';
-String nameHeaderString = 'What\'s your first name?';
-String nameSubHeaderString = 'You won\'t be able to change this later';
+String addNameString = 'Add name';
+String whatsYourNameString = 'What\'s your first name?';
+String cantChangeThisLaterString = 'You won\'t be able to change this later';
 
-String addPhotoHeaderString = 'Add photos';
-String addPhotoSubHeaderString =
+String addPhotosString = 'Add photos';
+String profileWithGoodPhotosString =
     'Profile with more good photos are getting more matches, so add your best photos';
 
-String birthdayMainHeaderString = 'Add DOB';
-String birthdayHeaderString = 'When\'s your birthday?';
-String birthdaySubHeaderString =
-    'Be accurate to specify this to get genuine matches';
+String addDOBString = 'Add DOB';
+String whenIsYourBdayString = 'When\'s your birthday?';
+String beAccurateString = 'Be accurate to specify this to get genuine matches';
 
-String genderMainHeaderString = 'Add gender';
-String genderHeaderString = 'Mention your gender';
+String addGenderString = 'Add gender';
+String mentionYourGenderString = 'Mention your gender';
 
-String likeToDateHeaderString = 'Who would you like to date?';
-String likeToDateSubHeaderString =
+String whomToDateString = 'Who would you like to date?';
+String youCanChooseMoreThanOneAnswerString =
     'You can choose more than one answer and change any time';
 
-String personalInfoHeaderString = 'We need to know more about you.';
-String personalInfoSubHeaderString =
-    'Be accurate to specify this to get genuine matches';
+String weNeedToKnowMoreString = 'We need to know more about you.';
 
-String addInterestsHeaderString = 'Add Interests.';
-String addInterestsSubHeaderString = 'Add your interests and habits';
+String addInterestsString = 'Add Interests.';
+String addYourInterstsAndHabitsString = 'Add your interests and habits';
 String chooseInterestsString = 'Choose your interests';
 
-String addProfessionalHeaderString = 'Add Professional Details.';
+String addProfessionalDetailString = 'Add Professional Details.';
+String enableDatingString = 'Enable Dating';
+String enableDatingProfileToUseString =
+    'You need to enable dating profile and have to provide your profile information to start dating peoples';
 
 String followFriendsToSendPostString = 'Follow friends to send post.';
 
@@ -1063,6 +1065,8 @@ String drinkingHabitString = 'Drinking habit';
 String selectString = 'Select';
 String disLikeString = 'Dislike';
 
+String doYouSmokeString = 'Do you smoke?';
+
 String leaveGroupConfirmationString = "Are you sure, you want to leave group?";
 String deleteGroupConfirmationString =
     "Are you sure, you want to delete group?";
@@ -1082,6 +1086,7 @@ String reachString = 'Reach';
 String nonFollowersString = 'Non-Followers';
 
 String viewsString = 'Views';
+String viewString = 'View';
 
 String postInteractionsString = 'Post interactions';
 String savedString = 'Saved';
@@ -1092,3 +1097,4 @@ String followsString = 'Follows';
 
 String chatGPT = 'ChatGPT';
 String noLiveUserString = 'No live user found';
+String uploadPhotoString = 'Upload photo';

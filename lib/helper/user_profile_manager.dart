@@ -1,17 +1,13 @@
 import 'dart:async';
-
-import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/apiHandler/apis/auth_api.dart';
 import 'package:foap/apiHandler/apis/profile_api.dart';
-import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/manager/db_manager.dart';
 import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/screens/login_sign_up/login_screen.dart';
-import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import '../screens/login_sign_up/auth_tab.dart';
 import '../util/shared_prefs.dart';
 
 class UserProfileManager extends GetxController {
@@ -23,19 +19,19 @@ class UserProfileManager extends GetxController {
     return user.value != null;
   }
 
-  logout() {
+  logout() async {
     user.value = null;
+
+    await AuthApi.logout();
+
     SharedPrefs().clearPreferences();
-    Get.offAll(() => const LoginScreen());
+    Get.offAll(() => const AuthTab());
     getIt<SocketManager>().disconnect();
     getIt<DBManager>().clearAllUnreadCount();
     getIt<DBManager>().deleteAllChatHistory();
 
     GoogleSignIn googleSignIn = GoogleSignIn();
     googleSignIn.disconnect();
-
-    AuthApi.logout();
-
     Future.delayed(const Duration(seconds: 2), () {
       _dashboardController.indexChanged(0);
     });

@@ -3,11 +3,11 @@ import 'package:foap/screens/add_on/ui/reel/reels.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../components/force_update_view.dart';
-import '../chat/chat_history.dart';
 import '../home_feed/home_feed_screen.dart';
 import '../post/add_post_screen.dart';
 import '../profile/my_profile.dart';
 import '../settings_menu/settings_controller.dart';
+import 'explore.dart';
 
 class DashboardController extends GetxController {
   RxInt currentIndex = 0.obs;
@@ -55,7 +55,7 @@ class DashboardState extends State<DashboardScreen> {
   void initState() {
     items = [
       const HomeFeedScreen(),
-      const ChatHistory(),
+      const Explore(),
       Container(),
       const Reels(),
       const MyProfile(
@@ -128,7 +128,7 @@ class DashboardState extends State<DashboardScreen> {
                             icon: Obx(() => Stack(
                                   children: [
                                     Obx(() => ThemeIconWidget(
-                                          ThemeIcon.chat,
+                                          ThemeIcon.search,
                                           size: 28,
                                           color: _dashboardController
                                                       .currentIndex.value ==
@@ -149,7 +149,7 @@ class DashboardState extends State<DashboardScreen> {
                                           ).circular)
                                   ],
                                 )),
-                            label: chatsString.tr,
+                            label: searchString.tr,
                           ),
                           const BottomNavigationBarItem(
                             icon: SizedBox(

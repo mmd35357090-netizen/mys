@@ -3,17 +3,11 @@ import 'package:foap/apiHandler/apis/auth_api.dart';
 import 'package:foap/apiHandler/apis/misc_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/util/constant_util.dart';
-import 'package:get/get.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
-// import 'package:rate_my_app/rate_my_app.dart';
-
-import '../../apiHandler/api_controller.dart';
 import '../../manager/location_manager.dart';
 import '../../util/shared_prefs.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
-
-import '../dashboard/loading.dart';
 
 class SettingsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();

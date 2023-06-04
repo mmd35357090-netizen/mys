@@ -1,12 +1,11 @@
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'choose_whom_to_date.dart';
 
 class WhatYouHope extends StatefulWidget {
-  final bool isFromSignup;
+  final bool isSettingProfile;
 
-  const WhatYouHope({Key? key, required this.isFromSignup}) : super(key: key);
+  const WhatYouHope({Key? key, required this.isSettingProfile})
+      : super(key: key);
 
   @override
   State<WhatYouHope> createState() => _WhatYouHopeState();
@@ -127,12 +126,12 @@ class _WhatYouHopeState extends State<WhatYouHope> {
                 height: 50,
                 width: MediaQuery.of(context).size.width - 50,
                 child: AppThemeButton(
-                    enabledBackgroundColor: Colors.white,
+                    backgroundColor: Colors.white,
                     cornerRadius: 25,
                     text: nextString.tr,
                     onPress: () {
-                      Get.to(() =>
-                          ChooseWhomToDate(isFromSignup: widget.isFromSignup));
+                      Get.to(() => ChooseWhomToDate(
+                          isSettingProfile: widget.isSettingProfile));
                     })),
           ),
         ],

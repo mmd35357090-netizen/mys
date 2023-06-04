@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
 
-import '../../controllers/subscription_packages_controller.dart';
+import '../../controllers/misc/subscription_packages_controller.dart';
 import '../../manager/socket_manager.dart';
 import '../../util/shared_prefs.dart';
 import '../login_sign_up/set_user_name.dart';

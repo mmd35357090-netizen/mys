@@ -1,15 +1,11 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../apiHandler/api_controller.dart';
 import '../../apiHandler/apis/users_api.dart';
 import '../home_feed/enlarge_image_view.dart';
 import '../post/single_post_detail.dart';
 import '../profile/other_user_profile.dart';
 import '../settings_menu/settings_controller.dart';
-import '../settings_menu/web_view_screen.dart';
 
 class CompletedCompetitionDetail extends StatefulWidget {
   final int competitionId;
@@ -45,7 +41,6 @@ class CompletedCompetitionDetailState
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBarWithIcon(
               icon: ThemeIcon.privacyPolicy,
               title: competitionString.tr,
@@ -106,8 +101,9 @@ class CompletedCompetitionDetailState
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Heading5Text(
+                                      BodyLargeText(
                                         competition.description,
+                                        weight: TextWeight.regular,
                                       ),
                                       addPhotoGrid(competition: competition),
                                     ],
@@ -228,11 +224,11 @@ class CompletedCompetitionDetailState
   Widget addPhotoGrid({required CompetitionModel competition}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       competition.posts.isNotEmpty
-          ? Heading3Text(
+          ? Heading4Text(
               submittedPhotosString.tr,
               weight: FontWeight.bold,
-              color: AppColorConstants.themeColor,
-            ).tP16
+              color: AppColorConstants.grayscale500,
+            ).tP25
           : Container(),
       competition.posts.isNotEmpty
           ? GridView.builder(

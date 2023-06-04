@@ -3,8 +3,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'add_personal_info.dart';
 
 class ChooseWhomToDate extends StatefulWidget {
-  final bool isFromSignup;
-  const ChooseWhomToDate({Key? key, required this.isFromSignup}) : super(key: key);
+  final bool isSettingProfile;
+  const ChooseWhomToDate({Key? key, required this.isSettingProfile}) : super(key: key);
 
 
   @override
@@ -25,11 +25,11 @@ class _ChooseWhomToDateState extends State<ChooseWhomToDate> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Heading3Text(
-              likeToDateHeaderString.tr,
+              whomToDateString.tr,
 
             ).setPadding(top: 100),
             Heading4Text(
-              likeToDateSubHeaderString.tr,
+              youCanChooseMoreThanOneAnswerString.tr,
 
             ).setPadding(top: 20),
             ListView.builder(
@@ -47,7 +47,7 @@ class _ChooseWhomToDateState extends State<ChooseWhomToDate> {
                       cornerRadius: 25,
                       text: nextString.tr,
                       onPress: () {
-                        Get.to(() =>  AddPersonalInfo(isFromSignup: widget.isFromSignup));
+                        Get.to(() =>  AddPersonalInfo(isSettingProfile: widget.isSettingProfile));
                       })),
             ).setPadding(top: 100),
           ],

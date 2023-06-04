@@ -2,7 +2,7 @@ import 'package:chewie/chewie.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
-import '../controllers/live_tv_streaming_controller.dart';
+import '../controllers/tv/live_tv_streaming_controller.dart';
 import '../model/live_tv_model.dart';
 import '../screens/settings_menu/settings_controller.dart';
 

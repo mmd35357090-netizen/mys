@@ -115,7 +115,11 @@ class EventCard2 extends StatelessWidget {
                     right: 10,
                     child: Container(
                       color: AppColorConstants.themeColor,
-                      child: Text(freeString.tr).p4,
+                      child: BodyLargeText(
+                        freeString.tr,
+                        color: Colors.white,
+                        weight: TextWeight.bold,
+                      ).p4,
                     ).round(5))
             ],
           ),
@@ -134,7 +138,7 @@ class EventCard2 extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    Heading2Text(event.startAtDateTime.toUpperCase(),
+                    Heading6Text(event.startAtDateTime.toUpperCase(),
                         maxLines: 1,
                         weight: TextWeight.regular,
                         color: AppColorConstants.themeColor),

@@ -4,5 +4,5 @@ export 'package:foap/screens/highlights/hightlights_viewer.dart';
 
 export 'package:foap/model/highlights.dart';
 
-export 'package:foap/controllers/highlights_controller.dart';
+export 'package:foap/controllers/story/highlights_controller.dart';
 export 'package:foap/components/highlights_bar.dart';

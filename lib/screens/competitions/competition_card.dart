@@ -1,8 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
-import 'package:get/get.dart';
-
-import '../../apiHandler/api_controller.dart';
 import '../../apiHandler/apis/users_api.dart';
 
 class CompetitionCard extends StatefulWidget {
@@ -52,9 +49,12 @@ class CompetitionCardState extends State<CompetitionCard> {
                 Positioned(
                     left: 16,
                     right: 16,
-                    bottom: 80,
-                    child:
-                        Heading4Text(model.title, weight: TextWeight.semiBold))
+                    bottom: 70,
+                    child: Heading4Text(
+                      model.title,
+                      weight: TextWeight.semiBold,
+                      color: Colors.white,
+                    ))
               ],
             ),
           ]),
@@ -118,9 +118,7 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                           return user == null
                               ? BodyLargeText(loadingString.tr)
                               : BodyLargeText(
-                                  user.isMe
-                                      ? youString.tr
-                                      : user.userName,
+                                  user.isMe ? youString.tr : user.userName,
                                   weight: TextWeight.bold,
                                   color: AppColorConstants.themeColor);
                         } else {
@@ -132,9 +130,7 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                           model.mainWinnerId().toString()),
                     )
                   : BodyLargeText(
-                      model.isPast
-                          ? completedString.tr
-                          : model.timeLeft,
+                      model.isPast ? completedString.tr : model.timeLeft,
                       weight: TextWeight.bold,
                       color: AppColorConstants.themeColor)
             ]),

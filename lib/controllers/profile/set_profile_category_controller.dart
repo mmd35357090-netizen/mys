@@ -1,4 +1,3 @@
-import 'package:foap/apiHandler/api_controller.dart';
 import 'package:foap/apiHandler/apis/misc_api.dart';
 import 'package:get/get.dart';
 import '../../model/category_model.dart';

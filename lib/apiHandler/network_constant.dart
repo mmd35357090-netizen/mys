@@ -26,7 +26,7 @@ class NetworkConstantsUtil {
       'users/{{id}}?expand=isFollowing,isFollower,totalFollowing,totalFollower,totalPost,totalWinnerPost,userLiveDetail,giftSummary,userSetting';
 
   static String getMyProfile =
-      'users/profile?expand=totalFollowing,totalFollower,totalActivePost,userLiveDetail,giftSummary,userSetting';
+      'users/profile?expand=totalFollowing,totalFollower,totalActivePost,userLiveDetail,giftSummary,userSetting,interest,language';
   static String updateUserProfile = 'users/profile-update';
   static String updateProfileImage = 'users/update-profile-image';
   static String updateProfileCoverImage = 'users/update-profile-cover-image';
@@ -202,6 +202,9 @@ class NetworkConstantsUtil {
   static String deleteClub = 'clubs/';
   static String searchClubs = 'clubs?expand=createdByUser,totalJoinedUser';
   static String topClubs =
+      'clubs/top-club?expand=createdByUser,totalJoinedUser&type=2';
+
+  static String trendingClubs =
       'clubs/top-club?expand=createdByUser,totalJoinedUser&type=1';
 
   static String joinClub = 'clubs/join';

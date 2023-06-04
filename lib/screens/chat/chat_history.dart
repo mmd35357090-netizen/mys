@@ -46,19 +46,40 @@ class _ChatHistoryState extends State<ChatHistory> {
           const SizedBox(
             height: 50,
           ),
-          (_settingsController.setting.value!.enableAudioCalling ||
-                  _settingsController.setting.value!.enableVideoCalling)
-              ? titleNavigationBarWithIcon(
-
-                  title: chatsString.tr,
-                  icon: ThemeIcon.mobile,
-                  completion: () {
-                    Get.to(() => const CallHistory());
-                  })
-              : titleNavigationBar(
-
-                  title: chatsString.tr,
-                ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const ThemeIconWidget(
+                ThemeIcon.backArrow,
+              ).ripple(() {
+                Get.back();
+              }),
+              BodyLargeText(chatsString.tr, weight: TextWeight.medium),
+              _settingsController.setting.value!.enableAudioCalling ||
+                      _settingsController.setting.value!.enableVideoCalling
+                  ? ThemeIconWidget(
+                      ThemeIcon.mobile,
+                      color: AppColorConstants.iconColor,
+                      size: 25,
+                    ).ripple(() {
+                      Get.to(() => const CallHistory());
+                    })
+                  : const SizedBox(
+                      width: 25,
+                    ),
+            ],
+          ).setPadding(left: 16, right: 16, top: 8, bottom: 16),
+          // (_settingsController.setting.value!.enableAudioCalling ||
+          //         _settingsController.setting.value!.enableVideoCalling)
+          //     ? titleNavigationBarWithIcon(
+          //         title: chatsString.tr,
+          //         icon: ThemeIcon.mobile,
+          //         completion: () {
+          //           Get.to(() => const CallHistory());
+          //         })
+          //     : titleNavigationBar(
+          //         title: chatsString.tr,
+          //       ),
           divider().tP8,
           SFSearchBar(
                   showSearchIcon: true,
@@ -99,9 +120,8 @@ class _ChatHistoryState extends State<ChatHistory> {
                           children: [
                             Heading6Text(
                               deleteString.tr,
-                            weight: TextWeight.bold,
+                              weight: TextWeight.bold,
                               color: AppColorConstants.grayscale700,
-
                             )
                           ],
                         ).hP25,
@@ -138,7 +158,6 @@ class _ChatHistoryState extends State<ChatHistory> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-
         isScrollControlled: true,
         builder: (context) => FractionallySizedBox(
               heightFactor: 0.9,

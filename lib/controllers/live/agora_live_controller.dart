@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:foap/apiHandler/apis/gift_api.dart';
 import 'package:foap/apiHandler/apis/users_api.dart';
-import 'package:foap/controllers/subscription_packages_controller.dart';
+import 'package:foap/controllers/misc/subscription_packages_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/live_imports.dart';
 import 'package:foap/helper/string_extension.dart';
@@ -572,6 +572,8 @@ class AgoraLiveController extends GetxController {
           liveId: liveId,
           resultCallback: (result, metadata) {
             giftsReceived.addAll(result);
+            // giftsReceived.unique((e)=> e.id);
+
             canLoadMoreGifts = result.length >= metadata.perPage;
             giftsPage += 1;
             update();

@@ -6,14 +6,16 @@ import 'package:flutter/gestures.dart';
 import 'package:foap/components/post_card_controller.dart';
 import 'package:foap/components/reply_chat_cells/post_gift_controller.dart';
 import 'package:foap/components/video_widget.dart';
-import 'package:foap/controllers/profile_controller.dart';
+import 'package:foap/controllers/profile/profile_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:profanity_filter/profanity_filter.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../controllers/chat_and_call/chat_detail_controller.dart';
 import '../controllers/chat_and_call/select_user_for_chat_controller.dart';
-import '../controllers/home_controller.dart';
-import '../controllers/post_controller.dart';
+import '../controllers/home/home_controller.dart';
+import '../controllers/post/comments_controller.dart';
+import '../controllers/post/post_controller.dart';
 import '../model/post_gallery.dart';
 import '../model/post_model.dart';
 import '../model/post_search_query.dart';
@@ -130,8 +132,6 @@ class PostMediaTile extends StatelessWidget {
 class PostCard extends StatefulWidget {
   final PostModel model;
 
-  // final Function(String) textTapHandler;
-
   final VoidCallback removePostHandler;
   final VoidCallback blockUserHandler;
   final VoidCallback viewInsightHandler;
@@ -139,7 +139,6 @@ class PostCard extends StatefulWidget {
   const PostCard(
       {Key? key,
       required this.model,
-      // required this.textTapHandler,
       required this.removePostHandler,
       required this.blockUserHandler,
       required this.viewInsightHandler})
@@ -159,6 +158,9 @@ class PostCardState extends State<PostCard> {
   final FlareControls flareControls = FlareControls();
   final PostGiftController _postGiftController = Get.find();
   final PostController _postController = Get.find();
+
+  TextEditingController commentInputField = TextEditingController();
+  final CommentsController _commentsController = CommentsController();
 
   @override
   void initState() {
@@ -212,13 +214,11 @@ class PostCardState extends State<PostCard> {
                       width: double.infinity,
                       child: BodyLargeText(
                         viewInsightsString.tr,
-                        color: Colors.white,
-                        // color: AppColorConstants.themeColor,
                         weight: TextWeight.semiBold,
                       ).p16.ripple(() {
                         widget.viewInsightHandler();
                       }),
-                    ).bP16
+                    )
                 ],
               ),
               Obx(() => Positioned(
@@ -252,11 +252,50 @@ class PostCardState extends State<PostCard> {
         height: 16,
       ),
       commentAndLikeWidget().hP16,
-      viewGifts(),
+      const SizedBox(
+        height: 12,
+      ),
+      commentsCountWidget().hP16,
       const SizedBox(
         height: 16,
       ),
+      buildMessageTextField(),
     ]).vP16;
+  }
+
+  Widget postTimeView() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // const ThemeIconWidget(
+        //   ThemeIcon.clock,
+        //   size: 15,
+        // ),
+        // const SizedBox(width: 5),
+        BodyMediumText(widget.model.postTime.tr, weight: TextWeight.regular),
+      ],
+    );
+  }
+
+  Widget commentsCountWidget() {
+    return InkWell(
+        onTap: () => openComments(),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          // ThemeIconWidget(
+          //   ThemeIcon.message,
+          //   color: AppColorConstants.iconColor,
+          // ),
+          // const SizedBox(
+          //   width: 5,
+          // ),
+          widget.model.totalComment > 0
+              ? BodyMediumText(
+                  '$viewString ${widget.model.totalComment} $commentsString',
+                  weight: TextWeight.semiBold,
+                  color: AppColorConstants.grayscale700,
+                )
+              : Container(),
+        ]));
   }
 
   Widget viewGifts() {
@@ -265,7 +304,7 @@ class PostCardState extends State<PostCard> {
         widget.model.isMyPost
             ? BodyLargeText(
                 viewGiftString.tr,
-                weight: TextWeight.bold,
+                // weight: TextWeight.regular,
               ).ripple(() {
                 showModalBottomSheet<void>(
                     backgroundColor: Colors.transparent,
@@ -281,11 +320,8 @@ class PostCardState extends State<PostCard> {
                     });
               })
             : Container(),
-        const SizedBox(
-          height: 10,
-        )
       ],
-    ).setPadding(left: 16, top: 16);
+    ).setPadding(left: 16);
   }
 
   Widget commentAndLikeWidget() {
@@ -327,29 +363,29 @@ class PostCardState extends State<PostCard> {
               )
             : Container();
       }),
+      // const SizedBox(
+      //   width: 40,
+      // ),
+      // InkWell(
+      //     onTap: () => openComments(),
+      //     child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      //       ThemeIconWidget(
+      //         ThemeIcon.message,
+      //         color: AppColorConstants.iconColor,
+      //       ),
+      //       const SizedBox(
+      //         width: 5,
+      //       ),
+      //       widget.model.totalComment > 0
+      //           ? BodyLargeText('${widget.model.totalComment}',
+      //                   weight: TextWeight.bold)
+      //               .ripple(() {
+      //               openComments();
+      //             })
+      //           : Container(),
+      //     ])),
       const SizedBox(
-        width: 10,
-      ),
-      InkWell(
-          onTap: () => openComments(),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            ThemeIconWidget(
-              ThemeIcon.message,
-              color: AppColorConstants.iconColor,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            widget.model.totalComment > 0
-                ? BodyLargeText('${widget.model.totalComment}',
-                        weight: TextWeight.bold)
-                    .ripple(() {
-                    openComments();
-                  })
-                : Container(),
-          ])),
-      const SizedBox(
-        width: 10,
+        width: 40,
       ),
       ThemeIconWidget(
         ThemeIcon.share,
@@ -368,7 +404,7 @@ class PostCardState extends State<PostCard> {
       !widget.model.isMyPost
           ? const ThemeIconWidget(
               ThemeIcon.gift,
-            ).lp(20).ripple(() {
+            ).lp(40).ripple(() {
               showModalBottomSheet<void>(
                   context: context,
                   builder: (BuildContext context) {
@@ -384,18 +420,88 @@ class PostCardState extends State<PostCard> {
             })
           : Container(),
       const Spacer(),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const ThemeIconWidget(
-            ThemeIcon.clock,
-            size: 15,
-          ),
-          const SizedBox(width: 5),
-          BodyMediumText(widget.model.postTime.tr, weight: TextWeight.medium),
-        ],
-      )
+      viewGifts(),
     ]);
+  }
+
+  Widget buildMessageTextField() {
+    return Container(
+      height: 50.0,
+      margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+              child: Obx(() {
+            TextEditingValue(
+                text: _commentsController.searchText.value,
+                selection: TextSelection.fromPosition(
+                    TextPosition(offset: _commentsController.position.value)));
+
+            return Container(
+              color: AppColorConstants.cardColor.withOpacity(0.5),
+              child: TextField(
+                controller: commentInputField,
+                onChanged: (text) {
+                  _commentsController.textChanged(
+                      text, commentInputField.selection.baseOffset);
+                },
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: writeCommentString.tr,
+                  hintStyle: TextStyle(
+                      fontSize: FontSizes.b2,
+                      color: AppColorConstants.grayscale700),
+                ),
+                textInputAction: TextInputAction.send,
+                style: TextStyle(
+                    fontSize: FontSizes.b2,
+                    color: AppColorConstants.grayscale900),
+                onSubmitted: (_) {
+                  addNewMessage();
+                },
+                onTap: () {},
+              ).hP8,
+            );
+          }).borderWithRadius(value: 0.5, radius: 15)),
+          const SizedBox(
+            width: 20,
+          ),
+          Container(
+            width: 45,
+            height: 45,
+            color: AppColorConstants.grayscale900,
+            child: InkWell(
+              onTap: addNewMessage,
+              child: Icon(
+                Icons.send,
+                color: AppColorConstants.themeColor,
+              ),
+            ),
+          ).circular
+        ],
+      ),
+    );
+  }
+
+  void addNewMessage() {
+    if (commentInputField.text.trim().isNotEmpty) {
+      final filter = ProfanityFilter();
+      bool hasProfanity = filter.hasProfanity(commentInputField.text);
+      if (hasProfanity) {
+        AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
+        return;
+      }
+
+      _commentsController.postCommentsApiCall(
+          comment: commentInputField.text.trim(),
+          postId: widget.model.id,
+          commentPosted: () {
+            setState(() {
+              widget.model.totalComment += 1;
+            });
+          });
+      commentInputField.text = '';
+    }
   }
 
   Widget addPostUserInfo() {
@@ -446,6 +552,7 @@ class PostCardState extends State<PostCard> {
                 : Container()
           ],
         )),
+        postTimeView().hP16,
         SizedBox(
           height: 20,
           width: 20,
@@ -517,7 +624,7 @@ class PostCardState extends State<PostCard> {
       query.hashTag = text.replaceAll('#', '');
       _postController.setPostSearchQuery(query: query, callback: () {});
 
-      Get.to(()=> const Posts());
+      Get.to(() => const Posts());
       // _postController.getPosts();
     } else {
       String userTag = text.replaceAll('@', '');

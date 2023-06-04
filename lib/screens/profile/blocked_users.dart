@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
 import '../../components/user_card.dart';
-import '../../controllers/blocked_users_controller.dart';
+import '../../controllers/misc/blocked_users_controller.dart';
 
 class BlockedUsersList extends StatefulWidget {
   const BlockedUsersList({Key? key}) : super(key: key);

@@ -18,9 +18,8 @@ export 'package:foap/screens/profile/change_phone_number.dart';
 export 'package:foap/screens/profile/change_user_name.dart';
 export 'package:foap/screens/profile/password_changed_popup.dart';
 export 'package:foap/screens/profile/verify_otp_for_phone_number.dart';
-export 'package:foap/screens/profile/users_list.dart';
 export 'package:foap/screens/profile/update_profile.dart';
 export 'package:foap/screens/profile/other_user_profile.dart';
 export 'package:foap/screens/profile/my_profile.dart';
 
-export 'package:foap/controllers/profile_controller.dart';
+export 'package:foap/controllers/profile/profile_controller.dart';

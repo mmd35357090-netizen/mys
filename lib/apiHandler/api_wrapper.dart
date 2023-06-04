@@ -25,7 +25,6 @@ class ApiResponse {
     model.success = json['status'] == 200;
     model.data = json['data'];
 
-    print(json);
     if (model.success != true) {
       Map errors = model.data['errors'];
       List errorsArr = errors[errors.keys.first] ?? [];
@@ -45,8 +44,6 @@ class ApiWrapper {
   Future<ApiResponse?> getApi({required String url}) async {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     String urlString = '${NetworkConstantsUtil.baseUrl}$url';
-    print(urlString);
-    print("Bearer ${authKey!}");
 
     return http.get(Uri.parse(urlString), headers: {
       "Authorization": "Bearer ${authKey!}"
@@ -69,6 +66,9 @@ class ApiWrapper {
     // EasyLoading.show(status: loadingString.tr);
 
     String urlString = '${NetworkConstantsUtil.baseUrl}$url';
+
+    print(urlString);
+    print(param);
 
     return http.post(Uri.parse(urlString), body: jsonEncode(param), headers: {
       "Authorization": "Bearer ${authKey!}",

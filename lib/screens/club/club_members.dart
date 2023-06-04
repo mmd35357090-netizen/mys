@@ -15,7 +15,7 @@ class ClubMembers extends StatefulWidget {
 }
 
 class ClubMembersState extends State<ClubMembers> {
-  final ClubsController _clubsController = ClubsController();
+  final ClubsController _clubsController = Get.find();
 
   @override
   void initState() {

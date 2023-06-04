@@ -1,6 +1,6 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:foap/components/timer_widget.dart';
-import 'package:foap/controllers/agora_call_controller.dart';
+import 'package:foap/controllers/chat_and_call/agora_call_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';

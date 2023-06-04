@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as google_map;
 import 'package:get/get.dart';
 
-import '../../controllers/map_screen_controller.dart';
+import '../../controllers/misc/map_screen_controller.dart';
 
 // ignore: must_be_immutable
 class MapsUsersScreen extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import '../../apiHandler/api_controller.dart';
 import '../../model/post_model.dart';
 import '../../model/user_model.dart';
+import 'package:foap/helper/list_extension.dart';
 
 class SelectUserForChatController extends GetxController {
   final ChatDetailController chatDetailController = Get.find();
@@ -43,6 +43,7 @@ class SelectUserForChatController extends GetxController {
           resultCallback: (result, metadata) {
             followingIsLoading = false;
             following.addAll(result);
+            following.unique((e)=> e.id);
 
             followingPage += 1;
             if (result.length == metadata.perPage) {

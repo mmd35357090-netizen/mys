@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:foap/helper/extension.dart';
 import 'package:foap/screens/club/search_club.dart';
 import 'package:get/get.dart';
-
 import '../../components/actionSheets/action_sheet1.dart';
 import '../../components/group_avatars/group_avatar1.dart';
 import '../../components/group_avatars/group_avatar2.dart';
@@ -20,42 +19,32 @@ import '../../segmentAndMenu/horizontal_menu.dart';
 import '../../theme/theme_icon.dart';
 import '../../util/app_config_constants.dart';
 import '../../util/app_util.dart';
+import '../reuseable_widgets/club_listing.dart';
 import 'categories_list.dart';
 import 'category_club_listing.dart';
 import 'club_detail.dart';
 
-class ClubsListing extends StatefulWidget {
-  const ClubsListing({Key? key}) : super(key: key);
+class ExploreClubs extends StatefulWidget {
+  const ExploreClubs({Key? key}) : super(key: key);
 
   @override
-  ClubsListingState createState() => ClubsListingState();
+  ExploreClubsState createState() => ExploreClubsState();
 }
 
-class ClubsListingState extends State<ClubsListing> {
-  final ClubsController _clubsController = ClubsController();
+class ExploreClubsState extends State<ExploreClubs> {
+  final ClubsController _clubsController = Get.find();
   final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _clubsController.getCategories();
-      _clubsController.getClubs(isStartOver: true);
-      _clubsController.selectedSegmentIndex(index: 0, forceRefresh: false);
-    });
-
+    loadData();
     _controller.addListener(() {
       if (_controller.position.atEdge) {
         bool isTop = _controller.position.pixels == 0;
         if (isTop) {
         } else {
-          if (_clubsController.segmentIndex.value == 3) {
-            if (!_clubsController.isLoadingInvitations.value) {
-              _clubsController.getClubInvitations();
-            }
-          } else {
-            if (!_clubsController.isLoadingClubs.value) {
-              _clubsController.getClubs(isStartOver: false);
-            }
+          if (!_clubsController.isLoadingInvitations.value) {
+            _clubsController.getClubInvitations();
           }
         }
       }
@@ -64,9 +53,18 @@ class ClubsListingState extends State<ClubsListing> {
     super.initState();
   }
 
+  loadData() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _clubsController.clear();
+
+      _clubsController.getCategories();
+      _clubsController.getClubs();
+      _clubsController.selectedSegmentIndex(index: 0);
+    });
+  }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     _clubsController.clear();
     _clubsController.clearMembers();
 
@@ -87,16 +85,20 @@ class ClubsListingState extends State<ClubsListing> {
           color: Colors.white,
         ),
       ).circular.ripple(() {
-        Get.to(() => CategoriesList(clubsController: _clubsController));
+        Get.to(() => CategoriesList(clubsController: _clubsController))!
+            .then((value) {
+          loadData();
+        });
       }),
       body: Column(
         children: [
-
           backNavigationBarWithIcon(
               title: clubsString.tr,
               iconBtnClicked: () {
                 _clubsController.clear();
-                Get.to(() => const SearchClubsListing());
+                Get.to(() => const SearchClubsListing())!.then((value) {
+                  loadData();
+                });
               },
               icon: ThemeIcon.search),
           divider().tP8,
@@ -109,15 +111,9 @@ class ClubsListingState extends State<ClubsListing> {
           ),
           links(),
           Expanded(
-            child: Obx(() {
-              List<ClubModel> clubs = _clubsController.clubs;
-              List<ClubInvitation> invitations = _clubsController.invitations;
-
-              return _clubsController.segmentIndex.value == 3
-                  ? clubsInvitationsListingWidget(invitations)
-                  : clubsListingWidget(clubs);
-            }),
-          ),
+              child: Obx(() => _clubsController.segmentIndex.value == 3
+                  ? clubsInvitationsListingWidget(_clubsController.invitations)
+                  : ClubListing()))
         ],
       ),
     );
@@ -125,7 +121,7 @@ class ClubsListingState extends State<ClubsListing> {
 
   Widget categories() {
     return SizedBox(
-      height: 100,
+      height: 50,
       child: Obx(() {
         List<CategoryModel> categories = _clubsController.categories;
         return _clubsController.isLoadingCategories.value
@@ -157,8 +153,7 @@ class ClubsListingState extends State<ClubsListing> {
               child: HorizontalMenuBar(
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   onSegmentChange: (segment) {
-                    _clubsController.selectedSegmentIndex(
-                        index: segment, forceRefresh: false);
+                    _clubsController.selectedSegmentIndex(index: segment);
                   },
                   selectedIndex: _clubsController.segmentIndex.value,
                   menus: [
@@ -170,49 +165,6 @@ class ClubsListingState extends State<ClubsListing> {
             ),
           ],
         ));
-  }
-
-  Widget clubsListingWidget(List<ClubModel> clubs) {
-    return _clubsController.isLoadingClubs.value
-        ? const ClubsScreenShimmer()
-        : _clubsController.clubs.isEmpty
-            ? Container()
-            : ListView.separated(
-                controller: _controller,
-                padding: const EdgeInsets.only(
-                    left: 16, right: 16, top: 20, bottom: 100),
-                itemCount: clubs.length,
-                // physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext ctx, int index) {
-                  return ClubCard(
-                    club: clubs[index],
-                    joinBtnClicked: () {
-                      _clubsController.joinClub(clubs[index]);
-                    },
-                    leaveBtnClicked: () {
-                      _clubsController.leaveClub(clubs[index]);
-                    },
-                    previewBtnClicked: () {
-                      Get.to(() => ClubDetail(
-                            club: clubs[index],
-                            needRefreshCallback: () {
-                              _clubsController.getClubs(isStartOver: false);
-                            },
-                            deleteCallback: (club) {
-                              _clubsController.clubDeleted(club);
-                              AppUtil.showToast(
-                                  message: clubIsDeletedString.tr,
-                                  isSuccess: true);
-                            },
-                          ));
-                    },
-                  );
-                },
-                separatorBuilder: (BuildContext ctx, int index) {
-                  return const SizedBox(
-                    height: 25,
-                  );
-                });
   }
 
   Widget clubsInvitationsListingWidget(List<ClubInvitation> invitations) {
@@ -240,7 +192,7 @@ class ClubsListingState extends State<ClubsListing> {
                       Get.to(() => ClubDetail(
                             club: invitations[index].club!,
                             needRefreshCallback: () {
-                              _clubsController.getClubs(isStartOver: false);
+                              _clubsController.getClubs();
                             },
                             deleteCallback: (club) {
                               _clubsController.clubDeleted(club);

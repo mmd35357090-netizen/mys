@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/profile_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
 import '../../universal_components/rounded_input_field.dart';
 
 class SetUserName extends StatefulWidget {

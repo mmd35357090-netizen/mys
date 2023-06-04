@@ -1,10 +1,9 @@
 import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-
-import '../../apiHandler/api_controller.dart';
 import '../../manager/socket_manager.dart';
 import '../../model/user_model.dart';
+import 'package:foap/helper/list_extension.dart';
 
 class SelectUserForGroupChatController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();
@@ -58,6 +57,7 @@ class SelectUserForGroupChatController extends GetxController {
           resultCallback: (result, metadata) {
             isLoading = false;
             friends.addAll(result);
+            friends.unique((e)=> e.id);
 
             page += 1;
             canLoadMore = result.length >= metadata.perPage;

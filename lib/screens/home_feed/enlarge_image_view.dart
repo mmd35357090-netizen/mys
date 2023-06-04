@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-import '../../apiHandler/api_controller.dart';
 import '../../apiHandler/apis/post_api.dart';
 import '../../model/post_model.dart';
 import '../profile/other_user_profile.dart';
@@ -142,7 +140,6 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
     if (!model!.isReported) {
       showModalBottomSheet(
           context: context,
-
           builder: (context) => Wrap(
                 children: [
                   Heading3Text(wantToReportString.tr,
@@ -168,8 +165,9 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
   }
 
   void openComments() {
-    Get.to(() => CommentsScreen(
+    Get.bottomSheet(CommentsScreen(
         model: model!,
+        isPopup: true,
         commentPostedCallback: () {
           model!.totalComment += 1;
         },
@@ -179,7 +177,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
           }
 
           setState(() {});
-        }));
+        }).round(40));
   }
 
   void likeUnlikeApiCall() {
@@ -206,8 +204,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
         postId: model!.id,
         resultCallback: () {
           AppUtil.showToast(
-              message: postReportedSuccessfullyString.tr,
-              isSuccess: true);
+              message: postReportedSuccessfullyString.tr, isSuccess: true);
         });
   }
 }

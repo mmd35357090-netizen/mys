@@ -36,6 +36,7 @@ Widget backNavigationBar({required String title}) {
 Widget backNavigationBarWithIcon(
     {required ThemeIcon icon,
     required String title,
+    Color? iconColor,
     required VoidCallback iconBtnClicked}) {
   return Container(
     height: 100,
@@ -63,7 +64,7 @@ Widget backNavigationBarWithIcon(
             ThemeIconWidget(
               icon,
               size: 20,
-              color: AppColorConstants.iconColor,
+              color: iconColor ?? AppColorConstants.iconColor,
             ).ripple(() {
               iconBtnClicked();
             }),
@@ -187,6 +188,7 @@ Widget profileScreensNavigationBar(
 Widget titleNavigationBarWithIcon(
     {required String title,
     required ThemeIcon icon,
+    Color? iconColor,
     required VoidCallback completion}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -197,7 +199,7 @@ Widget titleNavigationBarWithIcon(
       BodyLargeText(title.tr, weight: TextWeight.medium),
       ThemeIconWidget(
         icon,
-        color: AppColorConstants.iconColor,
+        color: iconColor ??  AppColorConstants.iconColor,
         size: 25,
       ).ripple(() {
         completion();

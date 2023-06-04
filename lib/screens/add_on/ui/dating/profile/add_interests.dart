@@ -7,11 +7,11 @@ import 'package:get/get.dart';
 
 import 'add_profesional_details.dart';
 
-
 class AddInterests extends StatefulWidget {
-  final bool isFromSignup;
+  final bool isSettingProfile;
 
-  const AddInterests({Key? key, required this.isFromSignup}) : super(key: key);
+  const AddInterests({Key? key, required this.isSettingProfile})
+      : super(key: key);
 
   @override
   State<AddInterests> createState() => AddInterestsState();
@@ -38,25 +38,23 @@ class AddInterestsState extends State<AddInterests> {
     datingController.getInterests();
     datingController.getLanguages();
 
-    if (!widget.isFromSignup) {
-      if (_userProfileManager.user.value!.smoke != null) {
-        smoke = (_userProfileManager.user.value!.smoke ?? 1) - 1;
-      }
-      if (_userProfileManager.user.value!.drink != null) {
-        int drink =
-            int.parse(_userProfileManager.user.value!.drink ?? '1') - 1;
-        drinkHabitController.text = drinkHabitList[drink];
-      }
-      if (_userProfileManager.user.value!.interests != null) {
-        selectedInterests = _userProfileManager.user.value!.interests!;
-        String result = selectedInterests.map((val) => val.name).join(', ');
-        interestsController.text = result;
-      }
-      if (_userProfileManager.user.value!.languages != null) {
-        selectedLanguages = _userProfileManager.user.value!.languages!;
-        String result = selectedLanguages.map((val) => val.name).join(', ');
-        languageController.text = result;
-      }
+    if (_userProfileManager.user.value!.smoke != null) {
+      smoke = (_userProfileManager.user.value!.smoke!);
+    }
+    if (_userProfileManager.user.value!.drink != null) {
+      int drink = int.parse(_userProfileManager.user.value!.drink!) - 1;
+      drinkHabitController.text = drinkHabitList[drink];
+    }
+
+    if (_userProfileManager.user.value!.interests != null) {
+      selectedInterests = _userProfileManager.user.value!.interests!;
+      String result = selectedInterests.map((val) => val.name).join(', ');
+      interestsController.text = result;
+    }
+    if (_userProfileManager.user.value!.languages != null) {
+      selectedLanguages = _userProfileManager.user.value!.languages!;
+      String result = selectedLanguages.map((val) => val.name).join(', ');
+      languageController.text = result;
     }
   }
 
@@ -65,18 +63,9 @@ class AddInterestsState extends State<AddInterests> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: [
-          const SizedBox(height: 50),
-          profileScreensNavigationBar(
-
-              rightBtnTitle:
-                  widget.isFromSignup ? skipString.tr : null,
-              title: addInterestsHeaderString.tr,
-              completion: () {
-                Get.to(() => AddProfessionalDetails(
-                      isFromSignup: widget.isFromSignup,
-                    ));
-              }),
-          divider().tP8,
+          backNavigationBar(
+            title: addInterestsString.tr,
+          ),
           Expanded(
               child: SingleChildScrollView(
             child: Column(
@@ -84,17 +73,17 @@ class AddInterestsState extends State<AddInterests> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Heading2Text(
-                  addInterestsHeaderString.tr,
+                  addInterestsString.tr,
                 ).setPadding(top: 20),
                 Heading6Text(
-                  addInterestsSubHeaderString.tr,
+                  addYourInterstsAndHabitsString.tr,
                 ).setPadding(top: 20),
-                addHeader('Do you smoke?').setPadding(top: 30, bottom: 8),
+                addHeader(doYouSmokeString.tr).setPadding(top: 30, bottom: 8),
                 SegmentedControl(
                     segments: [yesString.tr, noString.tr],
-                    value: smoke,
+                    value: smoke - 1,
                     onValueChanged: (value) {
-                      setState(() => smoke = value);
+                      setState(() => smoke = value + 1);
                     }),
                 addHeader(drinkingHabitString.tr)
                     .setPadding(top: 30, bottom: 8),
@@ -111,8 +100,7 @@ class AddInterestsState extends State<AddInterests> {
                     openDrinkHabitListPopup();
                   },
                 ),
-                addHeader(interestsString.tr)
-                    .setPadding(top: 30, bottom: 8),
+                addHeader(interestsString.tr).setPadding(top: 30, bottom: 8),
                 DropdownBorderedField(
                   hintText: selectString.tr,
                   controller: interestsController,
@@ -126,8 +114,7 @@ class AddInterestsState extends State<AddInterests> {
                     openInterestsPopup();
                   },
                 ),
-                addHeader(languageString.tr)
-                    .setPadding(top: 30, bottom: 8),
+                addHeader(languageString.tr).setPadding(top: 30, bottom: 8),
                 DropdownBorderedField(
                   hintText: selectString.tr,
                   controller: languageController,
@@ -149,48 +136,7 @@ class AddInterestsState extends State<AddInterests> {
                           cornerRadius: 25,
                           text: submitString.tr,
                           onPress: () {
-                            AddDatingDataModel dataModel = AddDatingDataModel();
-                            dataModel.smoke = smoke + 1;
-                            _userProfileManager.user.value!.smoke =
-                                dataModel.smoke;
-
-                            if (drinkHabitController.text.isNotEmpty) {
-                              int drink = drinkHabitList
-                                  .indexOf(drinkHabitController.text);
-                              dataModel.drink = drink + 1;
-                              _userProfileManager.user.value!.drink =
-                                  dataModel.drink.toString();
-                            }
-                            if (selectedInterests.isNotEmpty) {
-                              dataModel.interests = selectedInterests;
-                              _userProfileManager
-                                  .user
-                                  .value!
-                                  .interests = selectedInterests;
-                            }
-                            if (selectedLanguages.isNotEmpty) {
-                              dataModel.languages = selectedLanguages;
-                              _userProfileManager
-                                  .user
-                                  .value!
-                                  .languages = selectedLanguages;
-                            }
-                            datingController.updateDatingProfile(dataModel,
-                                (msg) {
-                              if (widget.isFromSignup) {
-                                Get.to(() => AddProfessionalDetails(
-                                    isFromSignup: widget.isFromSignup));
-                              } else {
-                                Get.back();
-                              }
-                              // if (msg != '' &&
-                              //     !isLoginFirstTime) {
-                              //   AppUtil.showToast(
-                              //
-                              //       message: msg,
-                              //       isSuccess: true);
-                              // }
-                            });
+                            submitDetail();
                           })),
                 ).setPadding(top: 100),
               ],
@@ -210,14 +156,13 @@ class AddInterestsState extends State<AddInterests> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             return FractionallySizedBox(
                 heightFactor: 0.8,
                 child: Container(
-                        color: Theme.of(context).cardColor.darken(0.07),
+                        color: AppColorConstants.cardColor.darken(0.07),
                         child: ListView.builder(
                             itemCount: drinkHabitList.length,
                             physics: const NeverScrollableScrollPhysics(),
@@ -236,8 +181,7 @@ class AddInterestsState extends State<AddInterests> {
                                               drinkHabitController.text
                                           ? ThemeIcon.selectedCheckbox
                                           : ThemeIcon.emptyCheckbox,
-                                      color:
-                                         AppColorConstants.iconColor));
+                                      color: AppColorConstants.iconColor));
                             }).p16)
                     .topRounded(40));
           });
@@ -248,14 +192,13 @@ class AddInterestsState extends State<AddInterests> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             return FractionallySizedBox(
                 heightFactor: 0.8,
                 child: Container(
-                        color: Theme.of(context).cardColor.darken(0.07),
+                        color: AppColorConstants.cardColor.darken(0.07),
                         child: ListView.builder(
                             itemCount: datingController.interests.length,
                             physics: const NeverScrollableScrollPhysics(),
@@ -284,8 +227,7 @@ class AddInterestsState extends State<AddInterests> {
                                       isAdded
                                           ? ThemeIcon.selectedCheckbox
                                           : ThemeIcon.emptyCheckbox,
-                                      color:
-                                      AppColorConstants.iconColor));
+                                      color: AppColorConstants.iconColor));
                             }).p16)
                     .topRounded(40));
           });
@@ -296,14 +238,13 @@ class AddInterestsState extends State<AddInterests> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             return FractionallySizedBox(
                 heightFactor: 0.8,
                 child: Container(
-                        color: Theme.of(context).cardColor.darken(),
+                        color: AppColorConstants.cardColor.darken(),
                         child: ListView.builder(
                             itemCount: datingController.languages.length,
                             physics: const NeverScrollableScrollPhysics(),
@@ -332,11 +273,38 @@ class AddInterestsState extends State<AddInterests> {
                                       isAdded
                                           ? ThemeIcon.selectedCheckbox
                                           : ThemeIcon.emptyCheckbox,
-                                      color:
-                                      AppColorConstants.iconColor));
+                                      color: AppColorConstants.iconColor));
                             }).p16)
                     .topRounded(40));
           });
         });
+  }
+
+  submitDetail() {
+    AddDatingDataModel dataModel = AddDatingDataModel();
+    dataModel.smoke = smoke;
+    _userProfileManager.user.value!.smoke = dataModel.smoke;
+
+    if (drinkHabitController.text.isNotEmpty) {
+      int drink = drinkHabitList.indexOf(drinkHabitController.text);
+      dataModel.drink = drink + 1;
+      _userProfileManager.user.value!.drink = dataModel.drink.toString();
+    }
+    if (selectedInterests.isNotEmpty) {
+      dataModel.interests = selectedInterests;
+      _userProfileManager.user.value!.interests = selectedInterests;
+    }
+    if (selectedLanguages.isNotEmpty) {
+      dataModel.languages = selectedLanguages;
+      _userProfileManager.user.value!.languages = selectedLanguages;
+    }
+    datingController.updateDatingProfile(dataModel, () {
+      if (widget.isSettingProfile) {
+        Get.to(() =>
+            AddProfessionalDetails(isSettingProfile: widget.isSettingProfile));
+      } else {
+        Get.back();
+      }
+    });
   }
 }

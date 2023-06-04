@@ -5,7 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/apiHandler/apis/users_api.dart';
-import 'package:foap/controllers/agora_call_controller.dart';
+import 'package:foap/controllers/chat_and_call/agora_call_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/chat/chat_detail.dart';

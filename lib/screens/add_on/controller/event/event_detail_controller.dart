@@ -2,8 +2,6 @@ import 'package:foap/apiHandler/apis/events_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/event_imports.dart';
 
-import 'package:foap/apiHandler/api_controller.dart';
-
 class EventDetailController extends GetxController {
   Rx<EventModel?> event = Rx<EventModel?>(null);
   RxList<EventCoupon> coupons = <EventCoupon>[].obs;

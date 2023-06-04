@@ -85,18 +85,17 @@ class GiftApi {
       required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.sendGift;
 
-    dynamic param = await ApiParamModel().sendGiftParam(
-        giftId: gift.id,
-        receiverId: receiverId,
-        liveId: liveId,
-        postId: postId,
-        source: liveId != null
-            ? 1
-            : postId != null
-                ? 3
-                : 2);
-
-    ApiWrapper().postApi(url: url, param: param).then((result) {
+    ApiWrapper().postApi(url: url, param: {
+      "gift_id": gift.id.toString(),
+      'reciever_id': receiverId.toString(),
+      'send_on_type': liveId != null
+          ? 1
+          : postId != null
+              ? 3
+              : 2,
+      'live_call_id': liveId == null ? '' : liveId.toString(),
+      'post_id': postId == null ? '' : postId.toString()
+    }).then((result) {
       if (result?.success == true) {
         resultCallback();
       }
@@ -151,14 +150,13 @@ class GiftApi {
       required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.sendPostGifts;
 
-    dynamic param = await ApiParamModel().sendPostGiftParam(
-        giftId: gift.id!,
-        receiverId: receiverId,
-        sendOnType: 3,
-        postType: 2,
-        postId: postId);
-
-    ApiWrapper().postApi(url: url, param: param).then((result) {
+    ApiWrapper().postApi(url: url, param: {
+      "gift_id": gift.id!.toString(),
+      "reciever_id": receiverId.toString(),
+      "send_on_type": 3,
+      "post_type": 2,
+      "post_id": postId.toString()
+    }).then((result) {
       if (result?.success == true) {
         resultCallback();
       }

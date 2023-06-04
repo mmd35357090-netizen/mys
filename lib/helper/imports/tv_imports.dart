@@ -7,4 +7,4 @@ export 'package:foap/screens/tvs/tv_list_by_category.dart';
 export 'package:foap/screens/tvs/tv_list_home.dart';
 export 'package:foap/screens/tvs/tv_show_detail.dart';
 
-export 'package:foap/controllers/live_tv_streaming_controller.dart';
+export 'package:foap/controllers/tv/live_tv_streaming_controller.dart';

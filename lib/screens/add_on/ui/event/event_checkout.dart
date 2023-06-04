@@ -1,6 +1,6 @@
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:foap/components/payment_method_tile.dart';
-import 'package:foap/controllers/profile_controller.dart';
+import 'package:foap/controllers/profile/profile_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/controller/event/checkout_controller.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
@@ -72,7 +72,7 @@ class _EventCheckoutState extends State<EventCheckout> {
                                     ),
                                   ],
                                 ).setPadding(top: 16, left: 16, right: 16),
-                                divider().vP16,
+                                // divider().vP16,
                                 walletView(),
                                 paymentGateways().hP16,
                                 const SizedBox(

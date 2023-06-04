@@ -19,11 +19,8 @@ class PaymentMethodTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SettingsController settingsController = Get.find();
     return Container(
-            color: settingsController.darkMode.value
-                ? Colors.white
-                : Colors.black,
+            color: AppColorConstants.cardColor.darken(),
             height: 50,
             width: double.infinity,
             child: Image.asset(

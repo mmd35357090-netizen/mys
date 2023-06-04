@@ -8,9 +8,6 @@ import 'package:foap/helper/common_components.dart';
 import 'package:foap/helper/extension.dart';
 import 'package:foap/helper/localization_strings.dart';
 import 'package:foap/helper/user_profile_manager.dart';
-import 'package:foap/manager/service_locator.dart';
-import 'package:foap/screens/add_on/controller/event/event_detail_controller.dart';
-import 'package:foap/screens/add_on/ui/event/select_user_to_gift.dart';
 import 'package:foap/theme/theme_icon.dart';
 import 'package:foap/universal_components/app_buttons.dart';
 import 'package:foap/util/app_config_constants.dart';
@@ -70,7 +67,7 @@ class EventDetailState extends State<EventDetail> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           SizedBox(
-                              height: 400,
+                              height: 280,
                               child: CachedNetworkImage(
                                 imageUrl: widget.event.image,
                                 fit: BoxFit.cover,
@@ -172,8 +169,7 @@ class EventDetailState extends State<EventDetail> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BodyLargeText(locationString.tr,
-                    weight: TextWeight.medium),
+                BodyLargeText(locationString.tr, weight: TextWeight.medium),
                 const SizedBox(
                   height: 5,
                 ),
@@ -200,8 +196,7 @@ class EventDetailState extends State<EventDetail> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BodyLargeText(priceString.tr,
-                      weight: TextWeight.medium),
+                  BodyLargeText(priceString.tr, weight: TextWeight.medium),
                   const SizedBox(
                     height: 5,
                   ),
@@ -445,8 +440,7 @@ class EventDetailState extends State<EventDetail> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Heading6Text(eventGalleryString.tr,
-                    weight: TextWeight.medium),
+                Heading6Text(eventGalleryString.tr, weight: TextWeight.medium),
                 BodyLargeText(
                   seeAllString.tr,
                   color: AppColorConstants.themeColor,

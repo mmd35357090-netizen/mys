@@ -21,5 +21,5 @@ export 'package:foap/screens/settings_menu/account_verification/verification_req
 export 'package:foap/screens/settings_menu/account_verification/verification_reject_reason.dart';
 
 
-export 'package:foap/controllers/notification_setting_controller.dart';
+export 'package:foap/controllers/notification/notification_setting_controller.dart';
 export 'package:foap/model/setting_model.dart';

@@ -3,11 +3,10 @@ import 'package:get/get.dart';
 
 import 'add_name.dart';
 
-
 class AllowNotification extends StatefulWidget {
-  final bool isFromSignup;
+  final bool isSettingProfile;
 
-  const AllowNotification({Key? key, required this.isFromSignup})
+  const AllowNotification({Key? key, required this.isSettingProfile})
       : super(key: key);
 
   @override
@@ -26,15 +25,15 @@ class _AllowNotificationState extends State<AllowNotification> {
           Container(
             height: 60,
             width: 60,
-            color: Theme.of(context).cardColor,
+            color: AppColorConstants.themeColor,
             child: ThemeIconWidget(ThemeIcon.notification,
-                color: Theme.of(context).primaryColor),
+                color: AppColorConstants.backgroundColor),
           ).round(30),
           Heading3Text(
-            notificationHeaderString.tr,
+            allowNotiifcationString.tr,
           ).setPadding(top: 40),
           Heading5Text(
-            notificationSubHeaderString.tr,
+            weWillLetYouKnowString.tr,
           ).setPadding(top: 20),
           Center(
             child: SizedBox(
@@ -44,7 +43,7 @@ class _AllowNotificationState extends State<AllowNotification> {
                     cornerRadius: 25,
                     text: allowNotificationString.tr,
                     onPress: () {
-                      Get.to(() => AddName(isFromSignup: widget.isFromSignup));
+                      Get.to(() => AddName(isSettingProfile: widget.isSettingProfile));
                     })),
           ).setPadding(top: 150),
           Center(
@@ -52,11 +51,10 @@ class _AllowNotificationState extends State<AllowNotification> {
                 height: 50,
                 width: MediaQuery.of(context).size.width - 50,
                 child: AppThemeButton(
-
                     cornerRadius: 25,
                     text: notNowString.tr,
                     onPress: () {
-                      Get.to(() => AddName(isFromSignup: widget.isFromSignup));
+                      Get.to(() => AddName(isSettingProfile: widget.isSettingProfile));
                     })),
           ).setPadding(top: 20),
         ],

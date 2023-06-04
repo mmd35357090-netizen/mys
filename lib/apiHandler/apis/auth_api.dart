@@ -200,13 +200,13 @@ class AuthApi {
       {required String username,
       required VoidCallback successCallback,
       required VoidCallback failureCallback}) async {
-    EasyLoading.show(status: loadingString.tr);
+    // EasyLoading.show(status: loadingString.tr);
 
     ApiWrapper()
         .postApiWithoutToken(url: NetworkConstantsUtil.checkUserName, param: {
       "username": username,
     }).then((response) {
-      EasyLoading.dismiss();
+      // EasyLoading.dismiss();
 
       if (response?.success == true) {
         successCallback();

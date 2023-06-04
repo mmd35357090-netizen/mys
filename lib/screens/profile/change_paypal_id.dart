@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import '../../controllers/profile_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
 
 class ChangePaypalId extends StatefulWidget {
   const ChangePaypalId({Key? key}) : super(key: key);

@@ -3,8 +3,11 @@ import 'package:foap/screens/profile/update_profile.dart';
 import 'package:foap/screens/profile/user_post_media.dart';
 import 'package:foap/screens/settings_menu/settings.dart';
 import '../../components/sm_tab_bar.dart';
-import '../../controllers/highlights_controller.dart';
-import '../../controllers/profile_controller.dart';
+import '../../controllers/post/post_controller.dart';
+import '../../controllers/story/highlights_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
+import '../../model/post_search_query.dart';
+import '../reuseable_widgets/post_list.dart';
 import '../settings_menu/settings_controller.dart';
 import 'follower_following_list.dart';
 
@@ -23,6 +26,7 @@ class MyProfileState extends State<MyProfile>
   final HighlightsController _highlightsController = HighlightsController();
   final SettingsController _settingsController = Get.find();
   final UserProfileManager _userProfileManager = Get.find();
+  final PostController _postController = Get.find();
 
   List<String> tabs = [postsString, reelsString, mentionsString];
 
@@ -53,13 +57,16 @@ class MyProfileState extends State<MyProfile>
   @override
   void dispose() {
     _profileController.clear();
+    _postController.clear();
     super.dispose();
   }
 
   loadData() {
     _profileController.getMyProfile();
     _profileController.getMentionPosts(_userProfileManager.user.value!.id);
-    _profileController.getPosts(_userProfileManager.user.value!.id);
+    PostSearchQuery query = PostSearchQuery();
+    query.userId = _userProfileManager.user.value!.id;
+    _postController.setPostSearchQuery(query: query, callback: () {});
     _profileController.getReels(_userProfileManager.user.value!.id);
 
     _highlightsController.getHighlights(
@@ -302,12 +309,14 @@ class MyProfileState extends State<MyProfile>
           ? backNavigationBarWithIcon(
               title: '',
               icon: ThemeIcon.setting,
+              iconColor: Colors.white,
               iconBtnClicked: () {
                 Get.to(() => const Settings());
               }).tp(40)
           : titleNavigationBarWithIcon(
               title: '',
               icon: ThemeIcon.setting,
+              iconColor: Colors.white,
               completion: () {
                 Get.to(() => const Settings());
               }).tp(40),

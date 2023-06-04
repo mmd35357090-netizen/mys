@@ -41,10 +41,7 @@ class _BuyTicketState extends State<BuyTicket> {
         height: Get.height,
         child: Column(
           children: [
-
-            backNavigationBar(
-                 title: buyTicketString.tr),
-            divider().tP8,
+            backNavigationBar(title: buyTicketString.tr),
             Expanded(
               child: Obx(() => Stack(
                     children: [
@@ -213,14 +210,12 @@ class _BuyTicketState extends State<BuyTicket> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BodyLargeText(ticketTypeString.tr,
-                weight: TextWeight.semiBold)
-            .hP16,
+        BodyLargeText(ticketTypeString.tr, weight: TextWeight.semiBold).hP16,
         const SizedBox(
           height: 25,
         ),
         SizedBox(
-          height: 150,
+          height: 160,
           child: ListView.separated(
             padding: const EdgeInsets.only(left: 16, right: 16),
             scrollDirection: Axis.horizontal,
@@ -277,12 +272,10 @@ class _BuyTicketState extends State<BuyTicket> {
               ),
               Row(
                 children: [
-                  Text(
+                  BodyLargeText(
                     totalSeatsString.tr,
-                    style: TextStyle(
-                        fontSize: FontSizes.b2,
-                        fontWeight: TextWeight.medium,
-                        color: AppColorConstants.themeColor),
+                    color: AppColorConstants.themeColor,
+                    weight: TextWeight.bold,
                   ),
                   const SizedBox(
                     width: 5,
@@ -295,12 +288,10 @@ class _BuyTicketState extends State<BuyTicket> {
               ),
               Row(
                 children: [
-                  Text(
+                  BodyLargeText(
                     availableSeatsString.tr,
-                    style: TextStyle(
-                        fontSize: FontSizes.b2,
-                        fontWeight: TextWeight.medium,
-                        color: AppColorConstants.themeColor),
+                    color: AppColorConstants.themeColor,
+                    weight: TextWeight.bold,
                   ),
                   const SizedBox(
                     width: 5,
@@ -324,8 +315,7 @@ class _BuyTicketState extends State<BuyTicket> {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading5Text(applyCouponString.tr,
-                      weight: TextWeight.medium)
+              Heading5Text(applyCouponString.tr, weight: TextWeight.medium)
                   .hP16,
               const SizedBox(
                 height: 40,
@@ -374,8 +364,7 @@ class _BuyTicketState extends State<BuyTicket> {
             children: [
               Row(
                 children: [
-                  Heading4Text('${codeString.tr} :',
-                      weight: TextWeight.medium),
+                  Heading4Text('${codeString.tr} :', weight: TextWeight.medium),
                   const SizedBox(
                     width: 5,
                   ),
@@ -386,7 +375,7 @@ class _BuyTicketState extends State<BuyTicket> {
                   ),
                 ],
               ),
-              divider( color: AppColorConstants.themeColor).vP8,
+              divider(color: AppColorConstants.themeColor).vP8,
               Row(
                 children: [
                   BodyMediumText('${discountString.tr} :',
@@ -436,8 +425,7 @@ class _BuyTicketState extends State<BuyTicket> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Heading5Text(orderSummaryString.tr,
-              weight: TextWeight.medium),
+          Heading5Text(orderSummaryString.tr, weight: TextWeight.medium),
           const SizedBox(
             height: 10,
           ),
@@ -447,8 +435,7 @@ class _BuyTicketState extends State<BuyTicket> {
           ),
           Row(
             children: [
-              BodySmallText(subTotalString.tr,
-                  weight: TextWeight.regular),
+              BodySmallText(subTotalString.tr, weight: TextWeight.regular),
               const Spacer(),
               BodySmallText(
                   '\$${_buyTicketController.selectedTicketType.value!.price * _buyTicketController.numberOfTickets.value}',
@@ -460,8 +447,7 @@ class _BuyTicketState extends State<BuyTicket> {
           ),
           Row(
             children: [
-              BodySmallText(serviceFeeString.tr,
-                  weight: TextWeight.regular),
+              BodySmallText(serviceFeeString.tr, weight: TextWeight.regular),
               const Spacer(),
               BodySmallText(
                   '\$${_settingsController.setting.value!.serviceFee}',
@@ -485,17 +471,10 @@ class _BuyTicketState extends State<BuyTicket> {
                     weight: TextWeight.medium),
               ],
             ),
-          const SizedBox(
-            height: 25,
-          ),
-          divider(),
-          const SizedBox(
-            height: 25,
-          ),
+          divider(height: 1, color: AppColorConstants.themeColor).vP16,
           Row(
             children: [
-              BodyLargeText(totalString.tr,
-                  weight: TextWeight.regular),
+              BodyLargeText(totalString.tr, weight: TextWeight.regular),
               const Spacer(),
               BodyLargeText('\$${_buyTicketController.amountToBePaid}',
                   weight: TextWeight.medium),
@@ -507,18 +486,12 @@ class _BuyTicketState extends State<BuyTicket> {
   }
 
   Widget checkoutButton() {
-    return Container(
-      height: 50,
-      color: AppColorConstants.themeColor,
-      child: Center(
-        child:
-            Heading6Text(checkoutString.tr, weight: TextWeight.medium)
-                .hP16,
-      ),
-    ).round(20).ripple(() {
-      Get.to(() => EventCheckout(
-            ticketOrder: _buyTicketController.ticketOrder,
-          ));
-    });
+    return AppThemeButton(
+        text: checkoutString.tr,
+        onPress: () {
+          Get.to(() => EventCheckout(
+                ticketOrder: _buyTicketController.ticketOrder,
+              ));
+        });
   }
 }

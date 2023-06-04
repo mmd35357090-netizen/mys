@@ -431,3 +431,10 @@ extension PinchZoomImage on Widget {
         ],
       );
 }
+
+extension AppChip on Widget {
+  Widget makeChip({Color? backGroundColor}) => Container(
+    color: backGroundColor ?? AppColorConstants.themeColor.withOpacity(0.2),
+    child: setPadding(left: 16, right: 16, top: 8, bottom: 8),
+  ).borderWithRadius(value: 1, radius: 20);
+}

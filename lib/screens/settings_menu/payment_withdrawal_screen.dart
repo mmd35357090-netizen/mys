@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import '../../components/transaction_tile.dart';
-import '../../controllers/profile_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
 import '../../model/payment_model.dart';
 
 class PaymentWithdrawalScreen extends StatefulWidget {

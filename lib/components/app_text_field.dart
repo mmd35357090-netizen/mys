@@ -11,12 +11,12 @@ class AppTextField extends StatelessWidget {
 
   const AppTextField(
       {Key? key,
-        required this.controller,
-        this.hintText,
-        this.label,
-        this.maxLines,
-        this.onChanged,
-        this.icon})
+      required this.controller,
+      this.hintText,
+      this.label,
+      this.maxLines,
+      this.onChanged,
+      this.icon})
       : super(key: key);
 
   @override
@@ -104,7 +104,6 @@ class AppDateTextField extends StatelessWidget {
   final String? label;
   final String? countryCodeText;
 
-  final ValueChanged<String>? currencyValueChanged;
   final ValueChanged<TimeOfDay>? onChanged;
 
   const AppDateTextField({
@@ -114,7 +113,6 @@ class AppDateTextField extends StatelessWidget {
     this.label,
     this.icon,
     this.countryCodeText,
-    this.currencyValueChanged,
     this.onChanged,
   }) : super(key: key);
 
@@ -140,7 +138,6 @@ class AppDateTimeTextField extends StatelessWidget {
   final String? label;
   final String? countryCodeText;
 
-  final ValueChanged<String>? currencyValueChanged;
   final ValueChanged<DateTime>? onChanged;
   final DateTime? minDate;
   final DateTime? maxDate;
@@ -152,7 +149,6 @@ class AppDateTimeTextField extends StatelessWidget {
     this.label,
     this.icon,
     this.countryCodeText,
-    this.currencyValueChanged,
     this.onChanged,
     this.minDate,
     this.maxDate,
@@ -225,12 +221,12 @@ class AppDropdownField extends StatelessWidget {
 
   const AppDropdownField(
       {Key? key,
-        this.hintText,
-        this.label,
-        this.icon,
-        this.value,
-        required this.onChanged,
-        required this.options})
+      this.hintText,
+      this.label,
+      this.icon,
+      this.value,
+      required this.onChanged,
+      required this.options})
       : super(key: key);
 
   @override

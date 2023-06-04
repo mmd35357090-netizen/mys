@@ -1,8 +1,6 @@
 import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import '../../apiHandler/api_controller.dart';
 import '../../apiHandler/apis/misc_api.dart';
 import '../../manager/socket_manager.dart';
 

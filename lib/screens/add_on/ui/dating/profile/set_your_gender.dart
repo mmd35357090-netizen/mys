@@ -5,9 +5,10 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'add_personal_info.dart';
 
 class SetYourGender extends StatefulWidget {
-  final bool isFromSignup;
+  final bool isSettingProfile;
 
-  const SetYourGender({Key? key, required this.isFromSignup}) : super(key: key);
+  const SetYourGender({Key? key, required this.isSettingProfile})
+      : super(key: key);
 
   @override
   State<SetYourGender> createState() => _SetYourGenderState();
@@ -22,10 +23,8 @@ class _SetYourGenderState extends State<SetYourGender> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    if (!widget.isFromSignup &&
-        _userProfileManager.user.value!.gender != null) {
+    if (_userProfileManager.user.value!.gender != null) {
       selectedGender =
           int.parse(_userProfileManager.user.value!.gender ?? '1') - 1;
     }
@@ -36,28 +35,19 @@ class _SetYourGenderState extends State<SetYourGender> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: [
-          const SizedBox(height: 50),
-          profileScreensNavigationBar(
-              
-              rightBtnTitle:
-                  widget.isFromSignup ? skipString.tr : null,
-              title: genderMainHeaderString.tr,
-              completion: () {
-                Get.to(
-                    () => AddPersonalInfo(isFromSignup: widget.isFromSignup));
-              }),
-          divider().tP8,
+          backNavigationBar(
+            title: genderString.tr,
+          ),
           Expanded(
-              child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Heading2Text(
-                  genderMainHeaderString.tr,
+                  genderString.tr,
                 ).setPadding(top: 20),
                 Heading6Text(
-                  genderHeaderString.tr,
+                  mentionYourGenderString.tr,
                 ).setPadding(top: 20),
                 ListView.builder(
                   itemCount: 3,
@@ -66,36 +56,35 @@ class _SetYourGenderState extends State<SetYourGender> {
                   itemBuilder: (_, int index) =>
                       addOption(index).setPadding(top: 15),
                 ).setPadding(top: 35),
-                Center(
-                  child: SizedBox(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width - 50,
-                      child: AppThemeButton(
-                          cornerRadius: 25,
-                          text: submitString.tr,
-                          onPress: () {
-                            if (selectedGender != null) {
-                              AddDatingDataModel dataModel =
-                                  AddDatingDataModel();
-                              dataModel.gender = selectedGender! + 1;
-                              _userProfileManager.user.value!.gender =
-                                  dataModel.gender.toString();
+                const Spacer(),
+                SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width - 50,
+                    child: AppThemeButton(
+                        cornerRadius: 25,
+                        text: submitString.tr,
+                        onPress: () {
+                          if (selectedGender != null) {
+                            AddDatingDataModel dataModel = AddDatingDataModel();
+                            dataModel.gender = selectedGender! + 1;
+                            _userProfileManager.user.value!.gender =
+                                dataModel.gender.toString();
 
-                              datingController.updateDatingProfile(dataModel,
-                                  (msg) {
-                                if (widget.isFromSignup) {
-                                  Get.to(() => AddPersonalInfo(
-                                      isFromSignup: widget.isFromSignup));
-                                } else {
-                                  Get.back();
-                                }
-                              });
-                            }
-                          })),
-                ).setPadding(top: 150),
+                            datingController.updateDatingProfile(dataModel, () {
+                              if (widget.isSettingProfile) {
+                                Get.to(() => AddPersonalInfo(
+                                    isSettingProfile: widget.isSettingProfile));
+                              } else {
+                                Get.back();
+                              }
+                            });
+                          }
+                        })),
               ],
-            ).hP25,
-          )),
+            ).hp(DesignConstants.horizontalPadding),
+          ),
+          const SizedBox(height: 20,)
+
         ]));
   }
 
