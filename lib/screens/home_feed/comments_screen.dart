@@ -182,16 +182,16 @@ class CommentsScreenState extends State<CommentsScreen> {
                 ).rP8.ripple(() {
                   commentInputField.text = '';
                   _commentsController.openGify(() {
-                    // _commentsController.postMediaCommentsApiCall(
-                    //     type: CommentType.gif,
-                    //     postId: widget.postId ?? widget.model!.id,
-                    //     commentPosted: () {
-                    //       widget.commentPostedCallback();
-                    //     });
-                    // Timer(
-                    //     const Duration(milliseconds: 500),
-                    //     () => _controller
-                    //         .jumpTo(_controller.position.maxScrollExtent));
+                    _commentsController.postMediaCommentsApiCall(
+                        type: CommentType.gif,
+                        postId: widget.postId ?? widget.model!.id,
+                        commentPosted: () {
+                          widget.commentPostedCallback();
+                        });
+                    Timer(
+                        const Duration(milliseconds: 500),
+                        () => _controller
+                            .jumpTo(_controller.position.maxScrollExtent));
                   });
                 }),
               ]).hP8,

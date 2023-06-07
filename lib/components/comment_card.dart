@@ -87,8 +87,8 @@ class CommentTileState extends State<CommentTile> {
   showCommentMedia() {
     return CachedNetworkImage(
       imageUrl: model.filename,
-      height: 50,
-      width: 50,
+      height: 150,
+      width: 150,
       fit: BoxFit.cover,
     ).round(10).tP16;
   }

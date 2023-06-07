@@ -50,8 +50,9 @@ class CommentModel {
     CommentModel model = CommentModel();
     model.type = type;
     model.comment = comment ?? '';
-    model.filename = 'https://product.fwdtechnology.co/social_media_plus/uploads/image/${filename ?? ''}';
-
+    model.filename = type == CommentType.image
+        ? 'https://product.fwdtechnology.co/social_media_plus/uploads/image/${filename ?? ''}'
+        : filename ?? '';
 
     model.userId = user.id;
     model.userName = user.userName;

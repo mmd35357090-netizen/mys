@@ -105,7 +105,7 @@ class CommentsController extends GetxController {
       {required int postId,
       required VoidCallback commentPosted,
       required CommentType type}) async {
-    String filename = await uploadMedia(selectedMedia.value!, type);
+    String filename = type == CommentType.image ? await uploadMedia(selectedMedia.value!, type) : selectedMedia.value!.fileUrl!;
 
     comments.add(CommentModel.fromNewMessage(
         type, _userProfileManager.user.value!,

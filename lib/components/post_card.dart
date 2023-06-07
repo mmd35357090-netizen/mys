@@ -483,15 +483,15 @@ class PostCardState extends State<PostCard> {
               ).rP8.ripple(() {
                 commentInputField.text = '';
                 _commentsController.openGify(() {
-                  // _commentsController.postMediaCommentsApiCall(
-                  //     type: CommentType.gif,
-                  //     postId: widget.model.id,
-                  //     commentPosted: () {
-                  //       setState(() {
-                  //         widget.model.totalComment += 1;
-                  //       });
-                  //     });
-                  // commentInputField.text = '';
+                  _commentsController.postMediaCommentsApiCall(
+                      type: CommentType.gif,
+                      postId: widget.model.id,
+                      commentPosted: () {
+                        setState(() {
+                          widget.model.totalComment += 1;
+                        });
+                      });
+                  commentInputField.text = '';
                 });
               }),
             ]).hP8,
