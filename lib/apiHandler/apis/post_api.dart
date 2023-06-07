@@ -186,15 +186,27 @@ class PostApi {
 
   static postComment(
       {required int postId,
-      required String comment,
-      required VoidCallback resultCallback}) {
+      required CommentType? type,
+      required VoidCallback resultCallback,
+      String? comment,
+      String? filename}) {
     var url = NetworkConstantsUtil.addComment;
 
     ApiWrapper().postApi(url: url, param: {
       "post_id": postId.toString(),
-      'comment': comment
+      'comment': comment ?? '',
+      "type": type == CommentType.gif
+          ? '4'
+          : type == CommentType.video
+              ? '3'
+              : type == CommentType.image
+                  ? '2'
+                  : '1',
+      "filename": filename ?? ''
     }).then((value) {
-      resultCallback();
+      if (value?.success == true) {
+        resultCallback();
+      }
     });
   }
 

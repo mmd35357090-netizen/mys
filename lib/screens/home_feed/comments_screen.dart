@@ -110,9 +110,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                               enablePullDown: false);
                         }))),
             buildMessageTextField(),
-            const SizedBox(
-              height: 20,
-            )
+            const SizedBox(height: 20)
           ],
         ));
   }
@@ -124,46 +122,82 @@ class CommentsScreenState extends State<CommentsScreen> {
       child: Row(
         children: <Widget>[
           Expanded(
-              child: Obx(() {
-             TextEditingValue(
-                text: _commentsController.searchText.value,
-                selection: TextSelection.fromPosition(
-                    TextPosition(offset: _commentsController.position.value)));
-
-            return Container(
+            child: Container(
               color: AppColorConstants.cardColor.withOpacity(0.5),
-              child: TextField(
-                controller: commentInputField,
-                onChanged: (text) {
-                  _commentsController.textChanged(
-                      text, commentInputField.selection.baseOffset);
-                },
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: writeCommentString.tr,
-                  hintStyle: TextStyle(
-                      fontSize: FontSizes.b2,
-                      color: AppColorConstants.grayscale700),
+              child: Row(children: <Widget>[
+                Expanded(
+                  child: Obx(() {
+                    TextEditingValue(
+                        text: _commentsController.searchText.value,
+                        selection: TextSelection.fromPosition(TextPosition(
+                            offset: _commentsController.position.value)));
+
+                    return TextField(
+                      controller: commentInputField,
+                      onChanged: (text) {
+                        _commentsController.textChanged(
+                            text, commentInputField.selection.baseOffset);
+                      },
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: writeCommentString.tr,
+                        hintStyle: TextStyle(
+                            fontSize: FontSizes.b2,
+                            color: AppColorConstants.grayscale700),
+                      ),
+                      textInputAction: TextInputAction.send,
+                      style: TextStyle(
+                          fontSize: FontSizes.b2,
+                          color: AppColorConstants.grayscale900),
+                      onSubmitted: (_) {
+                        addNewMessage();
+                      },
+                      onTap: () {
+                        Timer(
+                            const Duration(milliseconds: 300),
+                            () => _controller
+                                .jumpTo(_controller.position.maxScrollExtent));
+                      },
+                    );
+                  }),
                 ),
-                textInputAction: TextInputAction.send,
-                style: TextStyle(
-                    fontSize: FontSizes.b2,
-                    color: AppColorConstants.grayscale900),
-                onSubmitted: (_) {
-                  addNewMessage();
-                },
-                onTap: () {
-                  Timer(
-                      const Duration(milliseconds: 300),
-                      () => _controller
-                          .jumpTo(_controller.position.maxScrollExtent));
-                },
-              ).hP8,
-            );
-          }).borderWithRadius(value: 0.5, radius: 15)),
-          const SizedBox(
-            width: 20,
+                ThemeIconWidget(
+                  ThemeIcon.camera,
+                  color: AppColorConstants.grayscale900,
+                ).rP8.ripple(() => _commentsController.selectPhoto(handler: () {
+                      _commentsController.postMediaCommentsApiCall(
+                          type: CommentType.image,
+                          postId: widget.postId ?? widget.model!.id,
+                          commentPosted: () {
+                            widget.commentPostedCallback();
+                          });
+                      Timer(
+                          const Duration(milliseconds: 500),
+                          () => _controller
+                              .jumpTo(_controller.position.maxScrollExtent));
+                    })),
+                ThemeIconWidget(
+                  ThemeIcon.gif,
+                  color: AppColorConstants.grayscale900,
+                ).rP8.ripple(() {
+                  commentInputField.text = '';
+                  _commentsController.openGify(() {
+                    // _commentsController.postMediaCommentsApiCall(
+                    //     type: CommentType.gif,
+                    //     postId: widget.postId ?? widget.model!.id,
+                    //     commentPosted: () {
+                    //       widget.commentPostedCallback();
+                    //     });
+                    // Timer(
+                    //     const Duration(milliseconds: 500),
+                    //     () => _controller
+                    //         .jumpTo(_controller.position.maxScrollExtent));
+                  });
+                }),
+              ]).hP8,
+            ).borderWithRadius(value: 0.5, radius: 15),
           ),
+          const SizedBox(width: 20),
           Container(
             width: 45,
             height: 45,

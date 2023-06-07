@@ -1,14 +1,23 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:foap/apiHandler/apis/post_api.dart';
 import 'package:foap/apiHandler/apis/users_api.dart';
+import 'package:foap/components/custom_gallery_picker.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
+import 'package:giphy_get/giphy_get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../apiHandler/apis/misc_api.dart';
+import '../../helper/imports/chat_imports.dart';
 import '../../model/comment_model.dart';
 import '../../model/hash_tag.dart';
-import 'package:foap/helper/list_extension.dart';
+import '../../screens/settings_menu/settings_controller.dart';
+import '../../util/constant_util.dart';
 
 class CommentsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
+  final SettingsController _settingsController = Get.find();
 
   RxInt isEditing = 0.obs;
   RxString currentHashtag = ''.obs;
@@ -35,6 +44,9 @@ class CommentsController extends GetxController {
   int commentsPage = 1;
   bool canLoadMoreComments = true;
 
+  Rx<Media?> selectedMedia = Rx<Media?>(null);
+  final ImagePicker _picker = ImagePicker();
+
   // bool accountsIsLoading = false;
 
   clear() {
@@ -50,7 +62,7 @@ class CommentsController extends GetxController {
     commentsPage = 1;
     canLoadMoreComments = true;
 
-    update();
+    selectedMedia = Rx<Media?>(null);
   }
 
   void getComments(int postId, VoidCallback callback) {
@@ -77,18 +89,63 @@ class CommentsController extends GetxController {
       {required String comment,
       required int postId,
       required VoidCallback commentPosted}) {
-    CommentModel newMessage =
-        CommentModel.fromNewMessage(comment, _userProfileManager.user.value!);
-    newMessage.commentTime = justNowString.tr;
-    comments.add(newMessage);
+    comments.add(CommentModel.fromNewMessage(
+        CommentType.text, _userProfileManager.user.value!,
+        comment: comment));
     update();
 
     PostApi.postComment(
-        postId: postId, comment: comment, resultCallback: commentPosted);
+        type: CommentType.text,
+        postId: postId,
+        comment: comment,
+        resultCallback: commentPosted);
+  }
+
+  void postMediaCommentsApiCall(
+      {required int postId,
+      required VoidCallback commentPosted,
+      required CommentType type}) async {
+    String filename = await uploadMedia(selectedMedia.value!, type);
+
+    comments.add(CommentModel.fromNewMessage(
+        type, _userProfileManager.user.value!,
+        filename: filename));
+    update();
+
+    PostApi.postComment(
+        type: type,
+        postId: postId,
+        filename: filename,
+        resultCallback: commentPosted);
+  }
+
+  Future<String> uploadMedia(Media media, CommentType type) async {
+    String imagePath = '';
+
+    await AppUtil.checkInternet().then((value) async {
+      if (value) {
+        final tempDir = await getTemporaryDirectory();
+        Uint8List mainFileData = await media.file!.compress();
+
+        //media
+        File file = await File(
+                '${tempDir.path}/${media.id!.replaceAll('/', '')}${type == CommentType.image ? '.png' : '.gif'}')
+            .create();
+        file.writeAsBytesSync(mainFileData);
+
+        await PostApi.uploadFile(file.path,
+            resultCallback: (fileName, filePath) async {
+          imagePath = fileName;
+          await file.delete();
+        });
+      } else {
+        AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
+      }
+    });
+    return imagePath;
   }
 
   // adding hashtag and mentions
-
   startedEditing() {
     isEditing.value = 1;
     update();
@@ -108,7 +165,7 @@ class CommentsController extends GetxController {
           hashtag: text.replaceAll('#', ''),
           resultCallback: (result, metadata) {
             hashTags.addAll(result);
-            hashTags.unique((e)=> e.name);
+            hashTags.unique((e) => e.name);
 
             canLoadMoreHashtags = result.length >= metadata.perPage;
             hashtagsIsLoading = false;
@@ -165,7 +222,7 @@ class CommentsController extends GetxController {
           searchText: text,
           resultCallback: (result, metadata) {
             searchedUsers.addAll(result);
-            searchedUsers.unique((e)=> e.id);
+            searchedUsers.unique((e) => e.id);
 
             accountsIsLoading = false;
             canLoadMoreAccounts = result.length >= metadata.perPage;
@@ -180,7 +237,7 @@ class CommentsController extends GetxController {
   }
 
   textChanged(String text, int position) {
-    clear();
+    // clear();
     isEditing.value = 1;
     searchText.value = text;
     String substring = text.substring(0, position).replaceAll("\n", " ");
@@ -222,5 +279,42 @@ class CommentsController extends GetxController {
     }
 
     this.position.value = position;
+  }
+
+  selectPhoto({ImageSource source = ImageSource.gallery, required VoidCallback handler}) async {
+    XFile? image = source == ImageSource.camera
+        ? await _picker.pickImage(source: ImageSource.camera)
+        : await _picker.pickImage(source: source);
+    if (image != null) {
+      Media media = Media();
+      media.mediaType = GalleryMediaType.photo;
+      media.file = File(image.path);
+      media.id = randomId();
+      selectedMedia.value = media;
+      handler();
+    }
+  }
+
+  void openGify(VoidCallback handler) async {
+    String randomId = 'hsvcewd78djhbejkd';
+
+    GiphyGif? gif = await GiphyGet.getGif(
+      context: Get.context!,
+      //Required
+      apiKey: _settingsController.setting.value!.giphyApiKey!,
+      //Required.
+      lang: GiphyLanguage.english,
+      //Optional - Language for query.
+      randomID: randomId,
+      // Optional - An ID/proxy for a specific user.
+      tabColor: Colors.teal, // Optional- default accent color.
+    );
+
+    if (gif != null) {
+      selectedMedia.value = Media(
+          fileUrl: 'https://i.giphy.com/media/${gif.id}/200.gif',
+          mediaType: GalleryMediaType.gif);
+      handler();
+    }
   }
 }

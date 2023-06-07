@@ -14,13 +14,12 @@ class AppConfigConstants {
 
   // static const restApiBaseUrl =
   //     'https://product.fwdtechnology.co/socialified/api/web/v1/';
-
-  static const restApiBaseUrl =
-      'https://product.fwdtechnology.co/social_media_backend/api/web/v1';
+  // static const restApiBaseUrl =
+  //     'https://product.fwdtechnology.co/social_media_backend/api/web/v1/';
+  static const restApiBaseUrl ='https://product.fwdtechnology.co/social_media_plus/api/web/v1/';
 
   // Socket api url
   static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";
-
   // static const socketApiBaseUrl = "http://product.fwdtechnology.co:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS

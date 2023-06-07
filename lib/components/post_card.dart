@@ -431,41 +431,72 @@ class PostCardState extends State<PostCard> {
       child: Row(
         children: <Widget>[
           Expanded(
-              child: Obx(() {
-            TextEditingValue(
-                text: _commentsController.searchText.value,
-                selection: TextSelection.fromPosition(
-                    TextPosition(offset: _commentsController.position.value)));
+              child: Container(
+            color: AppColorConstants.cardColor.withOpacity(0.5),
+            child: Row(children: <Widget>[
+              Expanded(child: Obx(() {
+                TextEditingValue(
+                    text: _commentsController.searchText.value,
+                    selection: TextSelection.fromPosition(TextPosition(
+                        offset: _commentsController.position.value)));
 
-            return Container(
-              color: AppColorConstants.cardColor.withOpacity(0.5),
-              child: TextField(
-                controller: commentInputField,
-                onChanged: (text) {
-                  _commentsController.textChanged(
-                      text, commentInputField.selection.baseOffset);
-                },
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: writeCommentString.tr,
-                  hintStyle: TextStyle(
+                return TextField(
+                  controller: commentInputField,
+                  onChanged: (text) {
+                    _commentsController.textChanged(
+                        text, commentInputField.selection.baseOffset);
+                  },
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: writeCommentString.tr,
+                    hintStyle: TextStyle(
+                        fontSize: FontSizes.b2,
+                        color: AppColorConstants.grayscale700),
+                  ),
+                  textInputAction: TextInputAction.send,
+                  style: TextStyle(
                       fontSize: FontSizes.b2,
-                      color: AppColorConstants.grayscale700),
-                ),
-                textInputAction: TextInputAction.send,
-                style: TextStyle(
-                    fontSize: FontSizes.b2,
-                    color: AppColorConstants.grayscale900),
-                onSubmitted: (_) {
-                  addNewMessage();
-                },
-                onTap: () {},
-              ).hP8,
-            );
-          }).borderWithRadius(value: 0.5, radius: 15)),
-          const SizedBox(
-            width: 20,
-          ),
+                      color: AppColorConstants.grayscale900),
+                  onSubmitted: (_) {
+                    addNewMessage();
+                  },
+                  onTap: () {},
+                );
+              })),
+              ThemeIconWidget(
+                ThemeIcon.camera,
+                color: AppColorConstants.grayscale900,
+              ).rP8.ripple(() => _commentsController.selectPhoto(handler: () {
+                    _commentsController.postMediaCommentsApiCall(
+                        type: CommentType.image,
+                        postId: widget.model.id,
+                        commentPosted: () {
+                          setState(() {
+                            widget.model.totalComment += 1;
+                          });
+                        });
+                    commentInputField.text = '';
+                  })),
+              ThemeIconWidget(
+                ThemeIcon.gif,
+                color: AppColorConstants.grayscale900,
+              ).rP8.ripple(() {
+                commentInputField.text = '';
+                _commentsController.openGify(() {
+                  // _commentsController.postMediaCommentsApiCall(
+                  //     type: CommentType.gif,
+                  //     postId: widget.model.id,
+                  //     commentPosted: () {
+                  //       setState(() {
+                  //         widget.model.totalComment += 1;
+                  //       });
+                  //     });
+                  // commentInputField.text = '';
+                });
+              }),
+            ]).hP8,
+          ).borderWithRadius(value: 0.5, radius: 15)),
+          const SizedBox(width: 20),
           Container(
             width: 45,
             height: 45,

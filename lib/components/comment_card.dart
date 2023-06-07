@@ -53,30 +53,44 @@ class CommentTileState extends State<CommentTile> {
                   ).ripple(() {
                     Get.to(() => OtherUserProfile(userId: model.userId));
                   }),
-                  DetectableText(
-                    text: model.comment,
-                    detectionRegExp: RegExp(
-                      "(?!\\n)(?:^|\\s)([#@]([$detectionContentLetters]+))|$urlRegexContent",
-                      multiLine: true,
-                    ),
-                    detectedStyle: TextStyle(
-                        fontSize: FontSizes.b3,
-                        fontWeight: TextWeight.semiBold,
-                        color: AppColorConstants.grayscale900),
-                    basicStyle: TextStyle(
-                        fontSize: FontSizes.b3,
-                        color: AppColorConstants.grayscale900),
-                    onTap: (tappedText) {
-                      commentTextTapHandler(text: tappedText);
-                      // postCardController.titleTextTapped(text: tappedText,post: widget.model);
-                    },
-                  )
+                  model.type == CommentType.text
+                      ? showCommentText()
+                      : showCommentMedia()
                 ],
               ))
             ],
           )),
           BodySmallText(model.commentTime, weight: TextWeight.medium).tP4
         ]);
+  }
+
+  showCommentText() {
+    return DetectableText(
+      text: model.comment,
+      detectionRegExp: RegExp(
+        "(?!\\n)(?:^|\\s)([#@]([$detectionContentLetters]+))|$urlRegexContent",
+        multiLine: true,
+      ),
+      detectedStyle: TextStyle(
+          fontSize: FontSizes.b3,
+          fontWeight: TextWeight.semiBold,
+          color: AppColorConstants.grayscale900),
+      basicStyle: TextStyle(
+          fontSize: FontSizes.b3, color: AppColorConstants.grayscale900),
+      onTap: (tappedText) {
+        commentTextTapHandler(text: tappedText);
+        // postCardController.titleTextTapped(text: tappedText,post: widget.model);
+      },
+    );
+  }
+
+  showCommentMedia() {
+    return CachedNetworkImage(
+      imageUrl: model.filename,
+      height: 50,
+      width: 50,
+      fit: BoxFit.cover,
+    ).round(10).tP16;
   }
 
   commentTextTapHandler({required String text}) {
