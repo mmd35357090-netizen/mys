@@ -4,8 +4,8 @@ class PostGallery {
   String fileName;
   String filePath;
   String? videoThumbnail;
-  int mediaType;
-  int type;
+  int mediaType; //  image=1, video=2, audio=3
+  // int type;
   int currentIndexOfMediaToShow = 0;
 
   PostGallery(
@@ -14,7 +14,7 @@ class PostGallery {
       required this.filePath,
       required this.postId,
       required this.mediaType,
-      required this.type,
+      // required this.type,
       this.videoThumbnail});
 
   factory PostGallery.fromJson(dynamic json) {
@@ -24,7 +24,7 @@ class PostGallery {
         filePath: json['filenameUrl'] ?? "",
         postId: json['post_id'],
         mediaType: json['media_type'],
-        type: json['type'],
+        // type: json['type'],
         videoThumbnail: json['videoThumbUrl']);
 
     return galleryPost;

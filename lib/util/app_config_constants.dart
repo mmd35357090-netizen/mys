@@ -12,11 +12,12 @@ class AppConfigConstants {
   static const googleMapApiKey = 'add your google map api key';
   static const razorpayKey = 'rzp_test_jDl2SjSKYlghAD';
 
-  // static const restApiBaseUrl =
-  //     'https://product.fwdtechnology.co/socialified/api/web/v1/';
-  // static const restApiBaseUrl =
-  //     'https://product.fwdtechnology.co/social_media_backend/api/web/v1/';
-  static const restApiBaseUrl ='https://product.fwdtechnology.co/social_media_plus/api/web/v1/';
+  // static const baseUrl =
+  //     'https://product.fwdtechnology.co/socialified';
+  // static const baseUrl =
+  //     'https://product.fwdtechnology.co/social_media_backend';
+  static const baseUrl ='https://product.fwdtechnology.co/social_media_plus';
+  static const restApiBaseUrl ='$baseUrl/api/web/v1/';
 
   // Socket api url
   static const socketApiBaseUrl = "http://fwdtechnology.co:3000/";

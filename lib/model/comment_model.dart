@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../helper/enum.dart';
 import '../helper/localization_strings.dart';
+import '../util/app_config_constants.dart';
 import 'user_model.dart';
 
 class CommentModel {
@@ -51,7 +52,7 @@ class CommentModel {
     model.type = type;
     model.comment = comment ?? '';
     model.filename = type == CommentType.image
-        ? 'https://product.fwdtechnology.co/social_media_plus/uploads/image/${filename ?? ''}'
+        ? '${AppConfigConstants.baseUrl}/uploads/image/${filename ?? ''}'
         : filename ?? '';
 
     model.userId = user.id;

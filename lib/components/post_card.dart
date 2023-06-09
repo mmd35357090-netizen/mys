@@ -187,7 +187,7 @@ class PostCardState extends State<PostCard> {
               context,
               PageRouteBuilder(
                 pageBuilder: (context, animation1, animation2) =>
-                    PostMediaFullScreen(post: widget.model),
+                    PostMediaFullScreen(gallery: widget.model.gallery),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),

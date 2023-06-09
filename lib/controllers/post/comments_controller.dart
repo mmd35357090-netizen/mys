@@ -105,7 +105,9 @@ class CommentsController extends GetxController {
       {required int postId,
       required VoidCallback commentPosted,
       required CommentType type}) async {
-    String filename = type == CommentType.image ? await uploadMedia(selectedMedia.value!, type) : selectedMedia.value!.fileUrl!;
+    String filename = type == CommentType.image
+        ? await uploadMedia(selectedMedia.value!)
+        : selectedMedia.value!.fileUrl!;
 
     comments.add(CommentModel.fromNewMessage(
         type, _userProfileManager.user.value!,
@@ -119,7 +121,7 @@ class CommentsController extends GetxController {
         resultCallback: commentPosted);
   }
 
-  Future<String> uploadMedia(Media media, CommentType type) async {
+  Future<String> uploadMedia(Media media) async {
     String imagePath = '';
 
     await AppUtil.checkInternet().then((value) async {
@@ -128,9 +130,9 @@ class CommentsController extends GetxController {
         Uint8List mainFileData = await media.file!.compress();
 
         //media
-        File file = await File(
-                '${tempDir.path}/${media.id!.replaceAll('/', '')}${type == CommentType.image ? '.png' : '.gif'}')
-            .create();
+        File file =
+            await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
+                .create();
         file.writeAsBytesSync(mainFileData);
 
         await PostApi.uploadFile(file.path,
@@ -281,7 +283,9 @@ class CommentsController extends GetxController {
     this.position.value = position;
   }
 
-  selectPhoto({ImageSource source = ImageSource.gallery, required VoidCallback handler}) async {
+  selectPhoto(
+      {ImageSource source = ImageSource.gallery,
+      required VoidCallback handler}) async {
     XFile? image = source == ImageSource.camera
         ? await _picker.pickImage(source: ImageSource.camera)
         : await _picker.pickImage(source: source);

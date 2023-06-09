@@ -3,7 +3,9 @@ import 'package:detectable_text_field/widgets/detectable_text.dart';
 import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../model/comment_model.dart';
+import '../model/post_gallery.dart';
 import '../screens/dashboard/posts.dart';
+import '../screens/home_feed/post_media_full_screen.dart';
 import '../screens/profile/other_user_profile.dart';
 
 class CommentTile extends StatefulWidget {
@@ -90,7 +92,25 @@ class CommentTileState extends State<CommentTile> {
       height: 150,
       width: 150,
       fit: BoxFit.cover,
-    ).round(10).tP16;
+    ).round(10).tP16.ripple(() {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) =>
+              PostMediaFullScreen(gallery: [
+                PostGallery(
+                  id: 0,
+                  postId: 0,
+                  fileName: "",
+                  filePath: model.filename ?? "",
+                  mediaType: 1, //  image=1, video=2, audio=3
+                )
+              ]),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+    });
   }
 
   commentTextTapHandler({required String text}) {

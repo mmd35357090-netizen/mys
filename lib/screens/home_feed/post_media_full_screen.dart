@@ -7,18 +7,15 @@ import '../../model/post_gallery.dart';
 import '../../model/post_model.dart';
 
 class PostMediaFullScreen extends StatefulWidget {
-  final PostModel post;
+  final List<PostGallery> gallery;
   final int? startIndex;
 
-  const PostMediaFullScreen({Key? key, required this.post, this.startIndex})
+  const PostMediaFullScreen({Key? key, required this.gallery, this.startIndex})
       : super(key: key);
 
   @override
   State<PostMediaFullScreen> createState() => _PostMediaFullScreenState();
 }
-
-
-
 
 class _PostMediaFullScreenState extends State<PostMediaFullScreen> {
   @override
@@ -48,7 +45,7 @@ class _PostMediaFullScreenState extends State<PostMediaFullScreen> {
   }
 
   List<Widget> mediaList() {
-    return widget.post.gallery.map((item) {
+    return widget.gallery.map((item) {
       if (item.isVideoPost == true) {
         return videoPostTile(item);
       } else {
