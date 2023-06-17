@@ -28,7 +28,7 @@ class UsersList extends StatelessWidget {
       }
     });
 
-    return _usersController.accountsIsLoading
+    return Obx(() => _usersController.accountsIsLoading
         ? const ShimmerUsers()
         : _usersController.searchedUsers.isNotEmpty
             ? ListView.separated(
@@ -59,6 +59,6 @@ class UsersList extends StatelessWidget {
             : SizedBox(
                 height: Get.size.height * 0.5,
                 child: emptyUser(title: noUserFoundString.tr, subTitle: ''),
-              );
+              ));
   }
 }

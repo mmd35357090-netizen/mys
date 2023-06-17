@@ -98,7 +98,7 @@ class LoginController extends GetxController {
           code: countryCode,
           phone: phone,
           successCallback: (token) {
-            Get.to(() => VerifyPhoneLoginOTP(
+            Get.to(() => VerifyRegistrationOTP(
                   token: token,
                 ));
           });
@@ -174,7 +174,7 @@ class LoginController extends GetxController {
           name: name,
           password: password,
           successCallback: (token) {
-            Get.to(() => VerifyPhoneLoginOTP(
+            Get.to(() => VerifyRegistrationOTP(
                   // isVerifyingEmail: true,
                   // isVerifyingPhone: false,
                   token: token,
@@ -358,7 +358,7 @@ class LoginController extends GetxController {
       AuthApi.forgotPassword(
           email: email,
           successCallback: (token) {
-            Get.to(() => VerifyPhoneLoginOTP(
+            Get.to(() => VerifyRegistrationOTP(
                   // isVerifyingEmail: false,
                   // isVerifyingPhone: false,
                   token: token,

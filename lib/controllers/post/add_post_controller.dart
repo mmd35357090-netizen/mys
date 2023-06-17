@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:foap/apiHandler/apis/misc_api.dart';
 import 'package:foap/apiHandler/apis/post_api.dart';
 import 'package:foap/components/custom_gallery_picker.dart';
+import 'package:foap/controllers/misc/users_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:foap/helper/string_extension.dart';
@@ -17,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 
 class AddPostController extends GetxController {
   final HomeController _homeController = Get.find();
+  final UsersController _usersController = Get.find();
 
   RxInt isEditing = 0.obs;
   RxString currentHashtag = ''.obs;
@@ -30,7 +32,7 @@ class AddPostController extends GetxController {
   late String postingTitle;
 
   RxList<Hashtag> hashTags = <Hashtag>[].obs;
-  RxList<UserModel> searchedUsers = <UserModel>[].obs;
+  // RxList<UserModel> searchedUsers = <UserModel>[].obs;
 
   int currentUpdateAbleStartOffset = 0;
   int currentUpdateAbleEndOffset = 0;
@@ -45,9 +47,9 @@ class AddPostController extends GetxController {
   bool canLoadMoreHashtags = true;
   bool hashtagsIsLoading = false;
 
-  int accountsPage = 1;
-  bool canLoadMoreAccounts = true;
-  bool accountsIsLoading = false;
+  // int accountsPage = 1;
+  // bool canLoadMoreAccounts = true;
+  // bool accountsIsLoading = false;
 
   PostType? currentPostType;
 
@@ -64,7 +66,7 @@ class AddPostController extends GetxController {
     // postingTitle = '';
 
     hashTags.clear();
-    searchedUsers.clear();
+    // searchedUsers.clear();
 
     currentUpdateAbleStartOffset = 0;
     currentUpdateAbleEndOffset = 0;
@@ -79,9 +81,9 @@ class AddPostController extends GetxController {
     canLoadMoreHashtags = true;
     hashtagsIsLoading = false;
 
-    accountsPage = 1;
-    canLoadMoreAccounts = true;
-    accountsIsLoading = false;
+    // accountsPage = 1;
+    // canLoadMoreAccounts = true;
+    // accountsIsLoading = false;
 
     update();
   }
@@ -160,31 +162,32 @@ class AddPostController extends GetxController {
   }
 
   searchUsers({required String text, VoidCallback? callBackHandler}) {
-    if (canLoadMoreAccounts) {
-      accountsIsLoading = true;
-
-      UsersApi.searchUsers(
-          page: accountsPage,
-          isExactMatch: 0,
-          searchText: text.replaceAll('@', ''),
-          resultCallback: (result, metadata) {
-            searchedUsers.addAll(result);
-            searchedUsers.unique((e) => e.id);
-
-            accountsIsLoading = false;
-            canLoadMoreAccounts = result.length >= metadata.perPage;
-            accountsPage += 1;
-            update();
-
-            if (callBackHandler != null) {
-              callBackHandler();
-            }
-          });
-    } else {
-      if (callBackHandler != null) {
-        callBackHandler();
-      }
-    }
+    _usersController.setSearchTextFilter(text.replaceAll('@', ''));
+    // if (canLoadMoreAccounts) {
+    //   accountsIsLoading = true;
+    //
+    //   UsersApi.searchUsers(
+    //       page: accountsPage,
+    //       isExactMatch: 0,
+    //       searchText: text.replaceAll('@', ''),
+    //       resultCallback: (result, metadata) {
+    //         searchedUsers.addAll(result);
+    //         searchedUsers.unique((e) => e.id);
+    //
+    //         accountsIsLoading = false;
+    //         canLoadMoreAccounts = result.length >= metadata.perPage;
+    //         accountsPage += 1;
+    //         update();
+    //
+    //         if (callBackHandler != null) {
+    //           callBackHandler();
+    //         }
+    //       });
+    // } else {
+    //   if (callBackHandler != null) {
+    //     callBackHandler();
+    //   }
+    // }
   }
 
   textChanged(String text, int position) {
@@ -212,7 +215,8 @@ class AddPostController extends GetxController {
         currentUpdateAbleStartOffset = position;
       }
 
-      searchedUsers.clear();
+      _usersController.clear();
+      // searchedUsers.clear();
 
       if (lastPart.length > 1) {
         searchUsers(text: lastPart);
@@ -229,7 +233,7 @@ class AddPostController extends GetxController {
         currentUserTag.value = lastPart;
       }
       currentUserTag.value = '';
-      searchedUsers.value = [];
+      _usersController.clear();
     }
 
     this.position.value = position;

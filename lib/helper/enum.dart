@@ -120,3 +120,5 @@ enum NotificationType {
   relationInvite,
   none
 }
+
+enum LiveBattleResultType { winner, draw }

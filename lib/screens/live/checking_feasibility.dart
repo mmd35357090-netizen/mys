@@ -3,9 +3,15 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:foap/helper/imports/live_imports.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../model/call_model.dart';
 
 class CheckingLiveFeasibility extends StatefulWidget {
-  const CheckingLiveFeasibility({Key? key}) : super(key: key);
+  final Live? battle;
+  final VoidCallback successCallbackHandler;
+
+  const CheckingLiveFeasibility(
+      {Key? key, this.battle, required this.successCallbackHandler})
+      : super(key: key);
 
   @override
   State<CheckingLiveFeasibility> createState() =>
@@ -22,7 +28,8 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
 
   @override
   void dispose() {
-    _agoraLiveController.clear();
+    print('clearing data from here ==== 3');
+    // _agoraLiveController.clear();
     super.dispose();
   }
 
@@ -45,12 +52,13 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
       body: Center(
         child: Stack(
           children: [
-            if(_agoraLiveController.engine != null)AgoraVideoView(
-              controller: VideoViewController(
-                rtcEngine: _agoraLiveController.engine!,
-                canvas: const VideoCanvas(uid: 0),
+            if (_agoraLiveController.engine != null)
+              AgoraVideoView(
+                controller: VideoViewController(
+                  rtcEngine: _agoraLiveController.engine!,
+                  canvas: const VideoCanvas(uid: 0),
+                ),
               ),
-            ),
             Positioned(
                 left: 0,
                 right: 0,
@@ -179,6 +187,15 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
   }
 
   goToLive() {
-    _agoraLiveController.initializeLive();
+    if (widget.battle != null) {
+      // join a battle
+      Future.delayed(const Duration(milliseconds: 500), () {
+        widget.successCallbackHandler();
+      });
+      _agoraLiveController.initializeLiveBattle(widget.battle!);
+    } else {
+      // start new live
+      _agoraLiveController.initializeLive();
+    }
   }
 }

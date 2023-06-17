@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -126,5 +127,26 @@ class SharedPrefs {
     // Alternatively, you can use the device's current locale:
     // var locale = await findSystemLocale();
     return locale;
+  }
+
+  void setCallNotificationData(dynamic data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (data != null) {
+      prefs.setString('notificationData', jsonEncode(data));
+    } else {
+      prefs.remove('notificationData');
+    }
+  }
+
+  Future<dynamic> getCallNotificationData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? jsonData = prefs.getString('notificationData');
+
+    if (jsonData != null) {
+      return jsonDecode(jsonData) as Map<String, dynamic>;
+    }
+
+    // If no data is found, return an empty map or null, depending on your requirements
+    return null; // or return null;
   }
 }

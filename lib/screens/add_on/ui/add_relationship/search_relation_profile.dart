@@ -5,6 +5,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/controller/relationship/relationship_search_controller.dart';
 import 'package:get/get.dart';
 
+import '../../../../controllers/misc/users_controller.dart';
+
 class SearchProfile extends StatefulWidget {
   final int? relationId;
   final VoidCallback? actionPerformed;
@@ -18,6 +20,7 @@ class SearchProfile extends StatefulWidget {
 
 class _SearchProfileState extends State<SearchProfile> {
   final RelationshipSearchController relationshipSearchController = RelationshipSearchController();
+  final UsersController _usersController = Get.find();
 
   @override
   void dispose() {
@@ -50,14 +53,14 @@ class _SearchProfileState extends State<SearchProfile> {
                       showSearchIcon: true,
                       iconColor: AppColorConstants.themeColor,
                       onSearchChanged: (value) {
-                        relationshipSearchController.searchTextChanged(value);
+                        _usersController.setSearchTextFilter(value);
                       },
                       onSearchStarted: () {
                         //controller.startSearch();
                       },
                       onSearchCompleted: (searchTerm) {}),
                 ),
-                Obx(() => relationshipSearchController.searchText.isNotEmpty
+                Obx(() => _usersController.searchText.isNotEmpty
                     ? Row(
                         children: [
                           const SizedBox(width: 10),
@@ -96,22 +99,22 @@ class _SearchProfileState extends State<SearchProfile> {
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent ==
           scrollController.position.pixels) {
-        if (!relationshipSearchController.accountsIsLoading) {
-          relationshipSearchController.searchData();
+        if (!_usersController.accountsIsLoading) {
+          _usersController.loadUsers();
         }
       }
     });
 
-    return relationshipSearchController.accountsIsLoading
+    return _usersController.accountsIsLoading
         ? const ShimmerUsers()
-        : relationshipSearchController.searchedUsers.isNotEmpty
+        : _usersController.searchedUsers.isNotEmpty
             ? ListView.separated(
                 controller: scrollController,
                 padding: const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 100),
-                itemCount: relationshipSearchController.searchedUsers.length,
+                itemCount: _usersController.searchedUsers.length,
                 itemBuilder: (BuildContext ctx, int index) {
                   return RelationUserTile(
-                    profile: relationshipSearchController.searchedUsers[index],
+                    profile: _usersController.searchedUsers[index],
                     inviteCallback: (userID) {
                       relationshipSearchController
                           .inviteUser(widget.relationId ?? 0, userID, () {

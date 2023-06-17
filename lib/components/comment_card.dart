@@ -3,6 +3,7 @@ import 'package:detectable_text_field/widgets/detectable_text.dart';
 import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../model/comment_model.dart';
+import '../model/search_model.dart';
 import '../screens/dashboard/posts.dart';
 import '../screens/profile/other_user_profile.dart';
 
@@ -87,10 +88,12 @@ class CommentTileState extends State<CommentTile> {
     } else {
       String userTag = text.replaceAll('@', '');
 
+      UserSearchModel searchModel = UserSearchModel();
+      searchModel.isExactMatch = 1;
+      searchModel.searchText = userTag;
       UsersApi.searchUsers(
+          searchModel: searchModel,
           page: 1,
-          isExactMatch: 1,
-          searchText: userTag,
           resultCallback: (result, metadata) {
             if (result.isNotEmpty) {
               Get.to(() => OtherUserProfile(userId: result.first.id));

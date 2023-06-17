@@ -4,6 +4,8 @@ import '../../helper/imports/common_import.dart';
 import '../../model/api_meta_data.dart';
 import 'package:get/get.dart';
 
+import '../../model/search_model.dart';
+
 class UsersApi {
   static getSuggestedUsers(
       {required int page, required Function(List<UserModel>) resultCallback}) {
@@ -21,23 +23,20 @@ class UsersApi {
   }
 
   static searchUsers(
-      {required int isExactMatch,
-      SearchFrom? searchFrom,
-      required String searchText,
+      {required UserSearchModel searchModel,
       required int page,
       required Function(List<UserModel>, APIMetaData) resultCallback}) {
     var url = NetworkConstantsUtil.findFriends;
     //searchFrom  ----- 1=username,2=email,3=phone
-    String searchFromValue = searchFrom == null
+    String searchFromValue = searchModel.searchFrom == null
         ? ''
-        : searchFrom == SearchFrom.username
+        : searchModel.searchFrom == SearchFrom.username
             ? '1'
-            : searchFrom == SearchFrom.email
+            : searchModel.searchFrom == SearchFrom.email
                 ? '2'
                 : '3';
     url =
-        '${url}searchText=$searchText&searchFrom=$searchFromValue&isExactMatch=$isExactMatch&page=$page';
-
+        '${url}searchText=${searchModel.searchText ?? ''}&searchFrom=$searchFromValue&isExactMatch=${searchModel.isExactMatch ?? ''}&is_chat_user_online=${searchModel.isOnline == 1 ? '1' : ''}&page=$page';
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var topUsers = result!.data['user']['items'];

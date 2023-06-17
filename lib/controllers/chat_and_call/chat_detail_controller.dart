@@ -1396,14 +1396,14 @@ class ChatDetailController extends GetxController {
     int roomId = updatedData['room'];
     int status = updatedData['current_status'];
     int messageId = updatedData['id'];
-    int createdAt = updatedData['created_at'];
+    // int createdAt = updatedData['created_at'];
     if (localMessageId != null) {
       if (chatRoom.value?.id == roomId) {
         var message =
             messages.where((e) => e.localMessageId == localMessageId).first;
         message.id = messageId;
         message.status = status;
-        message.createdAt = createdAt;
+        // message.createdAt = createdAt;
         // message.media = null;
         if (message.messageContentType == MessageContentType.reply) {
           // message.reply.media = null;

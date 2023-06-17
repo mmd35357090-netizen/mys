@@ -1,13 +1,16 @@
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:foap/components/sm_tab_bar.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/model/live_tv_model.dart';
-
 import '../../components/live_tv_player.dart';
+import '../../controllers/misc/rating_controller.dart';
 import '../../model/tv_show_model.dart';
 import 'package:foap/helper/imports/tv_imports.dart';
+
+import '../misc/reviews.dart';
 
 class TVShowDetail extends StatefulWidget {
   final TvModel tvModel;
@@ -22,7 +25,13 @@ class TVShowDetail extends StatefulWidget {
 
 class _TVShowDetailState extends State<TVShowDetail> {
   final TvStreamingController _liveTvStreamingController = Get.find();
+  final RatingController _ratingController = Get.find();
+
   TextEditingController messageTextField = TextEditingController();
+  TextEditingController reviewTE = TextEditingController();
+  double rating = 5;
+
+  final List<String> tabs = [aboutString, ratingsString];
 
   @override
   void initState() {
@@ -41,6 +50,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
         AutoOrientation.landscapeAutoMode();
       }
 
+      _ratingController.getRatings(type: 1, refId: widget.showModel.id!);
       _liveTvStreamingController.getTvShowEpisodes(showId: widget.showModel.id);
     });
   }
@@ -51,6 +61,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+    _ratingController.clear();
     super.dispose();
   }
 
@@ -70,7 +81,6 @@ class _TVShowDetailState extends State<TVShowDetail> {
               if (orientation == Orientation.portrait)
                 Column(
                   children: [
-
                     backNavigationBar(
                       title: widget.showModel.name!,
                     ),
@@ -90,12 +100,23 @@ class _TVShowDetailState extends State<TVShowDetail> {
                       )
                     : Container();
               }),
-              // orientation == Orientation.portrait &&
-              //         widget.tvModel.isLiveBroadcasting
-              //     ? segmentView().tP16
-              //     :
               if (orientation == Orientation.portrait)
-                Expanded(child: detailView()),
+                DefaultTabController(
+                    length: tabs.length,
+                    initialIndex: 0,
+                    child: Column(
+                      children: [
+                        SMTabBar(tabs: tabs),
+                        divider(),
+                        SizedBox(
+                          height: Get.height * 0.5,
+                          child: TabBarView(children: [
+                            Expanded(child: detailView()),
+                            ReviewsList()
+                          ]),
+                        ),
+                      ],
+                    )),
             ],
           ),
         );
@@ -160,6 +181,50 @@ class _TVShowDetailState extends State<TVShowDetail> {
         ).bP25,
         Row(
           children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                    height: 25,
+                    child:
+                        Heading4Text(widget.showModel.ratingScore.toString())),
+                const SizedBox(
+                  height: 10,
+                ),
+                BodyLargeText(
+                    '${widget.showModel.totalRatings.toString()} $ratingsString',
+                    color: AppColorConstants.themeColor,
+                    weight: TextWeight.bold),
+              ],
+            ),
+            const SizedBox(
+              width: 2,
+              height: 50,
+              // color: AppColorConstants.dividerColor,
+            ).hP25,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const ThemeIconWidget(
+                  ThemeIcon.thumbsUp,
+                  size: 25,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                BodyLargeText(
+                  rateString,
+                  color: AppColorConstants.themeColor,
+                  weight: TextWeight.bold,
+                ),
+              ],
+            ).ripple(() {
+              showRatingView();
+            })
+          ],
+        ).bP25,
+        Row(
+          children: [
             CachedNetworkImage(
               imageUrl: widget.showModel.imageUrl ?? '',
               width: 50,
@@ -189,5 +254,70 @@ class _TVShowDetailState extends State<TVShowDetail> {
         ),
       ],
     ).p16;
+  }
+
+  showRatingView() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          color: AppColorConstants.backgroundColor,
+          child: Container(
+            height: 430,
+            color: AppColorConstants.themeColor.withOpacity(0.1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Heading5Text(
+                  '$rateString ${widget.showModel.name}',
+                ).setPadding(left: 16, right: 16, bottom: 16),
+                ratingView(),
+                reviewView(),
+                AppThemeButton(
+                  text: submitString,
+                  onPress: () {
+                    Navigator.of(context).pop();
+                    _ratingController.postRating(
+                        refId: widget.showModel.id!,
+                        rating: rating,
+                        review: reviewTE.text,
+                        type: 1);
+                  },
+                ).hp(DesignConstants.horizontalPadding)
+              ],
+            ),
+          ),
+        ).topRounded(20);
+      },
+    );
+  }
+
+  Widget ratingView() {
+    return RatingBar.builder(
+      initialRating: 5,
+      minRating: 1,
+      direction: Axis.horizontal,
+      allowHalfRating: true,
+      unratedColor: AppColorConstants.shadowColor,
+      itemCount: 5,
+      itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+      itemBuilder: (context, _) => const Icon(
+        Icons.star,
+        color: Colors.amber,
+      ),
+      onRatingUpdate: (value) {
+        rating = value;
+      },
+    );
+  }
+
+  Widget reviewView() {
+    return AppTextField(
+      controller: reviewTE,
+      maxLines: 5,
+      hintText: pleaseEnterMessageString,
+    ).p(DesignConstants.horizontalPadding);
   }
 }

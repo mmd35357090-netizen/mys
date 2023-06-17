@@ -140,7 +140,7 @@ class NetworkConstantsUtil {
   //***********live TVs***********//
   static String getTVCategories =
       'categories/live-tv?expand=liveTv,liveTv.currentViewer';
-  static String getTVShows = 'live-tvs/tv-shows?expand=tvShowEpisode';
+  static String getTVShows = 'live-tvs/tv-shows?expand=tvShowEpisode,rating';
   static String getTVShowById = 'tv-shows/tv-show-details?expand=tvShowEpisode';
   static String getTVShowEpisodes = 'tv-shows/tv-show-episodes?';
   static String tvBanners = 'tv-banners';
@@ -156,6 +156,8 @@ class NetworkConstantsUtil {
 
   //******** Live *********//
   static String liveHistory = 'user-live-histories?expand=giftSummary';
+  static String liveGiftsReceived =
+      'gifts/live-call-gift-recieved?expand=giftDetail,senderDetail&';
 
   //***********Podcast***********//
   static String getPodcastCategories =
@@ -293,4 +295,9 @@ class NetworkConstantsUtil {
   static String matchedProfiles = 'datings/profile-matching';
   static String likeProfiles = 'datings/profile-like-by-other-users';
   static String getLanguages = 'languages';
+
+  //*********** Misc ***********//
+  static String postRating = 'ratings';
+  static String ratingList =
+      'ratings?type={{type}}&reference_id={{reference_id}}&expand=user';
 }

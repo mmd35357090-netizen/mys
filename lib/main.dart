@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:foap/apiHandler/apis/auth_api.dart';
+import 'package:foap/controllers/misc/rating_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
@@ -55,6 +56,7 @@ import 'manager/db_manager.dart';
 import 'manager/location_manager.dart';
 import 'manager/notification_manager.dart';
 import 'manager/player_manager.dart';
+import 'manager/socket_manager.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -66,10 +68,12 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 late List<CameraDescription> cameras;
+bool isLaunchedFromCallNotification = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
+  HttpOverrides.global = MyHttpOverrides();
 
   await Firebase.initializeApp();
   final firebaseMessaging = FCM();
@@ -113,6 +117,7 @@ Future<void> main() async {
   Get.put(ProfileController());
   Get.put(ChatHistoryController());
   Get.put(ChatRoomDetailController());
+  // Get.put(RatingController());
   Get.put(TvStreamingController());
   Get.put(LocationManager());
   Get.put(MapScreenController());
@@ -133,6 +138,9 @@ Future<void> main() async {
   Get.put(SelectUserForGroupChatController());
 
   setupServiceLocator();
+
+  dynamic data = await SharedPrefs().getCallNotificationData();
+
   final UserProfileManager userProfileManager = Get.find();
 
   await userProfileManager.refreshProfile();
@@ -170,11 +178,22 @@ Future<void> main() async {
       ],
       debug: true);
 
-  runApp(Phoenix(child: const SocialifiedApp()));
+  if (data != null && userProfileManager.user.value != null) {
+    isLaunchedFromCallNotification = true;
+    getIt<SocketManager>().connect();
+    performActionOnCallNotificationBanner(data, true, true);
+  } else {
+    runApp(Phoenix(
+        child: const SocialifiedApp(
+      startScreen: SplashScreen(),
+    )));
+  }
 }
 
 class SocialifiedApp extends StatefulWidget {
-  const SocialifiedApp({Key? key}) : super(key: key);
+  final Widget startScreen;
+
+  const SocialifiedApp({Key? key, required this.startScreen}) : super(key: key);
 
   @override
   State<SocialifiedApp> createState() => _SocialifiedAppState();
@@ -203,7 +222,7 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
                   fallbackLocale: const Locale('en', 'US'),
                   debugShowCheckedModeBanner: false,
                   // navigatorKey: navigationKey,
-                  home: const SplashScreen(),
+                  home: widget.startScreen,
                   builder: EasyLoading.init(),
                   // theme: AppTheme.lightTheme,
                   // darkTheme: AppTheme.darkTheme,

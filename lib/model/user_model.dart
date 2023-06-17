@@ -5,53 +5,6 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'chat_room_model.dart';
 import 'package:get/get.dart';
 
-class UserLiveCallDetail {
-  int id = 0;
-  int startTime = 0;
-  int? endTime;
-  int? totalTime;
-  int status = 0;
-  String token = '';
-  String channelName = '';
-  List<UserModel>? host;
-
-  UserLiveCallDetail();
-
-  factory UserLiveCallDetail.fromJson(dynamic json) {
-    UserLiveCallDetail model = UserLiveCallDetail();
-
-    model.id = json['id'];
-    model.status = json['status'];
-    model.startTime = json['start_time'];
-    model.endTime = json['end_time'];
-    model.totalTime = json['total_time'];
-    model.token = json['token'] ?? '';
-    model.channelName = json['channel_name'] ?? '';
-
-    if (json['userdetails'] != null) {
-      model.host = <UserModel>[];
-      json['userdetails'].forEach((v) {
-        model.host!.add(UserModel.fromJson(v));
-      });
-    }
-    return model;
-  }
-}
-
-class GiftSummary {
-  int totalGift = 0;
-  int totalCoin = 0;
-
-  GiftSummary();
-
-  factory GiftSummary.fromJson(dynamic json) {
-    GiftSummary model = GiftSummary();
-    model.totalGift = json['totalGift'];
-    model.totalCoin = json['totalCoin'];
-    return model;
-  }
-}
-
 class UserModel {
   int id = 0;
 
@@ -326,6 +279,80 @@ class UserModel {
     } else {
       return true;
     }
+  }
+}
+
+class LiveCallHostUser {
+  UserModel userDetail;
+  bool isMainHost;
+  int totalCoins;
+  int totalGifts;
+
+  LiveCallHostUser(
+      {required this.userDetail,
+      required this.isMainHost,
+      required this.totalCoins,
+      required this.totalGifts});
+
+  factory LiveCallHostUser.fromJson(dynamic json) {
+    UserModel user = UserModel();
+    user.id = json['userId'];
+    user.userName = json['username'] ?? json['userName'];
+    user.picture = json['userImageUrl'] ?? 'test';
+    LiveCallHostUser model = LiveCallHostUser(
+        userDetail: user,
+        isMainHost: json['isSuperHost'] == 1,
+        totalCoins: json['totalCoin'] ?? 0,
+        totalGifts: json['totalGift'] ?? 0);
+
+    return model;
+  }
+}
+
+class UserLiveCallDetail {
+  int id = 0;
+  int startTime = 0;
+  int? endTime;
+  int? totalTime;
+  int status = 0;
+  String token = '';
+  String channelName = '';
+  List<UserModel>? host;
+
+  UserLiveCallDetail();
+
+  factory UserLiveCallDetail.fromJson(dynamic json) {
+    UserLiveCallDetail model = UserLiveCallDetail();
+
+    model.id = json['id'];
+    model.status = json['status'];
+    model.startTime = json['start_time'];
+    model.endTime = json['end_time'];
+    model.totalTime = json['total_time'];
+    model.token = json['token'] ?? '';
+    model.channelName = json['channel_name'] ?? '';
+
+    if (json['userdetails'] != null) {
+      model.host = <UserModel>[];
+      json['userdetails'].forEach((v) {
+        model.host!.add(UserModel.fromJson(v));
+      });
+    }
+    return model;
+  }
+}
+
+class GiftSummary {
+  int totalGift = 0;
+  int totalCoin = 0;
+
+  GiftSummary();
+
+  factory GiftSummary.fromJson(dynamic json) {
+    GiftSummary model = GiftSummary();
+    model.totalGift = json['totalGift'];
+    model.totalCoin = json['totalCoin'];
+    return model;
   }
 }
 

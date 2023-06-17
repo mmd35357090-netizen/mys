@@ -6,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/hashtag_tile.dart';
 import '../../components/user_card.dart';
 import '../../components/video_widget.dart';
+import '../../controllers/misc/users_controller.dart';
 import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/post/select_post_media_controller.dart';
 import '../chat/media.dart';
@@ -43,6 +44,8 @@ class AddPostState extends State<AddPostScreen> {
       SelectPostMediaController();
 
   final AddPostController addPostController = Get.find();
+  final UsersController _usersController = Get.find();
+
   final RefreshController _usersRefreshController =
       RefreshController(initialRefresh: false);
   final RefreshController _hashtagRefreshController =
@@ -309,13 +312,13 @@ class AddPostState extends State<AddPostScreen> {
         builder: (ctx) {
           return ListView.separated(
               padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
-              itemCount: addPostController.searchedUsers.length,
+              itemCount: _usersController.searchedUsers.length,
               itemBuilder: (BuildContext ctx, int index) {
                 return UserTile(
-                  profile: addPostController.searchedUsers[index],
+                  profile: _usersController.searchedUsers[index],
                   viewCallback: () {
                     addPostController.addUserTag(
-                        addPostController.searchedUsers[index].userName);
+                        _usersController.searchedUsers[index].userName);
                   },
                 );
               },

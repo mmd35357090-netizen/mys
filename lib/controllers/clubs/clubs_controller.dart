@@ -132,8 +132,6 @@ class ClubsController extends GetxController {
   }
 
   getClubs() {
-    print('getClubs $canLoadMoreClubs');
-    print('clubsPage $clubsPage');
 
     if (canLoadMoreClubs) {
       ClubApi.getClubs(

@@ -4,13 +4,7 @@ import 'dart:typed_data';
 import 'package:foap/apiHandler/api_wrapper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
-import 'package:get/get.dart';
-
-import '../../model/api_meta_data.dart';
-import '../../model/category_model.dart';
-import '../../model/notification_modal.dart';
 import '../../model/support_request_response.dart';
-import '../../screens/add_on/model/polls_model.dart';
 
 class MiscApi {
   static getProfileCategoryType(
@@ -194,4 +188,5 @@ class MiscApi {
       }
     });
   }
+
 }

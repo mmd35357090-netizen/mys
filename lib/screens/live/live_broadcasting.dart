@@ -1,19 +1,20 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/number_extension.dart';
-import 'package:get/get.dart';
 import 'dart:ui';
 import 'package:foap/helper/imports/live_imports.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:lottie/lottie.dart';
 import 'package:wakelock/wakelock.dart';
-
-import '../../components/user_card.dart';
+import '../../components/timer_view.dart';
 import '../../controllers/misc/gift_controller.dart';
 import '../../controllers/misc/subscription_packages_controller.dart';
 import '../../model/call_model.dart';
-import '../../model/chat_message_model.dart';
 import '../../model/gift_model.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'components.dart';
+import 'gift_sender_list.dart';
+import 'invite_users.dart';
+import 'messages_in_live.dart';
 
 class LiveBroadcastScreen extends StatefulWidget {
   final Live live;
@@ -24,33 +25,61 @@ class LiveBroadcastScreen extends StatefulWidget {
   State<LiveBroadcastScreen> createState() => _LiveBroadcastScreenState();
 }
 
-class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
+class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
+    with SingleTickerProviderStateMixin {
   final AgoraLiveController _agoraLiveController = Get.find();
   final GiftController _giftController = GiftController();
   final SubscriptionPackageController packageController = Get.find();
-  final UserProfileManager _userProfileManager = Get.find();
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+
+  // animation
+  late AnimationController _controller;
+  late Animation<double> _leftContainerAnimation;
+  late Animation<double> _rightContainerAnimation;
 
   @override
   void initState() {
     super.initState();
+    prepareAnimationController();
     packageController.initiate();
     _giftController.loadMostUsedGifts();
-    Wakelock.enable(); // Turn on wakelock feature till call is running
+    Wakelock.enable();
   }
 
   @override
   void dispose() {
-    // _agoraLiveController.clear();
     super.dispose();
+    print('dispose from here');
+    print('clearing data from here ==== 4');
+
+    _agoraLiveController.clear();
+  }
+
+  prepareAnimationController() {
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    _leftContainerAnimation =
+        Tween<double>(begin: -Get.width / 2, end: 0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0, 0.5),
+    ));
+
+    _rightContainerAnimation =
+        Tween<double>(begin: Get.width, end: 0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0, 0.5),
+    ));
+
+    _controller.forward();
   }
 
   // Create UI with local view and remote view
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Stack(
           children: [
             GestureDetector(
@@ -64,7 +93,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
               ),
             ),
             Obx(() {
-              return _agoraLiveController.sendingGift.value == null
+              return _agoraLiveController.populateGift.value == null
                   ? Container()
                   : Positioned(
                       left: 0,
@@ -74,15 +103,30 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                       child: Pulse(
                         duration: const Duration(milliseconds: 500),
                         child: Center(
-                          child: Image.network(
-                            _agoraLiveController.sendingGift.value!.logo,
-                            height: 80,
-                            width: 80,
+                          child: CachedNetworkImage(
+                            imageUrl: _agoraLiveController
+                                .populateGift.value!.giftDetail.logo,
+                            height: 150,
+                            width: 150,
                             fit: BoxFit.contain,
                           ),
                         ),
                       ));
-            })
+            }),
+            Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    Obx(() => _agoraLiveController
+                                    .live.value?.battleDetail?.battleStatus ==
+                                BattleStatus.completed &&
+                            _agoraLiveController.liveEnd.value == false
+                        ? battleResultView()
+                        : Container()),
+                  ],
+                ))
           ],
         ));
   }
@@ -100,7 +144,10 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
               height: 400,
             ),
             Heading3Text(
-              endLiveCallConfirmationString.tr,
+              _agoraLiveController.live.value!.battleStatus ==
+                      BattleStatus.started
+                  ? endLiveBattleConfirmationString.tr
+                  : endLiveCallConfirmationString.tr,
               textAlign: TextAlign.center,
             ),
             const Spacer(),
@@ -112,8 +159,12 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                   child: AppThemeButton(
                     text: yesString.tr,
                     onPress: () {
-                      _agoraLiveController.onCallEnd(isHost: true);
-                      _agoraLiveController.loadGiftsReceived();
+                      if (_agoraLiveController.live.value!.battleStatus ==
+                          BattleStatus.started) {
+                        _agoraLiveController.liveBattleCompleted();
+                      } else {
+                        _agoraLiveController.onCallEnd(isHost: true);
+                      }
                     },
                   ),
                 ),
@@ -123,7 +174,12 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                     backgroundColor: Colors.red,
                     text: noString.tr,
                     onPress: () {
-                      _agoraLiveController.dontEndLiveCall();
+                      if (_agoraLiveController.live.value!.battleStatus ==
+                          BattleStatus.started) {
+                        _agoraLiveController.dontEndLiveBattle();
+                      } else {
+                        _agoraLiveController.dontEndLiveCall();
+                      }
                     },
                   ),
                 )
@@ -141,36 +197,43 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
   Widget onLiveWidget() {
     return Stack(
       children: [
-        Center(
-          child: widget.live.isHosting == true
-              ? _renderLocalPreview()
-              : _renderRemoteVideo(),
+        Obx(
+          () {
+            return (_agoraLiveController
+                            .live.value?.battleDetail?.battleStatus ==
+                        BattleStatus.started ||
+                    _agoraLiveController
+                            .live.value?.battleDetail?.battleStatus ==
+                        BattleStatus.accepted ||
+                    (_agoraLiveController
+                                    .live.value!.battleDetail?.battleUsers ??
+                                [])
+                            .isNotEmpty &&
+                        _agoraLiveController
+                                .live.value?.battleDetail?.battleStatus !=
+                            BattleStatus.completed)
+                ? Column(
+                    children: [battleView(), bottomSectionView()],
+                  )
+                : Stack(
+                    children: [
+                      singleUserLiveView(),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: bottomSectionView(),
+                      )
+                    ],
+                  );
+          },
         ),
-        topBar(context),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Column(
-            children: [
-              !widget.live.isHosting
-                  ? Stack(
-                      children: [
-                        messagesListView(),
-                        Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            child: defaultCoinsView()),
-                      ],
-                    )
-                  : messagesListView(),
-              messageComposerView()
-            ],
-          ),
-        ),
-        widget.live.isHosting ? _actionWidgetForHostUser() : Container(),
-        _agoraLiveController.askLiveEndConformation.value == true
+        Obx(() => _agoraLiveController.liveEnd.value ? Container() : topBar()),
+        // _agoraLiveController.live.value!.amIMainHostInLive
+        //     ? _actionWidgetForHostUser()
+        //     : Container(),
+        _agoraLiveController.askLiveEndConformation.value == true ||
+                _agoraLiveController.askBattleEndConformation.value == true
             ? Positioned(
                 left: 0, right: 0, bottom: 0, child: askLiveEndConfirmation())
             : Container()
@@ -178,8 +241,518 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
     );
   }
 
+  Widget singleUserLiveView() {
+    return Obx(() => _agoraLiveController.live.value!.amIMainHostInLive
+        ? SizedBox(height: Get.height, child: _renderLocalPreview())
+        : _renderRemoteVideo(LiveCallHostUser(
+            userDetail: _agoraLiveController.live.value!.mainHostUserDetail,
+            isMainHost: true,
+            // battleId: 0,
+            totalCoins: 0,
+            totalGifts: 0)));
+  }
+
+  Widget battleView() {
+    return SizedBox(
+      height: Get.height * 0.6,
+      // color: Colors.red,
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 150,
+          ),
+          Row(
+            children: [
+              UserAvatarView(
+                  size: 25,
+                  hideLiveIndicator: true,
+                  hideOnlineIndicator: true,
+                  user: _agoraLiveController
+                      .live.value!.battleDetail!.mainHost.userDetail),
+              const SizedBox(
+                width: 9,
+              ),
+              Row(
+                children: [
+                  Container(
+                    constraints: BoxConstraints(
+                        minWidth: 70, maxWidth: (Get.width - 170)),
+                    width: (Get.width - 100) *
+                        _agoraLiveController.live.value!.battleDetail!
+                            .percentageOfCoinsFor(_agoraLiveController
+                                .live.value!.battleDetail!.mainHost),
+                    color: AppColorConstants.themeColor,
+                    height: 25,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const ThemeIconWidget(
+                          ThemeIcon.diamond,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                        Obx(() => BodySmallText(
+                            _agoraLiveController
+                                .live.value!.battleDetail!.mainHost.totalCoins
+                                .toString(),
+                            color: Colors.white))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    constraints: BoxConstraints(
+                        minWidth: 100, maxWidth: (Get.width - 200)),
+                    width: (Get.width - 100) *
+                        _agoraLiveController.live.value!.battleDetail!
+                            .percentageOfCoinsFor(_agoraLiveController
+                                .live.value!.battleDetail!.opponentHost),
+                    color: AppColorConstants.red,
+                    height: 25,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const ThemeIconWidget(ThemeIcon.diamond,
+                            size: 15, color: Colors.white),
+                        Obx(() => BodySmallText(
+                            _agoraLiveController.live.value!.battleDetail!
+                                .opponentHost.totalCoins
+                                .toString(),
+                            color: Colors.white)),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ).round(20),
+              const SizedBox(
+                width: 9,
+              ),
+              UserAvatarView(
+                  hideLiveIndicator: true,
+                  hideOnlineIndicator: true,
+                  size: 25,
+                  user: _agoraLiveController
+                      .live.value!.battleDetail!.opponentHost.userDetail),
+            ],
+          ).hP16,
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: Stack(
+              children: [
+                AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return Row(
+                        children: [
+                          SizedBox(
+                              width: Get.width / 2,
+                              height: double.infinity,
+                              child: Transform.translate(
+                                  offset:
+                                      Offset(_leftContainerAnimation.value, 0),
+                                  child: mainHostView())),
+                          SizedBox(
+                              width: Get.width / 2,
+                              height: double.infinity,
+                              child: Transform.translate(
+                                  offset:
+                                      Offset(_rightContainerAnimation.value, 0),
+                                  child: battleOpponentView()))
+                        ],
+                      );
+                    }),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      height: 30,
+                      width: 100,
+                      color: AppColorConstants.red,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const ThemeIconWidget(
+                            ThemeIcon.clock,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 5),
+                          Center(
+                              child: UnlockTimerView(
+                            unlockTime: _agoraLiveController.live.value!
+                                .battleDetail!.timeRemainingInBattle,
+                            completionHandler: () {
+                              _agoraLiveController.liveBattleCompleted();
+                            },
+                          )),
+                        ],
+                      ).hP4,
+                    ).topRounded(10),
+                  ),
+                ),
+                Obx(() => _agoraLiveController
+                            .live.value?.battleDetail?.battleStatus ==
+                        BattleStatus.accepted
+                    ? Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 50,
+                                  width: 120,
+                                  color: AppColorConstants.cardColor,
+                                  child: Row(
+                                    children: [
+                                      UserAvatarView(
+                                        user: _agoraLiveController
+                                            .live.value!.mainHostUserDetail,
+                                        size: 28,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Expanded(
+                                        child: BodySmallText(
+                                          _agoraLiveController.live.value!
+                                              .mainHostUserDetail.userName,
+                                          maxLines: 1,
+                                        ),
+                                      )
+                                    ],
+                                  ).hP4,
+                                ).round(10),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  color: AppColorConstants.backgroundColor,
+                                  child: const Center(
+                                      child: Heading4Text(
+                                    'VS',
+                                  )),
+                                ).borderWithRadius(
+                                    value: 5,
+                                    radius: 50,
+                                    color: AppColorConstants.red),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                  height: 50,
+                                  width: 120,
+                                  color: AppColorConstants.cardColor,
+                                  child: Row(
+                                    children: [
+                                      UserAvatarView(
+                                        user: _agoraLiveController
+                                            .live
+                                            .value!
+                                            .battleDetail!
+                                            .opponentHost
+                                            .userDetail,
+                                        size: 28,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Expanded(
+                                        child: BodySmallText(
+                                          _agoraLiveController
+                                              .live
+                                              .value!
+                                              .battleDetail!
+                                              .opponentHost
+                                              .userDetail
+                                              .userName,
+                                          maxLines: 1,
+                                        ),
+                                      )
+                                    ],
+                                  ).hP4,
+                                ).round(10)
+                              ],
+                            ),
+                            Lottie.asset(
+                              'assets/lottie/live_battle.json',
+                              height: 150,
+                              // width: 200,
+                            )
+                          ],
+                        ),
+                      )
+                    : Container())
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget mainHostView() {
+    if (_agoraLiveController.live.value!.amIMainHostInLive) {
+      return _renderLocalPreview();
+    } else {
+      return _renderRemoteVideo(
+          _agoraLiveController.live.value!.battleDetail!.mainHost);
+    }
+  }
+
+  Widget battleOpponentView() {
+    if (_agoraLiveController.live.value!.amIMainHostInLive) {
+      return _renderRemoteVideo(
+          _agoraLiveController.live.value!.battleDetail!.opponentHost);
+    } else {
+      if (_agoraLiveController.live.value!.amIHostInLive) {
+        return _renderLocalPreview();
+      }
+      return _renderRemoteVideo(
+          _agoraLiveController.live.value!.battleDetail!.opponentHost);
+    }
+  }
+
+  Widget battleResultView() {
+    return Stack(
+      children: [
+        Container(
+          height: _agoraLiveController.live.value!.amIHostInLive
+              ? Get.height * 0.7
+              : Get.height * 0.4,
+          width: Get.width,
+          color: AppColorConstants.cardColor,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Positioned(
+              //   left: 0,
+              //   top: 0,
+              //   bottom: 150,
+              //   right: 0,
+              //   child: Lottie.asset(
+              //     'assets/lottie/confetti.json',
+              //     height: 150,
+              //     // width: 200,
+              //   ),
+              // ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _agoraLiveController.live.value!.battleDetail!.resultType ==
+                          LiveBattleResultType.winner
+                      ? winnerDetail()
+                      : drawViewDetail(),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  if (_agoraLiveController.live.value!.amIHostInLive)
+                    Expanded(
+                        child: GiftSenders(
+                      liveId: _agoraLiveController.live.value!.id,
+                      battleId:
+                          _agoraLiveController.live.value!.battleDetail?.id,
+                    ))
+                ],
+              ).p16,
+            ],
+          ),
+        ),
+        Positioned(
+            right: 20,
+            top: 20,
+            child: Container(
+              color: AppColorConstants.themeColor,
+              height: 28,
+              width: 28,
+              child: const ThemeIconWidget(
+                ThemeIcon.close,
+                color: Colors.white,
+              ),
+            ).circular.ripple(() {
+              _agoraLiveController.closeWinnerInfo();
+            }))
+      ],
+    ).round(20);
+  }
+
+  Widget winnerDetail() {
+    return Column(
+      children: [
+        Heading4Text(
+          winnerString,
+          weight: TextWeight.bold,
+          color: AppColorConstants.themeColor,
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Image.asset(
+          'assets/crown.png',
+          width: 60,
+        ),
+        UserAvatarView(
+          user: _agoraLiveController
+              .live.value!.battleDetail!.winnerHost.userDetail,
+          size: 80,
+          hideOnlineIndicator: true,
+          hideLiveIndicator: true,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        BodyLargeText(
+          _agoraLiveController
+              .live.value!.battleDetail!.winnerHost.userDetail.userName,
+          weight: TextWeight.semiBold,
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        Container(
+          height: 25,
+          width: 80,
+          color: AppColorConstants.themeColor,
+          child: Center(
+            child: BodyLargeText(
+              _agoraLiveController
+                  .live.value!.battleDetail!.winnerHost.totalCoins
+                  .toString(),
+              color: Colors.white,
+            ),
+          ),
+        ).round(5),
+      ],
+    );
+  }
+
+  Widget drawViewDetail() {
+    return Column(
+      children: [
+        Heading4Text(
+          battleDrawString,
+          weight: TextWeight.bold,
+          color: AppColorConstants.themeColor,
+        ),
+        const SizedBox(
+          height: 40,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            SizedBox(
+                width: Get.width * 0.3,
+                child: hostDetail(
+                    _agoraLiveController.live.value!.battleDetail!.mainHost)),
+            Container(
+              height: 40,
+              width: 40,
+              color: AppColorConstants.backgroundColor,
+              child: const Center(
+                  child: Heading6Text(
+                'VS',
+              )),
+            )
+                .borderWithRadius(
+                    value: 5, radius: 50, color: AppColorConstants.red)
+                .bp(70),
+            SizedBox(
+                width: Get.width * 0.3,
+                child: hostDetail(_agoraLiveController
+                    .live.value!.battleDetail!.opponentHost))
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget hostDetail(LiveCallHostUser host) {
+    return Column(
+      children: [
+        UserAvatarView(
+          user: host.userDetail,
+          size: 70,
+          hideOnlineIndicator: true,
+          hideLiveIndicator: true,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        BodyLargeText(
+          host.userDetail.userName,
+          weight: TextWeight.semiBold,
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        Container(
+          height: 25,
+          width: 80,
+          color: AppColorConstants.themeColor,
+          child: Center(
+            child: BodyLargeText(
+              host.totalCoins.toString(),
+              color: Colors.white,
+            ),
+          ),
+        ).round(5),
+      ],
+    );
+  }
+
+  Widget contributor(UserModel user) {
+    return Column(
+      children: [
+        UserAvatarView(
+          user: user,
+          size: 40,
+          hideOnlineIndicator: true,
+          hideLiveIndicator: true,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        BodySmallText(
+          user.userName,
+          weight: TextWeight.regular,
+          maxLines: 1,
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        Container(
+          height: 25,
+          width: 80,
+          color: AppColorConstants.themeColor,
+          child: const Center(
+            child: BodyLargeText(
+              '20',
+              color: Colors.white,
+            ),
+          ),
+        ).round(5),
+      ],
+    );
+  }
+
   Widget liveEndWidget() {
-    return widget.live.isHosting
+    return _agoraLiveController.live.value!.amIHostInLive
         ? liveEndWidgetForHosts()
         : liveEndWidgetForViewers();
   }
@@ -196,17 +769,15 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
             const ThemeIconWidget(
               ThemeIcon.close,
               size: 25,
-              color: Colors.white,
+              // color: Colors.white,
             ).ripple(() {
-              if (widget.live.isHosting) {
-                _agoraLiveController.closeLive();
-              } else {
-                Get.back();
-              }
+              Get.back();
+              _agoraLiveController.clear();
             }),
             const Spacer()
           ],
         ),
+        // if (_agoraLiveController.live.value!.battleUsers.length == 1)
         hostUserInfo(),
       ],
     ).hP16;
@@ -224,13 +795,8 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
             const ThemeIconWidget(
               ThemeIcon.close,
               size: 25,
-              color: Colors.white,
             ).ripple(() {
-              if (widget.live.isHosting) {
-                _agoraLiveController.closeLive();
-              } else {
-                Get.back();
-              }
+              _agoraLiveController.closeLive();
             }),
             const Spacer()
           ],
@@ -241,7 +807,6 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
         Heading4Text(
           liveEndString.tr,
           weight: TextWeight.medium,
-          color: Colors.white,
         ),
         Container(
           height: 5,
@@ -255,7 +820,10 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
         const SizedBox(
           height: 50,
         ),
-        Expanded(child: giftersView())
+        Expanded(
+            child: GiftSenders(
+          liveId: _agoraLiveController.live.value!.id,
+        ))
       ],
     );
   }
@@ -292,7 +860,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Heading4Text(_agoraLiveController.liveTime,
+                    Heading4Text(_agoraLiveController.liveDurationLength,
                             weight: TextWeight.medium)
                         .bP8,
                     BodySmallText(
@@ -353,25 +921,24 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
   }
 
   Widget hostUserInfo() {
+    UserModel mainHostDetail =
+        _agoraLiveController.live.value!.mainHostUserDetail;
     return Column(
       children: [
         const SizedBox(
           height: 150,
         ),
         UserAvatarView(
-          user: widget.live.isHosting
-              ? _userProfileManager.user.value!
-              : _agoraLiveController.host!,
-          hideLiveIndicator: _agoraLiveController.liveEnd.value == true,
+          user: mainHostDetail,
+          hideLiveIndicator: true,
+          hideOnlineIndicator: true,
           size: 100,
         ),
         const SizedBox(
           height: 10,
         ),
         Heading4Text(
-          widget.live.isHosting
-              ? _userProfileManager.user.value!.userName
-              : _agoraLiveController.host!.userName,
+          mainHostDetail.userName,
           weight: TextWeight.bold,
           color: AppColorConstants.grayscale700,
         ),
@@ -383,11 +950,32 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
     );
   }
 
+  Widget bottomSectionView() {
+    return SizedBox(
+      height: Get.height * 0.4,
+      // color: Colors.yellow,
+      child: Column(
+        children: [
+          !_agoraLiveController.live.value!.amIHostInLive
+              ? Column(
+                  children: [
+                    SizedBox(
+                        height: (Get.height * 0.4) - 130,
+                        child: MessagesInLive()),
+                    topGiftsView(),
+                  ],
+                )
+              : SizedBox(
+                  height: (Get.height * 0.4) - 70, child: MessagesInLive()),
+          messageComposerView()
+        ],
+      ),
+    );
+  }
+
   Widget messageComposerView() {
     return Container(
-      // color: ColorConstants.backgroundColor.withOpacity(0.9),
       color: Colors.black,
-
       height: 70,
       child: Column(
         children: [
@@ -400,42 +988,106 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                 child: Container(
                   height: 40,
                   color: AppColorConstants.cardColor,
-                  child: Obx(() => TextField(
-                        controller: _agoraLiveController.messageTf.value,
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontSize: FontSizes.b2,
-                            color: AppColorConstants.grayscale900),
-                        maxLines: 50,
-                        onChanged: (text) {
-                          _agoraLiveController.messageChanges();
+                  child: Obx(() => Focus(
+                        onFocusChange: (status) {
+                          _agoraLiveController.messageTextFocusToggle();
                         },
-                        decoration: InputDecoration(
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.only(
-                                left: 10, right: 10, top: 5),
-                            labelStyle: TextStyle(fontSize: FontSizes.b2),
-                            hintStyle: TextStyle(fontSize: FontSizes.b2),
-                            hintText: pleaseEnterMessageString.tr),
+                        child: TextField(
+                          controller: _agoraLiveController.messageTf.value,
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: FontSizes.b2,
+                              color: AppColorConstants.grayscale900),
+                          maxLines: 50,
+                          onChanged: (text) {
+                            // _agoraLiveController.messageChanges();
+                          },
+                          decoration: InputDecoration(
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.only(
+                                  left: 10, right: 10, top: 5),
+                              labelStyle: TextStyle(fontSize: FontSizes.b2),
+                              hintStyle: TextStyle(fontSize: FontSizes.b2),
+                              hintText: messageString.tr),
+                        ),
                       )),
                 ).round(10),
               ),
               const SizedBox(
                 width: 20,
               ),
-              ThemeIconWidget(
+              Obx(() => _agoraLiveController.messageTextFocus.value == false &&
+                      _agoraLiveController.live.value!.amIHostInLive == true
+                  ? Row(
+                      children: [
+                        const ThemeIconWidget(
+                          ThemeIcon.cameraSwitch,
+                          size: 30,
+                          color: Colors.white,
+                        ).circular.ripple(() {
+                          _agoraLiveController.onToggleCamera();
+                        }),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Obx(() => ThemeIconWidget(
+                              _agoraLiveController.mutedVideo.value
+                                  ? ThemeIcon.videoCameraOff
+                                  : ThemeIcon.videoCamera,
+                              size: 30,
+                              color: Colors.white,
+                            )).circular.ripple(() {
+                          _agoraLiveController.onToggleMuteVideo();
+                        }),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Obx(() => ThemeIconWidget(
+                              _agoraLiveController.mutedAudio.value
+                                  ? ThemeIcon.micOff
+                                  : ThemeIcon.mic,
+                              size: 30,
+                              color: Colors.white,
+                            )).circular.ripple(() {
+                          _agoraLiveController.onToggleMuteAudio();
+                        }),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Obx(() =>
+                            _agoraLiveController.live.value?.canInvite == true
+                                ? Row(
+                                    children: [
+                                      const ThemeIconWidget(
+                                        ThemeIcon.invite,
+                                        size: 25,
+                                        color: Colors.white,
+                                      ).ripple(() {
+                                        createBattle();
+                                      }),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                    ],
+                                  )
+                                : Container()),
+                      ],
+                    )
+                  : Container()),
+              const ThemeIconWidget(
                 ThemeIcon.send,
-                size: 40,
-                color: AppColorConstants.themeColor,
+                size: 25,
+                color: Colors.white,
               ).ripple(() {
                 sendMessage();
               }),
-              if (widget.live.isHosting == false)
+              if (_agoraLiveController.live.value!.amIHostInLive == false)
                 const SizedBox(
                   width: 20,
                 ),
-              if (widget.live.isHosting == false)
+              if (_agoraLiveController.live.value!.amIHostInLive == false)
                 Container(
                   height: 40,
                   width: 40,
@@ -457,7 +1109,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
                             child:
                                 GiftsPageView(giftSelectedCompletion: (gift) {
                               Get.back();
-                              _agoraLiveController.sendGift(gift);
+                              sendGift(gift);
                             }));
                       });
                 }),
@@ -471,48 +1123,81 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
     );
   }
 
-  Widget topBar(BuildContext context) {
+  Widget topBar() {
     return Column(
       children: [
         const SizedBox(
           height: 30,
         ),
         SizedBox(
-          height: 70,
+          height: 120,
           child: Row(children: [
-            const ThemeIconWidget(
-              ThemeIcon.downArrow,
-              color: Colors.white,
-              size: 25,
+            Row(
+              children: [
+                UserAvatarView(
+                  user: _agoraLiveController.live.value!.mainHostUserDetail,
+                  hideLiveIndicator: true,
+                  hideOnlineIndicator: true,
+                  size: 35,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                BodyLargeText(_agoraLiveController
+                    .live.value!.mainHostUserDetail.userName)
+              ],
+            ).hP16,
+            const Spacer(),
+            Container(
+              height: 40,
+              width: 40,
+              color: AppColorConstants.themeColor.withOpacity(0.2),
+              child: const ThemeIconWidget(
+                ThemeIcon.account,
+                size: 25,
+                color: Colors.white,
+              ),
+            ).circular.ripple(() {
+              showModalBottomSheet<void>(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  builder: (BuildContext context) {
+                    return const LiveJoinedUsers();
+                  });
+            }),
+            const SizedBox(
+              width: 20,
+            ),
+            Image.asset(
+              'assets/live.png',
+              height: 30,
             ),
             const SizedBox(
               width: 20,
             ),
-            Heading6Text(
-              joinedUsersString.tr,
-              weight: TextWeight.bold,
-              color: AppColorConstants.grayscale600,
-            ),
-            const Spacer(),
-            widget.live.isHosting == false
-                ? const ThemeIconWidget(
-                    ThemeIcon.close,
-                    size: 25,
-                    color: Colors.white,
-                  ).circular.ripple(() {
-                    _agoraLiveController.onCallEnd(isHost: false);
-                  })
-                : Image.asset(
-                    'assets/live.png',
-                    height: 30,
-                  ),
-          ]).ripple(() {
-            showModalBottomSheet<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return const LiveJoinedUsers();
-                });
-          }),
+            Container(
+              height: 28,
+              width: 28,
+              color: AppColorConstants.themeColor.withOpacity(0.5),
+              child: const Center(
+                child: ThemeIconWidget(
+                  ThemeIcon.close,
+                  size: 20,
+                  color: Colors.white,
+                  // color: Colors.white,
+                ),
+              ),
+            ).circular.ripple(() {
+              if (_agoraLiveController.live.value!.battleStatus ==
+                  BattleStatus.started) {
+                _agoraLiveController.askConfirmationForEndBattle();
+              } else if (_agoraLiveController.live.value!.amIHostInLive) {
+                _agoraLiveController.askConfirmationForEndCall();
+              } else {
+                _agoraLiveController.onCallEnd(isHost: false);
+              }
+            }),
+          ]),
         ).hP16,
       ],
     );
@@ -520,258 +1205,96 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
 
   // Generate local preview
   Widget _renderLocalPreview() {
-    return Obx(() => _agoraLiveController.mutedVideo.value
+    return GetBuilder<AgoraLiveController>(
+        init: _agoraLiveController,
+        builder: (ctx) {
+          return _agoraLiveController.mutedVideo.value
+              ? Container(
+                  color: AppColorConstants.red,
+                  child: Center(
+                      child: Heading6Text(
+                    videoPausedString.tr,
+                    color: AppColorConstants.grayscale600,
+                  )))
+              : _agoraLiveController.engine != null
+                  ? AgoraVideoView(
+                      controller: VideoViewController(
+                        rtcEngine: _agoraLiveController.engine!,
+                        canvas: const VideoCanvas(uid: 0),
+                      ),
+                    )
+                  : Container();
+        });
+  }
+
+  // Generate remote preview
+  Widget _renderRemoteVideo(LiveCallHostUser host) {
+    return _agoraLiveController.reConnectingRemoteView.value
         ? Container(
             color: AppColorConstants.red,
             child: Center(
                 child: Heading6Text(
-              videoPausedString.tr,
+              reConnectingString.tr,
               color: AppColorConstants.grayscale600,
             )))
-        : _agoraLiveController.engine != null
-            ? AgoraVideoView(
-                controller: VideoViewController(
-                  rtcEngine: _agoraLiveController.engine!,
-                  canvas: const VideoCanvas(uid: 0),
-                ),
-              )
-            : Container());
-  }
-
-  // Generate remote preview
-  Widget _renderRemoteVideo() {
-    return Stack(
-      children: [
-        _agoraLiveController.reConnectingRemoteView.value
+        : _agoraLiveController.videoPaused.value
             ? Container(
-                color: AppColorConstants.red,
+                color: AppColorConstants.themeColor,
                 child: Center(
                     child: Heading6Text(
-                  reConnectingString.tr,
+                  videoPausedString.tr,
                   color: AppColorConstants.grayscale600,
                 )))
-            : _agoraLiveController.videoPaused.value
-                ? Container(
-                    color: AppColorConstants.themeColor,
-                    child: Center(
-                        child: Heading6Text(
-                      videoPausedString.tr,
-                      color: AppColorConstants.grayscale600,
-                    )))
-                : _agoraLiveController.engine != null
-                    ? AgoraVideoView(
-                        controller: VideoViewController.remote(
-                          rtcEngine: _agoraLiveController.engine!,
-                          canvas: VideoCanvas(
-                              uid: _agoraLiveController.remoteUserId.value),
-                          connection:
-                              RtcConnection(channelId: widget.live.channelName),
-                        ),
-                      )
-                    : Container(),
-      ],
-    );
+            : _agoraLiveController.engine != null
+                ? AgoraVideoView(
+                    controller: VideoViewController.remote(
+                      rtcEngine: _agoraLiveController.engine!,
+                      canvas: VideoCanvas(uid: host.userDetail.id),
+                      connection:
+                          RtcConnection(channelId: widget.live.channelName),
+                    ),
+                  )
+                : Container();
   }
 
   // Ui & UX For Bottom Portion (Switch Camera,Video On/Off,Mic On/Off)
-  Widget _actionWidgetForHostUser() => Positioned(
-        right: 0,
-        bottom: (widget.live.isHosting) ? 100 : 120,
-        child: SizedBox(
-          width: 60,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Obx(() => _agoraLiveController.giftsReceived.isEmpty
-                  ? Container()
-                  : Container(
-                      color: AppColorConstants.themeColor,
-                      child: Column(
-                        children: [
-                          const ThemeIconWidget(
-                            ThemeIcon.diamond,
-                            size: 20,
-                            color: Colors.white,
-                          ).circular.ripple(() {
-                            _agoraLiveController.onToggleCamera();
-                          }),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          BodySmallText(
-                              _agoraLiveController.totalCoinsEarned.formatNumber
-                                  .toString(),
-                              weight: TextWeight.medium)
-                        ],
-                      ).p8,
-                    ).round(15)),
-              const SizedBox(
-                height: 20,
-              ),
-              const ThemeIconWidget(
-                ThemeIcon.cameraSwitch,
-                size: 30,
-                color: Colors.white,
-              ).circular.ripple(() {
-                _agoraLiveController.onToggleCamera();
-              }),
-              const SizedBox(
-                height: 20,
-              ),
-              Obx(() => ThemeIconWidget(
-                    _agoraLiveController.mutedVideo.value
-                        ? ThemeIcon.videoCameraOff
-                        : ThemeIcon.videoCamera,
-                    size: 30,
-                    color: Colors.white,
-                  )).circular.ripple(() {
-                _agoraLiveController.onToggleMuteVideo();
-              }),
-              const SizedBox(
-                height: 20,
-              ),
-              Obx(() => ThemeIconWidget(
-                    _agoraLiveController.mutedAudio.value
-                        ? ThemeIcon.micOff
-                        : ThemeIcon.mic,
-                    size: 30,
-                    color: Colors.white,
-                  )).circular.ripple(() {
-                _agoraLiveController.onToggleMuteAudio();
-              }),
-              const SizedBox(
-                height: 20,
-              ),
-              const ThemeIconWidget(
-                ThemeIcon.close,
-                size: 30,
-                color: Colors.white,
-              ).circular.ripple(() {
-                _agoraLiveController.askConfirmationForEndCall();
-              }),
-              // const SizedBox(
-              //   height: 20,
-              // ),
-            ],
-          ),
-        ),
-      );
+  // Widget _actionWidgetForHostUser() => Positioned(
+  //       right: 0,
+  //       bottom: 150,
+  //       child: SizedBox(
+  //         width: 60,
+  //         child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: <Widget>[
+  //             Obx(() => _agoraLiveController.giftsReceived.isEmpty
+  //                 ? Container()
+  //                 : Container(
+  //                     color: AppColorConstants.themeColor,
+  //                     child: Column(
+  //                       children: [
+  //                         const ThemeIconWidget(
+  //                           ThemeIcon.diamond,
+  //                           size: 20,
+  //                           color: Colors.white,
+  //                         ).circular.ripple(() {
+  //                           _agoraLiveController.onToggleCamera();
+  //                         }),
+  //                         const SizedBox(
+  //                           height: 10,
+  //                         ),
+  //                         BodySmallText(
+  //                             _agoraLiveController.totalCoinsEarned.formatNumber
+  //                                 .toString(),
+  //                             weight: TextWeight.medium)
+  //                       ],
+  //                     ).p8,
+  //                   ).round(15)),
+  //           ],
+  //         ),
+  //       ),
+  //     );
 
-  Widget messagesListView() {
-    return Container(
-      height: MediaQuery.of(context).size.height / 2.5,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[
-            Colors.transparent,
-            Colors.black.withOpacity(0.7),
-            Colors.black.withOpacity(0.9)
-          ],
-        ),
-      ),
-      child: GetBuilder<AgoraLiveController>(
-          init: _agoraLiveController,
-          builder: (ctx) {
-            return ListView.separated(
-                padding: const EdgeInsets.only(
-                    top: 10, bottom: 50, left: 16, right: 70),
-                itemCount: _agoraLiveController.messages.length,
-                itemBuilder: (ctx, index) {
-                  ChatMessageModel message =
-                      _agoraLiveController.messages[index];
-                  if (message.messageContentType == MessageContentType.gift) {
-                    return giftMessageTile(message);
-                  }
-                  return textMessageTile(message);
-                },
-                separatorBuilder: (ctx, index) {
-                  return const SizedBox(
-                    height: 10,
-                  );
-                });
-          }),
-    );
-  }
-
-  Widget textMessageTile(ChatMessageModel message) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        AvatarView(size: 25, url: message.userPicture, name: message.userName),
-        const SizedBox(
-          width: 10,
-        ),
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BodyMediumText(
-                message.userName,
-                weight: TextWeight.semiBold,
-                color: AppColorConstants.grayscale500,
-              ),
-              BodySmallText(
-                message.decrypt,
-                color: AppColorConstants.grayscale500,
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget giftMessageTile(ChatMessageModel message) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        AvatarView(size: 25, url: message.userPicture, name: message.userName),
-        const SizedBox(
-          width: 10,
-        ),
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BodyMediumText(
-                message.userName,
-                weight: TextWeight.semiBold,
-                color: AppColorConstants.grayscale600,
-              ),
-              Row(
-                children: [
-                  BodySmallText(
-                    sentAGiftString.tr,
-                    color: AppColorConstants.grayscale600,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  CachedNetworkImage(
-                    imageUrl: message.giftContent.image,
-                    height: 20,
-                    width: 20,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  BodySmallText(
-                    message.giftContent.coins.toString(),
-                    color: AppColorConstants.grayscale600,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget defaultCoinsView() {
+  Widget topGiftsView() {
     return SizedBox(
       height: 60,
       child: Obx(() => ListView.separated(
@@ -780,7 +1303,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
           itemCount: _giftController.topGifts.length,
           itemBuilder: (ctx, index) {
             return giftBox(_giftController.topGifts[index]).ripple(() {
-              _agoraLiveController.sendGift(_giftController.topGifts[index]);
+              sendGift(_giftController.topGifts[index]);
             });
           },
           separatorBuilder: (ctx, index) {
@@ -825,48 +1348,213 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen> {
     ).round(10);
   }
 
-  Widget giftersView() {
-    return Column(
-      children: [
-        Heading4Text(
-          giftsReceivedString.tr,
-          weight: TextWeight.semiBold,
-          color: Colors.white,
-        ),
-        Container(
-          height: 5,
-          width: 180,
-          color: AppColorConstants.themeColor,
-        ).round(10).tP8,
-        const SizedBox(
-          height: 20,
-        ),
-        Expanded(
-          child: Container(
-            color: AppColorConstants.cardColor,
-            child: ListView.separated(
-                padding: const EdgeInsets.only(
-                    left: 16, right: 16, top: 25, bottom: 100),
-                itemCount: _agoraLiveController.giftsReceived.length,
-                itemBuilder: (ctx, index) {
-                  return GifterUserTile(
-                    gift: _agoraLiveController.giftsReceived[index],
-                  );
-                },
-                separatorBuilder: (ctx, index) {
-                  return const SizedBox(height: 15);
-                }).addPullToRefresh(
-                refreshController: _refreshController,
-                onRefresh: () {},
-                onLoading: () {
-                  _agoraLiveController.loadGiftsReceived();
-                },
-                enablePullUp: true,
-                enablePullDown: false),
-          ).topRounded(50),
-        ),
-      ],
-    );
+  Widget selectHostForGift(Function(LiveCallHostUser) userSelectedCallback) {
+    return Container(
+      color: AppColorConstants.cardColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Heading4Text(sendGiftToString, weight: TextWeight.bold),
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    UserAvatarView(
+                      user: _agoraLiveController.live.value!.battleDetail!
+                          .battleUsers.first.userDetail,
+                      hideLiveIndicator: true,
+                      hideOnlineIndicator: true,
+                      size: 80,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Heading5Text(
+                        _agoraLiveController.live.value!.battleDetail!
+                            .battleUsers.first.userDetail.userName,
+                        weight: TextWeight.bold),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    AppThemeButton(
+                        height: 40,
+                        width: 100,
+                        text: sendString,
+                        onPress: () {
+                          userSelectedCallback(_agoraLiveController
+                              .live.value!.battleDetail!.battleUsers.first);
+                        })
+                  ],
+                ),
+                Container(
+                  width: 1,
+                  height: 150,
+                  color: AppColorConstants.dividerColor,
+                ).p25,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    UserAvatarView(
+                        user: _agoraLiveController.live.value!.battleDetail!
+                            .battleUsers.last.userDetail,
+                        size: 80,
+                        hideLiveIndicator: true,
+                        hideOnlineIndicator: true),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Heading5Text(
+                      _agoraLiveController.live.value!.battleDetail!.battleUsers
+                          .last.userDetail.userName,
+                      weight: TextWeight.bold,
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    AppThemeButton(
+                        height: 40,
+                        width: 100,
+                        text: sendString,
+                        onPress: () {
+                          userSelectedCallback(_agoraLiveController
+                              .live.value!.battleDetail!.battleUsers.last);
+                        })
+                  ],
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    ).topRounded(40);
+  }
+
+  createBattle() {
+    if (!_agoraLiveController.live.value!.canInvite) {
+      alreadyInvitedWidget();
+      return;
+    }
+    showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return FractionallySizedBox(
+            heightFactor: 0.6,
+            child: Container(
+              color: AppColorConstants.cardColor,
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Heading4Text(
+                    chooseBattleTimeString,
+                    weight: TextWeight.bold,
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Expanded(
+                    child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 8,
+                                childAspectRatio: 3,
+                                crossAxisSpacing: 8),
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 50),
+                        itemBuilder: (ctx, index) {
+                          return Container(
+                            color: AppColorConstants.red,
+                            child: Center(
+                              child: Heading4Text(
+                                _agoraLiveController.battleTimeArray[index]
+                                    .convertSecondsToTimeString,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ).round(10).ripple(() {
+                            Navigator.of(context).pop();
+                            Future.delayed(const Duration(milliseconds: 200),
+                                () {
+                              inviteOpponent(
+                                  _agoraLiveController.battleTimeArray[index]);
+                            });
+                          });
+                        },
+                        itemCount: _agoraLiveController.battleTimeArray.length),
+                  ),
+                ],
+              ),
+            ).topRounded(40),
+          );
+        });
+  }
+
+  inviteOpponent(int battleTime) {
+    showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return InviteUsers(
+            userSelectedHandler: (user) {
+              // Navigator.of(context).pop();
+              _agoraLiveController.inviteUserToLive(
+                  user: user,
+                  battleTime: battleTime,
+                  alreadyInvitedHandler: () {
+                    alreadyInvitedWidget();
+                  });
+            },
+          );
+        });
+  }
+
+  alreadyInvitedWidget() {
+    showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return FractionallySizedBox(
+            heightFactor: 0.55,
+            child: AlreadyInvitedTimerView(
+              user: _agoraLiveController.live.value!.invitedUserDetail!,
+              time: 30,
+            ),
+          );
+        });
+  }
+
+  sendGift(GiftModel gift) {
+    if ((_agoraLiveController.live.value!.battleDetail?.battleUsers ?? [])
+        .isEmpty) {
+      _agoraLiveController.sendGift(gift: gift);
+    } else {
+      showModalBottomSheet<void>(
+          backgroundColor: Colors.transparent,
+          context: context,
+          enableDrag: true,
+          isDismissible: true,
+          builder: (BuildContext context) {
+            return FractionallySizedBox(
+                heightFactor: 0.65,
+                child: selectHostForGift((user) {
+                  Navigator.of(context).pop();
+                  _agoraLiveController.sendGift(gift: gift, host: user);
+                }));
+          });
+    }
   }
 
   sendMessage() {

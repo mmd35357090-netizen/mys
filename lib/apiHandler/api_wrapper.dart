@@ -45,12 +45,15 @@ class ApiWrapper {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     String urlString = '${NetworkConstantsUtil.baseUrl}$url';
 
+    print('urlString ${urlString}');
+    print( "Bearer ${authKey!}");
+
     return http.get(Uri.parse(urlString), headers: {
       "Authorization": "Bearer ${authKey!}"
     }).then((http.Response response) async {
       dynamic data = _decoder.convert(response.body);
       EasyLoading.dismiss();
-      // log(data.toString());
+      log(data.toString());
       if (data['status'] == 401 && data['data'] == null) {
         //Get.offAll(() => LoginForExpiredToken());
       } else {
@@ -75,6 +78,8 @@ class ApiWrapper {
       'Content-Type': 'application/json'
     }).then((http.Response response) async {
       dynamic data = _decoder.convert(response.body);
+      print(data);
+
       // EasyLoading.dismiss();
       if (data['status'] == 401 && data['data'] == null) {
         // Get.offAll(() => LoginForExpiredToken());

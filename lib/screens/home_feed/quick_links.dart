@@ -113,7 +113,9 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                     Get.to(() => const ExploreClubs());
                   } else if (link.linkType == QuickLinkType.pages) {
                   } else if (link.linkType == QuickLinkType.goLive) {
-                    Get.to(() => const CheckingLiveFeasibility());
+                    Get.to(() => CheckingLiveFeasibility(
+                          successCallbackHandler: () {},
+                        ));
                   } else if (link.linkType == QuickLinkType.story) {
                     Get.to(() => const ChooseMediaForStory());
                   } else if (link.linkType == QuickLinkType.highlights) {
@@ -136,8 +138,10 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                           title: enableDatingString,
                           subTitle: enableDatingProfileToUseString,
                           okHandler: () {
-                            Get.to(() => const UploadProfilePicture(isSettingProfile: true));
-                          });
+                            Get.to(() => const UploadProfilePicture(
+                                isSettingProfile: true));
+                          },
+                          cancelHandler: () {});
                     }
                   } else if (link.linkType == QuickLinkType.chatGPT) {
                     Get.to(() => const ChatGPT());

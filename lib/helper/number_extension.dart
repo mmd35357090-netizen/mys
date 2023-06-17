@@ -68,4 +68,18 @@ extension IntegerExtension on int {
   String get formatTime {
     return '${(Duration(seconds: this))}'.split('.')[0].padLeft(8, '0');
   }
+
+  String get convertSecondsToTimeString {
+    if (this < 60) {
+      return '${this}s';
+    } else {
+      int minutes = this ~/ 60;
+      int remainingSeconds = this % 60;
+      if (remainingSeconds == 0) {
+        return '${minutes}m';
+      } else {
+        return '${minutes}m:${remainingSeconds}s';
+      }
+    }
+  }
 }

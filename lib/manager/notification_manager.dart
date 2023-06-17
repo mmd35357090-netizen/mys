@@ -3,27 +3,27 @@ import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/apiHandler/apis/users_api.dart';
-import 'package:foap/controllers/chat_and_call/agora_call_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/chat/chat_detail.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:overlay_support/overlay_support.dart';
+import '../controllers/chat_and_call/agora_call_controller.dart';
+import '../main.dart';
+import '../screens/calling/accept_call.dart';
 import '../screens/home_feed/comments_screen.dart';
+import '../screens/post/single_post_detail.dart';
 import '../util/shared_prefs.dart';
 import 'package:logging/logging.dart';
 
 final logger = Logger('ExampleLogger');
-final file = File('${Directory.systemTemp.path}/najem_app.log');
+// final logFile = File('${Directory.systemTemp.path}/najem_app11.log');
 
 class FCM {
   final _firebaseMessaging = FirebaseMessaging.instance;
-
-  // final streamCtlr = StreamController<String>.broadcast();
-  // final titleCtlr = StreamController<String>.broadcast();
-  // final bodyCtlr = StreamController<String>.broadcast();
 
   setNotifications() async {
     FirebaseMessaging.onMessage.listen(
@@ -32,17 +32,28 @@ class FCM {
       },
     );
 
+    FirebaseMessaging.instance.getInitialMessage().then((message) async {
+      dynamic data = await SharedPrefs().getCallNotificationData();
+      if (data != null) {
+        Future.delayed(const Duration(seconds: 10), () {
+          performActionOnCallNotificationBanner(data, true, true);
+        });
+      }
+    });
+
     FirebaseMessaging.onMessageOpenedApp.listen(
       (message) async {
-        Future.delayed(const Duration(seconds: 0), () {
-          // handle app opened from notification
-          NotificationManager().parseNotificationMessage(message);
-          // add your custom code here
-        });
+        print('onMessageOpenedApp');
+        NotificationManager()
+            .parseAndSwitchToCorrespondingScreen(message.data, false);
+        // FGBGEvents.stream.listen((event) {
+        //
+        // });
+        // NotificationManager().parseNotificationMessage(message);
       },
     );
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // With this token you can test it easily on your phone
     _firebaseMessaging.getToken().then((fcmToken) {
@@ -55,20 +66,6 @@ class FCM {
       SharedPrefs().setFCMToken(fcmToken);
     }).onError((err) {});
   }
-
-// dispose() {
-//   streamCtlr.close();
-//   bodyCtlr.close();
-//   titleCtlr.close();
-// }
-}
-
-@pragma("vm:entry-point")
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  // await Firebase.initializeApp();
-  NotificationManager().parseNotificationMessage(message);
 }
 
 class NotificationManager {
@@ -84,58 +81,72 @@ class NotificationManager {
   String? fcmToken;
 
   initialize() {
-    // flutterLocalNotificationsPlugin.initialize(const InitializationSettings());
+    readLogFile();
     AwesomeNotifications().setListeners(
-        onActionReceivedMethod:
-            AwesomeNotificationController.onActionReceivedMethod,
-        onNotificationCreatedMethod:
-            AwesomeNotificationController.onNotificationCreatedMethod,
-        onNotificationDisplayedMethod:
-            AwesomeNotificationController.onNotificationDisplayedMethod,
-        onDismissActionReceivedMethod:
-            AwesomeNotificationController.onDismissActionReceivedMethod);
-    // AwesomeNotifications().actionStream.listen((action) {
-    //   AwesomeNotifications().dismissAllNotifications();
-    //
-    //   if (action.buttonKeyPressed == "answer") {
-    //     actionOnCall(action.payload!, true);
-    //   } else if (action.buttonKeyPressed == "decline") {
-    //     actionOnCall(action.payload!, false);
-    //   }
-    // });
-
-    // notificationHandlers();
+        onActionReceivedMethod: onActionReceivedMethod,
+        onNotificationCreatedMethod: onNotificationCreatedMethod,
+        onNotificationDisplayedMethod: onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod: onDismissActionReceivedMethod);
   }
 
-  performActionOnCallNotificationBanner(
-      Map<String, String?> data, bool accept) {
-    final AgoraCallController agoraCallController = Get.find();
-    String channelName = data['channelName'] as String;
-    String token = data['token'] as String;
-    String callType = data['callType'] as String;
-    String id = data['id'] as String;
-    String uuid = data['uuid'] as String;
-    String callerId = data['callerId'] as String;
-
-    UsersApi.getOtherUser(
-        userId: int.parse(callerId),
-        resultCallback: (user) {
-          Call call = Call(
-              uuid: uuid,
-              channelName: channelName,
-              isOutGoing: true,
-              opponent: user,
-              token: token,
-              callType: int.parse(callType),
-              callId: int.parse(id));
-
-          if (accept) {
-            agoraCallController.initiateAcceptCall(call: call);
-          } else {
-            agoraCallController.declineCall(call: call);
-          }
-        });
+  void readLogFile() {
+    // if (logFile.existsSync()) {
+    //   String fileContents = logFile.readAsStringSync();
+    //   print('log file start');
+    //   print(fileContents);
+    //   print('log file end');
+    // } else {
+    //   print('Log file does not exist.');
+    // }
   }
+
+  // performActionOnCallNotificationBanner(
+  //     Map<String, String?> data, bool accept) {
+  //   final AgoraCallController agoraCallController = Get.find();
+  //   String channelName = data['channelName'] as String;
+  //   String token = data['token'] as String;
+  //   String callType = data['callType'] as String;
+  //   String id = data['id'] as String;
+  //   String uuid = data['uuid'] as String;
+  //   String callerId = data['callerId'] as String;
+  //
+  //   ApiController().getOtherUser(callerId).then((response) {
+  //     Call call = Call(
+  //         uuid: uuid,
+  //         channelName: channelName,
+  //         isOutGoing: true,
+  //         opponent: response.user!,
+  //         token: token,
+  //         callType: int.parse(callType),
+  //         callId: int.parse(id));
+  //
+  //     logFile.writeAsStringSync('getOtherUser \n', mode: FileMode.append);
+  //
+  //     Future.delayed(Duration(seconds: isAppTerminated ? 0 : 0), () {
+  //       logFile.writeAsStringSync('getOtherUser 1\n', mode: FileMode.append);
+  //
+  //       logFile.writeAsStringSync(
+  //           '${isAppTerminated == true ? 'started from terminated' : 'started normally'} \n',
+  //           mode: FileMode.append);
+  //
+  //       if (isAppTerminated) {
+  //         logFile.writeAsStringSync('DashboardScreen 1\n',
+  //             mode: FileMode.append);
+  //         Get.offAll(() => DashboardScreen());
+  //         getIt<SocketManager>().connect();
+  //       }
+  //       if (accept) {
+  //         logFile.writeAsStringSync('accept 1\n', mode: FileMode.append);
+  //
+  //         agoraCallController.initiateAcceptCall(call: call);
+  //       } else {
+  //         logFile.writeAsStringSync('declineCall 1\n', mode: FileMode.append);
+  //
+  //         agoraCallController.declineCall(call: call);
+  //       }
+  //     });
+  //   });
+  // }
 
   createNotificationBannerForAndroid(Map<String?, Object?> data) {
     String message = data['body'] as String;
@@ -181,7 +192,6 @@ class NotificationManager {
       //call cancelled by caller
       AwesomeNotifications().dismissAllNotifications();
     } else {
-      // new call, show the notification banner to user
       String channelName = data['channelName'] as String;
       String token = data['token'] as String;
       String id = data['callType'] as String;
@@ -209,6 +219,7 @@ class NotificationManager {
             category: NotificationCategory.Call,
             displayOnBackground: true,
             wakeUpScreen: true,
+
             fullScreenIntent: true,
             displayOnForeground: true,
             autoDismissible: false,
@@ -216,11 +227,11 @@ class NotificationManager {
           actionButtons: [
             NotificationActionButton(
               key: "answer",
-              label: "Answer",
+              label: 'Answer',
             ),
             NotificationActionButton(
               key: "decline",
-              label: "Decline",
+              label: 'Decline',
             )
           ]);
     }
@@ -228,11 +239,6 @@ class NotificationManager {
 
   parseNotificationMessage(RemoteMessage message) {
     String? callType = message.data['callType'] as String?;
-
-    file.writeAsStringSync('${message.data.toString()} \n',
-        mode: FileMode.append);
-
-    print('file path ${file.path}');
 
     if (callType != null) {
       createNotificationBannerForCall(message.data);
@@ -249,6 +255,7 @@ class NotificationManager {
   }
 
   parseAndSwitchToCorrespondingScreen(dynamic data, bool isInForeground) {
+    print('parseAndSwitchToCorrespondingScreen ==$data');
     int notificationType =
         int.parse(data['notification_type'] as String? ?? '0');
 
@@ -257,8 +264,8 @@ class NotificationManager {
       if (notificationType == 1) {
         int referenceId = int.parse(data['reference_id'] as String);
         String message = data['body'];
-
         // following notification
+
         UsersApi.getOtherUser(
             userId: referenceId,
             resultCallback: (user) {
@@ -330,44 +337,43 @@ class NotificationManager {
         int userId = int.parse(data['userId'] as String);
         String body = data['body'];
 
-        UsersApi.getOtherUser(
-            userId: userId,
-            resultCallback: (user) {
-              showOverlayNotification((context) {
-                return Container(
-                  color: Colors.transparent,
-                  child: Card(
-                    color: AppColorConstants.cardColor,
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    child: ListTile(
-                      leading: UserAvatarView(
-                        size: 40,
-                        user: user,
-                      ),
-                      title: Heading5Text(
-                        liveString,
-                        weight: TextWeight.bold,
-                        color: AppColorConstants.themeColor,
-                      ),
-                      subtitle: Heading6Text(
-                        body,
-                      ),
-                    ).vp(12).ripple(() {
-                      OverlaySupportEntry.of(context)!.dismiss();
+        UsersApi.getOtherUser(userId: userId, resultCallback: (user){
+          showOverlayNotification((context) {
+            return Container(
+              color: Colors.transparent,
+              child: Card(
+                color: AppColorConstants.cardColor,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                child: ListTile(
+                  leading: UserAvatarView(
+                    size: 40,
+                    user: user,
+                  ),
+                  title: Heading5Text(
+                    liveString,
+                    weight: TextWeight.bold,
+                    color: AppColorConstants.themeColor,
+                  ),
+                  subtitle: Heading6Text(
+                    body,
+                  ),
+                ).vp(12).ripple(() {
+                  OverlaySupportEntry.of(context)!.dismiss();
 
-                      // Live live = Live(
-                      //     channelName: channelName,
-                      //     isHosting: false,
-                      //     host: response.user!,
-                      //     token: agoraToken,
-                      //     liveId: liveId);
+                  // Live live = Live(
+                  //     channelName: channelName,
+                  //     isHosting: false,
+                  //     host: response.user!,
+                  //     token: agoraToken,
+                  //     liveId: liveId);
 
-                      // agoraLiveController.joinAsAudience(live: live);
-                    }),
-                  ).setPadding(top: 50, left: 8, right: 8).round(10),
-                );
-              }, duration: const Duration(milliseconds: 4000));
-            });
+                  // agoraLiveController.joinAsAudience(live: live);
+                }),
+              ).setPadding(top: 50, left: 8, right: 8).round(10),
+            );
+          }, duration: const Duration(milliseconds: 4000));
+        });
+
       }
     } else {
       // go to screen
@@ -387,6 +393,12 @@ class NotificationManager {
         int referenceId = int.parse(data['reference_id'] as String);
         // new competition added notification
         // Get.to(() => CompetitionDetailsScreen(competitionId: referenceId));
+      } else if (notificationType == 8) {
+        int referenceId = int.parse(data['reference_id'] as String);
+        // new gift received
+        Get.to(() => SinglePostDetail(
+              postId: referenceId,
+            ));
       } else if (notificationType == 100) {
         // print(data);
         int? roomId = data['room'] as int?;
@@ -396,52 +408,104 @@ class NotificationManager {
           });
         }
       } else if (notificationType == 101) {
-        // int liveId = int.parse(data['liveCallId'] as String);
-        // String channelName = data['channelName'];
-        // String agoraToken = data['token'];
         int userId = int.parse(data['userId'] as String);
+
+        UsersApi.getOtherUser(
+            userId: userId,
+            resultCallback: (user) {
+              // Live live = Live(
+              //     channelName: channelName,
+              //     isHosting: false,
+              //     host: response.user!,
+              //     token: agoraToken,
+              //     liveId: liveId,
+              //     mainHostUserDetail: null, id: null);
+              //
+              // _agoraLiveController.joinAsAudience(live: live);
+            });
       }
     }
   }
 }
 
-class AwesomeNotificationController {
-  /// Use this method to detect when a new notification or a schedule is created
-  @pragma("vm:entry-point")
-  static Future<void> onNotificationCreatedMethod(
-      ReceivedNotification receivedNotification) async {
-    // Your code goes here
+/// Use this method to detect when a new notification or a schedule is created
+@pragma("vm:entry-point")
+Future<void> onNotificationCreatedMethod(
+    ReceivedNotification receivedNotification) async {
+  // Your code goes here
+}
+
+/// Use this method to detect every time that a new notification is displayed
+@pragma("vm:entry-point")
+Future<void> onNotificationDisplayedMethod(
+    ReceivedNotification receivedNotification) async {
+  // Your code goes here
+}
+
+/// Use this method to detect if the user dismissed a notification
+@pragma("vm:entry-point")
+Future<void> onDismissActionReceivedMethod(
+    ReceivedAction receivedAction) async {
+  // Your code goes here
+}
+
+/// Use this method to detect when the user taps on a notification or action button
+@pragma("vm:entry-point")
+Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
+  SharedPrefs().setCallNotificationData(null);
+
+  // Your code goes here
+
+  // Future.delayed(Duration(seconds: 10), () {
+  //   Get.to(() => TestScreen(message: 'onActionReceivedMethod'));
+  // });
+
+  // Navigate into pages, avoiding to open the notification details page over another details page already opened
+
+  AwesomeNotifications().dismissAllNotifications();
+  if (receivedAction.buttonKeyPressed == "answer") {
+    performActionOnCallNotificationBanner(receivedAction.payload!, true, false);
+  } else if (receivedAction.buttonKeyPressed == "decline") {
+    performActionOnCallNotificationBanner(
+        receivedAction.payload!, false, false);
   }
+}
 
-  /// Use this method to detect every time that a new notification is displayed
-  @pragma("vm:entry-point")
-  static Future<void> onNotificationDisplayedMethod(
-      ReceivedNotification receivedNotification) async {
-    // Your code goes here
-  }
+performActionOnCallNotificationBanner(
+    Map<String, dynamic> data, bool accept, bool askConfirmation) {
+  final AgoraCallController agoraCallController = Get.find();
+  String channelName = data['channelName'] as String;
+  String token = data['token'] as String;
+  String callType = data['callType'] as String;
+  String id = data['id'] as String;
+  String uuid = data['uuid'] as String;
+  String callerId = data['callerId'] as String;
 
-  /// Use this method to detect if the user dismissed a notification
-  @pragma("vm:entry-point")
-  static Future<void> onDismissActionReceivedMethod(
-      ReceivedAction receivedAction) async {
-    // Your code goes here
-  }
+  UsersApi.getOtherUser(
+      userId: int.parse(callerId),
+      resultCallback: (user) {
+        Call call = Call(
+            uuid: uuid,
+            channelName: channelName,
+            isOutGoing: true,
+            opponent: user,
+            token: token,
+            callType: int.parse(callType),
+            callId: int.parse(id));
 
-  /// Use this method to detect when the user taps on a notification or action button
-  @pragma("vm:entry-point")
-  static Future<void> onActionReceivedMethod(
-      ReceivedAction receivedAction) async {
-    // Your code goes here
-
-    // Navigate into pages, avoiding to open the notification details page over another details page already opened
-
-    AwesomeNotifications().dismissAllNotifications();
-    if (receivedAction.buttonKeyPressed == "answer") {
-      NotificationManager()
-          .performActionOnCallNotificationBanner(receivedAction.payload!, true);
-    } else if (receivedAction.buttonKeyPressed == "decline") {
-      NotificationManager().performActionOnCallNotificationBanner(
-          receivedAction.payload!, false);
-    }
-  }
+        if (askConfirmation) {
+          runApp(Phoenix(
+              child: SocialifiedApp(
+            startScreen: AcceptCallScreen(
+              call: call,
+            ),
+          )));
+        } else {
+          if (accept) {
+            agoraCallController.initiateAcceptCall(call: call);
+          } else {
+            agoraCallController.declineCall(call: call);
+          }
+        }
+      });
 }

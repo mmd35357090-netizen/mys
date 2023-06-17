@@ -29,7 +29,7 @@ class HashTagsList extends StatelessWidget {
       }
     });
 
-    return _miscController.hashtagsIsLoading
+    return Obx(() => _miscController.hashtagsIsLoading
         ? const ShimmerHashtag()
         : _miscController.hashTags.isNotEmpty
             ? ListView.builder(
@@ -53,6 +53,6 @@ class HashTagsList extends StatelessWidget {
             : SizedBox(
                 height: Get.size.height * 0.5,
                 child: emptyData(title: noHashtagFoundString.tr, subTitle: ''),
-              );
+              ));
   }
 }

@@ -24,7 +24,7 @@ class UserInfo extends StatelessWidget {
       children: [
         UserAvatarView(
           user: model,
-          size: 50,
+          size: 40,
         ),
         const SizedBox(width: 10),
         Column(
@@ -220,10 +220,11 @@ class UserTile extends StatelessWidget {
                 onTapHandler: () {
                   Live live = Live(
                       channelName: profile.liveCallDetail!.channelName,
-                      isHosting: false,
-                      host: profile,
+                      // isHosting: false,
+                      mainHostUserDetail: profile,
+                      // battleUsers: [],
                       token: profile.liveCallDetail!.token,
-                      liveId: profile.liveCallDetail!.id);
+                      id: profile.liveCallDetail!.id);
                   agoraLiveController.joinAsAudience(
                     live: live,
                   );
@@ -340,6 +341,86 @@ class UserTile extends StatelessWidget {
   }
 }
 
+class InviteUserTile extends StatelessWidget {
+  final UserModel profile;
+
+  final VoidCallback? inviteCallback;
+
+  const InviteUserTile({
+    Key? key,
+    required this.profile,
+    this.inviteCallback,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final AgoraLiveController agoraLiveController = Get.find();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              UserAvatarView(
+                user: profile,
+                size: 40,
+                onTapHandler: () {
+                  Live live = Live(
+                      channelName: profile.liveCallDetail!.channelName,
+                      // isHosting: false,
+                      mainHostUserDetail: profile,
+                      // battleUsers: [],
+                      token: profile.liveCallDetail!.token,
+                      id: profile.liveCallDetail!.id);
+                  agoraLiveController.joinAsAudience(
+                    live: live,
+                  );
+                },
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BodyLargeText(
+                      profile.userName,
+                      // weight: TextWeight.regular,
+                      maxLines: 1,
+                    ).bP4,
+                    profile.country != null
+                        ? BodyMediumText(
+                            '${profile.city!}, ${profile.country!}',
+                          )
+                        : Container()
+                  ],
+                ).hP8,
+              ),
+              // const Spacer(),
+            ],
+          ),
+        ),
+        // const Spacer(),
+        SizedBox(
+          height: 35,
+          width: 120,
+          child: AppThemeBorderButton(
+              // icon: ThemeIcon.message,
+              text: inviteString.tr,
+              textStyle: TextStyle(
+                  fontSize: FontSizes.b2,
+                  fontWeight: TextWeight.medium,
+                  color: AppColorConstants.themeColor),
+              onPress: () {
+                if (inviteCallback != null) {
+                  inviteCallback!();
+                }
+              }),
+        ),
+      ],
+    );
+  }
+}
+
 class RelationUserTile extends StatelessWidget {
   final UserModel profile;
 
@@ -372,10 +453,11 @@ class RelationUserTile extends StatelessWidget {
               onTapHandler: () {
                 Live live = Live(
                     channelName: profile.liveCallDetail!.channelName,
-                    isHosting: false,
-                    host: profile,
+                    // isHosting: false,
+                    mainHostUserDetail: profile,
+                    // battleUsers: [],
                     token: profile.liveCallDetail!.token,
-                    liveId: profile.liveCallDetail!.id);
+                    id: profile.liveCallDetail!.id);
                 agoraLiveController.joinAsAudience(
                   live: live,
                 );
@@ -459,10 +541,11 @@ class ClubMemberTile extends StatelessWidget {
               onTapHandler: () {
                 Live live = Live(
                     channelName: member.user!.liveCallDetail!.channelName,
-                    isHosting: false,
-                    host: member.user!,
+                    // isHosting: false,
+                    mainHostUserDetail: member.user!,
+                    // battleUsers: [],
                     token: member.user!.liveCallDetail!.token,
-                    liveId: member.user!.liveCallDetail!.id);
+                    id: member.user!.liveCallDetail!.id);
                 agoraLiveController.joinAsAudience(
                   live: live,
                 );
