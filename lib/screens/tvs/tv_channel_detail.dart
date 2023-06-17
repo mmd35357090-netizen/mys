@@ -8,6 +8,7 @@ import 'package:readmore/readmore.dart' as read_more;
 
 import '../../components/live_tv_player.dart';
 import '../../components/media_card.dart';
+import '../../controllers/misc/rating_controller.dart';
 
 class TVChannelDetail extends StatefulWidget {
   final TvModel tvModel;
@@ -128,16 +129,14 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                       trimLines: 2,
                                       trimMode: read_more.TrimMode.Line,
                                       colorClickableText: Colors.white,
-                                      trimCollapsedText:
-                                          showMoreString.tr,
+                                      trimCollapsedText: showMoreString.tr,
                                       trimExpandedText:
                                           '    ${showLessString.tr}',
-
                                       style: TextStyle(
                                           fontSize: FontSizes.b2,
                                           fontWeight: TextWeight.regular,
                                           color:
-                                          AppColorConstants.grayscale900),
+                                              AppColorConstants.grayscale900),
                                       moreStyle: TextStyle(
                                           fontSize: FontSizes.b2,
                                           fontWeight: TextWeight.bold,
@@ -179,6 +178,8 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                       _tvStreamingController
                                           .tvShows[index].showTime);
                                   return MediaCard(model: model).ripple(() {
+                                    Get.lazyPut(() => RatingController());
+
                                     Get.to(() => TVShowDetail(
                                         tvModel: widget.tvModel,
                                         showModel: _tvStreamingController

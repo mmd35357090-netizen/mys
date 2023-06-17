@@ -3,15 +3,8 @@ import 'package:foap/apiHandler/apis/live_streaming_api.dart';
 import 'package:foap/apiHandler/apis/post_api.dart';
 import 'package:foap/apiHandler/apis/story_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
-import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
-import 'package:foap/screens/add_on/ui/reel/create_reel_video.dart';
-import 'package:foap/screens/live/live_users_screen.dart';
 import '../../apiHandler/apis/misc_api.dart';
 import '../../model/gift_model.dart';
-import '../../model/post_gift_model.dart';
-import '../../screens/chatgpt/chat_gpt.dart';
-import '../../screens/tvs/tv_dashboard.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../screens/add_on/model/polls_model.dart';
 import '../../model/post_model.dart';
@@ -22,12 +15,8 @@ import 'package:foap/model/story_model.dart';
 import 'package:foap/model/post_gallery.dart';
 import 'package:foap/model/post_search_query.dart';
 import 'package:foap/screens/dashboard/posts.dart';
-import 'package:foap/screens/highlights/choose_stories.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
-import 'package:foap/screens/story/choose_media_for_story.dart';
 import 'package:foap/screens/home_feed/quick_links.dart';
-import 'package:foap/screens/live/checking_feasibility.dart';
-import 'package:foap/screens/competitions/competitions_screen.dart';
 import 'package:foap/helper/list_extension.dart';
 
 class HomeController extends GetxController {
@@ -246,8 +235,7 @@ class HomeController extends GetxController {
   void getPolls() async {
     MiscApi.getPolls(resultCallback: (result) {
       polls.addAll(result);
-      polls.unique((e)=> e.id);
-
+      polls.unique((e) => e.id);
     });
   }
 
@@ -259,8 +247,7 @@ class HomeController extends GetxController {
         questionOptionId: questionOptionId,
         resultCallback: (result) {
           polls.addAll(result);
-          polls.unique((e)=> e.id);
-
+          polls.unique((e) => e.id);
         });
   }
 
@@ -290,7 +277,7 @@ class HomeController extends GetxController {
             posts.addAll(
                 result.where((element) => element.gallery.isNotEmpty).toList());
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
-            posts.unique((e)=> e.id);
+            posts.unique((e) => e.id);
 
             isRefreshingPosts.value = false;
 
@@ -309,10 +296,6 @@ class HomeController extends GetxController {
 
   setCurrentVisibleVideo(
       {required PostGallery media, required double visibility}) {
-    // print(visibility);
-    if (visibility < 20) {
-      currentVisibleVideoId.value = -1;
-    }
     _mediaVisibilityInfo[media.id] = visibility;
     double maxVisibility =
         _mediaVisibilityInfo[_mediaVisibilityInfo.keys.first] ?? 0;
@@ -320,16 +303,20 @@ class HomeController extends GetxController {
 
     for (int key in _mediaVisibilityInfo.keys) {
       double visibility = _mediaVisibilityInfo[key] ?? 0;
-      if (visibility >= maxVisibility) {
+
+      if (visibility >= maxVisibility && visibility > 20) {
+        maxVisibility = visibility;
         maxVisibilityMediaId = key;
       }
     }
 
     if (currentVisibleVideoId.value != maxVisibilityMediaId &&
-        visibility > 80) {
+        maxVisibility > 20) {
       currentVisibleVideoId.value = maxVisibilityMediaId;
-      // update();
+    } else if (maxVisibility <= 20) {
+      currentVisibleVideoId.value = -1;
     }
+
   }
 
   void reportPost(int postId) {
@@ -412,7 +399,7 @@ class HomeController extends GetxController {
 
         stories.add(story);
         stories.addAll(responses[1] as List<StoryModel>);
-        stories.unique((e)=> e.id);
+        stories.unique((e) => e.id);
 
         liveUsers.value = responses[2] as List<UserModel>;
       }
@@ -454,7 +441,7 @@ class HomeController extends GetxController {
 
     followersStories.addAll(notViewedStories);
     followersStories.addAll(viewedAllStories);
-    followersStories.unique((e)=> e.id);
+    followersStories.unique((e) => e.id);
 
     return followersStories;
   }

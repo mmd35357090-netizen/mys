@@ -16,6 +16,8 @@ String currentString = 'Current';
 String completedString = 'Completed';
 String winnersString = 'Winners';
 String winnerString = 'Winner';
+String battleDrawString = 'Battle Draw';
+
 String prizeString = 'Prize';
 String selectedString = 'Selected';
 String youString = 'You';
@@ -159,6 +161,7 @@ String enterPhoneNumberString = "Enter phone number";
 String pleaseEnterEmailString = 'Please enter email';
 String pleaseEnterPhoneString = 'Please enter phone number';
 String pleaseEnterMessageString = 'Please enter message';
+
 String pleaseEnterCountryString = 'Please enter country';
 String pleaseEnterCityString = 'Please enter city';
 String pleaseEnterPaypalIdString = 'Please enter paypal id';
@@ -528,8 +531,20 @@ String nameString = "Name";
 String hideString = "Hide";
 String choosePrivacyString = "Choose Privacy";
 String inviteString = "Invite";
+String inviteUserString = "Invite user";
+
 String previewString = "Preview";
 String seeAllString = "See All";
+String alreadyInvitedInLiveString =
+    "Already invited {{user_name}} in live and waiting for confirmation";
+
+String waitingToAcceptString = "Waiting to accept";
+String invitationDeclinedString = "Invitation declined";
+String invitationDeclinedByOpponentString =
+    "Your invitation for battle is declined by {{user_name}}";
+String noResponseString = "No response";
+String noResponseByOpponentString =
+    "No response from {{user_name}} on live battle request";
 
 String clubsString = "Clubs";
 String suggestedClubsString = "Suggested Clubs";
@@ -685,6 +700,9 @@ String goingLiveString = 'Going live';
 String goString = 'Go';
 
 String endLiveCallConfirmationString = 'Do you want to end live call?';
+String endLiveBattleConfirmationString = 'Do you want to end live battle?';
+
+String chooseBattleTimeString = 'Choose battle time';
 
 String totalUserJoinedString = 'User joined';
 String usersString = 'Users';
@@ -694,6 +712,9 @@ String durationString = 'Duration';
 String messagesString = 'Messages';
 String giftsString = 'Gifts';
 String sendGiftString = 'Send gift';
+String sendGiftToString = 'Send gift to';
+String topContributorsString = 'Top contributors';
+
 String sentAGiftString = 'Sent a gift';
 String coinsEarnedString = 'Coins earned';
 String giftSentString = 'Gift is sent successfully';
@@ -1098,3 +1119,7 @@ String followsString = 'Follows';
 String chatGPT = 'ChatGPT';
 String noLiveUserString = 'No live user found';
 String uploadPhotoString = 'Upload photo';
+
+String rateString = 'Rate';
+String ratingsString = 'Ratings';
+String ratingSubmittedString = "Rating submitted successfully";

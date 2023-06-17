@@ -35,14 +35,13 @@ class _CallHistoryState extends State<CallHistory> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-
             backNavigationBarWithIcon(
                 icon: ThemeIcon.mobile,
-                title: callLogString.tr,
+                title: callLogString,
                 iconBtnClicked: () {
                   selectUsers();
                 }),
-            divider().tP8,
+            // divider(context: context).tP8,
             Expanded(
               child: GetBuilder<CallHistoryController>(
                   init: _callHistoryController,
@@ -68,8 +67,8 @@ class _CallHistoryState extends State<CallHistory> {
                                           _callHistoryController.calls[index])
                                   .ripple(() {
                                 _callHistoryController.reInitiateCall(
-                                    call: _callHistoryController.calls[index],
-                                    );
+                                  call: _callHistoryController.calls[index],
+                                );
                               });
                             },
                             separatorBuilder: (ctx, index) {
@@ -81,9 +80,9 @@ class _CallHistoryState extends State<CallHistory> {
                         : _callHistoryController.isLoading == true
                             ? Container()
                             : emptyData(
-                                title: noCallFoundString.tr,
-                                subTitle: makeSomeCallsString.tr,
-                               );
+                                title: noCallFoundString,
+                                subTitle: makeSomeCallsString,
+                              );
                   }).hP16,
             ),
           ],
@@ -91,22 +90,18 @@ class _CallHistoryState extends State<CallHistory> {
   }
 
   void selectUsers() {
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
+    Get.to(() => SelectUserForChat(userSelected: (user) {
+          _chatDetailController.getChatRoomWithUser(
+              userId: user.id,
+              callback: (room) {
+                EasyLoading.dismiss();
 
-        builder: (context) => SelectUserForChat(userSelected: (user) {
-              _chatDetailController.getChatRoomWithUser(
-                  userId: user.id,
-                  callback: (room) {
-                    EasyLoading.dismiss();
-
-                    Get.back();
-                    Get.to(() => ChatDetail(
-                          // opponent: usersList[index - 1].toChatRoomMember,
-                          chatRoom: room,
-                        ));
-                  });
-            }));
+                Get.back();
+                Get.to(() => ChatDetail(
+                      // opponent: usersList[index - 1].toChatRoomMember,
+                      chatRoom: room,
+                    ));
+              });
+        }));
   }
 }

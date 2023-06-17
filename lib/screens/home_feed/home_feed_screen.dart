@@ -249,10 +249,11 @@ class HomeFeedState extends State<HomeFeedScreen> {
               joinLiveUserCallback: (user) {
                 Live live = Live(
                     channelName: user.liveCallDetail!.channelName,
-                    isHosting: false,
-                    host: user,
+                    // isHosting: false,
+                    mainHostUserDetail: user,
+                    // battleUsers: [],
                     token: user.liveCallDetail!.token,
-                    liveId: user.liveCallDetail!.id);
+                    id: user.liveCallDetail!.id);
                 _agoraLiveController.joinAsAudience(
                   live: live,
                 );

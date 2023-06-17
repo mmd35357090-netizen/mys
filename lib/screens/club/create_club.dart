@@ -252,7 +252,7 @@ class CreateClubState extends State<CreateClub> {
       _createClubController.updateClubInfo(
           club: widget.club,
           callback: () {
-            _clubDetailController.setEvent(widget.club);
+            _clubDetailController.setClub(widget.club);
           });
     }
   }

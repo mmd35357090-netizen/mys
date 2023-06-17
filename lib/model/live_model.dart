@@ -7,8 +7,8 @@ class LiveModel {
   int startTime = 0;
   int endTime = 0;
   int totalTime = 0;
+  bool isBattle = false;
   GiftSummary? giftSummary;
-
   String? startedAt;
 
   LiveModel();

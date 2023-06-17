@@ -12,8 +12,10 @@ import '../../apiHandler/apis/misc_api.dart';
 import '../../helper/imports/chat_imports.dart';
 import '../../model/comment_model.dart';
 import '../../model/hash_tag.dart';
+
 import '../../screens/settings_menu/settings_controller.dart';
 import '../../util/constant_util.dart';
+import '../misc/users_controller.dart';
 
 class CommentsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
@@ -37,9 +39,9 @@ class CommentsController extends GetxController {
   bool canLoadMoreHashtags = true;
   bool hashtagsIsLoading = false;
 
-  int accountsPage = 1;
-  bool canLoadMoreAccounts = true;
-  bool accountsIsLoading = false;
+  // int accountsPage = 1;
+  // bool canLoadMoreAccounts = true;
+  // bool accountsIsLoading = false;
 
   int commentsPage = 1;
   bool canLoadMoreComments = true;
@@ -54,9 +56,9 @@ class CommentsController extends GetxController {
     canLoadMoreHashtags = true;
     hashtagsIsLoading = false;
 
-    accountsPage = 1;
-    canLoadMoreAccounts = true;
-    accountsIsLoading = false;
+    // accountsPage = 1;
+    // canLoadMoreAccounts = true;
+    // accountsIsLoading = false;
 
     comments.clear();
     commentsPage = 1;
@@ -216,26 +218,7 @@ class CommentsController extends GetxController {
   }
 
   searchUsers({required String text, VoidCallback? callback}) {
-    if (canLoadMoreAccounts) {
-      accountsIsLoading = true;
-      UsersApi.searchUsers(
-          page: accountsPage,
-          isExactMatch: 0,
-          searchText: text,
-          resultCallback: (result, metadata) {
-            searchedUsers.addAll(result);
-            searchedUsers.unique((e) => e.id);
-
-            accountsIsLoading = false;
-            canLoadMoreAccounts = result.length >= metadata.perPage;
-            accountsPage += 1;
-
-            if (callback != null) {
-              callback();
-            }
-            update();
-          });
-    }
+    _usersController.setSearchTextFilter(text);
   }
 
   textChanged(String text, int position) {

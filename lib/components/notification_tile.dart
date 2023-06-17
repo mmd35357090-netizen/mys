@@ -32,9 +32,9 @@ class NotificationTileType4 extends StatelessWidget {
             children: [
               BodyMediumText(notification.title, weight: TextWeight.semiBold)
                   .bP8,
-              BodyMediumText(
-                notification.message,
-              ).bP8,
+              // BodyMediumText(
+              //   notification.message,
+              // ).bP8,
               BodySmallText(
                 notification.notificationTime(),
                 color: AppColorConstants.grayscale500,
@@ -47,6 +47,7 @@ class NotificationTileType4 extends StatelessWidget {
           CachedNetworkImage(
                   height: 60,
                   width: 60,
+                  fit: BoxFit.cover,
                   imageUrl: notification.post!.gallery.first.thumbnail)
               .round(10),
         if (notification.type == NotificationType.follow)

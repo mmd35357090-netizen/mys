@@ -13,16 +13,14 @@ import 'package:foap/controllers/home/home_controller.dart';
 import 'package:foap/controllers/tv/live_tv_streaming_controller.dart';
 import 'package:foap/controllers/chat_and_call/voip_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/models.dart';
 import 'package:foap/helper/socket_constants.dart';
 import 'package:foap/helper/string_extension.dart';
 import 'package:foap/manager/db_manager.dart';
 import 'package:foap/manager/socket_manager.dart';
-import 'package:foap/model/chat_message_model.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/util/constant_util.dart';
-import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-
 export 'package:foap/helper/socket_constants.dart';
 
 class CachedRequest {
@@ -71,7 +69,7 @@ class SocketManager {
     // if(_socketInstance!.connected == false){
     _socketInstance?.connect();
     // }
-    print('socket connected');
+    print('socket connecting');
 
     socketGlobalListeners();
 
@@ -87,6 +85,11 @@ class SocketManager {
 
 //Socket Global Listener Events
   dynamic socketGlobalListeners() {
+    _socketInstance?.onAny((event, data) {
+      print('event $event');
+      print('data $data');
+      // Handle the incoming event and data here
+    });
     _socketInstance?.on(SocketConstants.eventConnect, onConnect);
     _socketInstance?.on(SocketConstants.eventDisconnect, onDisconnect);
     _socketInstance?.on(SocketConstants.onSocketError, onConnectError);
@@ -130,7 +133,19 @@ class SocketManager {
     _socketInstance?.on(SocketConstants.leaveLive, onUserLeaveLive);
     _socketInstance?.on(SocketConstants.endLive, onLiveEnd);
     _socketInstance?.on(SocketConstants.sendMessageInLive, newMessageInLive);
+    _socketInstance?.on(
+        SocketConstants.newGiftReceivedInLiveCall, newGiftReceivedInLiveCall);
 
+    _socketInstance?.on(SocketConstants.invitedInLive, invitedInLive);
+    _socketInstance?.on(
+        SocketConstants.replyInvitationInLive, repliedInvitationInLive);
+    _socketInstance?.on(
+        SocketConstants.inviteInLiveConfirmation, invitedInLiveConfirmation);
+    _socketInstance?.on(
+        SocketConstants.liveBattleStatusUpdated, liveBattleStatusUpdated);
+    _socketInstance?.on(
+        SocketConstants.liveBattleHostUpdated, liveBattleHostUpdated);
+    _socketInstance?.on(SocketConstants.endLiveBattle, endLiveBattle);
     // live tv
     _socketInstance?.on(
         SocketConstants.sendMessageInLiveTv, onReceiveMessageInLiveTv);
@@ -151,6 +166,8 @@ class SocketManager {
 
 //Get This Event After Successful Connection To Socket
   dynamic onConnect(_) {
+    print('socket connected');
+
     emit(SocketConstants.login, {
       'userId': _userProfileManager.user.value!.id,
       'username': _userProfileManager.user.value!.userName
@@ -387,16 +404,173 @@ class SocketManager {
   }
 
   void onUserLeaveLive(dynamic response) {
-    _agoraLiveController.onUserLeave(response['userId']);
+    int userId = response['userId'];
+    int liveId = response['liveCallId'];
+
+    _agoraLiveController.onUserLeave(userId: userId, liveId: liveId);
   }
 
   void onLiveEnd(dynamic response) {
     _homeController.liveUsersUpdated();
-    _agoraLiveController.onLiveEnd(response['liveCallId']);
+    _agoraLiveController.onLiveEndMessageReceived(response['liveCallId']);
+  }
+
+  void invitedInLive(dynamic response) {
+    UserModel host = UserModel();
+    host.id = response['userId'];
+    host.userName = response['username'];
+    host.picture = response['userImageUrl'];
+
+    Live live = Live(
+        channelName: response['channelName'],
+        mainHostUserDetail: host,
+        // battleUsers: [],
+        token: response['token'],
+        id: response['liveCallId']);
+    live.battleDetail =
+        BattleDetail.fromJson(response['battleInfo']['battleDetail']);
+    _agoraLiveController.invitedForLiveBattle(live);
+  }
+
+  void repliedInvitationInLive(dynamic response) {}
+
+  void invitedInLiveConfirmation(dynamic response) {}
+
+  void liveBattleStatusUpdated(dynamic response) async {
+    int status = response['status'];
+    int liveId = response['liveCallId'];
+
+    if (status == 4) {
+      BattleDetail battleDetail =
+          BattleDetail.fromJson(response['battleInfo']['battleDetail']);
+
+      List<LiveCallHostUser> battleUsers =
+          (response['battleInfo']['liveBattleHosts'] as List)
+              .map((e) => LiveCallHostUser.fromJson(e))
+              .toList();
+
+      print('battleUsers found ${battleUsers.length}');
+
+      // for (Map<String, dynamic> host in response['battleInfo']
+      //     ['liveBattleHosts']) {
+      //   await UsersApi.getOtherUser(
+      //       userId: host['userId'],
+      //       resultCallback: (user) {
+      //         battleUsers.add(LiveCallHostUser(
+      //             battleId: host['battleId'],
+      //             userDetail: user,
+      //             totalCoins: host['totalCoin'] == null
+      //                 ? 0
+      //                 : int.parse(host['totalCoin'].toString()),
+      //             totalGifts: host['totalGift'] == null
+      //                 ? 0
+      //                 : int.parse(host['totalGift'].toString()),
+      //             isMainHost: host['isSuperHost'] == 1));
+      //       });
+      // }
+
+      battleDetail.battleUsers = battleUsers;
+      // invitation request accepted
+      _agoraLiveController.userAcceptedLiveBattle(
+          liveId: liveId, battleDetail: battleDetail);
+    } else if (status == 3) {
+      // invitation request declined
+      _agoraLiveController.userDeclinedLiveBattle(liveId: liveId);
+    }
+  }
+
+  void liveBattleHostUpdated(dynamic response) async {
+    int liveId = response['liveCallId'];
+
+    List<LiveCallHostUser> battleUsers =
+        (response['battleInfo']['liveBattleHosts'] as List)
+            .map((e) => LiveCallHostUser.fromJson(e))
+            .toList();
+
+    // for (Map<String, dynamic> host in response['battleInfo']
+    //     ['liveBattleHosts']) {
+    //   await UsersApi.getOtherUser(
+    //       userId: host['userId'],
+    //       resultCallback: (user) {
+    //         hostUsers.add(LiveCallHostUser(
+    //             battleId: host['battleId'],
+    //             userDetail: user,
+    //             totalCoins: host['totalCoin'] == null
+    //                 ? 0
+    //                 : int.parse(host['totalCoin'].toString()),
+    //             totalGifts: host['totalGift'] == null
+    //                 ? 0
+    //                 : int.parse(host['totalGift'].toString()),
+    //             isMainHost: host['isSuperHost'] == 1));
+    //       });
+    // }
+
+    _agoraLiveController.liveCallHostsUpdated(
+        liveId: liveId,
+        hosts: battleUsers,
+        battleDetail: battleUsers.isNotEmpty
+            ? BattleDetail.fromJson(response['battleInfo']['battleDetail'])
+            : null);
+  }
+
+  void endLiveBattle(dynamic response) async {
+    int liveId = response['liveCallId'];
+    int battleId = response['battleId'];
+
+    _agoraLiveController.liveBattleEnded(liveId: liveId, battleId: battleId);
+  }
+
+  void newGiftReceivedInLiveCall(dynamic response) async {
+    int liveId = response['liveCallId'];
+    int giftId = response['giftId'];
+    String giftUrl = response['giftUrl'];
+    String giftName = response['name'];
+    int giftCoins = response['coin'];
+    int senderId = response['senderId'];
+    String senderName = response['senderName'];
+
+    String senderImage = response['senderImageUrl'];
+    int receiverId = response['userId'];
+
+    UserModel sentBy = UserModel();
+    sentBy.id = senderId;
+    sentBy.userName = senderName;
+    sentBy.picture = senderImage;
+
+    GiftModel gift =
+        GiftModel(id: giftId, name: giftName, logo: giftUrl, coins: giftCoins);
+
+    List<LiveCallHostUser> hostUsers = [];
+
+    for (Map<String, dynamic> host in response['battleInfo']
+        ['liveBattleHosts']) {
+      await UsersApi.getOtherUser(
+          userId: host['userId'],
+          resultCallback: (user) {
+            hostUsers.add(LiveCallHostUser(
+                // battleId: host['battleId'],
+                userDetail: user,
+                totalCoins: host['totalCoin'] == null
+                    ? 0
+                    : int.parse(host['totalCoin'].toString()),
+                totalGifts: host['totalGift'] == null
+                    ? 0
+                    : int.parse(host['totalGift'].toString()),
+                isMainHost: host['isSuperHost'] == 1));
+          });
+    }
+
+    _agoraLiveController.onGiftReceived(
+        liveId: liveId, gift: gift, sentBy: sentBy, sentToUserId: receiverId);
+    _agoraLiveController.liveCallHostsUpdated(
+        liveId: liveId,
+        hosts: hostUsers,
+        battleDetail: hostUsers.isNotEmpty
+            ? BattleDetail.fromJson(response['battleInfo']['battleDetail'])
+            : null);
   }
 
   // live tv
-
   void onReceiveMessageInLiveTv(dynamic response) async {
     ChatMessageModel message = ChatMessageModel.fromJson(response);
 

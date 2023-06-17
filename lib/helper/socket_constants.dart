@@ -50,6 +50,18 @@ class SocketConstants {
   static const String sendMessageInLive = "sendMessageLiveCall";
   static const String endLive = "endLiveCall";
   static const String leaveLive = "leaveUserLiveCall";
+  static const String inviteInLive = "inviteUserInLiveBattle";
+  static const String invitedInLive = "newliveBattleInvitation";
+
+  static const String replyInvitationInLive = "replyLiveBattleInvitation";
+  static const String inviteInLiveConfirmation =
+      "inviteUserInLiveBattleConfirm";
+  static const String liveBattleStatusUpdated = "liveBattleInvitationUpated";
+  static const String liveBattleHostUpdated = "liveBattleHostUpdated";
+  static const String endLiveBattle = "endLiveBattle";
+
+  static const String sendGiftLiveCall = "sendGiftLiveCall";
+  static const String newGiftReceivedInLiveCall = "newGiftReceivedliveCall";
 
   // livetv
   static const String joinLiveTv = "addUserLiveTv";

@@ -144,7 +144,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
   updateBtnClicked() {
     _createClubsController.updateClubImage(widget.club, context, (club) {
       // widget.submittedCallback(widget.club);
-      _clubDetailController.setEvent(widget.club);
+      _clubDetailController.setClub(widget.club);
 
     });
   }

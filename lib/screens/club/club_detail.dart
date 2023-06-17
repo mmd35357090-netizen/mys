@@ -36,7 +36,7 @@ class ClubDetailState extends State<ClubDetail> {
 
   @override
   void initState() {
-    _clubDetailController.setEvent(widget.club);
+    _clubDetailController.setClub(widget.club);
     refreshPosts();
     _clubDetailController.getClubJoinRequests(clubId: widget.club.id!);
     super.initState();

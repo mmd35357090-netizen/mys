@@ -1,6 +1,8 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
+import '../components/timer_view.dart';
+
 class AppUtil {
   static showToast({required String message, required bool isSuccess}) {
     Get.snackbar(isSuccess == true ? successString.tr : errorString.tr, message,
@@ -126,7 +128,8 @@ class AppUtil {
   static void showNewConfirmationAlert(
       {required String title,
       required String subTitle,
-      required VoidCallback okHandler}) {
+      required VoidCallback okHandler,
+      required VoidCallback cancelHandler}) {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: Get.context!,
@@ -174,6 +177,102 @@ class AppUtil {
                     )
                         .makeChip(backGroundColor: AppColorConstants.red)
                         .ripple(() {
+                      cancelHandler();
+                      Get.back(closeOverlays: true);
+                    }),
+                  ],
+                ),
+              ],
+            )
+          ],
+        ).hP16,
+      ).round(20),
+    );
+  }
+
+  static void showNewConfirmationAlertWithTimer(
+      {required String title,
+      required String subTitle,
+      required int time,
+      required VoidCallback okHandler,
+      required VoidCallback cancelHandler}) {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: Get.context!,
+      builder: (context) => Container(
+        height: 220,
+        width: Get.width,
+        color: AppColorConstants.backgroundColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                height: 30,
+                width: 120,
+                color: AppColorConstants.red,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const ThemeIconWidget(
+                      ThemeIcon.clock,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 5),
+                    Center(
+                        child: UnlockTimerView(
+                      unlockTime: time,
+                      completionHandler: () {
+                        Get.back(closeOverlays: true);
+                        // cancelHandler();
+                      },
+                    )),
+                  ],
+                ).hP4,
+              ).bottomRounded(10),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Heading3Text(
+              title,
+              color: AppColorConstants.themeColor,
+              weight: TextWeight.bold,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            BodyLargeText(
+              subTitle,
+              weight: TextWeight.regular,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Column(
+              children: [
+                Wrap(
+                  spacing: 20,
+                  children: [
+                    BodyLargeText(
+                      acceptString,
+                      color: AppColorConstants.grayscale100,
+                    )
+                        .makeChip(
+                            backGroundColor: AppColorConstants.grayscale900)
+                        .ripple(() {
+                      Get.back(closeOverlays: true);
+                      okHandler();
+                    }),
+                    BodyLargeText(
+                      declineString,
+                      color: Colors.white,
+                    )
+                        .makeChip(backGroundColor: AppColorConstants.red)
+                        .ripple(() {
+                      cancelHandler();
                       Get.back(closeOverlays: true);
                     }),
                   ],

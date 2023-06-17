@@ -38,7 +38,7 @@ class ClubDetailController extends GetxController {
     canLoadMoreJoinRequests = true;
   }
 
-  setEvent(ClubModel clubObj) {
+  setClub(ClubModel clubObj) {
     club.value = clubObj;
     club.refresh();
 

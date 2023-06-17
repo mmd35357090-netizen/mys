@@ -72,10 +72,10 @@ class TVModuleApi {
       if (result?.success == true) {
         var tvShowEpisode = result!.data['tvShowEpisode'];
         var items = tvShowEpisode['items'];
-        if (url == NetworkConstantsUtil.getTVShowEpisodes) {
+        // if (url == NetworkConstantsUtil.getTVShowEpisodes) {
           resultCallback(List<TVShowEpisodeModel>.from(
               items.map((x) => TVShowEpisodeModel.fromJson(x))));
-        }
+        // }
       }
     });
   }

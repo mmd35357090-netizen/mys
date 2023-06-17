@@ -1,5 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/models.dart';
 import 'package:foap/model/user_model.dart';
+
+import '../controllers/live/agora_live_controller.dart';
 
 class Call {
   final String uuid;
@@ -22,16 +25,189 @@ class Call {
 }
 
 class Live {
+  UserProfileManager userProfileManager = Get.find();
   final String channelName;
-  final bool isHosting;
-  final UserModel host;
-  final String token;
-  final int liveId;
 
-  Live(
-      {required this.channelName,
-      required this.isHosting,
-      required this.host,
-      required this.token,
-      required this.liveId});
+  // List<LiveCallHostUser> battleUsers = [];
+  UserModel? invitedUserDetail;
+  UserModel mainHostUserDetail;
+  BattleDetail? battleDetail;
+
+  final String token;
+  final int id;
+
+  Live({
+    required this.channelName,
+    required this.mainHostUserDetail,
+    // required this.battleUsers,
+    this.invitedUserDetail,
+    required this.token,
+    required this.id,
+  });
+
+  bool isPendingInvitation() {
+    return invitedUserDetail != null;
+  }
+
+  bool get amIMainHostInLive {
+    return mainHostUserDetail.id == userProfileManager.user.value!.id;
+  }
+
+  bool get amIHostInLive {
+    if ((battleDetail?.battleUsers ?? []).isNotEmpty) {
+      return battleDetail!.amIHostInLive;
+    }
+    return mainHostUserDetail.id == userProfileManager.user.value!.id;
+  }
+
+  BattleStatus get battleStatus {
+    if (battleDetail == null) {
+      return BattleStatus.none;
+    }
+    return battleDetail!.battleStatus;
+  }
+
+  bool get canInvite {
+    return invitedUserDetail == null && battleStatus == BattleStatus.none;
+  }
+
+  clearBattleData() {
+    battleDetail = null;
+    invitedUserDetail = null;
+  }
 }
+
+class BattleDetail {
+  UserProfileManager userProfileManager = Get.find();
+
+  final int id;
+  final int mainHostId;
+  final int opponentHostId;
+  final int timeRemainingInBattle;
+  final int totalBattleTime;
+
+  List<LiveCallHostUser> battleUsers = [];
+  BattleStatus battleStatus = BattleStatus.none;
+
+  BattleDetail({
+    required this.id,
+    required this.mainHostId,
+    required this.opponentHostId,
+    required this.timeRemainingInBattle,
+    required this.totalBattleTime
+  });
+
+  factory BattleDetail.fromJson(Map<String, dynamic> json) => BattleDetail(
+      id: json["id"],
+      mainHostId: json["super_host_user_id"],
+      opponentHostId: json["host_user_id"],
+      timeRemainingInBattle: json["timeToEnd"],
+      totalBattleTime: json["total_allowed_time"]);
+
+  bool get amIMainHostInLive {
+    return mainHost.userDetail.id == userProfileManager.user.value!.id;
+  }
+
+  bool get amIHostInLive {
+    if (battleUsers.isEmpty) {
+      return (mainHost.userDetail.id == userProfileManager.user.value!.id);
+    }
+    return battleUsers
+            .where((element) =>
+                element.userDetail.id == userProfileManager.user.value!.id)
+            .isNotEmpty ||
+        amIMainHostInLive;
+  }
+
+  LiveCallHostUser get mainHost {
+    print('battleUsers ${battleUsers.map((e) => e.isMainHost)}');
+    return battleUsers.where((element) => element.isMainHost == true).first;
+  }
+
+  LiveCallHostUser get opponentHost {
+    return battleUsers.where((element) => element.isMainHost == false).first;
+  }
+
+  LiveCallHostUser get otherHost {
+    return battleUsers
+        .where((element) =>
+            element.userDetail.id != userProfileManager.user.value!.id)
+        .first;
+  }
+
+  LiveCallHostUser get loggedInHost {
+    return battleUsers
+        .where((element) =>
+            element.userDetail.id == userProfileManager.user.value!.id)
+        .first;
+  }
+
+  bool isMainHost(int userId) {
+    return mainHost.userDetail.id == userProfileManager.user.value!.id;
+  }
+
+  bool isHost(int userId) {
+    return battleUsers
+        .where((element) => element.userDetail.id == userId)
+        .isNotEmpty;
+  }
+
+  double percentageOfCoinsFor(LiveCallHostUser host) {
+    if (battleUsers.isEmpty) {
+      return 0.5;
+    }
+    LiveCallHostUser otherHost = battleUsers
+        .where((element) => element.userDetail.id != host.userDetail.id)
+        .first;
+    if (host.totalCoins == 0 && otherHost.totalCoins == 0) {
+      return 0.5;
+    }
+
+    return (host.totalCoins / (host.totalCoins + otherHost.totalCoins));
+  }
+
+  LiveCallHostUser get winnerHost {
+    LiveCallHostUser userWithHighestCoins = battleUsers[0];
+
+    for (int i = 1; i < battleUsers.length; i++) {
+      if (battleUsers[i].totalCoins > userWithHighestCoins.totalCoins) {
+        userWithHighestCoins = battleUsers[i];
+      }
+    }
+
+    return userWithHighestCoins;
+  }
+
+  LiveBattleResultType get resultType {
+    if (battleUsers[0].totalCoins == battleUsers[1].totalCoins) {
+      return LiveBattleResultType.draw;
+    }
+    return LiveBattleResultType.winner;
+  }
+}
+
+// class BattleResultDetail {
+//   final List<LiveCallHostUser> users;
+//   final List<ReceivedGiftModel> gifts;
+//
+//   BattleResultDetail({
+//     required this.users,
+//     required this.gifts,
+//   });
+//
+//   factory BattleResultDetail.fromJson(Map<String, dynamic> json) =>
+//       BattleResultDetail(
+//         users: json["battleUser"] == null
+//             ? []
+//             : (json["battleUser"] as List)
+//                 .map((e) => LiveCallHostUser.fromJson(e))
+//                 .toList(),
+//         gifts: json["gift"] == null
+//             ? []
+//             : (json["gift"]['items'] as List)
+//                 .map((e) => ReceivedGiftModel.fromJson(e))
+//                 .toList(),
+//       );
+//
+//
+// }

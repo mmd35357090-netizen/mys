@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 
-
 class MediaListViewerController extends GetxController {
   int currentIndex = 0;
   RxList<ChatMessageModel> messages = <ChatMessageModel>[].obs;

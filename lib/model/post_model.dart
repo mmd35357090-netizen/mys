@@ -2,10 +2,7 @@ import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_gallery.dart';
 import 'package:foap/screens/add_on/model/reel_music_model.dart';
-
-// import 'package:timeago/timeago.dart' as timeago;
 import 'club_model.dart';
-import 'package:get/get.dart';
 
 class PostModel {
   int id = 0;

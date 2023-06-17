@@ -1,4 +1,5 @@
 import 'package:foap/apiHandler/apis/tv_api.dart';
+import 'package:foap/controllers/misc/rating_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/model/category_model.dart';
@@ -114,8 +115,8 @@ class TvStreamingController extends GetxController {
       TVModuleApi.getTvs(
           page: liveTvsCurrentPage,
           resultCallback: (result, metaData) {
-            tvs.addAll(result) ;
-            tvs.unique((e)=> e.id);
+            tvs.addAll(result);
+            tvs.unique((e) => e.id);
 
             canLoadMoreLiveTvs = tvs.length >= metaData.perPage;
             if (canLoadMoreLiveTvs) {
@@ -133,8 +134,8 @@ class TvStreamingController extends GetxController {
           categoryId: categoryId,
           name: name,
           resultCallback: (result, metaData) {
-            tvs.addAll(result) ;
-            tvs.unique((e)=> e.id);
+            tvs.addAll(result);
+            tvs.unique((e) => e.id);
 
             canLoadMoreTvs = tvs.length >= metaData.perPage;
             if (canLoadMoreTvs) {
@@ -153,7 +154,7 @@ class TvStreamingController extends GetxController {
           page: favTvsCurrentPage,
           resultCallback: (result, metadata) {
             tvs.addAll(result);
-            tvs.unique((e)=> e.id);
+            tvs.unique((e) => e.id);
 
             canLoadMoreFavTvs = tvs.length >= metadata.perPage;
             isLoadingFavTvs = false;
@@ -172,7 +173,7 @@ class TvStreamingController extends GetxController {
           page: subscribedTvsCurrentPage,
           resultCallback: (result, metadata) {
             tvs.addAll(result);
-            tvs.unique((e)=> e.id);
+            tvs.unique((e) => e.id);
 
             isLoadingSubscribedTvs = false;
             subscribedTvsCurrentPage += 1;

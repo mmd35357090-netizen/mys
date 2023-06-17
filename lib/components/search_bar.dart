@@ -97,7 +97,9 @@ class _SFSearchBarState extends State<SFSearchBar> {
                   })
                 : Container(),
             Expanded(
+
               child: TextField(
+                  autocorrect: false,
                   controller: controller,
                   onEditingComplete: () {
                     onSearchCompleted(controller.text);

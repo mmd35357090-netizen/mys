@@ -80,7 +80,7 @@ Widget backNavigationBarWithIcon(
           ),
         ),
       ],
-    ).setPadding(left: 16, right: 16, top: 45),
+    ).setPadding(left: 16, right: 16, top: 20),
   );
 }
 
@@ -199,7 +199,7 @@ Widget titleNavigationBarWithIcon(
       BodyLargeText(title.tr, weight: TextWeight.medium),
       ThemeIconWidget(
         icon,
-        color: iconColor ??  AppColorConstants.iconColor,
+        color: iconColor ?? AppColorConstants.iconColor,
         size: 25,
       ).ripple(() {
         completion();

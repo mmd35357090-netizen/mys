@@ -80,4 +80,14 @@ extension StringExtension on String {
       return this;
     }
   }
+
+  String get getInitials {
+    List<String> nameParts = trim().split(' ');
+    if (nameParts.length > 1) {
+      return nameParts[0].substring(0, 1).toUpperCase() +
+          nameParts[1].substring(0, 1).toUpperCase();
+    } else {
+      return nameParts[0].substring(0, 1).toUpperCase();
+    }
+  }
 }

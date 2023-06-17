@@ -122,3 +122,4 @@ enum NotificationType {
 }
 
 enum CommentType { text, image, video, gif }
+enum LiveBattleResultType { winner, draw }

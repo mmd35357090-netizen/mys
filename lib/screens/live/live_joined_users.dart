@@ -28,10 +28,7 @@ class _LiveJoinedUsersState extends State<LiveJoinedUsers> {
           const SizedBox(
             height: 20,
           ),
-          Heading6Text(
-            joinedUsersString.tr,
-              weight: TextWeight.bold
-          ),
+          Heading6Text(joinedUsersString.tr, weight: TextWeight.bold),
           const SizedBox(
             height: 20,
           ),
@@ -44,7 +41,8 @@ class _LiveJoinedUsersState extends State<LiveJoinedUsers> {
                       padding: const EdgeInsets.only(top: 20),
                       itemBuilder: (ctx, index) {
                         return UserTile(
-                            profile: agoraLiveController.currentJoinedUsers[index]);
+                            profile:
+                                agoraLiveController.currentJoinedUsers[index]);
                       },
                       separatorBuilder: (ctx, index) {
                         return const SizedBox(
@@ -56,6 +54,6 @@ class _LiveJoinedUsersState extends State<LiveJoinedUsers> {
           ),
         ],
       ).hP16,
-    );
+    ).topRounded(40);
   }
 }

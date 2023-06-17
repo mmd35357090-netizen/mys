@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import '../../controllers/misc/rating_controller.dart';
 import '../../model/category_model.dart';
 import '../../model/tv_banner_model.dart';
 import 'package:foap/model/live_tv_model.dart';
@@ -236,16 +237,14 @@ class _TvListHomeState extends State<TvListHome> {
     if (banner.bannerType == TvBannerType.show) {
       _tvStreamingController.getTvShowById(banner.referenceId!, () {
         _tvStreamingController.getTvChannelById(
-            _tvStreamingController.showDetail.value!.tvChannelId!,
-            () => {
-                  if (_tvStreamingController.tvChannelDetail.value != null)
-                    {
-                      Get.to(() => TVShowDetail(
-                          tvModel:
-                              _tvStreamingController.tvChannelDetail.value!,
-                          showModel: _tvStreamingController.showDetail.value!))
-                    }
-                });
+            _tvStreamingController.showDetail.value!.tvChannelId!, () {
+          if (_tvStreamingController.tvChannelDetail.value != null) {
+            Get.lazyPut(() => RatingController());
+            Get.to(() => TVShowDetail(
+                tvModel: _tvStreamingController.tvChannelDetail.value!,
+                showModel: _tvStreamingController.showDetail.value!));
+          }
+        });
         //find channel id in array
       });
     }

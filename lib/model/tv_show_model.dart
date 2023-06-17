@@ -1,3 +1,4 @@
+import 'package:foap/model/rating_model.dart';
 import 'package:intl/intl.dart';
 
 class TVShowModel {
@@ -13,6 +14,8 @@ class TVShowModel {
   int? createdBy;
   String? showTime;
   String? imageUrl;
+  double? ratingScore;
+  int? totalRatings;
 
   TVShowModel(
       {this.id,
@@ -26,7 +29,9 @@ class TVShowModel {
       this.createdAt,
       this.createdBy,
       this.showTime,
-      this.imageUrl});
+      this.imageUrl,
+      this.totalRatings,
+      this.ratingScore});
 
   TVShowModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -39,8 +44,11 @@ class TVShowModel {
     image = json['image'];
     createdAt = json['created_at'];
     createdBy = json['created_by'];
-    showTime = DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(json['show_time'] * 1000));
+    showTime = DateFormat('dd-MM-yyyy hh:mm a')
+        .format(DateTime.fromMillisecondsSinceEpoch(json['show_time'] * 1000));
     imageUrl = json['imageUrl'];
+    totalRatings = json['rating']['totalCount'] ?? 0;
+    ratingScore = json['rating']['ratingScore'] ?? 0;
   }
 }
 
@@ -53,21 +61,23 @@ class TVShowEpisodeModel {
   String? imageUrl;
   String? videoUrl;
 
-  TVShowEpisodeModel(
-      {this.id,
-        this.name,
-        this.tvShowId,
-        this.createdAt,
-        this.episodePeriod,
-        this.imageUrl,
-        this.videoUrl});
+  TVShowEpisodeModel({
+    this.id,
+    this.name,
+    this.tvShowId,
+    this.createdAt,
+    this.episodePeriod,
+    this.imageUrl,
+    this.videoUrl,
+  });
 
   TVShowEpisodeModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     tvShowId = json['tv_show_id'];
     episodePeriod = json['episode_period'];
-    createdAt = DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000));
+    createdAt = DateFormat('dd-MM-yyyy hh:mm a')
+        .format(DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000));
     imageUrl = json['imageUrl'];
     videoUrl = json['videoUrl'];
   }

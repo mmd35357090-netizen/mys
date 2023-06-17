@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:foap/util/app_config_constants.dart';
 
 enum ThemeIcon {
@@ -69,7 +70,7 @@ enum ThemeIcon {
   hidePwd,
   mobile,
   callEnd,
-
+  invite,
   name,
   showPwd,
   notification,
@@ -128,7 +129,9 @@ enum ThemeIcon {
   unSelectedRadio,
   diamond,
   music,
-  dating
+  dating,
+  acceptCall,
+  closeFilled
 }
 
 class ThemeIconWidget extends StatelessWidget {
@@ -852,6 +855,24 @@ class ThemeIconWidget extends StatelessWidget {
         return Icon(
           Icons.local_fire_department_outlined,
           size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.invite:
+        return Icon(
+          Icons.alternate_email,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.acceptCall:
+        return SvgPicture.asset(
+          'assets/svg/bold/Call.svg',
+          height: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.closeFilled:
+        return SvgPicture.asset(
+          'assets/svg/bold/Close Square.svg',
+          height: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
     }

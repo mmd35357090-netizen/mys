@@ -11,7 +11,7 @@ class ProfileApi {
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         log('user profile ${result!.data['user']}');
-        resultCallback(UserModel.fromJson(result!.data['user']));
+        resultCallback(UserModel.fromJson(result.data['user']));
       }
     });
   }
