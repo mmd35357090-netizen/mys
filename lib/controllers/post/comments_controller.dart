@@ -20,6 +20,7 @@ import '../misc/users_controller.dart';
 class CommentsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
   final SettingsController _settingsController = Get.find();
+  final UsersController _usersController = Get.find();
 
   RxInt isEditing = 0.obs;
   RxString currentHashtag = ''.obs;

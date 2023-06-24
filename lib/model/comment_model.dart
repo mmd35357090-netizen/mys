@@ -52,7 +52,7 @@ class CommentModel {
     model.type = type;
     model.comment = comment ?? '';
     model.filename = type == CommentType.image
-        ? '${AppConfigConstants.baseUrl}/uploads/image/${filename ?? ''}'
+        ? '${AppConfigConstants.restApiBaseUrl}/uploads/image/${filename ?? ''}'
         : filename ?? '';
 
     model.userId = user.id;

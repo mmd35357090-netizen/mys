@@ -1,9 +1,6 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
-// import 'package:timeago/timeago.dart' as timeago;
 import 'chat_room_model.dart';
-import 'package:get/get.dart';
 
 class UserModel {
   int id = 0;

@@ -6,8 +6,6 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart'
     as callkit;
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
-import 'package:get/get.dart';
-
 import 'agora_call_controller.dart';
 
 class CallData {

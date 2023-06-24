@@ -92,10 +92,6 @@ Future<void> main() async {
   // Get.changeThemeMode(ThemeMode.dark);
 
   Get.put(PlayerManager());
-
-  isDarkMode = await SharedPrefs().isDarkMode();
-  Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
-
   Get.put(UsersController());
   Get.lazyPut(() => EventsController());
   Get.lazyPut(() => ClubsController());
