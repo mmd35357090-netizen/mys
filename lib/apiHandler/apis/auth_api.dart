@@ -19,11 +19,12 @@ class AuthApi {
       "email": email,
       "password": password,
       "device_type": Platform.isAndroid ? '1' : '2',
-      "device_token": fcmToken,
+      "device_token": fcmToken ?? '',
       "device_token_voip_ios": voipToken ?? ''
     };
     EasyLoading.show(status: loadingString.tr);
 
+    print('param $param');
     ApiWrapper()
         .postApiWithoutToken(url: NetworkConstantsUtil.login, param: param)
         .then((response) {

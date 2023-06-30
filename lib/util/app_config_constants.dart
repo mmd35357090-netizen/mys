@@ -12,12 +12,11 @@ class AppConfigConstants {
   static const googleMapApiKey = 'add your google map api key';
   static const razorpayKey = 'rzp_test_jDl2SjSKYlghAD';
 
-
   static const restApiBaseUrl =
-      'https://product.fwdtechnology.co/social_media_plus/api/web/v1/';
+      'https://development.fwdtechnology.co/social_media_plus/api/web/v1/';
 
   // Socket api url
-  static const socketApiBaseUrl = "http://product.fwdtechnology.co:3000/";
+  static const socketApiBaseUrl = "http://development.fwdtechnology.co:3000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';
@@ -36,7 +35,6 @@ class AppConfigConstants {
   static const secondsInThreeDays = 259200;
   static const secondsInSevenDays = 604800;
   static const liveBattleConfirmationWaitTime = 30;
-
 }
 
 class DesignConstants {

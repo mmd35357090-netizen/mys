@@ -32,6 +32,7 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import 'components/post_card_controller.dart';
+import 'controllers/misc/gift_controller.dart';
 import 'controllers/misc/misc_controller.dart';
 import 'controllers/misc/users_controller.dart';
 import 'controllers/post/add_post_controller.dart';
@@ -95,7 +96,7 @@ Future<void> main() async {
   Get.put(UsersController());
   Get.lazyPut(() => EventsController());
   Get.lazyPut(() => ClubsController());
-
+  Get.lazyPut(() => GiftController());
   Get.put(MiscController());
   Get.put(DashboardController());
   Get.put(UserProfileManager());
