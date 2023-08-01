@@ -4,8 +4,7 @@ import 'package:foap/apiHandler/apis/profile_api.dart';
 import 'package:foap/apiHandler/apis/wallet_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
-import 'package:foap/screens/add_on/ui/dating/profile/set_location.dart';
-import 'package:get/get.dart';
+import 'package:foap/screens/login_sign_up/set_user_name.dart';
 import '../../apiHandler/apis/auth_api.dart';
 import '../../apiHandler/apis/post_api.dart';
 import '../../apiHandler/apis/users_api.dart';
@@ -254,7 +253,7 @@ class ProfileController extends GetxController {
           getMyProfile();
           if (isSigningUp == true) {
             if (isLoginFirstTime) {
-              Get.to(() => SetLocation(isSettingProfile: isSigningUp))!
+              Get.to(() => const SetUserName())!
                   .then((value) {});
             } else {
               isLoginFirstTime = false;

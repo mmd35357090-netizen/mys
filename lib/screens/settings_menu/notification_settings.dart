@@ -1,6 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../controllers/notification/notification_setting_controller.dart';
 
 class AppNotificationSettings extends StatefulWidget {
@@ -29,7 +27,6 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
         child: Column(
           children: [
             backNavigationBar(title: notificationSettingsString.tr),
-            divider().vP8,
             const SizedBox(
               height: 20,
             ),
@@ -60,7 +57,7 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
                                       .commentNotificationStatus.value = 0;
                                 })
                         ],
-                      ).setPadding(left: 16, right: 16, bottom: 16),
+                      ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 16),
                       settingSegment(likesString.tr).vP8,
                       settingSegment(commentsString.tr).vP8,
                     ],
@@ -99,7 +96,7 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
                 ? settingController.likesNotificationStatus.value == 1
                 : settingController.commentNotificationStatus.value == 1),
       ],
-    ).hP16;
+    ).hp(DesignConstants.horizontalPadding);
   }
 
   Widget settingOption(String sectionName, String title, bool isSelected) {

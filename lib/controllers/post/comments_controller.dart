@@ -1,21 +1,18 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:foap/apiHandler/apis/post_api.dart';
-import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/components/custom_gallery_picker.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
-import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../apiHandler/apis/misc_api.dart';
 import '../../helper/imports/chat_imports.dart';
 import '../../model/comment_model.dart';
 import '../../model/hash_tag.dart';
-
 import '../../screens/settings_menu/settings_controller.dart';
 import '../../util/constant_util.dart';
 import '../misc/users_controller.dart';
+import '../../components/giphy/giphy_get.dart';
 
 class CommentsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
@@ -40,27 +37,17 @@ class CommentsController extends GetxController {
   bool canLoadMoreHashtags = true;
   bool hashtagsIsLoading = false;
 
-  // int accountsPage = 1;
-  // bool canLoadMoreAccounts = true;
-  // bool accountsIsLoading = false;
-
   int commentsPage = 1;
   bool canLoadMoreComments = true;
 
   Rx<Media?> selectedMedia = Rx<Media?>(null);
   final ImagePicker _picker = ImagePicker();
 
-  // bool accountsIsLoading = false;
 
   clear() {
     hashtagsPage = 1;
     canLoadMoreHashtags = true;
     hashtagsIsLoading = false;
-
-    // accountsPage = 1;
-    // canLoadMoreAccounts = true;
-    // accountsIsLoading = false;
-
     comments.clear();
     commentsPage = 1;
     canLoadMoreComments = true;

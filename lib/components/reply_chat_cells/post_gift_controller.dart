@@ -54,11 +54,11 @@ class PostGiftController extends GetxController {
             final postGift = result;
             canLoadMoreReceivedGifts = result.length >= metadata.perPage;
             receivedGiftsPage += 1;
-            postGift.forEach((item) {
+            for (var item in postGift) {
               if (item.giftTimelineDetail != null) {
                 timelineGift.add(item.giftTimelineDetail!);
               }
-            });
+            }
           });
     }
   }

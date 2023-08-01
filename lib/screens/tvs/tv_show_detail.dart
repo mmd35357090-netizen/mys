@@ -84,7 +84,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
                     backNavigationBar(
                       title: widget.showModel.name!,
                     ),
-                    divider().tP8,
+                    const SizedBox(height: 8,),
                   ],
                 ),
               Obx(() {
@@ -147,17 +147,17 @@ class _TVShowDetailState extends State<TVShowDetail> {
               imageUrl: episode.imageUrl ?? '',
               fit: BoxFit.cover,
               height: 50,
-              width: MediaQuery.of(context).size.width / 4.5,
+              width: Get.width / 4.5,
             ),
             const Positioned.fill(child: Icon(Icons.play_circle))
           ],
         ),
-        title: Text(episode.name ?? ''),
+        title: BodyLargeText(episode.name ?? ''),
         dense: true,
       ).ripple(() {
         _liveTvStreamingController.playEpisode(episode);
       }),
-    ).setPadding(left: 16, right: 16, bottom: 5).round(10);
+    ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 5).round(10);
   }
 
   Widget episodeInfo() {
@@ -168,13 +168,13 @@ class _TVShowDetailState extends State<TVShowDetail> {
           children: [
             Container(
                     color: AppColorConstants.themeColor,
-                    child: Text(widget.showModel.ageGroup ?? "")
+                    child: BodyLargeText(widget.showModel.ageGroup ?? "")
                         .setPadding(left: 10, right: 10, top: 5, bottom: 5))
                 .round(10),
             const SizedBox(width: 10),
             Container(
                     color: AppColorConstants.themeColor,
-                    child: Text(widget.showModel.language ?? "")
+                    child: BodyLargeText(widget.showModel.language ?? "")
                         .setPadding(left: 10, right: 10, top: 5, bottom: 5))
                 .round(10),
           ],
@@ -272,7 +272,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
               children: <Widget>[
                 Heading5Text(
                   '$rateString ${widget.showModel.name}',
-                ).setPadding(left: 16, right: 16, bottom: 16),
+                ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 16),
                 ratingView(),
                 reviewView(),
                 AppThemeButton(

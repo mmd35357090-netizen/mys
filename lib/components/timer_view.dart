@@ -6,13 +6,13 @@ import 'package:foap/components/custom_texts.dart';
 class UnlockTimerView extends StatefulWidget {
   final int unlockTime; // Time in seconds to unlock the lesson
   final VoidCallback completionHandler;
-  const UnlockTimerView({required this.unlockTime,required this.completionHandler});
+  const UnlockTimerView({Key? key, required this.unlockTime,required this.completionHandler}) : super(key: key);
 
   @override
-  _UnlockTimerViewState createState() => _UnlockTimerViewState();
+  UnlockTimerViewState createState() => UnlockTimerViewState();
 }
 
-class _UnlockTimerViewState extends State<UnlockTimerView> {
+class UnlockTimerViewState extends State<UnlockTimerView> {
   late Timer _timer;
   int _remainingTime = 0;
 

@@ -5,7 +5,6 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/manager/db_manager.dart';
 import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
-import 'package:foap/screens/login_sign_up/login_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../screens/login_sign_up/auth_tab.dart';
 import '../util/shared_prefs.dart';

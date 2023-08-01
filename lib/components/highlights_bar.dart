@@ -19,7 +19,7 @@ class HighlightsBar extends StatelessWidget {
     return SizedBox(
       height: 85,
       child: ListView.separated(
-          padding: const EdgeInsets.only(left: 16,right: 16),
+          padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding,right: DesignConstants.horizontalPadding),
           scrollDirection: Axis.horizontal,
           itemCount: highlights.length + 1,
           itemBuilder: (BuildContext ctx, int index) {

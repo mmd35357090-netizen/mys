@@ -1,6 +1,6 @@
 import 'package:foap/controllers/post/post_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import '../../components/post_card.dart';
 import '../../model/post_model.dart';
 
@@ -169,7 +169,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 ],
               ),
             ],
-          ).hP16);
+          ).hp(DesignConstants.horizontalPadding));
   }
 
   Widget postInteraction() {
@@ -212,7 +212,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 ],
               ),
             ],
-          ).hP16);
+          ).hp(DesignConstants.horizontalPadding));
   }
 
   Widget viewByGender() {
@@ -283,7 +283,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 ],
               ),
             ],
-          ).hP16);
+          ).hp(DesignConstants.horizontalPadding));
   }
 
   Widget viewByNetwork() {
@@ -327,7 +327,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                 ],
               ),
             ],
-          ).hP16);
+          ).hp(DesignConstants.horizontalPadding));
   }
 
   Widget profileActivity() {
@@ -378,6 +378,6 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
         //   ],
         // ),
       ],
-    ).hP16;
+    ).hp(DesignConstants.horizontalPadding);
   }
 }

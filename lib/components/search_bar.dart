@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 
 class SFSearchBar extends StatefulWidget {
   final ValueChanged<String>? onSearchChanged;

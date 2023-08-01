@@ -1,6 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../components/search_bar.dart';
 import '../../components/user_card.dart';
 import '../../controllers/clubs/invite_friends_to_club_controller.dart';
@@ -30,7 +28,6 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           SizedBox(
             height: 50,
             child: Stack(
@@ -71,8 +68,8 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                 )
               ],
             ),
-          ).hP16,
-          divider().tP8,
+          ).hp(DesignConstants.horizontalPadding),
+          const SizedBox(height: 8,),
           GetBuilder<InviteFriendsToClubController>(
             init: _inviteFriendsToClubController,
             builder: (ctx) {
@@ -83,8 +80,8 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                       height: 110,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.only(
-                            top: 20, left: 16, right: 16, bottom: 10),
+                        padding:  EdgeInsets.only(
+                            top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 10),
                         itemCount: usersList.length,
                         itemBuilder: (context, index) {
                           return Stack(

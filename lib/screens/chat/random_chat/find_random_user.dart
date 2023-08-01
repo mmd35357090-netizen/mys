@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:ripple_wave/ripple_wave.dart';
 
 class FindRandomUser extends StatefulWidget {
@@ -38,8 +38,8 @@ class _FindRandomUserState extends State<FindRandomUser> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar( title: 'Finding...'),
-          divider().tP8,
+          backNavigationBar( title: findingString),
+          const SizedBox(height: 8,),
           const Spacer(),
           Obx(() => _randomChatAndCallController.randomOnlineUser.value == null
               ? Column(
@@ -135,7 +135,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
                   weight: TextWeight.medium
               ),
             ],
-          ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+          ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
         ).round(10).backgroundCard( shadowOpacity: 0.1).ripple(() {
           audioCall();
         }),
@@ -157,7 +157,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
                   weight: TextWeight.medium
               ),
             ],
-          ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+          ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
         ).round(10).backgroundCard( shadowOpacity: 0.1).ripple(() {
           videoCall();
         }),

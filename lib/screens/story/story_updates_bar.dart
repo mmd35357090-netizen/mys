@@ -1,7 +1,6 @@
 import 'package:foap/components/thumbnail_view.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
-import 'package:get/get.dart';
 
 class StoryUpdatesBar extends StatelessWidget {
   final List<StoryModel> stories;
@@ -23,7 +22,7 @@ class StoryUpdatesBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.only(left: 16,right: 16),
+      padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding,right: DesignConstants.horizontalPadding),
       scrollDirection: Axis.horizontal,
       itemCount: stories.length + liveUsers.length,
       itemBuilder: (BuildContext ctx, int index) {

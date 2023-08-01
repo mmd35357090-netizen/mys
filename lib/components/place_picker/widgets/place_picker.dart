@@ -19,6 +19,7 @@ import 'package:get/get.dart';
 ///
 /// API key provided should have `Maps SDK for Android`, `Maps SDK for iOS`
 /// and `Places API`  enabled for it
+//ignore: must_be_immutable
 class PlacePicker extends StatefulWidget {
   /// API key generated from Google Cloud Console. You can get an API key
   /// [here](https://cloud.google.com/maps-platform/)

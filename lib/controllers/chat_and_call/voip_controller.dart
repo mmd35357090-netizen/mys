@@ -103,7 +103,6 @@ class VoipController {
           agoraCallController.receivedEndCallNotification(call);
           break;
         case call_event.Event.actionCallTimeout:
-          print('call_event.Event.actionCallTimeout ${event.body}');
           Call call = Call(
               uuid: event.body['id'],
               channelName: '',

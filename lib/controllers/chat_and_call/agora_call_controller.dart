@@ -59,7 +59,6 @@ class AgoraCallController extends GetxController {
   makeCallRequest({required Call call}) async {
     opponent = call.opponent;
     localCallId = randomId();
-    print('makeCallRequest emit');
 
     getIt<SocketManager>().emit(
         SocketConstants.callCreate,
@@ -301,8 +300,6 @@ class AgoraCallController extends GetxController {
 
   void acceptCall({required Call call}) {
     // logFile.writeAsStringSync('permissionGranted acceptCall 1\n', mode: FileMode.append);
-    print('start call 7');
-
     getIt<SocketManager>().emit(SocketConstants.onAcceptCall, {
       'uuid': call.uuid,
       'userId': _userProfileManager.user.value!.id,

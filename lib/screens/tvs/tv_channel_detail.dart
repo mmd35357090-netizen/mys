@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/tv_imports.dart';
 import 'package:foap/model/live_tv_model.dart';
-import 'package:get/get.dart';
 import 'package:readmore/readmore.dart' as read_more;
 
 import '../../components/live_tv_player.dart';
@@ -65,10 +64,16 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ThemeIconWidget(
-                    ThemeIcon.backArrow,
-                    size: 18,
-                    color: AppColorConstants.iconColor,
+                  SizedBox(
+                    width: 30,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: ThemeIconWidget(
+                        ThemeIcon.backArrow,
+                        size: 18,
+                        color: AppColorConstants.iconColor,
+                      ),
+                    ),
                   ).ripple(() {
                     Get.back();
                   }),
@@ -89,8 +94,11 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                             _tvStreamingController.currentViewingTv.value!);
                       })),
                 ],
-              ).setPadding(left: 16, right: 16, top: 50, bottom: 16),
-              divider().tP8,
+              ).setPadding(
+                  left: DesignConstants.horizontalPadding,
+                  right: DesignConstants.horizontalPadding,
+                  top: 50,
+                  bottom: 16),
               Expanded(
                 child: ListView(
                     padding: EdgeInsets.zero,
@@ -109,12 +117,12 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                     // showMinimumHeight: isKeyboardVisible,
                                   )
                                 : SizedBox(
-                                    width: MediaQuery.of(context).size.width,
+                                    width: Get.width,
                                     height: 250,
                                     child: CachedNetworkImage(
                                       imageUrl: widget.tvModel.image,
                                       fit: BoxFit.cover,
-                                      width: MediaQuery.of(context).size.width,
+                                      width: Get.width,
                                       height: 200,
                                     )),
                             Column(

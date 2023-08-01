@@ -1,11 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
 import '../../components/post_card.dart';
 import '../../controllers/post/post_controller.dart';
 import '../../model/post_model.dart';
-import '../../model/post_search_query.dart';
 import '../post/view_post_insight.dart';
 import '../settings_menu/notifications.dart';
 

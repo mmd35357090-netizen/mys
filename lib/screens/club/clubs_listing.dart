@@ -8,11 +8,10 @@ import '../../components/group_avatars/group_avatar2.dart';
 import '../../components/shimmer_widgets.dart';
 import '../../components/top_navigation_bar.dart';
 import '../../controllers/clubs/clubs_controller.dart';
-import '../../helper/common_components.dart';
+
 import '../../helper/localization_strings.dart';
 import '../../model/category_model.dart';
 import '../../model/club_invitation.dart';
-import '../../model/club_model.dart';
 import '../../model/generic_item.dart';
 import '../../model/post_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
@@ -101,10 +100,7 @@ class ExploreClubsState extends State<ExploreClubs> {
                 });
               },
               icon: ThemeIcon.search),
-          divider().tP8,
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 15,),
           categories(),
           const SizedBox(
             height: 30,
@@ -127,14 +123,17 @@ class ExploreClubsState extends State<ExploreClubs> {
         return _clubsController.isLoadingCategories.value
             ? const ClubsCategoriesScreenShimmer()
             : ListView.separated(
-                padding: const EdgeInsets.only(left: 16),
+                padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding),
                 scrollDirection: Axis.horizontal,
                 itemCount: categories.length,
                 itemBuilder: (BuildContext ctx, int index) {
                   return CategoryAvatarType1(category: categories[index])
                       .ripple(() {
                     Get.to(() =>
-                        CategoryClubsListing(category: categories[index]));
+                        CategoryClubsListing(category: categories[index]))!.then((value) {
+                      _clubsController.clear();
+                      _clubsController.getClubs();
+                    });
                   });
                 },
                 separatorBuilder: (BuildContext ctx, int index) {
@@ -151,7 +150,7 @@ class ExploreClubsState extends State<ExploreClubs> {
           children: [
             Expanded(
               child: HorizontalMenuBar(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                   onSegmentChange: (segment) {
                     _clubsController.selectedSegmentIndex(index: segment);
                   },
@@ -174,8 +173,8 @@ class ExploreClubsState extends State<ExploreClubs> {
             ? Container()
             : ListView.separated(
                 controller: _controller,
-                padding: const EdgeInsets.only(
-                    left: 16, right: 16, top: 20, bottom: 100),
+                padding:  EdgeInsets.only(
+                    left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 20, bottom: 100),
                 itemCount: invitations.length,
                 // physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext ctx, int index) {

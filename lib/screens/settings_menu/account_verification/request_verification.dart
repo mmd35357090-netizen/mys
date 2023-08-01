@@ -80,9 +80,8 @@ class _RequestVerificationState extends State<RequestVerification> {
           const SizedBox(
             height: 10,
           ),
-          Text(
+          BodyMediumText(
             youAreVerifiedNowString.tr,
-            style: TextStyle(fontSize: FontSizes.b2),
             textAlign: TextAlign.center,
           ),
           const SizedBox(
@@ -246,11 +245,11 @@ class _RequestVerificationState extends State<RequestVerification> {
                     height: 15,
                   ),
                 ],
-              ).hP16,
+              ).hp(DesignConstants.horizontalPadding),
               SizedBox(
                 height: 80,
                 child: Obx(() => ListView.separated(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                       scrollDirection: Axis.horizontal,
                       itemCount:
                           _requestVerificationController.selectedImages.length,
@@ -299,8 +298,8 @@ class _RequestVerificationState extends State<RequestVerification> {
           ),
         ),
         Positioned(
-            left: 16,
-            right: 16,
+            left: DesignConstants.horizontalPadding,
+            right: DesignConstants.horizontalPadding,
             bottom: 0,
             child: SizedBox(
               width: Get.width - 32,

@@ -38,7 +38,6 @@ class _ChangeUserNameState extends State<ChangeUserName> {
                     isSigningUp: false,
                     );
               }),
-          divider().vP8,
           const SizedBox(
             height: 20,
           ),
@@ -80,7 +79,7 @@ class _ChangeUserNameState extends State<ChangeUserName> {
                 height: 20,
               ),
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         ],
       ),
     );

@@ -1,14 +1,3 @@
-export 'package:foap/screens/add_on/ui/dating/profile/add_photos.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/add_name.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/add_personal_info.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/add_profesional_details.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/choose_goal.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/choose_whom_to_date.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/set_date_of_birth.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/set_location.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/set_your_gender.dart';
-export 'package:foap/screens/add_on/ui/dating/profile/what_you_hope.dart';
-
 export 'package:foap/screens/profile/follower_following_list.dart';
 export 'package:foap/screens/profile/manage_photos.dart';
 export 'package:foap/screens/profile/change_location.dart';

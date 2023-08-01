@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/setting_imports.dart';
 
 class PaymentAndCoins extends StatefulWidget {
@@ -29,7 +29,7 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
         children: [
           backNavigationBar(
                title: paymentAndCoinsString.tr),
-          divider().tP8,
+          const SizedBox(height: 8,),
           Expanded(
             child: ListView(
               padding:  EdgeInsets.zero,
@@ -97,7 +97,7 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                   color: AppColorConstants.iconColor,
                   size: 15,
                 )
-              ]).hP16,
+              ]).hp(DesignConstants.horizontalPadding),
             ),
             divider()
           ],

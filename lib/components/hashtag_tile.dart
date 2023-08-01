@@ -39,7 +39,7 @@ class HashTagTile extends StatelessWidget {
                   weight: TextWeight.medium,
                 )
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
           ],
         ).vP16.ripple(() {
           onItemCallback();

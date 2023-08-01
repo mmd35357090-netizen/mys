@@ -59,7 +59,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                 )
               ],
             ),
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
           divider().tP8,
           SizedBox(
             height: 250,
@@ -107,7 +107,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                 )
               ],
             ),
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
           Expanded(
             child: GetBuilder<SelectUserForGroupChatController>(
                 init: selectUserForGroupChatController,

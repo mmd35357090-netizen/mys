@@ -1,6 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../components/notification_tile.dart';
 import '../../controllers/notification/notifications_controller.dart';
 import '../../model/notification_modal.dart';
@@ -34,7 +32,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           children: [
             backNavigationBar(
                  title: notificationsString.tr),
-            divider().tP8,
+            const SizedBox(height: 8,),
             Expanded(
               child: GetBuilder<NotificationController>(
                   init: _notificationController,
@@ -54,7 +52,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   NotificationTileType4(
                                           notification: _notificationController
                                               .notifications[index])
-                                      .hP16
+                                      .hp(DesignConstants.horizontalPadding)
                                       .ripple(() {
                                     handleNotificationTap(
                                         _notificationController

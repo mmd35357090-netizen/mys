@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
-
 import '../../controllers/misc/subscription_packages_controller.dart';
 
 class PackagesScreen extends StatefulWidget {
@@ -34,9 +32,8 @@ class PackagesScreenState extends State<PackagesScreen> {
     return Scaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
         backNavigationBar( title: packagesString.tr),
-        divider().tP8,
+        const SizedBox(height: 8,),
         const Expanded(child: CoinPackagesWidget()),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +67,7 @@ class PackagesScreenState extends State<PackagesScreen> {
             ),
             const SizedBox(height: 20),
           ],
-        ).hP16
+        ).hp(DesignConstants.horizontalPadding)
       ]),
     );
   }

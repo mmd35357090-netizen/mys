@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/highlights_imports.dart';
 
 class ChooseStoryForHighlights extends StatefulWidget {
@@ -85,7 +85,7 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                               itemCount: _highlightsController.stories.length,
                               itemBuilder: (context, index) {
                                 return _buildItem(index);
-                              }).hP16
+                              }).hp(DesignConstants.horizontalPadding)
                           : emptyData(
                               title: noStoryFoundString.tr,
                               subTitle: postSomeStoriesString.tr,

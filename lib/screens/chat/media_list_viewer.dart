@@ -1,6 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 
 class MediaListViewer extends StatefulWidget {
@@ -68,8 +67,8 @@ class _MediaListViewerState extends State<MediaListViewer> {
                         inChatRoom: widget.chatRoom);
                   })
                 ],
-              ).hP16,
-              divider().vP8,
+              ).hp(DesignConstants.horizontalPadding),
+              const SizedBox(height: 8,),
               GetBuilder<MediaListViewerController>(
                   init: mediaListViewerController,
                   builder: (ctx) {

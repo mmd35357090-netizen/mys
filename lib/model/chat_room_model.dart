@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:foap/helper/imports/common_import.dart';
 import 'chat_message_model.dart';
-import 'package:get/get.dart';
 
 class ChatRoomMember {
   int id;

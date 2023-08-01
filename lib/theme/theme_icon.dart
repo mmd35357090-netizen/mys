@@ -131,7 +131,7 @@ enum ThemeIcon {
   music,
   dating,
   acceptCall,
-  closeFilled
+  declineCall
 }
 
 class ThemeIconWidget extends StatelessWidget {
@@ -869,7 +869,7 @@ class ThemeIconWidget extends StatelessWidget {
           height: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-      case ThemeIcon.closeFilled:
+      case ThemeIcon.declineCall:
         return SvgPicture.asset(
           'assets/svg/bold/Close Square.svg',
           height: size ?? 20,

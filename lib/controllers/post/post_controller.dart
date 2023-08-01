@@ -108,8 +108,6 @@ class PostController extends GetxController {
             postsCurrentPage += 1;
 
             callback();
-
-            print('posts = ${posts.length}');
             update();
           });
     }

@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class PodcastModel {
+class HostModel {
   int id = 0;
   int categoryId = 0;
   String name = '';
@@ -15,10 +15,10 @@ class PodcastModel {
   int isFavorite = 0;
   int currentViewer = 0;
 
-  PodcastModel();
+  HostModel();
 
-  factory PodcastModel.fromJson(dynamic json) {
-    PodcastModel model = PodcastModel();
+  factory HostModel.fromJson(dynamic json) {
+    HostModel model = HostModel();
     model.id = json['id'];
     model.name = json['name'];
     model.categoryId = json['category_id'];
@@ -41,7 +41,7 @@ class PodcastModel {
   }
 }
 
-class PodcastShowModel {
+class PodcastModel {
   int id = 0;
   String name = '';
   int podcastChannelId = 0;
@@ -52,10 +52,10 @@ class PodcastShowModel {
   String image = '';
   String showTime = '';
 
-  PodcastShowModel();
+  PodcastModel();
 
-  factory PodcastShowModel.fromJson(dynamic json) {
-    PodcastShowModel model = PodcastShowModel();
+  factory PodcastModel.fromJson(dynamic json) {
+    PodcastModel model = PodcastModel();
     model.id = json['id'];
     model.name = json['name'];
     model.podcastChannelId = json['podcast_channel_id'];
@@ -69,7 +69,7 @@ class PodcastShowModel {
   }
 }
 
-class PodcastShowEpisodeModel {
+class PodcastEpisodeModel {
   int id = 0;
   String name = '';
   int podcastShowId = 0;
@@ -77,10 +77,10 @@ class PodcastShowEpisodeModel {
   String imageUrl = '';
   String audioUrl = '';
 
-  PodcastShowEpisodeModel();
+  PodcastEpisodeModel();
 
-  factory PodcastShowEpisodeModel.fromJson(dynamic json) {
-    PodcastShowEpisodeModel model = PodcastShowEpisodeModel();
+  factory PodcastEpisodeModel.fromJson(dynamic json) {
+    PodcastEpisodeModel model = PodcastEpisodeModel();
     model.id = json['id'];
     model.name = json['name'];
     model.podcastShowId = json['podcast_show_id'];

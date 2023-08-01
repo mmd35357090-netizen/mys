@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:giphy_get/giphy_get.dart';
+// import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import '../../components/giphy/giphy_get.dart';
 import '../../helper/imports/common_import.dart';
 import '../../util/constant_util.dart';
 import '../chat/drawing_screen.dart';
@@ -241,60 +242,6 @@ class PostOptionsPopup extends StatelessWidget {
             )));
   }
 
-  void _openActionSheet(Function(ImageSource, int) source) {
-    showModalBottomSheet(
-      context: Get.context!,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text('Choose Image from Gallery'),
-              onTap: () {
-                source(ImageSource.gallery, 1);
-                // do something when the user taps this option
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Capture Image from camera'),
-              onTap: () {
-                source(ImageSource.camera, 1);
-
-                // do something when the user taps this option
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text('Choose Video from Gallery'),
-              onTap: () {
-                source(ImageSource.gallery, 2);
-                // do something when the user taps this option
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Record Video from camera'),
-              onTap: () {
-                source(ImageSource.camera, 2);
-
-                // do something when the user taps this option
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.close),
-              title: const Text('Cancel'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   selectPhoto({
     required ImageSource source,
   }) async {
@@ -372,12 +319,9 @@ class ModalComponents extends StatelessWidget {
           onPress!();
         }),
         if (name != null)
-          Text(
+          BodyLargeText(
             name!,
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.w400,
-                letterSpacing: 0.5,
-                color: AppColorConstants.iconColor),
+            color: AppColorConstants.iconColor,
           ),
       ],
     );

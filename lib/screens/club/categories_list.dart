@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 
 import '../../components/group_avatars/group_avatar1.dart';
 import '../../model/category_model.dart';
@@ -25,15 +24,16 @@ class _CategoriesListState extends State<CategoriesList> {
           backNavigationBar(
             title: categoriesString.tr,
           ),
-          divider().tP8,
+          const SizedBox(height: 8,),
+
           Expanded(
               child: GetBuilder<ClubsController>(
                   init: widget.clubsController,
                   builder: (ctx) {
                     return GridView.builder(
                         itemCount: widget.clubsController.categories.length,
-                        padding: const EdgeInsets.only(
-                            top: 20, left: 16, right: 16, bottom: 50),
+                        padding:  EdgeInsets.only(
+                            top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 50),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3,

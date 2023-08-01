@@ -48,6 +48,7 @@ class _SocialLoginState extends State<SocialLogin> {
       if (account != null) {
         socialLogin(
             'google', account.id, account.displayName ?? '', account.email);
+        _googleSignIn.signOut();
       }
     });
     super.initState();

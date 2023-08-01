@@ -1,6 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../settings_menu/packages_screen.dart';
 
 class EarnCoinForContestPopup extends StatefulWidget {
@@ -51,7 +49,7 @@ class _EarnCoinForContestPopupState extends State<EarnCoinForContestPopup> {
                           Get.back();
                           Get.to(() => const PackagesScreen());
                         },
-                      ).hP16
+                      ).hp(DesignConstants.horizontalPadding)
                     ],
                   ).setPadding(top: 70, bottom: 45))
               .round(20)

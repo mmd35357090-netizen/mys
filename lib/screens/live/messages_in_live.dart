@@ -26,8 +26,8 @@ class MessagesInLive extends StatelessWidget {
           init: _agoraLiveController,
           builder: (ctx) {
             return ListView.separated(
-                padding: const EdgeInsets.only(
-                    top: 10, bottom: 50, left: 16, right: 70),
+                padding: EdgeInsets.only(
+                    top: 10, bottom: 50, left: DesignConstants.horizontalPadding, right: 70),
                 itemCount: _agoraLiveController.messages.length,
                 itemBuilder: (ctx, index) {
                   ChatMessageModel message =

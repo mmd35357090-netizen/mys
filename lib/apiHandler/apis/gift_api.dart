@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:foap/apiHandler/api_wrapper.dart';
-import 'package:foap/helper/imports/call_imports.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/category_model.dart';
 import '../../model/gift_model.dart';

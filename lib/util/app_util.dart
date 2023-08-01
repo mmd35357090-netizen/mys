@@ -118,7 +118,7 @@ class AppUtil {
                   ],
                 )
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
           ).round(20),
         );
       },
@@ -185,7 +185,7 @@ class AppUtil {
               ],
             )
           ],
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
       ).round(20),
     );
   }
@@ -280,7 +280,7 @@ class AppUtil {
               ],
             )
           ],
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
       ).round(20),
     );
   }

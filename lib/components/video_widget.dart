@@ -182,7 +182,7 @@ class _VideoPostTileState extends State<VideoPostTile> {
     } else {
       // print('prepareVideo 4');
 
-      videoPlayerController = VideoPlayerController.network(url);
+      videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
     }
 
     // print('prepareVideo 5');
@@ -316,7 +316,7 @@ class _FullScreenVideoPostTileState extends State<FullScreenVideoPostTile> {
               Navigator.of(context).pop();
             }),
           ),
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
         Expanded(
           key: UniqueKey(),
           child: Chewie(

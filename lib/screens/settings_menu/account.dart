@@ -1,8 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/add_on/ui/add_relationship/add_relationship.dart';
 import 'package:foap/screens/profile/blocked_users.dart';
-import 'package:get/get.dart';
-import '../../controllers/misc/request_verification_controller.dart';
 import '../live/live_history.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 
@@ -14,7 +11,6 @@ class AppAccount extends StatefulWidget {
 }
 
 class _AppAccountState extends State<AppAccount> {
-
   final SettingsController _settingsController = Get.find();
 
   @override
@@ -28,9 +24,7 @@ class _AppAccountState extends State<AppAccount> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
-          backNavigationBar(
-               title: accountString.tr),
+          backNavigationBar(title: accountString.tr),
           divider().tP8,
           Expanded(
             child: ListView(
@@ -38,30 +32,20 @@ class _AppAccountState extends State<AppAccount> {
               children: [
                 Column(
                   children: [
-                    addTileEvent(
-                        'assets/live_bw.png',
-                        liveHistoryString.tr,
+                    addTileEvent('assets/live_bw.png', liveHistoryString.tr,
                         liveHistorySubHeadlineString.tr, () {
                       Get.to(() => const LiveHistory());
                     }),
-                    addTileEvent(
-                        'assets/blocked_user.png',
-                        blockedUserString.tr,
-                        manageBlockedUserString.tr, () {
+                    addTileEvent('assets/blocked_user.png',
+                        blockedUserString.tr, manageBlockedUserString.tr, () {
                       Get.to(() => const BlockedUsersList());
                     }),
                     if (_settingsController
                         .setting.value!.enableProfileVerification)
                       addTileEvent('assets/verification.png',
                           requestVerificationString.tr, '', () {
-                            Get.to(() => const RequestVerification());
-                          }),
-                    addTileEvent(
-                        'assets/findFriends.png',
-                        addRelationshipString.tr,
-                        '', () {
-                      Get.to(() => const AddRelationship());
-                    }),
+                        Get.to(() => const RequestVerification());
+                      }),
                   ],
                 ),
                 const SizedBox(
@@ -99,9 +83,7 @@ class _AppAccountState extends State<AppAccount> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      BodyLargeText(title.tr,
-                          weight: TextWeight.medium)
-
+                      BodyLargeText(title.tr, weight: TextWeight.medium)
                     ],
                   ),
                 ),
@@ -111,7 +93,7 @@ class _AppAccountState extends State<AppAccount> {
                   color: AppColorConstants.iconColor,
                   size: 15,
                 )
-              ]).hP16,
+              ]).hp(DesignConstants.horizontalPadding),
             ),
             divider()
           ],

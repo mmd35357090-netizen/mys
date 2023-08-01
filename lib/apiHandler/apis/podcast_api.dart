@@ -1,5 +1,6 @@
 import 'package:foap/apiHandler/api_wrapper.dart';
 
+import '../../model/api_meta_data.dart';
 import '../../model/category_model.dart';
 import '../../screens/add_on/model/podcast_banner_model.dart';
 import '../../screens/add_on/model/podcast_model.dart';
@@ -13,10 +14,9 @@ class PodcastApi {
       if (result?.success == true) {
         var podcastBanners = result!.data['podcast_banner'];
         var items = podcastBanners['items'];
-          if (url == NetworkConstantsUtil.podcastBanners) {
-            resultCallback(List<PodcastBannerModel>.from(
-                items.map((x) => PodcastBannerModel.fromJson(x))));
-
+        if (url == NetworkConstantsUtil.podcastBanners) {
+          resultCallback(List<PodcastBannerModel>.from(
+              items.map((x) => PodcastBannerModel.fromJson(x))));
         }
       }
     });
@@ -35,10 +35,11 @@ class PodcastApi {
     });
   }
 
-  static getPodcastList(
-      {int? categoryId,
+  static getHostsList(
+      {required int page,
+      int? categoryId,
       String? name,
-      required Function(List<PodcastModel>) resultCallback}) async {
+      required Function(List<HostModel>, APIMetaData) resultCallback}) async {
     var url = NetworkConstantsUtil.getHosts;
 
     if (categoryId != null) {
@@ -47,23 +48,26 @@ class PodcastApi {
     if (name != null) {
       url = '$url&name=$name';
     }
+    url = '$url&page=$page';
 
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var podcasts = result!.data['podcast'];
         var items = podcasts['items'];
-          resultCallback(List<PodcastModel>.from(
-              items.map((x) => PodcastModel.fromJson(x))));
-
+        resultCallback(
+            List<HostModel>.from(items.map((x) => HostModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['podcast']['_meta']));
       }
     });
   }
 
-  static getPodcastShows(
-      {int? podcastId,
+  static getPodcasts(
+      {required int page,
+      int? podcastId,
       String? name,
-      required Function(List<PodcastShowModel>) resultCallback}) async {
-    var url = NetworkConstantsUtil.getPodcastShows;
+      required Function(List<PodcastModel>, APIMetaData)
+          resultCallback}) async {
+    var url = NetworkConstantsUtil.getPodcasts;
 
     if (podcastId != null) {
       url = '$url&podcast_channel_id=$podcastId';
@@ -71,69 +75,72 @@ class PodcastApi {
     if (name != null) {
       url = '$url&name=$name';
     }
+    url = '$url&page=$page';
 
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var podcasts = result!.data['podcast_show'];
         var items = podcasts['items'];
-          resultCallback(List<PodcastShowModel>.from(
-              items.map((x) => PodcastShowModel.fromJson(x))));
-        }
-
+        resultCallback(
+            List<PodcastModel>.from(items.map((x) => PodcastModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['podcast_show']['_meta']));
+      }
     });
   }
 
-  static getPodcastShowsEpisode(
-      {int? podcastShowId,
+  static getPodcastEpisode(
+      {required int page,
+      int? podcastId,
       String? name,
-      required Function(List<PodcastShowEpisodeModel>) resultCallback}) async {
-    var url = NetworkConstantsUtil.getPodcastShowsEpisode;
+      required Function(List<PodcastEpisodeModel>, APIMetaData)
+          resultCallback}) async {
+    var url = NetworkConstantsUtil.getPodcastEpisode;
 
-    if (podcastShowId != null) {
-      url = '$url&podcast_show_id=$podcastShowId';
+    if (podcastId != null) {
+      url = '$url&podcast_show_id=$podcastId';
     }
     if (name != null) {
       url = '$url&name=$name';
     }
+    url = '$url&page=$page';
 
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var showEpisodes = result!.data['podcastShowEpisode'];
         var items = showEpisodes['items'];
-          if (url == NetworkConstantsUtil.getPodcastShowsEpisode) {
-            resultCallback(List<PodcastShowEpisodeModel>.from(
-                items.map((x) => PodcastShowEpisodeModel.fromJson(x))));
-
-        }
+        resultCallback(
+            List<PodcastEpisodeModel>.from(
+                items.map((x) => PodcastEpisodeModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['podcastShowEpisode']['_meta']));
       }
     });
   }
 
-  static getPodcastShowById(
-      {int? showId, required Function(PodcastShowModel) resultCallback}) async {
+  static getPodcastById(
+      {int? id, required Function(PodcastModel) resultCallback}) async {
     var url = NetworkConstantsUtil.getHostShowById;
 
-    if (showId != null) {
-      url = '$url&id=$showId';
+    if (id != null) {
+      url = '$url&id=$id';
     }
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var showDetails = result!.data['podcastShowDetails'];
-        resultCallback(PodcastShowModel.fromJson(showDetails));
+        resultCallback(PodcastModel.fromJson(showDetails));
       }
     });
   }
 
   static getPodcastHostById(
       {required int hostId,
-      required Function(PodcastModel) resultCallback}) async {
+      required Function(HostModel) resultCallback}) async {
     var url = NetworkConstantsUtil.getPodcastHostDetail
         .replaceAll('{{host_id}}', hostId.toString());
 
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var showDetails = result!.data['podcastHostDetails'];
-        resultCallback(PodcastModel.fromJson(showDetails));
+        resultCallback(HostModel.fromJson(showDetails));
       }
     });
   }

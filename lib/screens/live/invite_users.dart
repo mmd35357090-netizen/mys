@@ -78,7 +78,7 @@ class _InviteUsersState extends State<InviteUsers> {
                 }),
           ),
         ],
-      ).hP16,
+      ).hp(DesignConstants.horizontalPadding),
     ).topRounded(40);
   }
 }

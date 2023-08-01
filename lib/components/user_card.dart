@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 
@@ -27,19 +26,25 @@ class UserInfo extends StatelessWidget {
           size: 40,
         ),
         const SizedBox(width: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BodyLargeText(model.userName, weight: TextWeight.semiBold),
-            const SizedBox(
-              height: 5,
-            ),
-            model.country != null
-                ? BodySmallText(
-                    '${model.country},${model.city}',
-                  )
-                : Container(),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BodyLargeText(
+                model.userName,
+                weight: TextWeight.semiBold,
+                maxLines: 1,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              model.country != null
+                  ? BodySmallText(
+                      '${model.country},${model.city}',
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       ],
     );
@@ -439,7 +444,6 @@ class RelationUserTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfileController profileController = Get.find();
-    final AgoraLiveController agoraLiveController = Get.find();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -450,21 +454,9 @@ class RelationUserTile extends StatelessWidget {
             UserAvatarView(
               user: profile,
               size: 40,
-              onTapHandler: () {
-                Live live = Live(
-                    channelName: profile.liveCallDetail!.channelName,
-                    // isHosting: false,
-                    mainHostUserDetail: profile,
-                    // battleUsers: [],
-                    token: profile.liveCallDetail!.token,
-                    id: profile.liveCallDetail!.id);
-                agoraLiveController.joinAsAudience(
-                  live: live,
-                );
-              },
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width - 200,
+              width: Get.width - 220,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -478,7 +470,7 @@ class RelationUserTile extends StatelessWidget {
                         )
                       : Container()
                 ],
-              ).hP16,
+              ).hp(DesignConstants.horizontalPadding),
             ),
             // const Spacer(),
           ],
@@ -564,7 +556,7 @@ class ClubMemberTile extends StatelessWidget {
                         )
                       : Container()
                 ],
-              ).hP16,
+              ).hp(DesignConstants.horizontalPadding),
             ).ripple(() {
               if (viewCallback != null) {
                 viewCallback!();
@@ -626,15 +618,18 @@ class SendMessageUserTile extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        UserInfo(model: profile).ripple(() {
-          if (viewCallback == null) {
-            profileController.setUser(profile);
-            Get.to(() => OtherUserProfile(userId: profile.id));
-          } else {
-            viewCallback!();
-          }
-        }),
-        const Spacer(),
+        Expanded(
+          child: UserInfo(model: profile).ripple(() {
+            if (viewCallback == null) {
+              profileController.setUser(profile);
+              Get.to(() => OtherUserProfile(userId: profile.id));
+            } else {
+              viewCallback!();
+            }
+          }),
+        ),
+        // const Spacer(),
+        const SizedBox(width: 10,),
         sendCallback != null
             ? AbsorbPointer(
                 absorbing: state == ButtonState.success,
@@ -787,7 +782,7 @@ class ClubJoinRequestTile extends StatelessWidget {
                         )
                       : Container()
                 ],
-              ).hP16,
+              ).hp(DesignConstants.horizontalPadding),
             ),
             // const Spacer(),
           ],

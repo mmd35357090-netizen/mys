@@ -33,8 +33,8 @@ class GiftSenders extends StatelessWidget {
           child: Obx(() => Container(
                 color: AppColorConstants.cardColor,
                 child: ListView.separated(
-                    padding: const EdgeInsets.only(
-                        left: 16, right: 16, top: 25, bottom: 100),
+                    padding:  EdgeInsets.only(
+                        left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 25, bottom: 100),
                     itemCount: _agoraLiveController.giftsReceived.length,
                     itemBuilder: (ctx, index) {
                       return GifterUserTile(

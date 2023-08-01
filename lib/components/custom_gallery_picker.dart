@@ -5,7 +5,7 @@ import 'package:foap/components/custom_camera/delegates/camera_picker_text_deleg
 import 'package:foap/components/gallery_picker/gallery_media_picker.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 
 import '../screens/chat/media.dart';
 import 'custom_camera/constants/config.dart';

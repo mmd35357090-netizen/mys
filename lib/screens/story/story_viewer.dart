@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
-import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:story_view/utils.dart';
 
 import '../profile/my_profile.dart';
@@ -203,7 +202,7 @@ class _StoryViewerState extends State<StoryViewer> {
 //         widget.story.title,
 //         style: TextStyle(fontSize: FontSizes.b2).bold,
 //         textAlign: TextAlign.center,
-//       ).hP16,
+//       ).hp(DesignConstants.horizontalPadding),
 //       divider(height: 0.5, color: AppTheme.dividerColor).tP16,
 //     ],
 //   );

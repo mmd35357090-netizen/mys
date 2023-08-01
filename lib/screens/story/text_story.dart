@@ -58,8 +58,8 @@
 //             children: [
 //               Obx(() {
 //                 return SizedBox(
-//                   height: MediaQuery.of(context).size.height,
-//                   width: MediaQuery.of(context).size.width,
+//                   height: Get.height,
+//                   width: Get.width,
 //                   child: Center(
 //                       child: TextField(
 //                     controller: inputText,
@@ -101,9 +101,9 @@
 //                 );
 //               }),
 //               Positioned(
-//                   left: 16,
+//                   left: DesignConstants.horizontalPadding,
 //                   top: 60,
-//                   right: 16,
+//                   right: DesignConstants.horizontalPadding,
 //                   child: Row(
 //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                     children: [
@@ -163,7 +163,7 @@
 //     return SizedBox(
 //       height: 30,
 //       child: ListView.separated(
-//         padding: const EdgeInsets.only(left: 16),
+//         padding: const EdgeInsets.only(left: DesignConstants.horizontalPadding),
 //         itemCount: fontsList.length,
 //         scrollDirection: Axis.horizontal,
 //         itemBuilder: (ctx, index) {
@@ -223,10 +223,10 @@
 //           child: const ThemeIconWidget(ThemeIcon.edit),
 //         ).borderWithRadius( value: 5, radius: 1).lP16,
 //         SizedBox(
-//           width: MediaQuery.of(context).size.width - 80,
+//           width: Get.width - 80,
 //           height: 50,
 //           child: ListView.builder(
-//               padding: const EdgeInsets.only(left: 16),
+//               padding: const EdgeInsets.only(left: DesignConstants.horizontalPadding),
 //               itemCount: 10,
 //               scrollDirection: Axis.horizontal,
 //               itemBuilder: (ctx, index) {
@@ -247,10 +247,10 @@
 //           color: Colors.white,
 //         ).borderWithRadius( value: 5, radius: 1).lP16,
 //         SizedBox(
-//           width: MediaQuery.of(context).size.width - 80,
+//           width: Get.width - 80,
 //           height: 50,
 //           child: ListView.builder(
-//               padding: const EdgeInsets.only(left: 16),
+//               padding: const EdgeInsets.only(left: DesignConstants.horizontalPadding),
 //               itemCount: 10,
 //               scrollDirection: Axis.horizontal,
 //               itemBuilder: (ctx, index) {

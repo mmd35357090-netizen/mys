@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 
 import '../../controllers/profile/set_profile_category_controller.dart';
 import '../../controllers/profile/profile_controller.dart';
@@ -62,14 +62,14 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
             setProfileCategoryTypeSubHeadingString.tr,
             textAlign: TextAlign.center,
             weight: TextWeight.medium,
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
           const SizedBox(
             height: 20,
           ),
           Expanded(
               child: Obx(() => ListView.separated(
-                  padding: const EdgeInsets.only(
-                      top: 20, bottom: 100, left: 16, right: 16),
+                  padding: EdgeInsets.only(
+                      top: 20, bottom: 100, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                   itemCount: _setProfileCategoryController.categories.length,
                   itemBuilder: (ctx, index) {
                     CategoryModel category =
@@ -77,11 +77,8 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(category.name,
-                            style: TextStyle(
-                                fontSize: FontSizes.b2,
-                                color: AppColorConstants.grayscale900,
-                                fontWeight: TextWeight.semiBold)),
+                        BodyMediumText(category.name,
+                            weight: TextWeight.semiBold,),
                         Obx(() => ThemeIconWidget(
                               _setProfileCategoryController
                                           .profileCategoryType.value ==
@@ -111,7 +108,7 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
                       _setProfileCategoryController.profileCategoryType.value,
                   isSigningUp: true,
                 );
-              }).hP16,
+              }).hp(DesignConstants.horizontalPadding),
           const SizedBox(
             height: 20,
           ),

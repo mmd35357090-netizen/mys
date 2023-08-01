@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_drawing_board/paint_contents.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../util/constant_util.dart';
@@ -73,7 +72,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
             child: Obx(() => DrawingBoard(
               controller: _drawingController,
               background: Container(
-                  width: MediaQuery.of(context).size.width,
+                  width: Get.width,
                   // height: double.infinity,
                   color: _drawingBoardController
                       .selectedBackgroundColor.value),
@@ -96,7 +95,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
               ),
               _buildStrokeToolbar(context),
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
           const SizedBox(
             height: 20,
           )
@@ -187,10 +186,10 @@ class _DrawingScreenState extends State<DrawingScreen> {
           child: const ThemeIconWidget(ThemeIcon.edit),
         ).borderWithRadius(value: 5, radius: 1),
         SizedBox(
-          width: MediaQuery.of(context).size.width - 80,
+          width: Get.width - 80,
           height: 50,
           child: ListView.builder(
-              padding: const EdgeInsets.only(left: 16),
+              padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
@@ -211,10 +210,10 @@ class _DrawingScreenState extends State<DrawingScreen> {
           color: Colors.white,
         ).borderWithRadius(value: 5, radius: 1),
         SizedBox(
-          width: MediaQuery.of(context).size.width - 80,
+          width: Get.width - 80,
           height: 50,
           child: ListView.builder(
-              padding: const EdgeInsets.only(left: 16),
+              padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {

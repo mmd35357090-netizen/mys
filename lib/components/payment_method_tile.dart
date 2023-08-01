@@ -1,7 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
-import '../screens/settings_menu/settings_controller.dart';
 
 class PaymentMethodTile extends StatelessWidget {
   const PaymentMethodTile({

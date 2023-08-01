@@ -1,12 +1,10 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:foap/components/timer_widget.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
-import 'package:get/get.dart';
 import 'package:pip_view/pip_view.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../controllers/chat_and_call/agora_call_controller.dart';
 
@@ -29,14 +27,14 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
   @override
   void initState() {
     super.initState();
-    Wakelock.enable(); // Turn on wakelock feature till call is running
+    WakelockPlus.enable(); // Turn on wakelock feature till call is running
   }
 
   @override
   void dispose() {
     // _engine.leaveChannel();
     // _engine.destroy();
-    Wakelock.disable(); // Turn off wakelock feature after call end
+    WakelockPlus.disable(); // Turn off wakelock feature after call end
     super.dispose();
   }
 
@@ -69,7 +67,10 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                     ),
                     Column(
                       children: [
-                        Expanded(child: opponentInfoView(isFloating)),
+                        const SizedBox(
+                          height: 100,
+                        ),
+                        Expanded(child: opponentNameAndCallStatus()),
                         const SizedBox(
                           height: 100,
                         ),
@@ -132,7 +133,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               size: 25,
             ).p8.ripple(() {
               // Get.back();
-              PIPView.of(context)!.presentBelow(DashboardScreen());
+              PIPView.of(context)!.presentBelow(const DashboardScreen());
             }),
           ]),
         ),
@@ -163,7 +164,8 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
 
   // Generate remote preview
   Widget _renderRemoteVideo(bool isFloating) {
-    if (agoraCallController.remoteJoined.value == true) {
+    if (agoraCallController.remoteJoined.value == true &&
+        agoraCallController.remoteUserId.value != 0) {
       return Stack(
         children: [
           agoraCallController.reConnectingRemoteView.value
@@ -171,7 +173,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                   color: AppColorConstants.red,
                   child: Center(
                       child: Heading6Text(
-                    reConnectingString,
+                    reConnectingString.tr,
                     color: AppColorConstants.grayscale700,
                   )))
               : agoraCallController.videoPaused.value
@@ -179,7 +181,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                       color: AppColorConstants.themeColor,
                       child: Center(
                           child: Heading6Text(
-                        videoPausedString,
+                        videoPausedString.tr,
                         color: AppColorConstants.grayscale700,
                       )))
                   : AgoraVideoView(
@@ -214,8 +216,8 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    SvgPicture.asset(
-                        'assets/svg/outline/call_bubble_overlay.svg'),
+                    // SvgPicture.asset(
+                    //     'assets/svg/outline/call_bubble_overlay.svg'),
                     Container(
                       color: AppColorConstants.themeColor,
                       child: UserAvatarView(
@@ -230,25 +232,33 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               const SizedBox(
                 height: 50,
               ),
-              Heading3Text(
-                widget.call.opponent.userName,
-                weight: TextWeight.bold,
-                color: AppColorConstants.grayscale900,
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              agoraCallController.remoteJoined.value == false
-                  ? BodyExtraLargeText(
-                      widget.call.isOutGoing
-                          ? ringingString
-                          : incomingCallString,
-                      weight: TextWeight.medium,
-                      color: AppColorConstants.grayscale800,
-                    )
-                  : _timerView(),
+              opponentNameAndCallStatus()
             ],
           );
+  }
+
+  opponentNameAndCallStatus() {
+    return Column(
+      children: [
+        Heading3Text(
+          widget.call.opponent.userName,
+          weight: TextWeight.bold,
+          color: AppColorConstants.grayscale900,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        agoraCallController.remoteJoined.value == false
+            ? BodyExtraLargeText(
+                widget.call.isOutGoing
+                    ? ringingString.tr
+                    : incomingCallString.tr,
+                weight: TextWeight.medium,
+                color: AppColorConstants.grayscale800,
+              )
+            : _timerView(),
+      ],
+    );
   }
 
   //Timer Ui
@@ -369,7 +379,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               height: 80,
               width: 80,
               child: const ThemeIconWidget(
-                ThemeIcon.closeFilled,
+                ThemeIcon.declineCall,
                 size: 30,
                 color: Colors.white,
               ).p16,

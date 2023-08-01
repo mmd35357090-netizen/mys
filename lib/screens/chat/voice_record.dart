@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 export 'package:path_provider/path_provider.dart';
-import 'package:get/get.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'dart:typed_data';
 import 'package:foap/helper/imports/common_import.dart';

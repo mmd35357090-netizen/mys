@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 
 class PasswordChangedPopup extends StatelessWidget {
   final UserProfileManager _userProfileManager = Get.find();
@@ -12,8 +11,8 @@ class PasswordChangedPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
+      height: Get.height,
+      width: Get.width,
       child: Stack(
         children: [
           Container(
@@ -60,9 +59,9 @@ class PasswordChangedPopup extends StatelessWidget {
                     onPress: () {
                       _userProfileManager.logout();
                     },
-                  ).hP16
+                  ).hp(DesignConstants.horizontalPadding)
                 ],
-              ).setPadding(top: 40).hP16,
+              ).setPadding(top: 40).hp(DesignConstants.horizontalPadding),
             ).topRounded(40),
           ),
         ],

@@ -118,7 +118,7 @@ class _SegmentTabState extends State<SegmentTab> {
                                   fontWeight: TextWeight.bold)
                           : widget.inActiveTextStyle ??
                               TextStyle(fontSize: FontSizes.b3))
-                  .hP16),
+                  .hp(DesignConstants.horizontalPadding)),
     )
         .backgroundCard(
             radius: cornerRadius,

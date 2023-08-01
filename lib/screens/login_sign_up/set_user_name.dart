@@ -1,8 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../controllers/profile/profile_controller.dart';
-import '../../universal_components/rounded_input_field.dart';
 
 class SetUserName extends StatefulWidget {
   const SetUserName({Key? key}) : super(key: key);
@@ -19,7 +16,7 @@ class _SetUserNameState extends State<SetUserName> {
   @override
   void initState() {
     super.initState();
-    userName.text = _userProfileManager.user.value!.userName ?? '';
+    userName.text = _userProfileManager.user.value!.userName ;
   }
 
   @override
@@ -82,7 +79,7 @@ class _SetUserNameState extends State<SetUserName> {
                     );
               })
         ],
-      ).hP16,
+      ).hp(DesignConstants.horizontalPadding),
     );
   }
 }

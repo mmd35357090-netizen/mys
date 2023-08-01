@@ -1,8 +1,10 @@
+import '../helper/enum.dart';
+
 class TVBannersModel {
   int? id;
   String? name;
   String? coverImage;
-  String? bannerType;
+  TvBannerType? bannerType;
   int? startTime;
   int? endTime;
   int? referenceId;
@@ -12,21 +14,21 @@ class TVBannersModel {
 
   TVBannersModel(
       {this.id,
-        this.name,
-        this.coverImage,
-        this.bannerType,
-        this.startTime,
-        this.endTime,
-        this.referenceId,
-        this.createdAt,
-        this.updatedAt,
-        this.coverImageUrl});
+      this.name,
+      this.coverImage,
+      this.bannerType,
+      this.startTime,
+      this.endTime,
+      this.referenceId,
+      this.createdAt,
+      this.updatedAt,
+      this.coverImageUrl});
 
   TVBannersModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     coverImage = json['cover_image'];
-    bannerType = json['banner_type'];
+    bannerType = json['banner_type'] == 1 ? TvBannerType.tv : TvBannerType.show;
     startTime = json['start_time'];
     endTime = json['end_time'];
     referenceId = json['reference_id'];

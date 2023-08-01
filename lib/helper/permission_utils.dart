@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dialog_utils.dart';
-import 'package:get/get.dart';
+
 
 class PermissionUtils {
   static void requestPermission(

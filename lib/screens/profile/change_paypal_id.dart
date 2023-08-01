@@ -60,7 +60,7 @@ class _ChangePaypalIdState extends State<ChangePaypalId> {
                 ],
               ).vP8,
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         ],
       ),
     );

@@ -166,12 +166,12 @@ class NetworkConstantsUtil {
       'podcast-shows/podcast-show-details?expand=podcastShowEpisode';
 
   static String podcastBanners = 'podcast-banners';
-  static String getHosts = 'podcasts?expand=currentViewer';
+  static String getHosts = 'podcasts?expand=currentViewer,podcastShow&category_id=&name=';
   static String getPodcastHostDetail =
       'podcasts/podcast-host-details?id={{host_id}}';
 
-  static String getPodcastShows = 'podcast-shows?expand=podcastShow';
-  static String getPodcastShowsEpisode = 'podcast-shows/podcast-show-episodes?';
+  static String getPodcasts = 'podcast-shows?expand=podcastShow';
+  static String getPodcastEpisode = 'podcast-shows/podcast-show-episodes?';
 
   //*********** Relations ***********//
   static String relationshipNames = 'relations';

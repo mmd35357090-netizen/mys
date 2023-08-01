@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import '../../apiHandler/apis/misc_api.dart';
 
 class NotificationSettingController extends GetxController {

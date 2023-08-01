@@ -24,7 +24,6 @@ class AuthApi {
     };
     EasyLoading.show(status: loadingString.tr);
 
-    print('param $param');
     ApiWrapper()
         .postApiWithoutToken(url: NetworkConstantsUtil.login, param: param)
         .then((response) {

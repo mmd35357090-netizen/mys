@@ -6,10 +6,11 @@ import 'package:foap/util/app_config_constants.dart';
 import 'package:just_audio/just_audio.dart' as just_audio;
 import 'package:rxdart/rxdart.dart' as rxdart;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AudioSongPlayer extends StatefulWidget {
-  final List<PodcastShowEpisodeModel>? songsArray;
-  final PodcastShowModel? show;
+  final List<PodcastEpisodeModel>? songsArray;
+  final PodcastModel? show;
 
   const AudioSongPlayer({Key? key, this.songsArray, this.show})
       : super(key: key);
@@ -66,7 +67,7 @@ class _AudioSongPlayerState extends State<AudioSongPlayer> {
           CachedNetworkImage(
             imageUrl: widget.songsArray?[0].imageUrl ?? "",
             fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width,
+            width: Get.width,
             // height: 230,
           ),
           ShaderMask(
@@ -270,7 +271,7 @@ class _AudioSongPlayerState extends State<AudioSongPlayer> {
 
                 removeTop: true,
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height / 2 - 100,
+                  height: Get.height / 2 - 100,
                   child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: widget.songsArray?.length,

@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/chat_imports.dart';
 
 class ChatImageViewer extends StatefulWidget {
@@ -39,7 +39,7 @@ class EnlargeImageViewState extends State<ChatImageViewer> {
                   Get.back();
                 }),
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
             divider().vP8,
             Expanded(
                 child: MessageImage(

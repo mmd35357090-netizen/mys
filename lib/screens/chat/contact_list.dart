@@ -1,8 +1,6 @@
 import 'package:flutter_contacts/contact.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/components/contact_tile.dart';
-import 'package:get/get.dart';
-
 import '../../controllers/chat_and_call/conatcts_controller.dart';
 
 class ContactList extends StatefulWidget {
@@ -55,7 +53,7 @@ class _ContactListState extends State<ContactList> {
                         contactsController.selectedContacts);
                   }),
                 ],
-              ).hP16,
+              ).hp(DesignConstants.horizontalPadding),
               Positioned(
                 left: 0,
                 right: 0,
@@ -77,7 +75,7 @@ class _ContactListState extends State<ContactList> {
                 builder: (ctx) {
                   return ListView.separated(
                       padding:
-                          const EdgeInsets.only(left: 16, right: 16, top: 25),
+                           EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 25),
                       itemCount: contactsController.contacts.length,
                       itemBuilder: (ctx, index) {
                         Contact contact = contactsController.contacts[index];

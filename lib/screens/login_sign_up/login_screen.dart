@@ -1,8 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
 
-import '../../universal_components/rounded_input_field.dart';
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -33,26 +31,26 @@ class LoginScreenState extends State<LoginScreen> {
               FocusScope.of(context).requestFocus(FocusNode());
             },
             child: SizedBox(
-              height: MediaQuery.of(context).size.height,
+              height: Get.height,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.08,
+                      height: Get.height * 0.08,
                     ),
                     Heading3Text(signInMessageString.tr,
                         weight: TextWeight.medium),
 
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.05,
+                      height: Get.height * 0.05,
                     ),
                     AppTextField(
                       controller: email,
                       hintText: emailOrUsernameString.tr,
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.025,
+                      height: Get.height * 0.025,
                     ),
                     AppPasswordTextField(
                       // onChanged: (value) {},
@@ -63,11 +61,11 @@ class LoginScreenState extends State<LoginScreen> {
                       // showRevealPasswordIcon: true,
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.04,
+                      height: Get.height * 0.04,
                     ),
                     addLoginBtn(),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.03,
+                      height: Get.height * 0.03,
                     ),
                     InkWell(
                       onTap: () {
@@ -81,14 +79,14 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.05,
+                      height: Get.height * 0.05,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           height: 1,
-                          width: MediaQuery.of(context).size.width * 0.37,
+                          width: Get.width * 0.37,
                           color: AppColorConstants.themeColor,
                         ),
                         Heading6Text(
@@ -96,19 +94,19 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         Container(
                           height: 1,
-                          width: MediaQuery.of(context).size.width * 0.37,
+                          width: Get.width * 0.37,
                           color: AppColorConstants.themeColor,
                         )
                       ],
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.04,
+                      height: Get.height * 0.04,
                     ),
                     const SocialLogin(hidePhoneLogin: false)
                         .setPadding(left: 65, right: 65),
 
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.05,
+                      height: Get.height * 0.05,
                     ),
                     // bioMetricView(),
                     // const Spacer(),

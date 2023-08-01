@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../components/actionSheets/action_sheet1.dart';
 import '../../model/generic_item.dart';
@@ -77,7 +76,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                         width: 20,
                       )),
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
             divider().tP8,
             Expanded(
               child: ListView(
@@ -171,7 +170,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         _chatDetailController.chatRoom.value!.description!,
           weight: TextWeight.regular
       ).p16,
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
   }
 
   Widget groupSettingWidget() {
@@ -212,7 +211,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Get.to(() => const GroupSettings());
         }),
       ],
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
   }
 
   Widget commonOptionsWidget() {
@@ -339,7 +338,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 }))
             : Container(),
       ],
-    ).round(10).backgroundCard(shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard(shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
   }
 
   Widget extraOptionsWidget() {
@@ -378,7 +377,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               isSuccess: true);
         })
       ],
-    ).round(10).backgroundCard(shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard(shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
   }
 
   Widget exitAndDeleteGroup() {
@@ -423,7 +422,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Get.back();
         }),
       ],
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
   }
 
   Widget callWidgets() {
@@ -446,7 +445,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                     weight: TextWeight.medium
                 ),
               ],
-            ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+            ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
           ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
             audioCall();
           }).rp(20),
@@ -466,7 +465,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                     weight: TextWeight.medium
                 ),
               ],
-            ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+            ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
           ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
             videoCall();
           }),
@@ -648,7 +647,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                                     )
                                   : Container()
                             ],
-                          ).hP16,
+                          ).hp(DesignConstants.horizontalPadding),
 
                           const Spacer(),
                           member.isAdmin == 1
@@ -670,7 +669,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                     }).vP8,
               ).round(10).backgroundCard(shadowOpacity: 0.1),
             ],
-          ).hP16);
+          ).hp(DesignConstants.horizontalPadding));
   }
 
   void openActionOptionsForParticipant(ChatRoomMember member) {

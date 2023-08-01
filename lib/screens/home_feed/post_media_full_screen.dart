@@ -1,10 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 
 import '../../components/live_tv_player.dart';
 import '../../model/post_gallery.dart';
-import '../../model/post_model.dart';
 
 class PostMediaFullScreen extends StatefulWidget {
   final List<PostGallery> gallery;
@@ -69,7 +67,7 @@ class _PostMediaFullScreenState extends State<PostMediaFullScreen> {
     return CachedNetworkImage(
       imageUrl: media.filePath,
       fit: BoxFit.contain,
-      width: MediaQuery.of(context).size.width,
+      width: Get.width,
       placeholder: (context, url) => AppUtil.addProgressIndicator(size: 100),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     ).addPinchAndZoom();
@@ -79,7 +77,7 @@ class _PostMediaFullScreenState extends State<PostMediaFullScreen> {
     return Positioned(
       child: SizedBox(
         height: 150.0,
-        width: MediaQuery.of(context).size.width,
+        width: Get.width,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -91,7 +89,7 @@ class _PostMediaFullScreenState extends State<PostMediaFullScreen> {
               Get.back();
             }),
           ],
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
       ),
     );
   }

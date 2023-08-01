@@ -6,7 +6,7 @@ import 'package:foap/helper/string_extension.dart';
 import 'package:foap/model/location.dart';
 import 'package:foap/screens/chat/media.dart';
 import 'package:intl/intl.dart';
-import 'package:get/get.dart';
+
 
 class ChatContentJson {
   int originalMessageId = 0;

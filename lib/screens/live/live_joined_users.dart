@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/live_imports.dart';
-
 import '../../components/user_card.dart';
 
 class LiveJoinedUsers extends StatefulWidget {
@@ -53,7 +51,7 @@ class _LiveJoinedUsersState extends State<LiveJoinedUsers> {
                 }),
           ),
         ],
-      ).hP16,
+      ).hp(DesignConstants.horizontalPadding),
     ).topRounded(40);
   }
 }

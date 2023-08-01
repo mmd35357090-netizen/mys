@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/chat_imports.dart';
 
 class ChatMediaList extends StatefulWidget {
@@ -62,7 +62,7 @@ class _ChatMediaListState extends State<ChatMediaList> {
                 width: 20,
               )
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
           divider().tP8,
           mediaList()
         ],
@@ -129,7 +129,7 @@ class _ChatMediaListState extends State<ChatMediaList> {
                     : Container()
               ]),
 
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
           );
         });
   }

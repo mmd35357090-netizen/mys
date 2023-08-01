@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 
 import '../../controllers/misc/faq_controller.dart';
 

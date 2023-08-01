@@ -1,8 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/profile_imports.dart';
-import 'package:foap/screens/add_on/ui/dating/profile/add_interests.dart';
 import 'package:foap/screens/login_sign_up/set_profile_category_type.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UpdateProfile extends StatefulWidget {
@@ -201,159 +199,8 @@ class UpdateProfileState extends State<UpdateProfile> {
                     ],
                   ),
                   divider().vP16,
-                  // Row(
-                  //   children: [
-                  //     BodyLargeText(currentLocation,
-                  //         weight: TextWeight.medium),
-                  //     const Spacer(),
-                  //     ThemeIconWidget(
-                  //       ThemeIcon.edit,
-                  //       color: AppColorConstants.iconColor,
-                  //       size: 15,
-                  //     ).ripple(() {
-                  //       Get.to(() => const SetLocation(isFromSignup: false))!
-                  //           .then((value) {
-                  //         reloadData();
-                  //       });
-                  //     })
-                  //   ],
-                  // ),
-                  // divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(nameString.tr, weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => BodyMediumText(
-                            profileController.user.value?.name ?? '',
-                          )),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      ).ripple(() {
-                        Get.to(() => const AddName(isSettingProfile: false))!
-                            .then((value) {
-                          reloadData();
-                        });
-                      })
-                    ],
-                  ),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(dateOfBirthString.tr, weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => BodyMediumText(
-                            profileController.user.value?.dob ?? '',
-                          )),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      ).ripple(() {
-                        Get.to(() => const SetDateOfBirth(isSettingProfile: false))!
-                            .then((value) {
-                          reloadData();
-                        });
-                      })
-                    ],
-                  ),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(genderString.tr, weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => BodyMediumText(
-                            profileController.user.value?.genderType ==
-                                    GenderType.male
-                                ? 'Male'
-                                : profileController.user.value?.genderType ==
-                                        GenderType.female
-                                    ? 'Female'
-                                    : 'Other',
-                          )),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      ).ripple(() {
-                        Get.to(() => const SetYourGender(isSettingProfile: false))!
-                            .then((value) {
-                          reloadData();
-                        });
-                      })
-                    ],
-                  ),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(personalDetailsString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      ).ripple(() {
-                        Get.to(() =>
-                                const AddPersonalInfo(isSettingProfile: false))!
-                            .then((value) {
-                          reloadData();
-                        });
-                      })
-                    ],
-                  ),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(interestsString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      ).ripple(() {
-                        Get.to(() => const AddInterests(
-                                  isSettingProfile: false,
-                                ))!
-                            .then((value) {
-                          reloadData();
-                        });
-                      })
-                    ],
-                  ),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(professionalString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      ).ripple(() {
-                        Get.to(() => const AddProfessionalDetails(
-                                isSettingProfile: false))!
-                            .then((value) {
-                          reloadData();
-                        });
-                      })
-                    ],
-                  ),
-                  divider().vP16,
                 ],
-              ).hP16,
+              ).hp(DesignConstants.horizontalPadding),
             ),
           ),
         ],
@@ -366,7 +213,7 @@ class UpdateProfileState extends State<UpdateProfile> {
         init: profileController,
         builder: (ctx) {
           return SizedBox(
-            height: 280,
+            height: 320,
             child: profileController.user.value != null
                 ? Stack(
                     children: [
@@ -377,7 +224,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                                 profileController.user.value!.coverImage != null
                                     ? CachedNetworkImage(
                                             width: Get.width,
-                                            height: 250,
+                                            height: 320,
                                             fit: BoxFit.cover,
                                             imageUrl: profileController
                                                 .user.value!.coverImage!)
@@ -385,14 +232,14 @@ class UpdateProfileState extends State<UpdateProfile> {
                                         .bottomRounded(40)
                                     : Container(
                                         width: Get.width,
-                                        height: 250,
+                                        height: 320,
                                         color: AppColorConstants.themeColor
                                             .withOpacity(0.2),
                                       ).bottomRounded(40),
                           ),
                           Positioned(
                               bottom: 10,
-                              right: 16,
+                              right: DesignConstants.horizontalPadding,
                               child: Container(
                                 color: AppColorConstants.cardColor,
                                 child: BodyLargeText(editProfileCoverString.tr)

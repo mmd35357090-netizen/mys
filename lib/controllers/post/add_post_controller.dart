@@ -4,21 +4,19 @@ import 'dart:typed_data';
 import 'package:foap/apiHandler/apis/misc_api.dart';
 import 'package:foap/apiHandler/apis/post_api.dart';
 import 'package:foap/components/custom_gallery_picker.dart';
-import 'package:foap/controllers/misc/users_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/helper/list_extension.dart';
 import 'package:foap/helper/string_extension.dart';
 import 'package:video_compress_ds/video_compress_ds.dart';
+import 'package:path_provider/path_provider.dart';
+
 import '../../apiHandler/apis/users_api.dart';
 import '../../model/hash_tag.dart';
 import '../../screens/chat/media.dart';
 import '../../screens/dashboard/dashboard_screen.dart';
 import '../home/home_controller.dart';
-import 'package:path_provider/path_provider.dart';
 
 class AddPostController extends GetxController {
   final HomeController _homeController = Get.find();
-  final UsersController _usersController = Get.find();
 
   RxInt isEditing = 0.obs;
   RxString currentHashtag = ''.obs;
@@ -32,7 +30,7 @@ class AddPostController extends GetxController {
   late String postingTitle;
 
   RxList<Hashtag> hashTags = <Hashtag>[].obs;
-  // RxList<UserModel> searchedUsers = <UserModel>[].obs;
+  RxList<UserModel> searchedUsers = <UserModel>[].obs;
 
   int currentUpdateAbleStartOffset = 0;
   int currentUpdateAbleEndOffset = 0;
@@ -47,44 +45,19 @@ class AddPostController extends GetxController {
   bool canLoadMoreHashtags = true;
   bool hashtagsIsLoading = false;
 
-  // int accountsPage = 1;
-  // bool canLoadMoreAccounts = true;
-  // bool accountsIsLoading = false;
-
-  PostType? currentPostType;
+  int accountsPage = 1;
+  bool canLoadMoreAccounts = true;
+  bool accountsIsLoading = false;
 
   clear() {
-    isEditing.value = 0;
-    currentHashtag.value = '';
-    currentUserTag.value = '';
-    currentIndex.value = 0;
-
-    isPosting.value = false;
-    isErrorInPosting.value = false;
-
-    // postingMedia = [];
-    // postingTitle = '';
-
-    hashTags.clear();
-    // searchedUsers.clear();
-
-    currentUpdateAbleStartOffset = 0;
-    currentUpdateAbleEndOffset = 0;
-    allowComments.value = true;
-
     searchText.value = '';
-    position.value = 0;
-
-    isPreviewMode.value = false;
-
     hashtagsPage = 1;
     canLoadMoreHashtags = true;
     hashtagsIsLoading = false;
 
-    // accountsPage = 1;
-    // canLoadMoreAccounts = true;
-    // accountsIsLoading = false;
-
+    accountsPage = 1;
+    canLoadMoreAccounts = true;
+    accountsIsLoading = false;
     update();
   }
 
@@ -117,8 +90,6 @@ class AddPostController extends GetxController {
           hashtag: text.replaceAll('#', ''),
           resultCallback: (result, metaData) {
             hashTags.addAll(result);
-            hashTags.unique((e) => e.name);
-
             canLoadMoreHashtags = result.length >= metaData.perPage;
             hashtagsIsLoading = false;
             hashtagsPage += 1;
@@ -144,6 +115,7 @@ class AddPostController extends GetxController {
         1;
 
     currentUserTag.value = '';
+
     update();
   }
 
@@ -162,32 +134,29 @@ class AddPostController extends GetxController {
   }
 
   searchUsers({required String text, VoidCallback? callBackHandler}) {
-    _usersController.setSearchTextFilter(text.replaceAll('@', ''));
-    // if (canLoadMoreAccounts) {
-    //   accountsIsLoading = true;
-    //
-    //   UsersApi.searchUsers(
-    //       page: accountsPage,
-    //       isExactMatch: 0,
-    //       searchText: text.replaceAll('@', ''),
-    //       resultCallback: (result, metadata) {
-    //         searchedUsers.addAll(result);
-    //         searchedUsers.unique((e) => e.id);
-    //
-    //         accountsIsLoading = false;
-    //         canLoadMoreAccounts = result.length >= metadata.perPage;
-    //         accountsPage += 1;
-    //         update();
-    //
-    //         if (callBackHandler != null) {
-    //           callBackHandler();
-    //         }
-    //       });
-    // } else {
-    //   if (callBackHandler != null) {
-    //     callBackHandler();
-    //   }
-    // }
+    if (canLoadMoreAccounts) {
+      accountsIsLoading = true;
+
+      UsersApi.searchUsers(
+          page: accountsPage,
+          isExactMatch: 0,
+          searchText: text.replaceAll('@', ''),
+          resultCallback: (result, metadata) {
+            searchedUsers.addAll(result);
+            accountsIsLoading = false;
+            canLoadMoreAccounts = result.length >= metadata.perPage;
+            accountsPage += 1;
+            update();
+
+            if (callBackHandler != null) {
+              callBackHandler();
+            }
+          });
+    } else {
+      if (callBackHandler != null) {
+        callBackHandler();
+      }
+    }
   }
 
   textChanged(String text, int position) {
@@ -203,7 +172,7 @@ class AddPostController extends GetxController {
         currentHashtag.value = lastPart;
         currentUpdateAbleStartOffset = position;
       }
-      hashTags.clear();
+
       if (lastPart.length > 1) {
         searchHashTags(text: lastPart);
         currentUpdateAbleEndOffset = position;
@@ -214,10 +183,6 @@ class AddPostController extends GetxController {
         currentUserTag.value = lastPart;
         currentUpdateAbleStartOffset = position;
       }
-
-      _usersController.clear();
-      // searchedUsers.clear();
-
       if (lastPart.length > 1) {
         searchUsers(text: lastPart);
         currentUpdateAbleEndOffset = position;
@@ -233,7 +198,7 @@ class AddPostController extends GetxController {
         currentUserTag.value = lastPart;
       }
       currentUserTag.value = '';
-      _usersController.clear();
+      searchedUsers.value = [];
     }
 
     this.position.value = position;
@@ -252,21 +217,18 @@ class AddPostController extends GetxController {
   }
 
   retryPublish() {
-    uploadAllPostFiles(
-        items: postingMedia, title: postingTitle, postType: currentPostType!);
+    uploadAllPostFiles(items: postingMedia, title: postingTitle);
   }
 
   void uploadAllPostFiles(
-      {required PostType postType,
-      required List<Media> items,
-      required String title,
-      int? competitionId,
-      int? clubId,
-      bool isReel = false,
-      int? audioId,
-      double? audioStartTime,
-      double? audioEndTime}) async {
-    currentPostType = postType;
+      {required List<Media> items,
+        required String title,
+        int? competitionId,
+        int? clubId,
+        bool isReel = false,
+        int? audioId,
+        double? audioStartTime,
+        double? audioEndTime}) async {
     postingMedia = items;
     postingTitle = title;
     isPosting.value = true;
@@ -286,7 +248,6 @@ class AddPostController extends GetxController {
     ]).whenComplete(() {});
 
     publishAction(
-      postType: postType,
       galleryItems: responses,
       title: title,
       tags: title.getHashtags(),
@@ -327,43 +288,39 @@ class AddPostController extends GetxController {
       file = mediaInfo!.file!;
 
       File videoThumbnail = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
+          '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
           .create();
 
       videoThumbnail.writeAsBytesSync(media.thumbnail!);
 
       await PostApi.uploadFile(videoThumbnail.path,
           resultCallback: (fileName, filePath) async {
-        print('fileName ${fileName}');
-        videoThumbnailPath = fileName;
-        await videoThumbnail.delete();
-      });
+            videoThumbnailPath = fileName;
+            await videoThumbnail.delete();
+          });
     }
 
     // EasyLoading.show(status: loadingString.tr);
     await PostApi.uploadFile(file.path,
         resultCallback: (fileName, filePath) async {
-      String imagePath = fileName;
+          String imagePath = fileName;
 
-      await file.delete();
+          await file.delete();
 
-      gallery = {
-        'filename': imagePath,
-        'video_thumb': videoThumbnailPath ?? '',
-        'type': competitionId == null ? '1' : '2',
-        'media_type': media.mediaType == GalleryMediaType.photo ? '1' : '2',
-        'is_default': '1',
-      };
-      print('got result');
-      completer.complete(gallery);
-    });
+          gallery = {
+            'filename': imagePath,
+            'video_thumb': videoThumbnailPath ?? '',
+            'type': competitionId == null ? '1' : '2',
+            'media_type': media.mediaType == GalleryMediaType.photo ? '1' : '2',
+            'is_default': '1',
+          };
+          completer.complete(gallery);
+        });
 
-    print('return');
     return completer.future;
   }
 
   void publishAction({
-    required PostType postType,
     required List<Map<String, String>> galleryItems,
     required String title,
     required List<String> tags,
@@ -376,7 +333,13 @@ class AddPostController extends GetxController {
     double? audioEndTime,
   }) {
     PostApi.addPost(
-        postType: postType,
+        postType: isReel == true
+            ? PostType.reel
+            : competitionId != null
+            ? PostType.competition
+            : clubId != null
+            ? PostType.club
+            : PostType.basic,
         title: title,
         gallery: galleryItems,
         hashTag: tags.join(','),

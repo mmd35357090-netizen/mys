@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../components/user_card.dart';
 import '../profile/other_user_profile.dart';
 
@@ -28,10 +26,9 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBar(
                title: joinRequestsString.tr),
-          divider().tP8,
+          const SizedBox(height: 8,),
           Expanded(
             child: GetBuilder<ClubDetailController>(
                 init: _clubDetailController,
@@ -50,8 +47,8 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
                   List<ClubJoinRequest> requestsList =
                       _clubDetailController.joinRequests;
                   return ListView.separated(
-                      padding: const EdgeInsets.only(
-                          top: 25, left: 16, right: 16, bottom: 100),
+                      padding:  EdgeInsets.only(
+                          top: 25, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 100),
                       itemCount: requestsList.length,
                       itemBuilder: (context, index) {
                         return ClubJoinRequestTile(

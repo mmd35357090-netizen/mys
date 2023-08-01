@@ -1,6 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../controllers/misc/rating_controller.dart';
 import '../../model/category_model.dart';
@@ -51,7 +50,7 @@ class _TvListHomeState extends State<TvListHome> {
           mainAxisSize: MainAxisSize.min,
           children: [
             backNavigationBar(title: tvsString.tr),
-            divider().tP8,
+            const SizedBox(height: 8,),
             Expanded(
                 child: GetBuilder<TvStreamingController>(
                     init: _tvStreamingController,
@@ -87,7 +86,7 @@ class _TvListHomeState extends State<TvListHome> {
         ? CachedNetworkImage(
             imageUrl: _tvStreamingController.banners.first.coverImageUrl ?? "",
             fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width,
+            width: Get.width,
             height: 200,
           )
             .round(10)
@@ -102,7 +101,7 @@ class _TvListHomeState extends State<TvListHome> {
                   CachedNetworkImage(
                     imageUrl: banner.coverImageUrl ?? "",
                     fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width,
+                    width: Get.width,
                     height: 200,
                   )
                       .round(10)
@@ -159,7 +158,7 @@ class _TvListHomeState extends State<TvListHome> {
               CachedNetworkImage(
                 imageUrl: tv.image,
                 fit: BoxFit.cover,
-                width: MediaQuery.of(context).size.width,
+                width: Get.width,
                 height: 200,
               ).backgroundCard().p16.ripple(() {
                 Get.to(() => LiveTvPlayer(
@@ -197,7 +196,7 @@ class _TvListHomeState extends State<TvListHome> {
       Row(
         children: [
           Heading6Text(model.name, weight: TextWeight.medium)
-              .setPadding(top: 20, bottom: 8, left: 16, right: 0),
+              .setPadding(top: 20, bottom: 8, left: DesignConstants.horizontalPadding, right: 0),
           const Spacer(),
           const ThemeIconWidget(
             ThemeIcon.nextArrow,

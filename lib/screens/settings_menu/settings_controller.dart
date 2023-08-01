@@ -49,10 +49,7 @@ class SettingsController extends GetxController {
   }
 
   changeLanguage(Map<String, String> language) async {
-    languagesList.forEach((element) {
-      var locale = Locale(element['language_code']!);
-      print('changeLanguage : ${locale.toString()}');
-    });
+
     var locale = Locale(language['language_code']!);
     Get.updateLocale(locale);
     currentLanguage.value = language['language_code']!;

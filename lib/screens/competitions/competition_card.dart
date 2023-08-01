@@ -37,7 +37,7 @@ class CompetitionCardState extends State<CompetitionCard> {
                   child: CachedNetworkImage(
                     imageUrl: model.photo,
                     fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width,
+                    width: Get.width,
                     height: 200,
                     placeholder: (context, url) =>
                         AppUtil.addProgressIndicator(size: 100),
@@ -47,8 +47,8 @@ class CompetitionCardState extends State<CompetitionCard> {
                 ),
                 CompetitionHighlightBar(model: model),
                 Positioned(
-                    left: 16,
-                    right: 16,
+                    left: DesignConstants.horizontalPadding,
+                    right: DesignConstants.horizontalPadding,
                     bottom: 70,
                     child: Heading4Text(
                       model.title,
@@ -58,7 +58,7 @@ class CompetitionCardState extends State<CompetitionCard> {
               ],
             ),
           ]),
-        )).hP16;
+        )).hp(DesignConstants.horizontalPadding);
   }
 }
 

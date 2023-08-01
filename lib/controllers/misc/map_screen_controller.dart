@@ -7,9 +7,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
 import 'package:foap/manager/location_manager.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
-import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as google_map;
-// import 'package:location/location.dart';
 
 class MapScreenController extends GetxController {
   RxList<UserModel> users = <UserModel>[].obs;

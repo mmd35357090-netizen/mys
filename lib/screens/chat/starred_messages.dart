@@ -1,7 +1,7 @@
 import 'package:flutter_contacts/contact.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:map_launcher/map_launcher.dart';
 import '../competitions/video_player_screen.dart';
@@ -44,7 +44,7 @@ class _StarredMessagesState extends State<StarredMessages> {
               height: 50,
             ),
             appBar(),
-            divider().tP8,
+            const SizedBox(height: 8,),
             Expanded(child: messagesListView()),
             Obx(() {
               return _chatDetailController.actionMode.value ==
@@ -81,7 +81,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                   mode: ChatMessageActionMode.edit);
             }),
           ],
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
         Positioned(
             left: 0,
             right: 0,
@@ -129,7 +129,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                 mode: ChatMessageActionMode.none);
           })
         ],
-      ).hP16,
+      ).hp(DesignConstants.horizontalPadding),
     );
   }
 
@@ -145,7 +145,7 @@ class _StarredMessagesState extends State<StarredMessages> {
             ),
       child: Obx(() => ListView.builder(
             padding:
-                const EdgeInsets.only(top: 10, bottom: 50, left: 16, right: 16),
+                 EdgeInsets.only(top: 10, bottom: 50, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
             itemCount: _chatRoomDetailController.starredMessages.length,
             itemBuilder: (ctx, index) {
               return messageTile(index);
@@ -310,7 +310,7 @@ class _StarredMessagesState extends State<StarredMessages> {
               children: [
                 ListTile(
                     title: Center(
-                        child: Text(deleteMessageForMeString.tr)),
+                        child: BodyLargeText(deleteMessageForMeString.tr)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.deleteMessage(deleteScope: 1);

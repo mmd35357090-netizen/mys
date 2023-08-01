@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../../components/search_bar.dart';
 import '../../../components/user_card.dart';
@@ -95,8 +94,8 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                 )
               ],
             ),
-          ).hP16,
-          divider().tP8,
+          ).hp(DesignConstants.horizontalPadding),
+          const SizedBox(height: 8,),
           GetBuilder<SelectUserForGroupChatController>(
             init: selectUserForGroupChatController,
             builder: (ctx) {
@@ -108,8 +107,8 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                       height: 110,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.only(
-                            top: 20, left: 16, right: 16, bottom: 10),
+                        padding: EdgeInsets.only(
+                            top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 10),
                         itemCount: usersList.length,
                         itemBuilder: (context, index) {
                           return Stack(

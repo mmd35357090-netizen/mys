@@ -68,8 +68,8 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                 )
               ],
             ),
-          ).hP16,
-          divider().tP8,
+          ).hp(DesignConstants.horizontalPadding),
+          const SizedBox(height: 8,),
           SizedBox(
             height: 250,
             child: Column(
@@ -125,7 +125,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                 )
               ],
             ),
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         ],
       ),
     );

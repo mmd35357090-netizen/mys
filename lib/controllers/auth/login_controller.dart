@@ -1,10 +1,8 @@
-import 'package:foap/screens/add_on/ui/dating/profile/set_location.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../apiHandler/apis/auth_api.dart';
 import '../../screens/login_sign_up/set_user_name.dart';
-import '../../screens/login_sign_up/verify_phone_login_OTP.dart';
+import '../../screens/login_sign_up/verify_phone_login_otp.dart';
 import '../../util/shared_prefs.dart';
 import 'dart:async';
 import 'package:foap/manager/socket_manager.dart';
@@ -54,7 +52,7 @@ class LoginController extends GetxController {
             getIt<SocketManager>().connect();
 
             if (_userProfileManager.user.value!.userName.isEmpty) {
-              Get.to(() => const SetLocation(isSettingProfile: false))!
+              Get.to(() => const SetUserName())!
                   .then((value) {});
             } else {
               Get.offAll(() => const DashboardScreen());

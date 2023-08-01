@@ -2,8 +2,9 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/string_extension.dart';
-import 'package:link_preview_generator/link_preview_generator.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../link_preview.dart';
 
 class TextChatTile extends StatelessWidget {
   final ChatMessageModel message;
@@ -19,13 +20,14 @@ class TextChatTile extends StatelessWidget {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LinkPreviewGenerator(
-                bodyMaxLines: 3,
-                link: messageString,
-                linkPreviewStyle: LinkPreviewStyle.large,
-                showGraphic: true,
-                errorBody: messageString,
-              ),
+              linkPreview(messageString),
+              // LinkPreviewGenerator(
+              //   bodyMaxLines: 3,
+              //   link: messageString,
+              //   linkPreviewStyle: LinkPreviewStyle.large,
+              //   showGraphic: true,
+              //   errorBody: messageString,
+              // ),
               const SizedBox(
                 height: 10,
               ),
@@ -53,7 +55,8 @@ class TextChatTile extends StatelessWidget {
               }
             },
             text: messageString,
-            style: TextStyle(fontSize: FontSizes.b2,color: AppColorConstants.grayscale900),
+            style: TextStyle(
+                fontSize: FontSizes.b2, color: AppColorConstants.grayscale900),
           );
   }
 }

@@ -1,9 +1,8 @@
-import 'package:foap/screens/reuseable_widgets/club_listing.dart';
-import 'package:get/get.dart';
-import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/club_imports.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/reuseable_widgets/club_listing.dart';
+
 import '../../components/actionSheets/action_sheet1.dart';
-import '../../components/group_avatars/group_avatar2.dart';
 import '../../model/category_model.dart';
 import '../../model/generic_item.dart';
 import '../../model/post_model.dart';
@@ -34,9 +33,6 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _clubsController.clear();
-    });
     super.dispose();
   }
 
@@ -55,7 +51,7 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
                     height: 20,
                   ),
                   HorizontalMenuBar(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                       onSegmentChange: (segment) {
                         _clubsController.selectedSegmentIndex(
                           index: segment,

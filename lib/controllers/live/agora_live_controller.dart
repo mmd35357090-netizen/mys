@@ -7,7 +7,7 @@ import 'package:foap/helper/imports/live_imports.dart';
 import 'package:foap/helper/string_extension.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../apiHandler/apis/gift_api.dart';
 import '../../helper/permission_utils.dart';
@@ -16,12 +16,10 @@ import '../../model/call_model.dart';
 import '../../model/chat_message_model.dart';
 import '../../model/gift_model.dart';
 import '../../model/package_model.dart';
-import '../../screens/live/components.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import '../../util/ad_helper.dart';
 import '../../util/constant_util.dart';
 import '../misc/subscription_packages_controller.dart';
-
 
 class AgoraLiveController extends GetxController {
   final SubscriptionPackageController packageController = Get.find();
@@ -276,15 +274,12 @@ class AgoraLiveController extends GetxController {
       await engine?.enableVideo();
 
       if (cameraInitiated == false && live.amIHostInLive) {
-        print('onToggleCamera');
         onToggleCamera();
         Future.delayed(const Duration(seconds: 2), () {
-          print('onToggleCamera again');
           onToggleCamera();
         });
         // onToggleCamera();
       } else {
-        print('by pass it');
       }
 
       liveStartTime = DateTime.now();
@@ -324,13 +319,9 @@ class AgoraLiveController extends GetxController {
     engine?.registerEventHandler(
       RtcEngineEventHandler(
           onJoinChannelSuccess: (RtcConnection connection, int elapsed) async {
-            debugPrint(
-                "local user ${connection.localUid} joined , on channel ${connection.channelId}");
-            update();
+           update();
           }, onLeaveChannel: (RtcConnection connection, RtcStats status) {
-        print('user leave from channel');
       }, onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-        debugPrint("remote user $remoteUid joined");
         remoteJoinedUsers.add(remoteUid);
         update();
       }, onUserOffline: (RtcConnection connection, int remoteUid,
@@ -346,15 +337,12 @@ class AgoraLiveController extends GetxController {
           ConnectionStateType state,
           ConnectionChangedReasonType reason) async {
         if (state == ConnectionStateType.connectionStateConnected) {
-          print('its connected');
         } else if (state == ConnectionStateType.connectionStateReconnecting ||
             state == ConnectionStateType.connectionStateConnecting) {
           // reConnectingRemoteView.value = true;
-          print('its reconnecting $state reason = $reason');
         }
       }, onFirstRemoteVideoFrame: (RtcConnection connection, int remoteUid,
           int width, int height, int elapsed) {
-        print('onFirstRemoteVideoFrame');
       }, onRemoteVideoStateChanged: (RtcConnection connection,
           int remoteUid,
           RemoteVideoState state,
@@ -373,22 +361,22 @@ class AgoraLiveController extends GetxController {
         }
       }, onLocalVideoStateChanged: (VideoSourceType source,
           LocalVideoStreamState state, LocalVideoStreamError error) {
-        print('onLocalVideoStateChanged $state');
+        // print('onLocalVideoStateChanged $state');
       }, onCameraReady: () {
-        print('camera is ready now');
+        // print('camera is ready now');
       }, onVideoDeviceStateChanged: (String deviceId,
           MediaDeviceType deviceType, MediaDeviceStateType deviceState) {
-        print('onVideoDeviceStateChanged $deviceState');
+        // print('onVideoDeviceStateChanged $deviceState');
       }, onLocalVideoStats: (RtcConnection connection, LocalVideoStats stats) {
         // print('onLocalVideoStats $stats');
       }, onFirstLocalVideoFrame:
           (VideoSourceType source, int width, int height, int elapsed) {
-        print('onFirstLocalVideoFrame');
+        // print('onFirstLocalVideoFrame');
 
         cameraInitiated = true;
       }, onFirstLocalVideoFramePublished:
           (RtcConnection connection, int elapsed) {
-        print('onFirstLocalVideoFramePublished');
+        // print('onFirstLocalVideoFramePublished');
       }),
     );
   }
@@ -397,7 +385,7 @@ class AgoraLiveController extends GetxController {
   void onCallEnd({required bool isHost}) async {
     engine?.leaveChannel();
     // engine.destroy();
-    Wakelock.disable(); // Turn off wakelock feature after call end
+    WakelockPlus.disable(); // Turn off wakelock feature after call end
     // Emit End live Event Into Socket
 
     if (isHost) {
@@ -417,7 +405,6 @@ class AgoraLiveController extends GetxController {
   closeLive() {
     Get.back();
     Timer(const Duration(seconds: 1), () {
-      print('clearing data from here ==== 1');
       clear();
     });
   }
@@ -452,7 +439,6 @@ class AgoraLiveController extends GetxController {
           'liveCallId': live.value?.id
         }));
 
-    print('clearing data from here ==== 2');
     clear();
     Get.back();
     InterstitialAds().show();
@@ -663,114 +649,6 @@ class AgoraLiveController extends GetxController {
 
   //*************** updates from socket *******************//
 
-  inviteUserToLive(
-      {required UserModel user,
-        required int battleTime,
-        required VoidCallback alreadyInvitedHandler}) {
-    if (live.value?.canInvite == true) {
-      getIt<SocketManager>().emit(SocketConstants.inviteInLive, {
-        'userId': user.id,
-        'liveCallId': live.value!.id,
-        'totalAllowedTime': battleTime
-      });
-
-      live.value!.invitedUserDetail = user;
-      live.refresh();
-
-      Timer(
-          const Duration(
-              seconds: AppConfigConstants.liveBattleConfirmationWaitTime + 5),
-              () {
-            if (live.value != null &&
-                live.value?.battleDetail == null &&
-                live.value?.invitedUserDetail != null) {
-              noResponseLiveBattle(
-                liveId: live.value!.id,
-              );
-            }
-          });
-    } else {
-      alreadyInvitedHandler();
-    }
-  }
-
-  invitedForLiveBattle(Live live) {
-    // const STATUS_LIVE_CALL_HOST_PENDING = 1;
-    // const STATUS_LIVE_CALL_HOST_ACCEPTED = 2;
-    // const STATUS_LIVE_CALL_HOST_REJECTED = 3;
-    // const STATUS_LIVE_CALL_HOST_ONGOING = 4;
-    // const STATUS_LIVE_CALL_HOST_COMPLETED = 10;
-
-    showModalBottomSheet<void>(
-        context: Get.context!,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext context) {
-          return FractionallySizedBox(
-            heightFactor: 0.7,
-            child: BattleInvitation(
-              live: live,
-              okHandler: () {
-                acceptBattleInvite(
-                    live: live, battleDetail: live.battleDetail!);
-              },
-              cancelHandler: () {
-                declineInvite(live.battleDetail!);
-              },
-            ),
-          );
-        }).then((value) {});
-  }
-
-  acceptBattleInvite({required Live live, required BattleDetail battleDetail}) {
-    battleDetail.battleStatus = BattleStatus.accepted;
-
-    Timer(const Duration(seconds: 1), () {
-      if (this.live.value?.id == live.id) {
-        engine?.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-        this.live.value!.battleDetail = battleDetail;
-        this.live.value!.battleDetail!.battleUsers.add(LiveCallHostUser(
-            userDetail: live.mainHostUserDetail,
-            // battleId: battleDetail.id,
-            totalCoins: 0,
-            totalGifts: 0,
-            isMainHost: true));
-
-        this.live.value!.battleDetail!.battleUsers.add(LiveCallHostUser(
-            userDetail: _userProfileManager.user.value!,
-            // battleId: battleDetail.id,
-            totalCoins: 0,
-            totalGifts: 0,
-            isMainHost: false));
-
-        this.live.refresh();
-
-        startLive(battleDetail: battleDetail);
-      } else {
-        live.battleDetail = battleDetail;
-        live.battleDetail!.battleUsers.add(LiveCallHostUser(
-            userDetail: live.mainHostUserDetail,
-            // battleId: battleDetail.id,
-            totalCoins: 0,
-            totalGifts: 0,
-            isMainHost: true));
-        live.battleDetail!.battleUsers.add(LiveCallHostUser(
-            userDetail: _userProfileManager.user.value!,
-            // battleId: battleDetail.id,
-            totalCoins: 0,
-            totalGifts: 0,
-            isMainHost: false));
-        // _joinLive(live: live);
-
-        Get.to(() => CheckingLiveFeasibility(
-          battle: live,
-          successCallbackHandler: () {
-            startLive(battleDetail: battleDetail);
-          },
-        ));
-      }
-    });
-  }
-
   startLive({required BattleDetail battleDetail}) {
     Timer(const Duration(seconds: 2), () {
       live.value!.battleDetail!.battleStatus = BattleStatus.started;
@@ -808,51 +686,6 @@ class AgoraLiveController extends GetxController {
       });
 
       live.refresh();
-    }
-  }
-
-  userDeclinedLiveBattle({
-    required int liveId,
-    // required UserModel user
-  }) {
-    if (live.value?.id == liveId) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        live.value!.invitedUserDetail = null;
-        live.refresh();
-      });
-
-      showModalBottomSheet<void>(
-          context: Get.context!,
-          backgroundColor: Colors.transparent,
-          builder: (BuildContext context) {
-            return FractionallySizedBox(
-              heightFactor: 0.55,
-              child: InvitationDeclinedView(
-                user: live.value!.invitedUserDetail!,
-              ),
-            );
-          }).then((value) {});
-    }
-  }
-
-  noResponseLiveBattle({
-    required int liveId,
-  }) {
-    if (live.value?.id == liveId) {
-      showModalBottomSheet<void>(
-          context: Get.context!,
-          backgroundColor: Colors.transparent,
-          builder: (BuildContext context) {
-            return FractionallySizedBox(
-              heightFactor: 0.55,
-              child: NoResponseOnInvitationView(
-                user: live.value!.invitedUserDetail!,
-              ),
-            );
-          }).then((value) {
-        live.value!.invitedUserDetail = null;
-        live.refresh();
-      });
     }
   }
 
@@ -920,7 +753,7 @@ class AgoraLiveController extends GetxController {
   onLiveEndMessageReceived(int liveId) {
     engine?.leaveChannel();
 
-    Wakelock.disable();
+    WakelockPlus.disable();
 
     currentJoinedUsers.clear();
     messages.clear();
@@ -984,7 +817,6 @@ class AgoraLiveController extends GetxController {
   showLiveStreaming() {
     startLiveStreaming.value = 2;
     startLiveStreaming.refresh();
-    print('showLiveStreaming');
   }
 
   // gifts

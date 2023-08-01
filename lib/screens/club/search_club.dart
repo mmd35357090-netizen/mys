@@ -1,7 +1,6 @@
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/club_imports.dart';
-import '../../components/group_avatars/group_avatar2.dart';
 import '../../components/search_bar.dart';
 import '../reuseable_widgets/club_listing.dart';
 
@@ -59,8 +58,8 @@ class SearchClubsListingState extends State<SearchClubsListing> {
                     onSearchCompleted: (searchTerm) {}),
               ),
             ],
-          ).setPadding(left: 16, right: 16, top: 25),
-          divider().tP8,
+          ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 25),
+          const SizedBox(height: 8,),
           Expanded(
             child: ClubListing(),
           ),

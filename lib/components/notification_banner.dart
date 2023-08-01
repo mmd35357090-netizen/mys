@@ -43,7 +43,7 @@ showNotification(ChatMessageModel message, ChatRoomModel room) {
           subtitle: Heading6Text(
             message.shortInfoForNotification,
           ),
-        ).setPadding(top: 60, left: 16, right: 16).ripple(() {
+        ).setPadding(top: 60, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding).ripple(() {
           OverlaySupportEntry.of(context)!.dismiss();
 
           Get.to(() => ChatDetail(

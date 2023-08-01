@@ -1,10 +1,9 @@
+import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/add_on/ui/reel/reels.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../components/force_update_view.dart';
+import '../../controllers/post/select_media.dart';
 import '../home_feed/home_feed_screen.dart';
-import '../post/add_post_screen.dart';
 import '../profile/my_profile.dart';
 import '../settings_menu/settings_controller.dart';
 import 'explore.dart';
@@ -13,19 +12,6 @@ class DashboardController extends GetxController {
   RxInt currentIndex = 0.obs;
   RxInt unreadMsgCount = 0.obs;
   RxBool isLoading = false.obs;
-
-  // getSettings() {
-  //  isLoading.value = true;
-  //   ApiController().getSettings().then((response) {
-  //     isLoading.value = false;
-  //
-  //     setting.value = response.settings;
-  //
-  //     if (setting.value?.latestVersion! != AppConfigConstants.currentVersion) {
-  //       forceUpdate.value = true;
-  //     }
-  //   });
-  // }
 
   indexChanged(int index) {
     currentIndex.value = index;
@@ -57,7 +43,7 @@ class DashboardState extends State<DashboardScreen> {
       const HomeFeedScreen(),
       const Explore(),
       Container(),
-      const Reels(),
+      const ChatHistory(),
       const MyProfile(
         showBack: false,
       ),
@@ -65,10 +51,6 @@ class DashboardState extends State<DashboardScreen> {
     ];
 
     super.initState();
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _settingsController.getSettings();
-    // });
   }
 
   @override
@@ -102,7 +84,7 @@ class DashboardState extends State<DashboardScreen> {
                       height: MediaQuery.of(context).viewPadding.bottom > 0
                           ? 100
                           : 80.0,
-                      width: MediaQuery.of(context).size.width,
+                      width: Get.width,
                       child: BottomNavigationBar(
                         backgroundColor: AppColorConstants.backgroundColor,
                         type: BottomNavigationBarType.fixed,
@@ -149,7 +131,7 @@ class DashboardState extends State<DashboardScreen> {
                                           ).circular)
                                   ],
                                 )),
-                            label: searchString.tr,
+                            label: exploreString.tr,
                           ),
                           const BottomNavigationBarItem(
                             icon: SizedBox(
@@ -160,7 +142,7 @@ class DashboardState extends State<DashboardScreen> {
                           ),
                           BottomNavigationBarItem(
                             icon: Obx(() => ThemeIconWidget(
-                                  ThemeIcon.videoCamera,
+                                  ThemeIcon.chat,
                                   size: 28,
                                   color:
                                       _dashboardController.currentIndex.value ==
@@ -168,7 +150,7 @@ class DashboardState extends State<DashboardScreen> {
                                           ? AppColorConstants.themeColor
                                           : AppColorConstants.iconColor,
                                 ).bP8),
-                            label: reelString.tr,
+                            label: chatsString.tr,
                           ),
                           BottomNavigationBarItem(
                             icon: Obx(() => ThemeIconWidget(
@@ -194,9 +176,7 @@ class DashboardState extends State<DashboardScreen> {
         () => showGeneralDialog(
             context: context,
             pageBuilder: (context, animation, secondaryAnimation) =>
-                const AddPostScreen(
-                  postType: PostType.basic,
-                )),
+                const SelectMedia()),
       );
     } else {
       Future.delayed(

@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
-
 import '../../controllers/auth/login_controller.dart';
 
 class VerifyOTPPhoneNumberChange extends StatefulWidget {
@@ -135,7 +133,6 @@ class VerifyOTPPhoneNumberChangeState
                                 color: AppColorConstants.themeColor);
                           })
                       : Container()
-                  // Text(' in (1:20) ', style: TextStyle(fontSize: FontSizes.b2).headingColor),
                 ],
               )).setPadding(top: 20, bottom: 25),
           const Spacer(),

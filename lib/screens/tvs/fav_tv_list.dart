@@ -12,7 +12,7 @@ class FavTvList extends StatefulWidget {
 }
 
 class _FavTvListState extends State<FavTvList> {
-  final TvStreamingController _tvStreamingController = Get.find();
+  final TvStreamingController _tvStreamingController = TvStreamingController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -54,8 +54,8 @@ class _FavTvListState extends State<FavTvList> {
         builder: (ctx) {
           return _tvStreamingController.isLoadingFavTvs
               ? SizedBox(
-                  height: (MediaQuery.of(context).size.height / 1.5),
-                  width: (MediaQuery.of(context).size.width),
+                  height: (Get.height / 1.5),
+                  width: (Get.width),
                   child: const Center(child: CircularProgressIndicator()))
               : _tvStreamingController.tvs.isEmpty
                   ? emptyData(title: noDataString, subTitle: '')

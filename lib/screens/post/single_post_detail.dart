@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/post/view_post_insight.dart';
-import 'package:get/get.dart';
-
 import '../../components/post_card.dart';
 import '../../controllers/post/single_post_detail_controller.dart';
 
@@ -36,9 +34,8 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBar( title: postString.tr),
-          divider().tP8,
+          const SizedBox(height: 8,),
           const SizedBox(
             height: 20,
           ),

@@ -1,7 +1,7 @@
 import 'package:foap/components/gallery_picker/src/presentation/pages/gallery_media_picker_controller.dart';
 import 'package:foap/components/gallery_picker/src/presentation/widgets/gallery_grid/thumbnail_widget.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import '../../../../../../screens/settings_menu/settings_controller.dart';
 import '../../../../../custom_camera/constants/constants.dart';
 

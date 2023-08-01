@@ -23,8 +23,8 @@ class _ChatGPTState extends State<ChatGPT> {
           backNavigationBar(title: chatGPT.tr),
           Obx(() => Expanded(
                   child: ListView.separated(
-                padding: const EdgeInsets.only(
-                    top: 50, bottom: 50, left: 16, right: 16),
+                padding:  EdgeInsets.only(
+                    top: 50, bottom: 50, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                 itemBuilder: (ctx, index) {
                   ChatGPTMessage message = _chatGPTController.messages[index];
                   return Row(
@@ -55,7 +55,7 @@ class _ChatGPTState extends State<ChatGPT> {
               ))),
           Obx(() => _chatGPTController.messages.isNotEmpty
               ? _chatGPTController.messages.last.isSent
-                  ? Lottie.asset('assets/lottie/typing.json').hP16
+                  ? Lottie.asset('assets/lottie/typing.json').hp(DesignConstants.horizontalPadding)
                   : Container()
               : Container()),
           messageComposerView()
@@ -134,7 +134,7 @@ class _ChatGPTState extends State<ChatGPT> {
                 height: 20,
               ),
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         )
       ],
     );

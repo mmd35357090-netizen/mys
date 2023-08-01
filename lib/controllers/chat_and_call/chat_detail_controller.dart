@@ -8,7 +8,6 @@ import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/string_extension.dart';
-import 'package:get/get.dart';
 import 'package:google_mlkit_smart_reply/google_mlkit_smart_reply.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:profanity_filter/profanity_filter.dart';
@@ -22,7 +21,7 @@ import '../../model/post_model.dart';
 import '../../util/constant_util.dart';
 import '../../util/shared_prefs.dart';
 import 'agora_call_controller.dart';
-import 'package:path_provider/path_provider.dart';
+
 
 class ChatDetailController extends GetxController {
   final AgoraCallController agoraCallController = Get.find();

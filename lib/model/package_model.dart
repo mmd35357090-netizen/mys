@@ -1,7 +1,7 @@
 class PackageModel {
   int id = 0;
   String name = '';
-  int price = 0;
+  double price = 0;
   int coin = 0;
 
   String inAppPurchaseIdIOS = '';
@@ -13,7 +13,7 @@ class PackageModel {
     PackageModel model = PackageModel();
     model.id = json['id'];
     model.name = json['name'];
-    model.price = json['price'];
+    model.price = double.parse(json['price'].toString());
     model.coin = json['coin'];
 
     model.inAppPurchaseIdIOS = json['in_app_purchase_id_ios'];

@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ChatMessageTile extends StatelessWidget {

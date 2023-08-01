@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/number_extension.dart';
-import 'package:get/get.dart';
-
 import '../../controllers/live/live_history_controller.dart';
 import '../../model/live_model.dart';
 
@@ -115,7 +113,7 @@ class LiveHistoryState extends State<LiveHistory> {
                   height: 20,
                 );
               },
-              itemCount: _liveHistoryController.lives.length)).hP16,
+              itemCount: _liveHistoryController.lives.length)).hp(DesignConstants.horizontalPadding),
         ),
       ]),
     );

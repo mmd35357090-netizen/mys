@@ -2,12 +2,13 @@ import 'package:foap/model/post_gift_model.dart';
 
 class TimelineGift {
   int? id;
-  int? recieverId;
+  int? receiverId;
   int? senderId;
   int? giftId;
   int? coin;
   int? sendOnType;
-  Null? liveCallId;
+
+  // Null liveCallId;
   int? postId;
   int? createdAt;
   int? postType;
@@ -15,55 +16,55 @@ class TimelineGift {
   PostGiftModel? giftTimelineDetail;
 
   TimelineGift(
-      {this.id,
-      this.recieverId,
-      this.senderId,
-      this.giftId,
-      this.coin,
-      this.sendOnType,
-      this.liveCallId,
-      this.postId,
-      this.createdAt,
-      this.postType,
-      this.senderDetail,
-      this.giftTimelineDetail});
+      {id,
+      recieverId,
+      senderId,
+      giftId,
+      coin,
+      sendOnType,
+      // liveCallId,
+      postId,
+      createdAt,
+      postType,
+      senderDetail,
+      giftTimelineDetail});
 
   TimelineGift.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    recieverId = json['reciever_id'];
+    receiverId = json['reciever_id'];
     senderId = json['sender_id'];
     giftId = json['gift_id'];
     coin = json['coin'];
     sendOnType = json['send_on_type'];
-    liveCallId = json['live_call_id'];
+    // liveCallId = json['live_call_id'];
     postId = json['post_id'];
     createdAt = json['created_at'];
     postType = json['post_type'];
     senderDetail = json['senderDetail'] != null
-        ? new SenderDetail.fromJson(json['senderDetail'])
+        ? SenderDetail.fromJson(json['senderDetail'])
         : null;
     giftTimelineDetail = json['giftTimelineDetail'] != null
-        ? new PostGiftModel.fromJson(json['giftTimelineDetail'])
+        ? PostGiftModel.fromJson(json['giftTimelineDetail'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['reciever_id'] = this.recieverId;
-    data['sender_id'] = this.senderId;
-    data['gift_id'] = this.giftId;
-    data['coin'] = this.coin;
-    data['send_on_type'] = this.sendOnType;
-    data['live_call_id'] = this.liveCallId;
-    data['post_id'] = this.postId;
-    data['created_at'] = this.createdAt;
-    data['post_type'] = this.postType;
-    if (this.senderDetail != null) {
-      data['senderDetail'] = this.senderDetail!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['reciever_id'] = receiverId;
+    data['sender_id'] = senderId;
+    data['gift_id'] = giftId;
+    data['coin'] = coin;
+    data['send_on_type'] = sendOnType;
+    // data['live_call_id'] = liveCallId;
+    data['post_id'] = postId;
+    data['created_at'] = createdAt;
+    data['post_type'] = postType;
+    if (senderDetail != null) {
+      data['senderDetail'] = senderDetail!.toJson();
     }
-    if (this.giftTimelineDetail != null) {
-      data['giftTimelineDetail'] = this.giftTimelineDetail!.toJson();
+    if (giftTimelineDetail != null) {
+      data['giftTimelineDetail'] = giftTimelineDetail!.toJson();
     }
     return data;
   }
@@ -73,37 +74,27 @@ class SenderDetail {
   String? name;
   String? username;
   String? email;
-  Null? image;
+  String? image;
   int? id;
-  int? isChatUserOnline;
-  int? chatLastTimeOnline;
-  Null? location;
-  Null? latitude;
-  Null? longitude;
+
   int? isReported;
-  Null? picture;
-  Null? coverImageUrl;
-  Null? userStory;
-  Null? profileCategoryName;
+  String? picture;
+  String? coverImageUrl;
+
+  String? profileCategoryName;
   int? isLike;
 
   SenderDetail(
-      {this.name,
-      this.username,
-      this.email,
-      this.image,
-      this.id,
-      this.isChatUserOnline,
-      this.chatLastTimeOnline,
-      this.location,
-      this.latitude,
-      this.longitude,
-      this.isReported,
-      this.picture,
-      this.coverImageUrl,
-      this.userStory,
-      this.profileCategoryName,
-      this.isLike});
+      {name,
+      username,
+      email,
+      image,
+      id,
+      isReported,
+      picture,
+      coverImageUrl,
+      profileCategoryName,
+      isLike});
 
   SenderDetail.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -111,37 +102,25 @@ class SenderDetail {
     email = json['email'];
     image = json['image'];
     id = json['id'];
-    isChatUserOnline = json['is_chat_user_online'];
-    chatLastTimeOnline = json['chat_last_time_online'];
-    location = json['location'];
-    latitude = json['latitude'];
-    longitude = json['longitude'];
     isReported = json['is_reported'];
     picture = json['picture'];
     coverImageUrl = json['coverImageUrl'];
-    userStory = json['userStory'];
     profileCategoryName = json['profileCategoryName'];
     isLike = json['is_like'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['username'] = this.username;
-    data['email'] = this.email;
-    data['image'] = this.image;
-    data['id'] = this.id;
-    data['is_chat_user_online'] = this.isChatUserOnline;
-    data['chat_last_time_online'] = this.chatLastTimeOnline;
-    data['location'] = this.location;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['is_reported'] = this.isReported;
-    data['picture'] = this.picture;
-    data['coverImageUrl'] = this.coverImageUrl;
-    data['userStory'] = this.userStory;
-    data['profileCategoryName'] = this.profileCategoryName;
-    data['is_like'] = this.isLike;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['username'] = username;
+    data['email'] = email;
+    data['image'] = image;
+    data['id'] = id;
+    data['is_reported'] = isReported;
+    data['picture'] = picture;
+    data['coverImageUrl'] = coverImageUrl;
+    data['profileCategoryName'] = profileCategoryName;
+    data['is_like'] = isLike;
     return data;
   }
 }
@@ -151,24 +130,24 @@ class Links {
   Self? first;
   Self? last;
 
-  Links({this.self, this.first, this.last});
+  Links({self, first, last});
 
   Links.fromJson(Map<String, dynamic> json) {
-    self = json['self'] != null ? new Self.fromJson(json['self']) : null;
-    first = json['first'] != null ? new Self.fromJson(json['first']) : null;
-    last = json['last'] != null ? new Self.fromJson(json['last']) : null;
+    self = json['self'] != null ? Self.fromJson(json['self']) : null;
+    first = json['first'] != null ? Self.fromJson(json['first']) : null;
+    last = json['last'] != null ? Self.fromJson(json['last']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.self != null) {
-      data['self'] = this.self!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (self != null) {
+      data['self'] = self!.toJson();
     }
-    if (this.first != null) {
-      data['first'] = this.first!.toJson();
+    if (first != null) {
+      data['first'] = first!.toJson();
     }
-    if (this.last != null) {
-      data['last'] = this.last!.toJson();
+    if (last != null) {
+      data['last'] = last!.toJson();
     }
     return data;
   }
@@ -177,15 +156,15 @@ class Links {
 class Self {
   String? href;
 
-  Self({this.href});
+  Self({href});
 
   Self.fromJson(Map<String, dynamic> json) {
     href = json['href'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['href'] = this.href;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['href'] = href;
     return data;
   }
 }
@@ -196,7 +175,7 @@ class Meta {
   int? currentPage;
   int? perPage;
 
-  Meta({this.totalCount, this.pageCount, this.currentPage, this.perPage});
+  Meta({totalCount, pageCount, currentPage, perPage});
 
   Meta.fromJson(Map<String, dynamic> json) {
     totalCount = json['totalCount'];
@@ -206,7 +185,7 @@ class Meta {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['totalCount'] = totalCount;
     data['pageCount'] = pageCount;
     data['currentPage'] = currentPage;

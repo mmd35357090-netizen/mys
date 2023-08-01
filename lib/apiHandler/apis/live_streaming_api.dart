@@ -2,7 +2,7 @@ import '../../helper/imports/common_import.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/live_model.dart';
 import '../api_wrapper.dart';
-import 'package:get/get.dart';
+
 
 class LiveStreamingApi {
   static getAllLiveUsers(

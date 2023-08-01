@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foap/controllers/misc/misc_controller.dart';
 import 'package:foap/controllers/misc/rating_controller.dart';
 import 'package:foap/helper/extension.dart';
 import 'package:get/get.dart';

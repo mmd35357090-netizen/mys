@@ -32,7 +32,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
   final ChatDetailController _chatDetailController = Get.find();
   final PostController _postController = Get.find();
 
-  List<String> tabs = [postsString, reelsString, mentionsString];
+  List<String> tabs = [postsString, mentionsString];
 
   TabController? controller;
 
@@ -87,6 +87,24 @@ class OtherUserProfileState extends State<OtherUserProfile>
                     (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
                     SliverAppBar(
+                      leading: const SizedBox(
+                        height: 30,
+                        width: 30,
+                        // color: AppColorConstants.themeColor,
+                        child: ThemeIconWidget(ThemeIcon.backArrow),
+                      ).circular.lP25.ripple(() {
+                        Get.back();
+                      }),
+                      actions: [
+                        const SizedBox(
+                          height: 30,
+                          width: 30,
+                          // color: AppColorConstants.themeColor,
+                          child: ThemeIconWidget(ThemeIcon.more),
+                        ).circular.rP25.ripple(() {
+                          openActionPopup();
+                        }),
+                      ],
                       backgroundColor: AppColorConstants.backgroundColor,
                       pinned: true,
                       expandedHeight: 470.0,
@@ -107,7 +125,6 @@ class OtherUserProfileState extends State<OtherUserProfile>
                   controller: controller,
                   children: [
                     PostList(),
-                    ReelsGrid(),
                     MentionsList(),
                   ],
                 )),
@@ -128,11 +145,11 @@ class OtherUserProfileState extends State<OtherUserProfile>
                     const SizedBox(
                       height: 20,
                     ),
-                    statsView().hP16,
+                    statsView().hp(DesignConstants.horizontalPadding),
                     const SizedBox(
                       height: 40,
                     ),
-                    buttonsView().hP16
+                    buttonsView().hp(DesignConstants.horizontalPadding)
                   ],
                 )
               : Container();
@@ -236,10 +253,10 @@ class OtherUserProfileState extends State<OtherUserProfile>
 
         if (_settingsController.setting.value!.enableChat)
           SizedBox(
-              width: MediaQuery.of(context).size.width * 0.25,
+              width: Get.width * 0.25,
               child: AppThemeButton(
                   height: 35,
-                  backgroundColor: AppColorConstants.disabledColor,
+                  backgroundColor: AppColorConstants.cardColor.darken(0.5),
                   text: chatString.tr,
                   onPress: () {
                     EasyLoading.show(status: loadingString.tr);
@@ -254,10 +271,10 @@ class OtherUserProfileState extends State<OtherUserProfile>
                   })).lP8,
         if (_settingsController.setting.value!.enableGift)
           SizedBox(
-              width: MediaQuery.of(context).size.width * 0.30,
+              width: Get.width * 0.30,
               child: AppThemeButton(
                   height: 35,
-                  backgroundColor: AppColorConstants.disabledColor,
+                  backgroundColor: AppColorConstants.cardColor.darken(0.5),
                   text: sendGiftString.tr,
                   onPress: () {
                     showModalBottomSheet<void>(
@@ -349,30 +366,33 @@ class OtherUserProfileState extends State<OtherUserProfile>
   void openActionPopup() {
     showModalBottomSheet(
         context: context,
-        builder: (context) => Wrap(
-              children: [
-                ListTile(
-                    title: Center(child: BodyLargeText(reportString.tr)),
-                    onTap: () async {
-                      Get.back();
+        builder: (context) => Container(
+              color: AppColorConstants.backgroundColor,
+              child: Wrap(
+                children: [
+                  ListTile(
+                      title: Center(child: BodyLargeText(reportString.tr)),
+                      onTap: () async {
+                        Get.back();
 
-                      _profileController.reportUser(context);
-                    }),
-                divider(),
-                ListTile(
-                    title: Center(child: BodyLargeText(blockString.tr)),
-                    onTap: () async {
-                      Get.back();
+                        _profileController.reportUser(context);
+                      }),
+                  divider(),
+                  ListTile(
+                      title: Center(child: BodyLargeText(blockString.tr)),
+                      onTap: () async {
+                        Get.back();
 
-                      _profileController.blockUser(context);
-                    }),
-                divider(),
-                ListTile(
-                    title: Center(child: BodyLargeText(cancelString.tr)),
-                    onTap: () {
-                      Get.back();
-                    }),
-              ],
+                        _profileController.blockUser(context);
+                      }),
+                  divider(),
+                  ListTile(
+                      title: Center(child: BodyLargeText(cancelString.tr)),
+                      onTap: () {
+                        Get.back();
+                      }),
+                ],
+              ),
             ));
   }
 

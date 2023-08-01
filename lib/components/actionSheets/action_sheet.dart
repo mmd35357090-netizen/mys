@@ -56,7 +56,7 @@ class ActionSheetState extends State<ActionSheet> {
                 Navigator.pop(context);
               })
             ],
-          ).setPadding(left: 16, right: 16, top: 25),
+          ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 25),
           divider( height: 0.2).tP25,
           for (int i = 0; i < items.length; i++)
             Row(

@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/random_chat/choose_profile_category.dart';
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_state_button/progress_button.dart';
@@ -75,7 +75,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                         List<UserModel> usersList =
                             _selectUserForChatController.following;
                         return _selectUserForChatController.followingIsLoading
-                            ? const ShimmerUsers().hP16
+                            ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
                             : usersList.isNotEmpty
                                 ? ListView.separated(
                                     padding: const EdgeInsets.only(
@@ -112,7 +112,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                           Get.back();
                                           Get.to(() =>
                                               const SelectUserForGroupChat());
-                                        }).hP16;
+                                        }).hp(DesignConstants.horizontalPadding);
                                       } else if (index == 1) {
                                         return SizedBox(
                                           height: 40,
@@ -143,7 +143,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                               () => const ChooseProfileCategory(
                                                     isCalling: false,
                                                   ));
-                                        }).hP16;
+                                        }).hp(DesignConstants.horizontalPadding);
                                       } else {
                                         return UserTile(
                                           profile: usersList[index - 2],
@@ -173,7 +173,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                             initiateVideoCall(
                                                 usersList[index - 2]);
                                           },
-                                        ).hP16;
+                                        ).hp(DesignConstants.horizontalPadding);
                                       }
                                     },
                                     separatorBuilder: (context, index) {
@@ -301,7 +301,6 @@ class SelectFollowingUserForMessageSendingState
 
   @override
   void dispose() {
-    // TODO: implement dispose
     selectUserForChatController.clear();
     super.dispose();
   }
@@ -329,7 +328,7 @@ class SelectFollowingUserForMessageSendingState
                 List<UserModel> usersList =
                     selectUserForChatController.following;
                 return selectUserForChatController.followingIsLoading
-                    ? const ShimmerUsers().hP16
+                    ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
                     : usersList.isNotEmpty
                         ? ListView.separated(
                             padding: const EdgeInsets.only(top: 20, bottom: 50),
@@ -363,7 +362,7 @@ class SelectFollowingUserForMessageSendingState
                                 height: 20,
                               );
                             },
-                          ).hP16
+                          ).hp(DesignConstants.horizontalPadding)
                         : emptyUser(
                             title: noUserFoundString.tr,
                             subTitle:

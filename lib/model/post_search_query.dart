@@ -31,6 +31,8 @@ class PostSearchQuery {
   @override
   // TODO: implement hashCode
   int get hashCode => super.hashCode;
+
+
 }
 
 class MentionedPostSearchQuery {

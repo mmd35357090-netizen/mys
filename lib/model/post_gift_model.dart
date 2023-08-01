@@ -14,11 +14,11 @@ class PostGiftModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['is_paid'] = this.isPaid;
-    data['coin'] = this.coin;
+    final Map<String, dynamic> data =  <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['is_paid'] = isPaid;
+    data['coin'] = coin;
     return data;
   }
 }

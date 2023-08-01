@@ -77,7 +77,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                         ),
                       ),
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
             divider().vP8,
             Expanded(
               child: Stack(children: [

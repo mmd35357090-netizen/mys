@@ -1,7 +1,6 @@
 import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
-import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../helper/permission_utils.dart';
 import '../../model/call_history_model.dart';

@@ -45,9 +45,6 @@ class ApiWrapper {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     String urlString = '${NetworkConstantsUtil.baseUrl}$url';
 
-    print('urlString ${urlString}');
-    print( "Bearer ${authKey!}");
-
     return http.get(Uri.parse(urlString), headers: {
       "Authorization": "Bearer ${authKey!}"
     }).then((http.Response response) async {
@@ -70,15 +67,11 @@ class ApiWrapper {
 
     String urlString = '${NetworkConstantsUtil.baseUrl}$url';
 
-    print(urlString);
-    print(param);
-
     return http.post(Uri.parse(urlString), body: jsonEncode(param), headers: {
       "Authorization": "Bearer ${authKey!}",
       'Content-Type': 'application/json'
     }).then((http.Response response) async {
       dynamic data = _decoder.convert(response.body);
-      print(data);
 
       // EasyLoading.dismiss();
       if (data['status'] == 401 && data['data'] == null) {
@@ -106,7 +99,6 @@ class ApiWrapper {
           'Content-Type': 'application/json'
         }).then((http.Response response) async {
       dynamic data = _decoder.convert(response.body);
-      print(data);
       EasyLoading.dismiss();
       if (data['status'] == 401 && data['data'] == null) {
         // Get.offAll(() => LoginForExpiredToken());
@@ -127,7 +119,6 @@ class ApiWrapper {
           'Content-Type': 'application/json'
         }).then((http.Response response) async {
       dynamic data = _decoder.convert(response.body);
-      print(data);
       EasyLoading.dismiss();
       if (data['status'] == 401 && data['data'] == null) {
         // Get.offAll(() => LoginForExpiredToken());
@@ -205,7 +196,6 @@ class ApiWrapper {
     if (data['status'] == 401 && data['data'] == null) {
       // Get.offAll(() => LoginForExpiredToken());
     } else {
-      print('data ${data}');
       return ApiResponse.fromJson(data);
     }
     return null;

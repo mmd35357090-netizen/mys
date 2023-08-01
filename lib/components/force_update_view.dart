@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../screens/settings_menu/settings_controller.dart';

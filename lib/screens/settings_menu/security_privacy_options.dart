@@ -1,6 +1,5 @@
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 
 class PrivacyOptions extends StatefulWidget {
@@ -85,7 +84,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                     settingsController.shareLocationToggle(val);
                   },
                 )),
-          ]).hP16,
+          ]).hp(DesignConstants.horizontalPadding),
         ),
         divider()
       ],
@@ -142,7 +141,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                       settingsController.biometricLogin(value);
                     },
                   ),
-                ]).hP16,
+                ]).hp(DesignConstants.horizontalPadding),
               ),
               divider()
             ],

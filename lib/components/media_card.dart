@@ -18,11 +18,12 @@ class MediaCard extends StatelessWidget {
             fit: BoxFit.cover,
             height: 110,
           ).round(12),
-          BodySmallText(model.name ?? '', weight: TextWeight.regular)
+          BodySmallText(model.name ?? '',
+                  maxLines: 1, weight: TextWeight.regular)
               .setPadding(top: 12, bottom: 6),
           BodySmallText(
             model.showTime ?? '',
-            weight: TextWeight.regular,
+            weight: TextWeight.semiBold,
             color: AppColorConstants.themeColor,
           ),
         ],

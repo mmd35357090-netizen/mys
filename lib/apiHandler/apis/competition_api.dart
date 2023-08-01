@@ -1,7 +1,5 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foap/apiHandler/api_wrapper.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/competition_model.dart';
 

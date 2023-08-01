@@ -5,7 +5,6 @@ import '../../components/sm_tab_bar.dart';
 import '../../controllers/misc/explore_controller.dart';
 import '../../controllers/post/post_controller.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
-import '../add_on/components/event/events_list.dart';
 import '../home_feed/quick_links.dart';
 import '../reuseable_widgets/club_listing.dart';
 import '../reuseable_widgets/hashtags.dart';
@@ -27,7 +26,6 @@ class _ExploreState extends State<Explore> {
     postsString,
     accountString,
     hashTagsString,
-    eventsString,
     clubsString,
   ];
 
@@ -96,7 +94,10 @@ class _ExploreState extends State<Explore> {
                       )
                     : Container())
               ],
-            ).setPadding(left: 16, right: 16, top: 25),
+            ).setPadding(
+                left: DesignConstants.horizontalPadding,
+                right: DesignConstants.horizontalPadding,
+                top: 25),
             Expanded(
                 child: DefaultTabController(
                     length: segments.length,
@@ -111,7 +112,6 @@ class _ExploreState extends State<Explore> {
                                   PostList(),
                                   UsersList(),
                                   HashTagsList(),
-                                  EventsList(),
                                   ClubListing(),
                                 ]),
                               )
@@ -128,7 +128,7 @@ class _ExploreState extends State<Explore> {
 
   Widget segmentView() {
     return HorizontalSegmentBar(
-        width: MediaQuery.of(context).size.width,
+        width: Get.width,
         onSegmentChange: (segment) {
           exploreController.segmentChanged(segment);
         },

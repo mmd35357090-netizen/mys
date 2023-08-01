@@ -1,12 +1,7 @@
-import 'dart:isolate';
-import 'dart:ui';
-// import 'package:flutter_downloader/flutter_downloader.dart';
-
 import 'package:background_downloader/background_downloader.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/number_extension.dart';
-import 'package:path/path.dart' as p;
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class FileChatTile extends StatefulWidget {
@@ -20,8 +15,7 @@ class FileChatTile extends StatefulWidget {
 
 class _FileChatTileState extends State<FileChatTile> {
   late TaskInfo taskInfo;
-  late String _localPath;
-  final ReceivePort _port = ReceivePort();
+  // final ReceivePort _port = ReceivePort();
 
   @override
   void initState() {
@@ -95,7 +89,7 @@ class _FileChatTileState extends State<FileChatTile> {
               }),
         widget.message.messageStatusType == MessageStatus.sending
             ? Positioned(
-                right: 16,
+                right: DesignConstants.horizontalPadding,
                 child: Center(child: AppUtil.addProgressIndicator(size: 40)))
             : Container()
       ],
@@ -236,8 +230,6 @@ class _FileChatTileState extends State<FileChatTile> {
   }
 
   Future<void> _prepareSaveDir() async {
-    _localPath = await FileManager.messageMediaDirectory(
-        widget.message.localMessageId, widget.message.roomId);
   }
 
   // Future<void> _requestDownload(TaskInfo task) async {
@@ -309,9 +301,6 @@ class _FileChatTileState extends State<FileChatTile> {
   //   });
   // }
 
-  void _unbindBackgroundIsolate() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
-  }
 }
 
 class ItemHolder {

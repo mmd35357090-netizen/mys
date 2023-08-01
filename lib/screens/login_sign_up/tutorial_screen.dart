@@ -1,8 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/login_sign_up/auth_tab.dart';
-import 'package:foap/screens/login_sign_up/signup_screen.dart';
-import 'package:get/get.dart';
+
 
 class TutorialScreen extends StatefulWidget {
   const TutorialScreen({Key? key}) : super(key: key);
@@ -51,7 +50,7 @@ class TutorialScreenState extends State<TutorialScreen> {
                   enableInfiniteScroll: false,
                   height: double.infinity,
                   viewportFraction: 1,
-                  // height: MediaQuery.of(context).size.height / 1.5,
+                  // height: Get.height / 1.5,
                   // aspectRatio: 0.7,
                   onPageChanged: (index, reason) {
                     setState(() {

@@ -39,13 +39,12 @@ class CreateClubState extends State<CreateClub> {
             height: Get.height,
             child: Column(
               children: [
-
                 backNavigationBar(
                   title: widget.club.id == null
                       ? createClubString.tr
                       : editClubInfoString.tr,
                 ),
-                divider().tP8,
+                const SizedBox(height: 8,),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -83,7 +82,7 @@ class CreateClubState extends State<CreateClub> {
                             )
                             // const Spacer(),
                           ],
-                        ).hP16,
+                        ).hp(DesignConstants.horizontalPadding),
                       ],
                     ),
                   ),
@@ -103,7 +102,7 @@ class CreateClubState extends State<CreateClub> {
                         : updateStrString.tr,
                     onPress: () {
                       nextBtnClicked();
-                    }).setPadding(left: 16, right: 16, bottom: 25, top: 25),
+                    }).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 25, top: 25),
               ))
         ],
       ),

@@ -307,6 +307,7 @@ String createString = 'Create';
 
 String searchString = 'Search';
 String searchAnythingString = 'Search anything';
+String exploreString = 'Explore';
 
 String logoutString = 'Log Out';
 String changePwdString = 'Change Password';
@@ -460,6 +461,7 @@ String fillFormString = "Please fill all the fields";
 
 String findFriendsString = "Find Friends";
 String findString = "Find";
+String findingString = "Finding...";
 
 String justNowString = "Just now";
 String monthsAgoString = "months ago";
@@ -794,10 +796,15 @@ String moreFromString = 'More from';
 String moreString = 'More';
 
 String podcastString = 'Podcast';
+String allPodcastsString = 'All podcasts';
+
+String hostsString = 'Hosts';
+
 String showMoreString = 'Show more';
 String showLessString = 'Show less';
-String albumsString = 'Albums';
+String showsString = 'Shows';
 String songsString = 'Songs';
+String episodesString = 'Episodes';
 
 String liveChatString = 'Live chat';
 String subscribeChannelToViewString = 'Subscribe channel to view';

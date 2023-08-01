@@ -1,31 +1,24 @@
 import 'dart:io';
 import 'package:auto_orientation/auto_orientation.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:foap/apiHandler/apis/auth_api.dart';
-import 'package:foap/controllers/misc/rating_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
-import 'package:foap/screens/add_on/controller/event/event_controller.dart';
-import 'package:foap/screens/add_on/controller/relationship/relationship_controller.dart';
-import 'package:foap/screens/add_on/controller/relationship/relationship_search_controller.dart';
 import 'package:foap/controllers/live/live_users_controller.dart';
 import 'package:foap/screens/settings_menu/help_support_contorller.dart';
 import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
-import 'package:get/get.dart';
-import 'package:giphy_get/l10n.dart';
+import 'package:foap/util/constant_util.dart';
+
+import 'components/giphy/src/l10n/l10n.dart';
 import 'components/reply_chat_cells/post_gift_controller.dart';
 import 'controllers/clubs/clubs_controller.dart';
 import 'controllers/misc/faq_controller.dart';
-import 'package:foap/screens/add_on/controller/reel/create_reel_controller.dart';
-import 'package:foap/screens/add_on/controller/reel/reels_controller.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/screens/login_sign_up/splash_screen.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
-import 'package:foap/util/constant_util.dart';
 import 'package:foap/util/shared_prefs.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -77,8 +70,7 @@ Future<void> main() async {
   HttpOverrides.global = MyHttpOverrides();
 
   await Firebase.initializeApp();
-  final firebaseMessaging = FCM();
-  await firebaseMessaging.setNotifications();
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   String? token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
@@ -88,13 +80,11 @@ Future<void> main() async {
 
   AutoOrientation.portraitAutoMode();
 
-  bool isDarkTheme = await SharedPrefs().isDarkMode();
-  Get.changeThemeMode(isDarkTheme ? ThemeMode.dark : ThemeMode.light);
-  // Get.changeThemeMode(ThemeMode.dark);
+  isDarkMode = await SharedPrefs().isDarkMode();
+  Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
 
   Get.put(PlayerManager());
   Get.put(UsersController());
-  Get.lazyPut(() => EventsController());
   Get.lazyPut(() => ClubsController());
   Get.lazyPut(() => GiftController());
   Get.put(MiscController());
@@ -114,29 +104,20 @@ Future<void> main() async {
   Get.put(ProfileController());
   Get.put(ChatHistoryController());
   Get.put(ChatRoomDetailController());
-  // Get.put(RatingController());
   Get.put(TvStreamingController());
   Get.put(LocationManager());
   Get.put(MapScreenController());
-  // Get.put(GiftController());
   Get.put(LiveHistoryController());
   Get.put(RequestVerificationController());
   Get.put(FAQController());
-  Get.put(DatingController());
-  Get.put(RelationshipController());
-  Get.put(RelationshipSearchController());
   Get.put(LiveUserController());
   Get.put(PostGiftController());
   Get.put(MercadappagoPaymentController());
   Get.put(HelpSupportController());
   Get.put(PodcastStreamingController());
-  Get.put(ReelsController());
-  Get.put(CreateReelController());
   Get.put(SelectUserForGroupChatController());
 
   setupServiceLocator();
-
-  dynamic data = await SharedPrefs().getCallNotificationData();
 
   final UserProfileManager userProfileManager = Get.find();
 
@@ -146,6 +127,7 @@ Future<void> main() async {
   await settingsController.getSettings();
 
   NotificationManager().initialize();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await getIt<DBManager>().createDatabase();
 
@@ -153,27 +135,7 @@ Future<void> main() async {
     AuthApi.updateFcmToken();
   }
 
-  AwesomeNotifications().initialize(
-      'resource://drawable/ic_launcher',
-      [
-        NotificationChannel(
-          channelGroupKey: 'Calls',
-          channelKey: 'calls',
-          channelName: 'Calls',
-          channelDescription: 'Notification channel for calls',
-          defaultColor: const Color(0xFF9D50DD),
-          ledColor: Colors.white,
-          importance: NotificationImportance.High,
-          locked: true,
-          enableVibration: true,
-          playSound: true,
-        ),
-      ],
-      channelGroups: [
-        NotificationChannelGroup(
-            channelGroupKey: 'calls', channelGroupName: 'Calls'),
-      ],
-      debug: true);
+  dynamic data = await SharedPrefs().getCallNotificationData();
 
   if (data != null && userProfileManager.user.value != null) {
     isLaunchedFromCallNotification = true;
@@ -254,7 +216,7 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  // await Firebase.initializeApp();
+  await Firebase.initializeApp();
 
-  NotificationManager().parseNotificationMessage(message);
+  NotificationManager().parseNotificationMessage(message.data);
 }

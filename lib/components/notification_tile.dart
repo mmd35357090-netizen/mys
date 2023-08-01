@@ -42,8 +42,9 @@ class NotificationTileType4 extends StatelessWidget {
             ],
           ).setPadding(top: 16, bottom: 16, left: 8, right: 8),
         ),
-        if (notification.type == NotificationType.like ||
-            notification.type == NotificationType.comment)
+        if ((notification.type == NotificationType.like ||
+                notification.type == NotificationType.comment) &&
+            notification.post!.gallery.isNotEmpty)
           CachedNetworkImage(
                   height: 60,
                   width: 60,

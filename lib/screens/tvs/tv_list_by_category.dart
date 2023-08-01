@@ -52,8 +52,8 @@ class _TvListByCategoryState extends State<TvListByCategory> {
                   ).overlay(Colors.black26),
                   Positioned(
                     bottom: 20,
-                    left: 16,
-                    right: 16,
+                    left: DesignConstants.horizontalPadding,
+                    right: DesignConstants.horizontalPadding,
                     child: Heading4Text(
                       widget.category.name,
                       weight: TextWeight.bold,
@@ -61,7 +61,7 @@ class _TvListByCategoryState extends State<TvListByCategory> {
                   ),
                   Positioned(
                       top: 50,
-                      left: 16,
+                      left: DesignConstants.horizontalPadding,
                       child: ThemeIconWidget(
                         ThemeIcon.backArrow,
                         size: 18,
@@ -86,8 +86,8 @@ class _TvListByCategoryState extends State<TvListByCategory> {
         builder: (ctx) {
           return _tvStreamingController.tvs.isEmpty
               ? SizedBox(
-                  height: (MediaQuery.of(context).size.height / 1.5),
-                  width: (MediaQuery.of(context).size.width),
+                  height: (Get.height / 1.5),
+                  width: (Get.width),
                   child: const Center(child: CircularProgressIndicator()))
               : GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

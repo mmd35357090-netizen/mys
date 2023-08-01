@@ -95,7 +95,7 @@ class _WallpaperForChatBackgroundState
 
                     setState(() {});
                   });
-                }).hP16,
+                }).hp(DesignConstants.horizontalPadding),
           )
         ],
       ),

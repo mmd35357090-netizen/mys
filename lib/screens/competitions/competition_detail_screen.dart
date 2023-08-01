@@ -1,10 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../settings_menu/settings_controller.dart';
-import '../settings_menu/web_view_screen.dart';
 
 class CompetitionDetailScreen extends StatefulWidget {
   final int competitionId;
@@ -74,7 +71,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                     //     url: settingsController.setting.value!.disclaimerUrl!));
                   }),
                 ],
-              ).hP16,
+              ).hp(DesignConstants.horizontalPadding),
               Positioned(
                 left: 0,
                 right: 0,
@@ -105,7 +102,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                                       imageUrl: competitionController
                                           .competition.value!.photo,
                                       fit: BoxFit.cover,
-                                      width: MediaQuery.of(context).size.width,
+                                      width: Get.width,
                                       height: 270,
                                       placeholder: (context, url) =>
                                           AppUtil.addProgressIndicator(
@@ -140,8 +137,8 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                                 competitionController.competition.value!
                                             .competitionMediaType ==
                                         1
-                                    ? addPhotoGrid().hP16
-                                    : addVideoGrid().hP16,
+                                    ? addPhotoGrid().hp(DesignConstants.horizontalPadding)
+                                    : addVideoGrid().hp(DesignConstants.horizontalPadding),
                               ])),
                           addBottomActionButton()
                         ]),
@@ -158,10 +155,10 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       model.exampleImages.isNotEmpty
-          ? Heading4Text(exampleVideosString.tr, weight: TextWeight.bold).hP16
+          ? Heading4Text(exampleVideosString.tr, weight: TextWeight.bold).hp(DesignConstants.horizontalPadding)
           : Container(),
       const SizedBox(height: 65)
-    ]).hP16;
+    ]).hp(DesignConstants.horizontalPadding);
   }
 
   Widget addPhotoGrid() {
@@ -262,7 +259,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
             }
           },
           child: Container(
-            width: MediaQuery.of(context).size.width,
+            width: Get.width,
             height: 95,
             color: AppColorConstants.themeColor,
             child: Center(

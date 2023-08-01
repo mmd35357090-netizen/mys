@@ -70,7 +70,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                     child: CachedNetworkImage(
                       imageUrl: model.gallery.first.filePath,
                       fit: BoxFit.fill,
-                      width: MediaQuery.of(context).size.width,
+                      width: Get.width,
                       placeholder: (context, url) =>
                           AppUtil.addProgressIndicator(size:100),
                       errorWidget: (context, url, error) =>

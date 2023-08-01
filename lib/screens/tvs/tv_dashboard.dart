@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/tvs/subscribed_tvs.dart';
 import 'package:foap/screens/tvs/tv_list_home.dart';
-import 'package:get/get.dart';
+
 
 import 'fav_tv_list.dart';
 
@@ -50,7 +50,7 @@ class TvDashboardScreenState extends State<TvDashboardScreen> {
         body: items[_dashboardController.currentIndex.value],
         bottomNavigationBar: SizedBox(
           height: MediaQuery.of(context).viewPadding.bottom > 0 ? 90 : 70.0,
-          width: MediaQuery.of(context).size.width,
+          width: Get.width,
           child: BottomNavigationBar(
             backgroundColor: AppColorConstants.backgroundColor,
             type: BottomNavigationBarType.fixed,

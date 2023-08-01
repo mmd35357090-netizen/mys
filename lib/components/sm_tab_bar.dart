@@ -41,8 +41,8 @@ class SMIconTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: [
       Positioned(
-          left: 16,
-          right: 16,
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
           bottom: 0,
           child: Container(
             height: 2,
@@ -71,8 +71,8 @@ class SMIconAndTextTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: [
       Positioned(
-          left: 16,
-          right: 16,
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
           bottom: 0,
           child: Container(
             height: 2,

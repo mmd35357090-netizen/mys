@@ -1,14 +1,11 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/add_on/ui/add_relationship/accept_reject_invitation.dart';
-import 'package:get/get.dart';
 
 Widget backNavigationBar({required String title}) {
   return Container(
     height: 100,
+    width: Get.width,
     color: AppColorConstants.themeColor.withOpacity(0.1),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
+    child: Stack(
       children: [
         Container(
           color: AppColorConstants.themeColor.withOpacity(0.4),
@@ -24,12 +21,19 @@ Widget backNavigationBar({required String title}) {
             }),
           ).p8,
         ).circular,
-        BodyLargeText(title.tr, weight: TextWeight.medium),
-        const SizedBox(
-          width: 40,
+        Positioned(
+          left: 50,
+          right: 50,
+          top: 10,
+          child: Center(
+              child: BodyLargeText(title.tr,
+                  maxLines: 1, weight: TextWeight.medium)),
         )
       ],
-    ).setPadding(left: 16, right: 16, top: 40),
+    ).setPadding(
+        left: DesignConstants.horizontalPadding,
+        right: DesignConstants.horizontalPadding,
+        top: 40),
   );
 }
 
@@ -45,7 +49,7 @@ Widget backNavigationBarWithIcon(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
               height: 35,
@@ -80,74 +84,11 @@ Widget backNavigationBarWithIcon(
           ),
         ),
       ],
-    ).setPadding(left: 16, right: 16, top: 20),
+    ).setPadding(
+        left: DesignConstants.horizontalPadding,
+        right: DesignConstants.horizontalPadding,
+        top: 40),
   );
-}
-
-Widget backNavigationBarWithIconBadge(
-    {required ThemeIcon icon,
-    required String title,
-    required int badgeCount,
-    required VoidCallback iconBtnClicked}) {
-  return Stack(
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ThemeIconWidget(
-            ThemeIcon.backArrow,
-            size: 18,
-            color: AppColorConstants.iconColor,
-          ).ripple(() {
-            Get.back();
-          }),
-          Expanded(
-              child: Align(
-            alignment: Alignment.centerRight,
-            child: ThemeIconWidget(
-              ThemeIcon.setting,
-              size: 25,
-              color: AppColorConstants.iconColor,
-            ).rP8.ripple(() {
-              iconBtnClicked();
-            }),
-          )),
-          Stack(children: [
-            ThemeIconWidget(
-              icon,
-              size: 30,
-              color: AppColorConstants.iconColor,
-            ).ripple(() {
-              Get.to(() => const AcceptRejectInvitation());
-            }),
-            if (badgeCount > 0)
-              Positioned.fill(
-                  child: Align(
-                      alignment: Alignment.topRight,
-                      child: Container(
-                        height: 18,
-                        width: 18,
-                        decoration: const BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                        ),
-                        child: Center(child: Text(badgeCount.toString())),
-                      )))
-          ]).ripple(() {
-            Get.to(() => const AcceptRejectInvitation());
-            //
-          }),
-        ],
-      ),
-      Positioned(
-        left: 0,
-        right: 0,
-        child: Center(
-          child: BodyLargeText(title.tr, weight: TextWeight.medium),
-        ),
-      ),
-    ],
-  ).setPadding(left: 16, right: 16, top: 8, bottom: 16);
 }
 
 Widget profileScreensNavigationBar(
@@ -173,7 +114,9 @@ Widget profileScreensNavigationBar(
               completion();
             }),
         ],
-      ).setPadding(left: 16, right: 16),
+      ).setPadding(
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding),
       Positioned(
         left: 0,
         right: 0,
@@ -205,12 +148,19 @@ Widget titleNavigationBarWithIcon(
         completion();
       }),
     ],
-  ).setPadding(left: 16, right: 16, top: 8, bottom: 16);
+  ).setPadding(
+      left: DesignConstants.horizontalPadding,
+      right: DesignConstants.horizontalPadding,
+      top: 8,
+      bottom: 16);
 }
 
 Widget titleNavigationBar({
   required String title,
 }) {
-  return BodyLargeText(title.tr, weight: TextWeight.medium)
-      .setPadding(left: 16, right: 16, top: 8, bottom: 16);
+  return BodyLargeText(title.tr, weight: TextWeight.medium).setPadding(
+      left: DesignConstants.horizontalPadding,
+      right: DesignConstants.horizontalPadding,
+      top: 8,
+      bottom: 16);
 }

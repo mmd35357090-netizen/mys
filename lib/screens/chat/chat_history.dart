@@ -49,11 +49,12 @@ class _ChatHistoryState extends State<ChatHistory> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const ThemeIconWidget(
-                ThemeIcon.backArrow,
-              ).ripple(() {
-                Get.back();
-              }),
+              const SizedBox(width: 20,),
+              // const ThemeIconWidget(
+              //   ThemeIcon.backArrow,
+              // ).ripple(() {
+              //   Get.back();
+              // }),
               BodyLargeText(chatsString.tr, weight: TextWeight.medium),
               _settingsController.setting.value!.enableAudioCalling ||
                       _settingsController.setting.value!.enableVideoCalling
@@ -68,18 +69,8 @@ class _ChatHistoryState extends State<ChatHistory> {
                       width: 25,
                     ),
             ],
-          ).setPadding(left: 16, right: 16, top: 8, bottom: 16),
-          // (_settingsController.setting.value!.enableAudioCalling ||
-          //         _settingsController.setting.value!.enableVideoCalling)
-          //     ? titleNavigationBarWithIcon(
-          //         title: chatsString.tr,
-          //         icon: ThemeIcon.mobile,
-          //         completion: () {
-          //           Get.to(() => const CallHistory());
-          //         })
-          //     : titleNavigationBar(
-          //         title: chatsString.tr,
-          //       ),
+          ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 16),
+          
           divider().tP8,
           SFSearchBar(
                   showSearchIcon: true,
@@ -92,7 +83,7 @@ class _ChatHistoryState extends State<ChatHistory> {
                   },
                   onSearchCompleted: (searchTerm) {})
               .p16,
-          Expanded(child: chatListView().hP16)
+          Expanded(child: chatListView().hp(DesignConstants.horizontalPadding))
         ],
       )),
     );

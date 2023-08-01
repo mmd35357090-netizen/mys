@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import '../../universal_components/rounded_input_field.dart';
 
 class ClubDescription extends StatefulWidget {
   const ClubDescription({Key? key}) : super(key: key);
@@ -25,7 +24,7 @@ class ClubDescriptionState extends State<ClubDescription> {
           backNavigationBar(
             title: clubDescriptionString.tr,
           ),
-          divider().tP8,
+          const SizedBox(height: 8,),
           const SizedBox(
             height: 20,
           ),
@@ -45,7 +44,7 @@ class ClubDescriptionState extends State<ClubDescription> {
                 controller: controller,
               )
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
           const Spacer(),
           AppThemeButton(
                   text: doneString.tr,
@@ -54,7 +53,7 @@ class ClubDescriptionState extends State<ClubDescription> {
                     // NavigationService.instance.navigateToRoute(
                     //     MaterialPageRoute(builder: (ctx) => InviteUser()));
                   })
-              .hP16,
+              .hp(DesignConstants.horizontalPadding),
           const SizedBox(
             height: 50,
           )

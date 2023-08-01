@@ -1,7 +1,4 @@
-import 'dart:ui';
 import 'package:foap/apiHandler/api_wrapper.dart';
-import 'package:get/get.dart';
-
 import '../../helper/imports/common_import.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/category_model.dart';

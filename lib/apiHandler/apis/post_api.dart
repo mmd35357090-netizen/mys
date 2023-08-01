@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -9,8 +8,6 @@ import '../../helper/localization_strings.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/comment_model.dart';
 import '../../model/post_model.dart';
-import '../../util/app_util.dart';
-import '../../util/shared_prefs.dart';
 import '../api_wrapper.dart';
 
 class PostApi {
@@ -107,7 +104,6 @@ class PostApi {
     url = '$url&page=$page';
     EasyLoading.show(status: loadingString.tr);
 
-    print('get post url $url');
     await ApiWrapper().getApi(url: url).then((response) {
       EasyLoading.dismiss();
 

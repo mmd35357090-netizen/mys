@@ -9,7 +9,7 @@ import 'package:foap/manager/file_manager.dart';
 import 'package:foap/model/chat_message_model.dart';
 import 'package:foap/model/chat_room_model.dart';
 import 'package:foap/model/story_model.dart';
-import 'package:get/get.dart';
+
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
@@ -58,7 +58,9 @@ class DBManager {
             await db.execute(
                 'ALTER TABLE Messages ADD COLUMN replied_on_message TEXT');
           });
-    } catch (error) {}
+    } catch (error) {
+      debugPrint('catch');
+    }
   }
 
   storyViewed(StoryMediaModel story) async {
@@ -112,16 +114,10 @@ class DBManager {
   newMessageReceived(ChatMessageModel message) async {
     ChatRoomModel? existingRoom =
         await getIt<DBManager>().getRoomById(message.roomId);
-    print('newMessageReceived');
-    print('existingRoom = $existingRoom');
 
     if (existingRoom == null) {
       // save room in database
-
-      print('getting chat room detail');
       _chatDetailController.getRoomDetail(message.roomId, (chatroom) async {
-        print('saving room');
-        print('chatroom = ${chatroom.roomMembers.length}');
 
         await getIt<DBManager>().saveRooms([chatroom]);
         await getIt<DBManager>().saveMessage(chatMessages: [message]);
@@ -138,7 +134,6 @@ class DBManager {
     var batch = database.batch();
 
     for (ChatRoomModel chatRoom in chatRooms) {
-      print('saving room${chatRoom.name}');
       ChatRoomModel? room = await getRoomById(chatRoom.id);
       if (room == null) {
         batch.rawInsert(
@@ -350,7 +345,6 @@ class DBManager {
         List<Map> userData = await txn.rawQuery(
             'SELECT * FROM UsersCache WHERE id = ${roomJson["created_by"]}');
 
-        print('roomJson ${roomJson['title']}');
         Map<String, dynamic> updateAbleRoomJson =
             Map<String, dynamic>.from(roomJson);
 

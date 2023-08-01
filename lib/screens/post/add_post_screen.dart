@@ -1,20 +1,13 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:dots_indicator/dots_indicator.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/post/post_option_popup.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/hashtag_tile.dart';
 import '../../components/user_card.dart';
-import '../../components/video_widget.dart';
-import '../../controllers/misc/users_controller.dart';
 import '../../controllers/post/add_post_controller.dart';
-import '../../controllers/post/select_post_media_controller.dart';
 import '../chat/media.dart';
 
 class AddPostScreen extends StatefulWidget {
-  final PostType postType;
-
-  // final List<Media> items;
+  final List<Media> items;
   final int? competitionId;
   final int? clubId;
   final bool? isReel;
@@ -24,14 +17,13 @@ class AddPostScreen extends StatefulWidget {
 
   const AddPostScreen(
       {Key? key,
-      required this.postType,
-      // required this.items,
-      this.competitionId,
-      this.clubId,
-      this.isReel,
-      this.audioId,
-      this.audioStartTime,
-      this.audioEndTime})
+        required this.items,
+        this.competitionId,
+        this.clubId,
+        this.isReel,
+        this.audioId,
+        this.audioStartTime,
+        this.audioEndTime})
       : super(key: key);
 
   @override
@@ -40,16 +32,13 @@ class AddPostScreen extends StatefulWidget {
 
 class AddPostState extends State<AddPostScreen> {
   TextEditingController descriptionText = TextEditingController();
-  final SelectPostMediaController _selectPostMediaController =
-      SelectPostMediaController();
 
   final AddPostController addPostController = Get.find();
-  final UsersController _usersController = Get.find();
 
   final RefreshController _usersRefreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController(initialRefresh: false);
   final RefreshController _hashtagRefreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController(initialRefresh: false);
 
   // RateMyApp rateMyApp = RateMyApp(
   //   preferencesPrefix: 'rateMyApp_',
@@ -67,8 +56,6 @@ class AddPostState extends State<AddPostScreen> {
       // if (mounted && rateMyApp.shouldOpenDialog) {
       //   rateMyApp.showRateDialog(context);
       // }
-
-      _selectPostMediaController.clear();
     });
   }
 
@@ -99,163 +86,133 @@ class AddPostState extends State<AddPostScreen> {
                           InkWell(
                               onTap: () => Get.back(),
                               child:
-                                  const ThemeIconWidget(ThemeIcon.backArrow)),
+                              const ThemeIconWidget(ThemeIcon.backArrow)),
                           const Spacer(),
-                          Container(
-                                  color: AppColorConstants.themeColor,
-                                  child: BodyLargeText(
-                                    widget.competitionId == null
-                                        ? postString.tr
-                                        : submitString.tr,
-                                    weight: TextWeight.medium,
-                                    color: Colors.white,
-                                  ).setPadding(
-                                      left: 8, right: 8, top: 5, bottom: 5))
-                              .round(10)
-                              .ripple(() {
+                          Heading5Text(
+                            widget.competitionId == null
+                                ? shareString.tr
+                                : submitString.tr,
+                            weight: TextWeight.medium,
+                            color: AppColorConstants.themeColor,
+                          ).ripple(() {
                             addPostController.uploadAllPostFiles(
-                                postType: widget.postType,
                                 isReel: widget.isReel ?? false,
                                 audioId: widget.audioId,
                                 audioStartTime: widget.audioStartTime,
                                 audioEndTime: widget.audioEndTime,
-                                items: _selectPostMediaController
-                                    .selectedMediaList,
+                                items: widget.items,
                                 title: descriptionText.text,
                                 competitionId: widget.competitionId,
                                 clubId: widget.clubId);
-                          }),
+                          })
                         ],
-                      ).hP16,
+                      ).hp(DesignConstants.horizontalPadding),
                       const SizedBox(
                         height: 30,
                       ),
-                      addDescriptionView().hP16,
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          mediaListView(isLarge: false).ripple(() {
+                            addPostController.togglePreviewMode();
+                          }),
+                          Expanded(child: addDescriptionView()),
+                        ],
+                      ).hp(DesignConstants.horizontalPadding),
                       Obx(() {
                         return addPostController.isEditing.value == 1
                             ? Expanded(
-                                child: Container(
-                                  // height: 500,
-                                  width: double.infinity,
-                                  color: AppColorConstants.disabledColor
-                                      .withOpacity(0.1),
-                                  child: addPostController
-                                          .currentHashtag.isNotEmpty
-                                      ? hashTagView()
-                                      : addPostController
-                                              .currentUserTag.isNotEmpty
-                                          ? usersView()
-                                          : Container().ripple(() {
-                                              FocusManager.instance.primaryFocus
-                                                  ?.unfocus();
-                                            }),
-                                ),
-                              )
-                            : mediaList();
+                          child: Container(
+                            // height: 500,
+                            width: double.infinity,
+                            color: AppColorConstants.disabledColor
+                                .withOpacity(0.1),
+                            child: addPostController
+                                .currentHashtag.isNotEmpty
+                                ? hashTagView()
+                                : addPostController
+                                .currentUserTag.isNotEmpty
+                                ? usersView()
+                                : Container(),
+                          ),
+                        )
+                            : Container();
                       }),
-                      Obx(() => addPostController.isEditing.value == 0
-                          ? const Spacer()
-                          : Container()),
-                      Obx(() => addPostController.isEditing.value == 0
-                          ? PostOptionsPopup(
-                              selectedMediaList: (medias) {
-                                _selectPostMediaController
-                                    .mediaSelected(medias);
-
-                                // _addDropController.setSelectedMedia(medias);
-                              },
-                              selectGif: (gifMedia) {
-                                _selectPostMediaController
-                                    .mediaSelected([gifMedia]);
-
-                                // _addDropController.setSelectedMedia([gifMedia]);
-                              },
-                              recordedAudio: (audioMedia) {
-                                _selectPostMediaController
-                                    .mediaSelected([audioMedia]);
-                                // _addDropController
-                                //     .setSelectedMedia([audioMedia]);
-                              },
-                              // mentionsCallback: () {
-                              //   // _addDropController.toggleUsersView();
-                              // },
-                              // hashtagCallback: () {
-                              //   // _addDropController.toggleHashtagView();
-                              // },
-                            )
-                          : Container())
+                      const SizedBox(
+                        height: 20,
+                      ),
                     ]),
+                addPostController.isPreviewMode.value
+                    ? Stack(
+                  children: [
+                    Container(
+                      height: Get.height,
+                      width: Get.width,
+                      color: AppColorConstants.backgroundColor
+                          .withOpacity(0.2),
+                      child: mediaListView(isLarge: true),
+                    ),
+                    Positioned(
+                        top: 50,
+                        left: DesignConstants.horizontalPadding,
+                        child: const ThemeIconWidget(
+                          ThemeIcon.close,
+                          size: 20,
+                        ).ripple(() {
+                          addPostController.togglePreviewMode();
+                        }))
+                  ],
+                )
+                    : Container()
               ],
             );
           }),
     );
   }
 
-  Widget mediaList() {
-    return Stack(
-      children: [
-        AspectRatio(
-            aspectRatio: 1,
-            child: Obx(() {
-              return CarouselSlider(
-                items: [
-                  for (Media media
-                      in _selectPostMediaController.selectedMediaList)
-                    media.mediaType == GalleryMediaType.photo
-                        ? Image.file(
-                            media.file!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          )
-                        : media.mediaType == GalleryMediaType.gif
-                            ? CachedNetworkImage(
-                                fit: BoxFit.cover, imageUrl: media.fileUrl!)
-                            : VideoPostTile(
-                                url: media.file!.path,
-                                isLocalFile: true,
-                                play: true,
-                              )
-                ],
-                options: CarouselOptions(
-                  aspectRatio: 1,
-                  enlargeCenterPage: false,
-                  enableInfiniteScroll: false,
-                  height: double.infinity,
-                  viewportFraction: 1,
-                  onPageChanged: (index, reason) {
-                    _selectPostMediaController.updateGallerySlider(index);
-                  },
-                ),
-              );
-            })),
-        Obx(() {
-          return _selectPostMediaController.selectedMediaList.length > 1
+  Widget mediaListView({required bool isLarge}) {
+    return SizedBox(
+      width: isLarge ? Get.width : 80,
+      height: isLarge ? Get.height : 80,
+      child: Stack(
+        children: [
+          CarouselSlider(
+            items: [
+              for (Media media in widget.items)
+                isLarge
+                    ? Image.file(media.file!,
+                    fit: BoxFit.cover, width: double.infinity)
+                    : Image.memory(
+                  media.thumbnail!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ).round(5)
+            ],
+            options: CarouselOptions(
+              enlargeCenterPage: false,
+              enableInfiniteScroll: false,
+              height: double.infinity,
+              viewportFraction: 1,
+              onPageChanged: (index, reason) {
+                addPostController.updateGallerySlider(index);
+              },
+            ),
+          ),
+          widget.items.length > 1 && isLarge == false
               ? Positioned(
-                  bottom: 10,
-                  left: 0,
-                  right: 0,
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                              height: 25,
-                              color: AppColorConstants.cardColor,
-                              child: DotsIndicator(
-                                dotsCount: _selectPostMediaController
-                                    .selectedMediaList.length,
-                                position: _selectPostMediaController
-                                    .currentIndex.value,
-                                decorator: DotsDecorator(
-                                    activeColor: AppColorConstants.themeColor),
-                              ).hP8)
-                          .round(20)),
-                )
-              : Container();
-        })
-      ],
-    ).p16;
+            right: 5,
+            top: 5,
+            child: Container(
+                height: 30,
+                width: 30,
+                color: AppColorConstants.backgroundColor,
+                child: const ThemeIconWidget(ThemeIcon.multiplePosts))
+                .circular,
+          )
+              : Container()
+        ],
+      ),
+    );
   }
 
   Widget addDescriptionView() {
@@ -268,36 +225,32 @@ class AddPostState extends State<AddPostScreen> {
                 TextPosition(offset: addPostController.position.value)));
 
         return Focus(
-          child: Container(
-            color: AppColorConstants.cardColor,
-            child: TextField(
-              controller: descriptionText,
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  fontSize: FontSizes.h5,
-                  color: AppColorConstants.grayscale900),
-              maxLines: 5,
-              onChanged: (text) {
-                addPostController.textChanged(
-                    text, descriptionText.selection.baseOffset);
-              },
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.only(top: 10, left: 10, right: 10),
-                  counterText: "",
-                  hintStyle: TextStyle(
-                      fontSize: FontSizes.h5,
-                      color: AppColorConstants.grayscale500),
-                  hintText: addSomethingAboutPostString.tr),
-            ),
-          ).round(10),
+          child: TextField(
+            controller: descriptionText,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+                fontSize: FontSizes.h5, color: AppColorConstants.grayscale900),
+            maxLines: 5,
+            onChanged: (text) {
+              addPostController.textChanged(
+                  text, descriptionText.selection.baseOffset);
+            },
+            decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.only(left: 10, right: 10),
+                counterText: "",
+                labelStyle: TextStyle(
+                    fontSize: FontSizes.b2,
+                    color: AppColorConstants.themeColor),
+                hintStyle: TextStyle(
+                    fontSize: FontSizes.h5,
+                    color: AppColorConstants.themeColor),
+                hintText: addSomethingAboutPostString.tr),
+          ),
           onFocusChange: (hasFocus) {
             if (hasFocus == true) {
-              print('startedEditing');
               addPostController.startedEditing();
             } else {
-              print('stopped');
               addPostController.stoppedEditing();
             }
           },
@@ -311,14 +264,14 @@ class AddPostState extends State<AddPostScreen> {
         init: addPostController,
         builder: (ctx) {
           return ListView.separated(
-              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
-              itemCount: _usersController.searchedUsers.length,
+              padding: EdgeInsets.only(top:20,left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
+              itemCount: addPostController.searchedUsers.length,
               itemBuilder: (BuildContext ctx, int index) {
                 return UserTile(
-                  profile: _usersController.searchedUsers[index],
+                  profile: addPostController.searchedUsers[index],
                   viewCallback: () {
                     addPostController.addUserTag(
-                        _usersController.searchedUsers[index].userName);
+                        addPostController.searchedUsers[index].userName);
                   },
                 );
               },
@@ -331,10 +284,9 @@ class AddPostState extends State<AddPostScreen> {
               onRefresh: () {},
               onLoading: () {
                 addPostController.searchUsers(
-                    text: addPostController.currentUserTag.value,
-                    callBackHandler: () {
-                      _usersRefreshController.loadComplete();
-                    });
+                    text: addPostController.currentUserTag.value,callBackHandler: (){
+                  _usersRefreshController.loadComplete();
+                });
               },
               enablePullUp: true,
               enablePullDown: false);
@@ -346,7 +298,7 @@ class AddPostState extends State<AddPostScreen> {
         init: addPostController,
         builder: (ctx) {
           return ListView.builder(
-            padding: const EdgeInsets.only(left: 16, right: 16),
+            padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
             itemCount: addPostController.hashTags.length,
             itemBuilder: (BuildContext ctx, int index) {
               return HashTagTile(
@@ -362,10 +314,9 @@ class AddPostState extends State<AddPostScreen> {
               onRefresh: () {},
               onLoading: () {
                 addPostController.searchHashTags(
-                    text: addPostController.currentHashtag.value,
-                    callBackHandler: () {
-                      _hashtagRefreshController.loadComplete();
-                    });
+                    text: addPostController.currentHashtag.value,callBackHandler: (){
+                  _hashtagRefreshController.loadComplete();
+                });
               },
               enablePullUp: true,
               enablePullDown: false);

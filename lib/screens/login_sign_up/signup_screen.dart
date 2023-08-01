@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
-import '../../universal_components/rounded_input_field.dart';
 import '../settings_menu/settings_controller.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -35,11 +34,11 @@ class SignUpScreenState extends State<SignUpScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.08,
+                  height: Get.height * 0.08,
                 ),
                 Heading3Text(signUpString.tr, weight: TextWeight.medium),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: Get.height * 0.05,
                 ),
                 GetBuilder<LoginController>(
                     init: loginController,
@@ -74,11 +73,11 @@ class SignUpScreenState extends State<SignUpScreen> {
                       ]);
                     }),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
+                  height: Get.height * 0.015,
                 ),
                 addTextField(email, emailString.tr),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
+                  height: Get.height * 0.015,
                 ),
                 AppPasswordTextField(
                   controller: password,
@@ -120,14 +119,14 @@ class SignUpScreenState extends State<SignUpScreen> {
                       : Container();
                 }),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
+                  height: Get.height * 0.015,
                 ),
                 AppPasswordTextField(
                   controller: confirmPassword,
                   hintText: confirmPasswordString.tr,
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
+                  height: Get.height * 0.015,
                 ),
                 RichText(
                   text: TextSpan(
@@ -168,18 +167,18 @@ class SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
+                  height: Get.height * 0.02,
                 ),
                 addSignUpBtn(),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: Get.height * 0.05,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       height: 1,
-                      width: MediaQuery.of(context).size.width * 0.35,
+                      width: Get.width * 0.35,
                       color: AppColorConstants.themeColor,
                     ),
                     Heading5Text(
@@ -187,18 +186,18 @@ class SignUpScreenState extends State<SignUpScreen> {
                     ),
                     Container(
                       height: 1,
-                      width: MediaQuery.of(context).size.width * 0.35,
+                      width: Get.width * 0.35,
                       color: AppColorConstants.themeColor,
                     )
                   ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.04,
+                  height: Get.height * 0.04,
                 ),
                 const SocialLogin(hidePhoneLogin: false)
                     .setPadding(left: 45, right: 45),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.2,
+                  height: Get.height * 0.2,
                 ),
               ]),
         ).setPadding(left: 25, right: 25),

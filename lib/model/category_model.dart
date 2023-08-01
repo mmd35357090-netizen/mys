@@ -1,6 +1,4 @@
 import 'package:foap/screens/add_on/model/podcast_model.dart';
-
-import '../screens/add_on/model/event_model.dart';
 import 'gift_model.dart';
 import 'live_tv_model.dart';
 
@@ -94,7 +92,7 @@ class GiftCategoryModel extends CategoryModel {
 }
 
 class PodcastCategoryModel extends CategoryModel {
-  List<PodcastModel> podcasts = [];
+  List<HostModel> podcasts = [];
 
   PodcastCategoryModel({
     required String name,
@@ -113,7 +111,7 @@ class PodcastCategoryModel extends CategoryModel {
         podcasts: json["podcastList"] == null
             ? []
             : (json["podcastList"] as List<dynamic>)
-            .map((e) => PodcastModel.fromJson(e))
+            .map((e) => HostModel.fromJson(e))
             .toList(),
       );
 }

@@ -1,11 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-import '../../components/empty_states.dart';
-import '../../components/shimmer_widgets.dart';
 import '../../components/user_card.dart';
 import '../../controllers/misc/users_controller.dart';
-import '../../helper/localization_strings.dart';
 
 class UsersList extends StatelessWidget {
   final UsersController _usersController = Get.find();

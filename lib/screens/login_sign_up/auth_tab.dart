@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
-
 import '../../components/sm_tab_bar.dart';
 
 class AuthTab extends StatefulWidget {
@@ -24,8 +23,8 @@ class _AuthTabState extends State<AuthTab> with SingleTickerProviderStateMixin {
               SignUpScreen(),
             ]),
             Positioned(
-              left: 16,
-              right: 16,
+              left: DesignConstants.horizontalPadding,
+              right: DesignConstants.horizontalPadding,
               bottom: 20,
               child: Container(
                 color: AppColorConstants.cardColor.withOpacity(0.8),

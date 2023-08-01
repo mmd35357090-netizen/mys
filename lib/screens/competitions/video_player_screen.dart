@@ -10,79 +10,6 @@ import '../../manager/file_manager.dart';
 import '../../model/chat_message_model.dart';
 import '../../model/post_gallery.dart';
 
-// class VideoPlayerScreen extends StatefulWidget {
-//   final PostGallery? media;
-//   final ChatMessageModel? chatMessage;
-//
-//   const VideoPlayerScreen({Key? key, this.media, this.chatMessage})
-//       : super(key: key);
-//
-//   @override
-//   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
-// }
-//
-// class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-//   late VideoPlayerController _controller;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     String videoPath = '';
-//     if (widget.media != null) {
-//       videoPath = widget.media!.filePath;
-//     } else {
-//       videoPath = widget.chatMessage!.mediaContent.video!;
-//     }
-//
-//     _controller = VideoPlayerController.network(videoPath)
-//       ..initialize().then((_) {
-//         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-//         setState(() {});
-//       });
-//   }
-//
-//   @override
-//   void dispose() {
-//     _controller.dispose();
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         backgroundColor: ColorConstants.backgroundColor,
-//         body: Column(
-//           children: [
-//             const SizedBox(
-//               height: 50,
-//             ),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 const ThemeIconWidget(
-//                   ThemeIcon.backArrow,
-//                   size: 20,
-//                 ).ripple(() {
-//                   Get.back();
-//                 }),
-//               ],
-//             ).hP16,
-//             divider().vP8,
-//             Expanded(
-//               child: Center(
-//                 child: _controller.value.isInitialized
-//                     ? AspectRatio(
-//                         aspectRatio: _controller.value.aspectRatio,
-//                         child: VideoPlayer(_controller),
-//                       )
-//                     : Container(),
-//               ),
-//             ),
-//           ],
-//         ));
-//   }
-// }
-
 class PlayVideoController extends StatefulWidget {
   final PostGallery? media;
   final ChatMessageModel? chatMessage;
@@ -104,18 +31,6 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
   @override
   void initState() {
     super.initState();
-
-    // if (widget.media != null) {
-    //   videoPath = widget.media!.filePath;
-    // } else {
-    //   videoPath = widget.chatMessage!.mediaContent.video!;
-    // }
-    //
-    // _controller = VideoPlayerController.network(videoPath)
-    //   ..initialize().then((_) {
-    //     // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-    //     setState(() {});
-    //   });
 
     loadVideo();
   }
@@ -157,9 +72,10 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
-          backNavigationBar( title: ''),
-          divider().tP16,
+          backNavigationBar(title: ''),
+          const SizedBox(
+            height: 16,
+          ),
           Expanded(
             child: Center(
               child: Stack(
@@ -191,10 +107,9 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
                                   // from a non-existent URL
                                   errorBuilder: (context, errorMessage) {
                                     return Center(
-                                      child: Text(
+                                      child: BodyLargeText(
                                         errorMessage,
-                                        style: const TextStyle(
-                                            color: Colors.white),
+                                        color: Colors.white,
                                       ),
                                     );
                                   },
@@ -219,9 +134,9 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
                           top: 0,
                           child: Container(
                             height: min(
-                                (MediaQuery.of(context).size.width - 32) /
+                                (Get.width - 32) /
                                     videoPlayerController!.value.aspectRatio,
-                                MediaQuery.of(context).size.height * 0.5),
+                                Get.height * 0.5),
                             color: Colors.black38,
                             child: const ThemeIconWidget(
                               ThemeIcon.play,
@@ -285,7 +200,7 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
     if (isLocalFile) {
       videoPlayerController = VideoPlayerController.file(File(url));
     } else {
-      videoPlayerController = VideoPlayerController.network(url);
+      videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
     }
 
     initializeVideoPlayerFuture = videoPlayerController!.initialize().then((_) {

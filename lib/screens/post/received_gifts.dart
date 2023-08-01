@@ -7,7 +7,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/reply_chat_cells/post_gift_controller.dart';
 import '../../components/user_card.dart';
 import '../../helper/localization_strings.dart';
-
+//ignore: must_be_immutable
 class ReceivedGiftsList extends StatelessWidget {
   int postId;
   final PostGiftController _postGiftController = Get.find();
@@ -32,7 +32,7 @@ class ReceivedGiftsList extends StatelessWidget {
   Widget giftersView() {
     return Obx(() => ListView.separated(
         padding:
-            const EdgeInsets.only(left: 16, right: 16, top: 25, bottom: 100),
+             EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 25, bottom: 100),
         itemCount: _postGiftController.stickerGifts.length,
         itemBuilder: (ctx, index) {
           return GifterUserTile(

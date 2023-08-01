@@ -1,4 +1,3 @@
-import 'package:foap/model/rating_model.dart';
 import 'package:intl/intl.dart';
 
 class TVShowModel {

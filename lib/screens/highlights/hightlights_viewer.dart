@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/highlights_imports.dart';
-import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:story_view/controller/story_controller.dart';
 import 'package:story_view/utils.dart';
 import 'package:story_view/widgets/story_view.dart';
@@ -132,7 +131,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
         builder: (context) => Wrap(
               children: [
                 ListTile(
-                    title: Center(child: Text(deleteFromHighlightString.tr)),
+                    title: Center(child: BodyLargeText(deleteFromHighlightString.tr)),
                     onTap: () async {
                       Get.back();
                       controller.play();
@@ -141,7 +140,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
                     }),
                 divider(),
                 ListTile(
-                    title: Center(child: Text(cancelString.tr)),
+                    title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () {
                       controller.play();
                       Get.back();

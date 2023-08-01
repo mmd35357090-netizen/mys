@@ -153,7 +153,7 @@ class ClubInvitationCard extends StatelessWidget {
                     ],
                   )).vP16,
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         ],
       ),
     ).round(15);

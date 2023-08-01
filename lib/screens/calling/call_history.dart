@@ -4,7 +4,6 @@ import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/chat_detail.dart';
 import 'package:foap/screens/chat/select_users.dart';
-import 'package:get/get.dart';
 
 class CallHistory extends StatefulWidget {
   const CallHistory({Key? key}) : super(key: key);
@@ -37,11 +36,10 @@ class _CallHistoryState extends State<CallHistory> {
           children: [
             backNavigationBarWithIcon(
                 icon: ThemeIcon.mobile,
-                title: callLogString,
+                title: callLogString.tr,
                 iconBtnClicked: () {
                   selectUsers();
                 }),
-            // divider(context: context).tP8,
             Expanded(
               child: GetBuilder<CallHistoryController>(
                   init: _callHistoryController,
@@ -67,8 +65,8 @@ class _CallHistoryState extends State<CallHistory> {
                                           _callHistoryController.calls[index])
                                   .ripple(() {
                                 _callHistoryController.reInitiateCall(
-                                  call: _callHistoryController.calls[index],
-                                );
+                                    call: _callHistoryController.calls[index],
+                                    );
                               });
                             },
                             separatorBuilder: (ctx, index) {
@@ -80,28 +78,32 @@ class _CallHistoryState extends State<CallHistory> {
                         : _callHistoryController.isLoading == true
                             ? Container()
                             : emptyData(
-                                title: noCallFoundString,
-                                subTitle: makeSomeCallsString,
-                              );
-                  }).hP16,
+                                title: noCallFoundString.tr,
+                                subTitle: makeSomeCallsString.tr,
+                               );
+                  }).hp(DesignConstants.horizontalPadding),
             ),
           ],
         ));
   }
 
   void selectUsers() {
-    Get.to(() => SelectUserForChat(userSelected: (user) {
-          _chatDetailController.getChatRoomWithUser(
-              userId: user.id,
-              callback: (room) {
-                EasyLoading.dismiss();
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
 
-                Get.back();
-                Get.to(() => ChatDetail(
-                      // opponent: usersList[index - 1].toChatRoomMember,
-                      chatRoom: room,
-                    ));
-              });
-        }));
+        builder: (context) => SelectUserForChat(userSelected: (user) {
+              _chatDetailController.getChatRoomWithUser(
+                  userId: user.id,
+                  callback: (room) {
+                    EasyLoading.dismiss();
+
+                    Get.back();
+                    Get.to(() => ChatDetail(
+                          // opponent: usersList[index - 1].toChatRoomMember,
+                          chatRoom: room,
+                        ));
+                  });
+            }));
   }
 }

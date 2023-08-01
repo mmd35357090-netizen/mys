@@ -56,7 +56,6 @@ class CompletedCompetitionDetailState
                 //     header: disclaimerString.tr,
                 //     url: ));
               }),
-          // divider().tP16,
           Expanded(
             child: Stack(children: [
               Obx(() {
@@ -76,7 +75,7 @@ class CompletedCompetitionDetailState
                                     child: CachedNetworkImage(
                                       imageUrl: competition.photo,
                                       fit: BoxFit.cover,
-                                      width: MediaQuery.of(context).size.width,
+                                      width: Get.width,
                                       placeholder: (context, url) =>
                                           AppUtil.addProgressIndicator(
                                               size: 100),
@@ -108,7 +107,7 @@ class CompletedCompetitionDetailState
                                       addPhotoGrid(competition: competition),
                                     ],
                                   ).setPadding(
-                                    top: 16, bottom: 16, left: 16, right: 16),
+                                    top: 16, bottom: 16, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                           ]));
               }),
               // addBottomActionButton()
@@ -140,7 +139,7 @@ class CompletedCompetitionDetailState
                   .p16;
         } else {
           return SizedBox(
-              width: MediaQuery.of(context).size.width - 32,
+              width: Get.width - 32,
               child: Center(
                 child: Heading6Text('Loading...',
                         color: AppColorConstants.themeColor)
@@ -160,7 +159,7 @@ class CompletedCompetitionDetailState
       required UserModel winner,
       required CompetitionModel competition}) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width - 32,
+      width: Get.width - 32,
       child: Row(
         // mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -300,7 +299,7 @@ class CompletedCompetitionDetailState
             }
           },
           child: Container(
-            width: MediaQuery.of(context).size.width,
+            width: Get.width,
             height: 60,
             color: AppColorConstants.themeColor,
             child: Center(

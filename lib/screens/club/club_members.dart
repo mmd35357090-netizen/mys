@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 
 import '../../components/user_card.dart';
 import '../profile/other_user_profile.dart';
@@ -45,10 +45,9 @@ class ClubMembersState extends State<ClubMembers> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-
             backNavigationBar(
                  title: clubMembersString.tr),
-            divider().tP8,
+            const SizedBox(height: 8,),
             Expanded(
               child: GetBuilder<ClubsController>(
                   init: _clubsController,
@@ -65,7 +64,7 @@ class ClubMembersState extends State<ClubMembers> {
 
                     List<ClubMemberModel> membersList = _clubsController.members;
                     return _clubsController.isLoadingMembers
-                        ? const ShimmerUsers().hP16
+                        ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -111,7 +110,7 @@ class ClubMembersState extends State<ClubMembers> {
                                             height: 20,
                                           );
                                         },
-                                      ).hP16,
+                                      ).hp(DesignConstants.horizontalPadding),
                                     ),
                             ],
                           );

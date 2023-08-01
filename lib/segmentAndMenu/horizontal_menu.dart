@@ -64,7 +64,7 @@ class HorizontalMenuBarState extends State<HorizontalMenuBar> {
                           ? TextWeight.semiBold
                           : TextWeight.medium,
                     )
-                        .setPadding(left: 16, right: 16, top: 5, bottom: 5)
+                        .setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 5, bottom: 5)
                         .ripple(() {
                       setState(() {
                         // selectedMenu = menus[index];

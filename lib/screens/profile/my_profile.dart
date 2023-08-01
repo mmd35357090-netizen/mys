@@ -28,7 +28,7 @@ class MyProfileState extends State<MyProfile>
   final UserProfileManager _userProfileManager = Get.find();
   final PostController _postController = Get.find();
 
-  List<String> tabs = [postsString, reelsString, mentionsString];
+  List<String> tabs = [postsString, mentionsString];
 
   TabController? controller;
 
@@ -105,7 +105,6 @@ class MyProfileState extends State<MyProfile>
                   controller: controller,
                   children: [
                     PostList(),
-                    ReelsGrid(),
                     MentionsList(),
                   ],
                 )),

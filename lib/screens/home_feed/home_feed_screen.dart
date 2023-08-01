@@ -1,5 +1,5 @@
-import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_polls/flutter_polls.dart';
 
@@ -11,7 +11,6 @@ import '../../model/call_model.dart';
 import '../../model/post_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
 import '../post/view_post_insight.dart';
-import '../settings_menu/settings_controller.dart';
 import '../story/choose_media_for_story.dart';
 import '../story/story_updates_bar.dart';
 import '../story/story_viewer.dart';
@@ -97,68 +96,46 @@ class HomeFeedState extends State<HomeFeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // menuView(),
-            const SizedBox(
-              height: 55,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Heading3Text(
-                      AppConfigConstants.appName,
-                      weight: TextWeight.regular,
-                      color: AppColorConstants.themeColor,
-                    )
-                  ],
-                ),
-                const Spacer(),
-                // const ThemeIconWidget(
-                //   ThemeIcon.map,
-                //   // color: ColorConstants.themeColor,
-                //   size: 25,
-                // ).ripple(() {
-                //   Get.to(() => MapsUsersScreen());
-                // }),
-                // const SizedBox(
-                //   width: 20,
-                // ),
-                const ThemeIconWidget(
-                  ThemeIcon.chat,
-                  size: 25,
-                ).ripple(() {
-                  Get.to(() => const ChatHistory());
-                }),
-                // const SizedBox(
-                //   width: 20,
-                // ),
-                // Obx(() => Container(
-                //       color: AppColorConstants.backgroundColor,
-                //       height: 25,
-                //       width: 25,
-                //       child: ThemeIconWidget(
-                //         _homeController.openQuickLinks.value == true
-                //             ? ThemeIcon.close
-                //             : ThemeIcon.menuIcon,
-                //         // color: ColorConstants.themeColor,
-                //         size: 25,
-                //       ),
-                //     ).ripple(() {
-                //       _homeController.quickLinkSwitchToggle();
-                //     })),
-              ],
-            ).hp(20),
-            const SizedBox(
-              height: 20,
-            ),
-            Expanded(
-              child: postsView(),
-            ),
-          ],
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // menuView(),
+              const SizedBox(
+                height: 55,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Heading3Text(
+                        AppConfigConstants.appName,
+                        weight: TextWeight.regular,
+                        color: AppColorConstants.themeColor,
+                      )
+                    ],
+                  ),
+                  const Spacer(),
+                  const ThemeIconWidget(
+                    ThemeIcon.notification,
+                    size: 25,
+                  ).ripple(() {
+                    Get.to(() => const NotificationsScreen());
+                  }),
+                ],
+              ).hp(20),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: postsView(),
+              ),
+            ],
+          ),
         ));
   }
 
@@ -276,13 +253,14 @@ class HomeFeedState extends State<HomeFeedScreen> {
                           ? const StoryAndHighlightsShimmer()
                           : storiesView());
                 } else if (index == 1) {
-                  return postingView().hP16;
+                  return postingView().hp(DesignConstants.horizontalPadding);
                 } else if (index == 2) {
                   return Obx(() => Column(
                         children: [
                           HorizontalMenuBar(
-                              padding:
-                                  const EdgeInsets.only(left: 16, right: 16),
+                              padding: EdgeInsets.only(
+                                  left: DesignConstants.horizontalPadding,
+                                  right: DesignConstants.horizontalPadding),
                               onSegmentChange: (segment) {
                                 _homeController.categoryIndexChanged(
                                     index: segment,
@@ -299,12 +277,12 @@ class HomeFeedState extends State<HomeFeedScreen> {
                           _homeController.isRefreshingPosts.value == true
                               ? SizedBox(
                                   height:
-                                      MediaQuery.of(context).size.height * 0.9,
+                                      Get.height * 0.9,
                                   child: const HomeScreenShimmer())
                               : _homeController.posts.isEmpty
                                   ? SizedBox(
                                       height:
-                                          MediaQuery.of(context).size.height *
+                                          Get.height *
                                               0.5,
                                       child: emptyPost(
                                           title: noPostFoundString.tr,

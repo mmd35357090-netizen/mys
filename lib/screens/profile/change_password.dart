@@ -61,7 +61,7 @@ class ChangePasswordState extends State<ChangePassword> {
                   .vP8,
               addTextField(confirmPassword, 'confirm_password'),
             ],
-          ).hP16
+          ).hp(DesignConstants.horizontalPadding)
         ]),
       ),
     );

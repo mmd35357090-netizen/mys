@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/number_extension.dart';
-import 'package:get/get.dart';
 import 'package:foap/model/live_tv_model.dart';
 import '../../components/live_tv_player.dart';
 import '../../model/chat_message_model.dart';
@@ -100,7 +99,11 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                                       .currentViewingTv.value!);
                             })),
                       ],
-                    ).setPadding(left: 16, right: 16, top: 8, bottom: 16),
+                    ).setPadding(
+                        left: DesignConstants.horizontalPadding,
+                        right: DesignConstants.horizontalPadding,
+                        top: 8,
+                        bottom: 16),
                     divider().tP8,
                   ],
                 ),
@@ -166,8 +169,11 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                         .messagesMap[widget.tvModel.id.toString()] ??
                     []);
                 return ListView.separated(
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 50, left: 16, right: 70),
+                    padding: EdgeInsets.only(
+                        top: 10,
+                        bottom: 50,
+                        left: DesignConstants.horizontalPadding,
+                        right: 70),
                     itemCount: messages.length,
                     itemBuilder: (ctx, index) {
                       return Container(
@@ -263,7 +269,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
             ],
           ),
         ],
-      ).hP16,
+      ).hp(DesignConstants.horizontalPadding),
     );
   }
 

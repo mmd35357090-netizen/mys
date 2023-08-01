@@ -1,7 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as google_map;
-import 'package:get/get.dart';
-
 import '../../controllers/misc/map_screen_controller.dart';
 
 // ignore: must_be_immutable
@@ -54,8 +52,8 @@ class _MapsUsersScreenState extends State<MapsUsersScreen> {
           final google_map.CameraPosition kGooglePlex =
               google_map.CameraPosition(
             target: google_map.LatLng(
-                _mapScreenController.currentLocation.value!.latitude!,
-                _mapScreenController.currentLocation.value!.longitude!),
+                _mapScreenController.currentLocation.value!.latitude,
+                _mapScreenController.currentLocation.value!.longitude),
             zoom: 0,
           );
 
@@ -79,7 +77,7 @@ class _MapsUsersScreenState extends State<MapsUsersScreen> {
     return Positioned(
       child: Container(
         height: 150.0,
-        width: MediaQuery.of(context).size.width,
+        width: Get.width,
         decoration: BoxDecoration(
             color: Colors.white,
             gradient: LinearGradient(
@@ -106,7 +104,7 @@ class _MapsUsersScreenState extends State<MapsUsersScreen> {
               Get.back();
             }),
           ],
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
       ),
     );
   }
@@ -136,8 +134,8 @@ class _MapsUsersScreenState extends State<MapsUsersScreen> {
   Future<void> _goToCurrentLocation() async {
     final google_map.CameraPosition kLake = google_map.CameraPosition(
         target: google_map.LatLng(
-            _mapScreenController.currentLocation.value!.latitude!,
-            _mapScreenController.currentLocation.value!.longitude!),
+            _mapScreenController.currentLocation.value!.latitude,
+            _mapScreenController.currentLocation.value!.longitude),
         tilt: 59,
         zoom: 5);
     final google_map.GoogleMapController controller = mapController;

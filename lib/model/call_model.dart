@@ -1,8 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/helper/imports/models.dart';
-import 'package:foap/model/user_model.dart';
-
-import '../controllers/live/agora_live_controller.dart';
 
 class Call {
   final String uuid;
@@ -120,7 +116,6 @@ class BattleDetail {
   }
 
   LiveCallHostUser get mainHost {
-    print('battleUsers ${battleUsers.map((e) => e.isMainHost)}');
     return battleUsers.where((element) => element.isMainHost == true).first;
   }
 

@@ -71,6 +71,7 @@ class ClubsController extends GetxController {
     _categoryId = null;
     _userId = null;
     _isJoined = null;
+
   }
 
   clearMembers() {
@@ -132,7 +133,6 @@ class ClubsController extends GetxController {
   }
 
   getClubs() {
-
     if (canLoadMoreClubs) {
       ClubApi.getClubs(
           name: _name,
@@ -145,7 +145,6 @@ class ClubsController extends GetxController {
             clubs.unique((e) => e.id);
             isLoadingClubs.value = false;
 
-            print('clubs.length ${result.length}');
             canLoadMoreClubs = result.length >= metadata.perPage;
 
             clubsPage += 1;
@@ -307,6 +306,6 @@ class ClubsController extends GetxController {
     );
     Get.back();
     callback();
-    ;
+
   }
 }

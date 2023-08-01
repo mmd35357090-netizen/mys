@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../../components/user_card.dart';
 
@@ -45,7 +44,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                   width: 20,
                 )
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
             divider().vP8,
             Expanded(
               child: ListView(
@@ -151,7 +150,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               ));
         }),
       ],
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
   }
 
   Widget extraOptionsWidget() {
@@ -189,7 +188,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               isSuccess: true);
         })
       ],
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hP16;
+    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
   }
 
   Widget callWidgets() {
@@ -209,7 +208,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               BodyMediumText(audioString.tr,
                   weight: TextWeight.medium),
             ],
-          ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+          ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
         ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
           audioCall();
         }),
@@ -232,7 +231,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
 
               ),
             ],
-          ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+          ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
         ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
           videoCall();
         }),
@@ -316,7 +315,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
               }).vP8,
         ).round(10).backgroundCard(shadowOpacity: 0.1),
       ],
-    ).hP16;
+    ).hp(DesignConstants.horizontalPadding);
   }
 
   void exportChatWithMedia() {

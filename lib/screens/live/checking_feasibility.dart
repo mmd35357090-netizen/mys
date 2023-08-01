@@ -104,12 +104,10 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                         const SizedBox(
                           height: 150,
                         ),
-                        Text(
+                        Heading4Text(
                           _agoraLiveController.errorMessage!,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: FontSizes.h3,
-                              fontWeight: TextWeight.regular),
+                         weight: TextWeight.regular,
                         ),
                         const SizedBox(
                           height: 20,
@@ -139,7 +137,7 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
                           Get.back();
                         })
                       ],
-                    ).hP16
+                    ).hp(DesignConstants.horizontalPadding)
                         : Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,

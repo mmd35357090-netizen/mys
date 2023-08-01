@@ -82,7 +82,7 @@ class FollowerFollowingState extends State<FollowerFollowingList> {
                         ? _userNetworkController.followers
                         : _userNetworkController.following;
                     return _userNetworkController.isLoading.value
-                        ? const ShimmerUsers().hP16
+                        ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
                         : Column(
                             children: [
                               usersList.isEmpty
@@ -119,7 +119,7 @@ class FollowerFollowingState extends State<FollowerFollowingList> {
                                             height: 20,
                                           );
                                         },
-                                      ).hP16,
+                                      ).hp(DesignConstants.horizontalPadding),
                                     ),
                             ],
                           );

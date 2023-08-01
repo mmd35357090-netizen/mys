@@ -1,17 +1,8 @@
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
-import 'package:foap/screens/settings_menu/account.dart';
-import 'package:foap/screens/settings_menu/payment_and_coins.dart';
-import 'package:foap/screens/settings_menu/security_privacy_options.dart';
-import 'package:foap/screens/settings_menu/settings_controller.dart';
-import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-
-import 'change_language.dart';
-import 'faq_list.dart';
 import 'help_screen.dart';
-import 'notification_settings.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -37,11 +28,10 @@ class _SettingsState extends State<Settings> {
           body: Column(
             children: [
               if (_settingsController.appearanceChanged!.value) Container(),
-              // const SizedBox(
-              //   height: 50,
-              // ),
               backNavigationBar(title: settingsString.tr),
-              divider().tP8,
+              const SizedBox(
+                height: 8,
+              ),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
@@ -50,9 +40,9 @@ class _SettingsState extends State<Settings> {
                       children: [
                         addTileEvent(
                             'assets/language.png', notificationsString.tr, '',
-                                () {
-                              Get.to(() => const NotificationsScreen());
-                            }, true),
+                            () {
+                          Get.to(() => const NotificationsScreen());
+                        }, true),
                         addTileEvent(
                             'assets/language.png', changeLanguageString.tr, '',
                             () {
@@ -162,7 +152,7 @@ class _SettingsState extends State<Settings> {
                     color: AppColorConstants.iconColor,
                     size: 15,
                   )
-              ]).hP16,
+              ]).hp(DesignConstants.horizontalPadding),
             ),
             divider()
           ],
@@ -208,7 +198,7 @@ class _SettingsState extends State<Settings> {
                     _settingsController.appearanceModeChanged(val);
                   },
                 )),
-          ]).hP16,
+          ]).hp(DesignConstants.horizontalPadding),
         ),
         divider()
       ],

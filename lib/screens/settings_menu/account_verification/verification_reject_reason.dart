@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import '../../add_on/model/verification_request_model.dart';
+import '../../../model/verification_request_model.dart';
 
 class VerificationRejectReason extends StatelessWidget {
   final VerificationRequest request;
@@ -23,7 +23,7 @@ class VerificationRejectReason extends StatelessWidget {
             child: Heading6Text(
               request.adminMessage ?? '',
               weight: TextWeight.regular,
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
           )
         ],
       ),

@@ -4,19 +4,16 @@ import 'package:foap/components/custom_texts.dart';
 import 'package:foap/components/empty_states.dart';
 import 'package:foap/components/top_navigation_bar.dart';
 import 'package:foap/controllers/podcast/podcast_streaming_controller.dart';
-import 'package:foap/helper/common_components.dart';
 import 'package:foap/helper/enum.dart';
 import 'package:foap/helper/extension.dart';
 import 'package:foap/helper/localization_strings.dart';
-import 'package:foap/model/category_model.dart';
 import 'package:foap/screens/add_on/model/podcast_banner_model.dart';
 import 'package:foap/screens/add_on/ui/podcast/podcast_host_detail.dart';
-import 'package:foap/screens/add_on/ui/podcast/podcast_show_detail.dart';
-import 'package:foap/screens/add_on/ui/podcast/podcasts_by_category.dart';
-import 'package:foap/theme/theme_icon.dart';
+import 'package:foap/screens/add_on/ui/podcast/podcast_detail.dart';
 import 'package:foap/util/app_config_constants.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class PodcastListDashboard extends StatefulWidget {
   const PodcastListDashboard({Key? key}) : super(key: key);
@@ -26,16 +23,23 @@ class PodcastListDashboard extends StatefulWidget {
 }
 
 class _PodcastListDashboardState extends State<PodcastListDashboard> {
-  final PodcastStreamingController _podcastStreamingController =
-      PodcastStreamingController();
+  final PodcastStreamingController _podcastStreamingController = Get.find();
   final CarouselController _controller = CarouselController();
   int _current = 0;
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
-    _podcastStreamingController.getPodcastCategories();
+    _podcastStreamingController.getHostsList(callback: () {});
     _podcastStreamingController.getPodcastBanners();
     super.initState();
+  }
+
+  loadMore() {
+    _podcastStreamingController.getHostsList(callback: () {
+      _refreshController.loadComplete();
+    });
   }
 
   @override
@@ -52,10 +56,7 @@ class _PodcastListDashboardState extends State<PodcastListDashboard> {
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            backNavigationBar(
-                     title: podcastString.tr)
-                ,
-            divider().tP8,
+            backNavigationBar(title: hostsString.tr),
             Expanded(
                 child: GetBuilder<PodcastStreamingController>(
                     init: _podcastStreamingController,
@@ -65,24 +66,24 @@ class _PodcastListDashboardState extends State<PodcastListDashboard> {
                             delegate: SliverChildListDelegate([
                           if (_podcastStreamingController.banners.isNotEmpty)
                             banner(),
-                          _podcastStreamingController.categories.isEmpty
-                              ? emptyData(
-                                  title: noDataString.tr,
-                                  subTitle: '')
-                              : ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  itemCount: _podcastStreamingController
-                                      .categories.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return podcastByCategory(
-                                        _podcastStreamingController
-                                            .categories[index]);
-                                  })
+                          _podcastStreamingController.hosts.isEmpty
+                              ? emptyData(title: noDataString.tr, subTitle: '')
+                              : SizedBox(
+                                  height: _podcastStreamingController
+                                          .banners.isNotEmpty
+                                      ? Get.height - 315
+                                      : Get.height - 100,
+                                  child: podcastHosts(),
+                                )
                         ]))
-                      ]);
+                      ]).addPullToRefresh(
+                          refreshController: _refreshController,
+                          onRefresh: () {},
+                          onLoading: () {
+                            loadMore();
+                          },
+                          enablePullUp: true,
+                          enablePullDown: false);
                     })),
           ],
         ));
@@ -93,7 +94,7 @@ class _PodcastListDashboardState extends State<PodcastListDashboard> {
         ? CachedNetworkImage(
             imageUrl: _podcastStreamingController.banners[0].coverImageUrl!,
             fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width,
+            width: Get.width,
             height: 200,
           )
             .round(10)
@@ -111,7 +112,7 @@ class _PodcastListDashboardState extends State<PodcastListDashboard> {
                   CachedNetworkImage(
                     imageUrl: banner.coverImageUrl!,
                     fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width,
+                    width: Get.width,
                     height: 200,
                   )
                       .round(10)
@@ -160,85 +161,62 @@ class _PodcastListDashboardState extends State<PodcastListDashboard> {
                 }).toList(),
               ).alignBottomCenter,
             ),
-          ]);
+          ]).bp(15);
   }
 
-  podcastByCategory(PodcastCategoryModel model) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(
-        children: [
-          Heading6Text(
-            model.name,
-              weight: TextWeight.medium
-          ).lP16,
-          const Spacer(),
-          const ThemeIconWidget(
-            ThemeIcon.nextArrow,
-            size: 15,
-          ).rP16.ripple(() {
-            Get.to(() => PodcastListByCategory(category: model));
-          }),
-        ],
+  Widget podcastHosts() {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 0.9,
       ),
-      SizedBox(
-        height: 170,
-        child: ListView.separated(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          shrinkWrap: true,
-          physics: const ClampingScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          itemCount: model.podcasts.length,
-          itemBuilder: (BuildContext context, int index) => CachedNetworkImage(
-            imageUrl: model.podcasts[index].image,
-            fit: BoxFit.cover,
-            height: 170,
-            width: 180,
-          ).round(10).ripple(() {
-            Get.to(() => PodcastHostDetail(
-                  podcastModel: model.podcasts[index],
-                ));
-          }),
-          separatorBuilder: (BuildContext context, int index) {
-            return const SizedBox(width: 8);
-          },
-        ),
-      ).setPadding(top: 8, bottom: 22),
-    ]);
+      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+      shrinkWrap: true,
+      physics: const ClampingScrollPhysics(),
+      itemCount: _podcastStreamingController.hosts.length,
+      itemBuilder: (BuildContext context, int index) => Column(
+        children: [
+          Expanded(
+            child: CachedNetworkImage(
+              imageUrl: _podcastStreamingController.hosts[index].image,
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+            ).round(10),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          BodyLargeText(
+            _podcastStreamingController.hosts[index].name,
+            weight: TextWeight.semiBold,
+            maxLines: 1,
+          )
+        ],
+      ).ripple(() {
+        Get.to(() => PodcastHostDetail(
+              podcastModel: _podcastStreamingController.hosts[index],
+            ));
+      }),
+    );
   }
 
   bannerClickAction(PodcastBannerModel banner) {
     if (banner.bannerType == PodcastBannerType.show) {
-      _podcastStreamingController.getPodcastShowById(banner.referenceId!, () {
-        _podcastStreamingController.getHostById(
-            _podcastStreamingController.showDetail.value!.podcastChannelId,
-            () => {
-                  if (_podcastStreamingController.hostDetail.value != null)
-                    {
-                      Get.to(() => PodcastShowDetail(
-                          podcastShowModel:
-                              _podcastStreamingController.showDetail.value!))
-                    }
-                });
+      _podcastStreamingController.getPodcastById(banner.referenceId!,
+          (show) {
+        Get.to(() => PodcastDetail(podcastModel: show));
         //find channel id in array
       });
+    } else if (banner.bannerType == PodcastBannerType.host) {
+      _podcastStreamingController.getHostById(
+          banner.referenceId!,
+          (host) => {
+                if (_podcastStreamingController.hostDetail.value != null)
+                  {Get.to(() => PodcastHostDetail(podcastModel: host))}
+              });
     }
-    // else {
-    //   TvModel? tvModel;
-    //   for (var category in _tvStreamingController.categories) {
-    //     var foundTv = category.tvs
-    //         .where((element) =>
-    //             element.id ==
-    //             _tvStreamingController.showDetail.value?.tvChannelId)
-    //         .toList();
-    //     if (foundTv.isNotEmpty) {
-    //       tvModel = foundTv.first;
-    //       break;
-    //     }
-    //   }
-    //
-    //   Get.to(() => TVChannelDetail(
-    //         tvModel: tvModel!,
-    //       ));
-    // }
   }
 }

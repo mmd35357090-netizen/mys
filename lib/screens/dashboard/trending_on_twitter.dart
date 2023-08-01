@@ -20,7 +20,7 @@
 //       ),
 //       backgroundColor: AppTheme().secondaryBackgroundColor,
 //       body: ListView.separated(
-//           padding: const EdgeInsets.only(left: 16, right: 16),
+//           padding: const EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
 //           itemBuilder: (BuildContext context, index) {
 //             return TwitterCard1(
 //               model: allNews[index],

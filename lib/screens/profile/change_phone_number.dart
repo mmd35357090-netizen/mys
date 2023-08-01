@@ -1,9 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
-import '../../components/app_text_field.dart';
 import '../../controllers/profile/profile_controller.dart';
-import '../../universal_components/rounded_input_field.dart';
 
 class ChangePhoneNumber extends StatefulWidget {
   const ChangePhoneNumber({Key? key}) : super(key: key);
@@ -40,7 +36,6 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
               height: 55,
             ),
             profileScreensNavigationBar(
-                
                 title: changePhoneNumberString.tr,
                 rightBtnTitle: doneString.tr,
                 completion: () {
@@ -49,7 +44,6 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
                       phoneNumber: phoneNumber.text,
                       );
                 }),
-            divider().vP8,
             const SizedBox(
               height: 20,
             ),
@@ -63,7 +57,7 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
                 ),
                 addTextField(),
               ],
-            ).hP16
+            ).hp(DesignConstants.horizontalPadding)
           ]),
         ));
   }

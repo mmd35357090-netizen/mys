@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -27,12 +27,10 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           backNavigationBar(
-
             title: addClubCoverPhotoString.tr,
           ),
-          divider().tP8,
+          const SizedBox(height: 8,),
           const SizedBox(
             height: 20,
           ),
@@ -54,7 +52,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
                 coverPhotoString.tr,
               ),
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
           Obx(() => SizedBox(
                 height: 250,
                 child: Stack(
@@ -121,7 +119,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
                 } else {
                   updateBtnClicked();
                 }
-              }).hP16,
+              }).hp(DesignConstants.horizontalPadding),
           const SizedBox(
             height: 50,
           )

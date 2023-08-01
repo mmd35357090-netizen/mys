@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 
 import '../../components/user_card.dart';
 import '../../controllers/misc/blocked_users_controller.dart';
@@ -50,7 +50,7 @@ class BlockedUsersListState extends State<BlockedUsersList> {
                   });
 
                   return blockedUsersController.isLoading
-                      ? const ShimmerUsers().hP16
+                      ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
                       : Column(
                           mainAxisAlignment:
                               blockedUsersController.usersList.isEmpty &&
@@ -84,7 +84,7 @@ class BlockedUsersListState extends State<BlockedUsersList> {
                                           height: 20,
                                         );
                                       },
-                                    ).hP16,
+                                    ).hp(DesignConstants.horizontalPadding),
                                   ),
                           ],
                         );

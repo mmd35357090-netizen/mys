@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 
 class ClubSettings extends StatefulWidget {
   final ClubModel club;
@@ -27,7 +26,6 @@ class _ClubSettingsState extends State<ClubSettings> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBar(
                title: clubSettingsString.tr),
           Expanded(
@@ -95,7 +93,7 @@ class _ClubSettingsState extends State<ClubSettings> {
                 }),
                 divider().vP16,
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
           )
         ],
       ),

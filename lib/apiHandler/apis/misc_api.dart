@@ -1,9 +1,7 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:foap/apiHandler/api_wrapper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
+
 import '../../model/support_request_response.dart';
 
 class MiscApi {

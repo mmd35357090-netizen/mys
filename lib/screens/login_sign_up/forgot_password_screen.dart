@@ -27,11 +27,11 @@ class ForgotPasswordState extends State<ForgotPasswordScreen> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.08,
+                    height: Get.height * 0.08,
                   ),
                   Heading3Text(forgotPwdString.tr, weight: TextWeight.medium),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
+                    height: Get.height * 0.02,
                   ),
                   Heading6Text(
                     helpToGetAccountString.tr,

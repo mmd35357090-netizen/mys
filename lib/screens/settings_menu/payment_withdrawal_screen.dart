@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import '../../components/transaction_tile.dart';
 import '../../controllers/profile/profile_controller.dart';
@@ -34,9 +33,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
     return Scaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
           backNavigationBar(title: earningsString.tr),
-          divider().vP8,
           const SizedBox(
             height: 20,
           ),
@@ -94,7 +91,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
               ],
             ).p16,
           ).round(10);
-        }).hP16;
+        }).hp(DesignConstants.horizontalPadding);
   }
 
   totalCoinBalanceView() {
@@ -133,7 +130,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
               ],
             ).p16,
           ).round(10);
-        }).hP16;
+        }).hp(DesignConstants.horizontalPadding);
   }
 
   Future<void> askNumberOfCoinToRedeem() async {
@@ -145,7 +142,7 @@ class PaymentWithdrawalState extends State<PaymentWithdrawalScreen> {
           dialogContext = context;
 
           return AlertDialog(
-            title: Text(
+            title: BodyLargeText(
               enterNumberOfCoinsString.tr,
             ),
             content: Container(

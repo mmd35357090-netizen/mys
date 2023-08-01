@@ -35,7 +35,7 @@ class LocationTile extends StatelessWidget {
                   '1.50k posts',
                 )
               ],
-            ).hP16,
+            ).hp(DesignConstants.horizontalPadding),
           ],
         ).p16.ripple(() {
           onItemCallback();

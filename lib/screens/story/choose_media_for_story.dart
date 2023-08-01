@@ -1,7 +1,5 @@
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/story_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import '../../components/custom_gallery_picker.dart';
 
 class ChooseMediaForStory extends StatefulWidget {

@@ -77,7 +77,7 @@ class _ChangeLocationState extends State<ChangeLocation> {
                 height: 20,
               ),
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         ],
       ),
     );

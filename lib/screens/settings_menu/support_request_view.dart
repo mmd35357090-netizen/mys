@@ -1,7 +1,5 @@
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../../model/support_request_response.dart';
-import '../../universal_components/rounded_input_field.dart';
 
 class SupportRequestView extends StatefulWidget {
   const SupportRequestView({Key? key}) : super(key: key);
@@ -33,18 +31,18 @@ class _SupportRequestViewState extends State<SupportRequestView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
+                    height: Get.height * 0.02,
                   ),
                   const BodyLargeText('Your Message', weight: FontWeight.bold),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.015,
+                    height: Get.height * 0.015,
                   ),
                   BodyLargeText(
                     item.requestMessage ?? '',
                     weight: TextWeight.regular,
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.1,
+                    height: Get.height * 0.1,
                   ),
                   if (item.replyMessage != null)
                     const BodyLargeText(
@@ -52,7 +50,7 @@ class _SupportRequestViewState extends State<SupportRequestView> {
                       weight: FontWeight.bold,
                     ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.015,
+                    height: Get.height * 0.015,
                   ),
                   BodyLargeText(
                     item.replyMessage ?? '',

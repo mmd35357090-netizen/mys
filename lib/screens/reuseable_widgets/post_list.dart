@@ -1,11 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:foap/helper/extension.dart';
-import '../../components/empty_states.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import '../../components/post_card.dart';
-import '../../components/shimmer_widgets.dart';
 import '../../controllers/post/post_controller.dart';
-import 'package:get/get.dart';
-import '../../helper/localization_strings.dart';
 
 class PostList extends StatelessWidget {
   final PostController postController = Get.find();
@@ -36,7 +31,7 @@ class PostList extends StatelessWidget {
                   ? const PostBoxShimmer()
                   : postController.posts.isNotEmpty
                       ? ListView.builder(
-                          padding: const EdgeInsets.only(top: 20,bottom: 100),
+                          padding: const EdgeInsets.only(top: 20, bottom: 100),
                           controller: scrollController,
                           itemCount: postController.posts.length,
                           // physics: const NeverScrollableScrollPhysics(),
@@ -47,7 +42,7 @@ class PostList extends StatelessWidget {
                                   removePostHandler: () {},
                                   blockUserHandler: () {},
                                   viewInsightHandler: () {}),
-                        ).hP16
+                        ).hp(DesignConstants.horizontalPadding)
                       : SizedBox(
                           height: Get.size.height * 0.5,
                           child: emptyPost(

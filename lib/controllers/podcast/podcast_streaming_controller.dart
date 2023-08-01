@@ -1,22 +1,33 @@
+import 'dart:ui';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foap/apiHandler/apis/podcast_api.dart';
-import 'package:foap/model/category_model.dart';
+import 'package:foap/helper/list_extension.dart';
 import 'package:foap/screens/add_on/model/podcast_banner_model.dart';
 import 'package:foap/screens/add_on/model/podcast_model.dart';
 import 'package:get/get.dart';
 
+import '../../helper/localization_strings.dart';
+
 class PodcastStreamingController extends GetxController {
   RxList<PodcastBannerModel> banners = <PodcastBannerModel>[].obs;
-  RxList<PodcastCategoryModel> categories = <PodcastCategoryModel>[].obs;
-  RxList<PodcastModel> podcasts = <PodcastModel>[].obs;
-  RxList<PodcastShowModel> podcastShows = <PodcastShowModel>[].obs;
-  RxList<PodcastShowEpisodeModel> podcastShowEpisodes =
-      <PodcastShowEpisodeModel>[].obs;
 
-  Rx<PodcastShowModel?> showDetail = Rx<PodcastShowModel?>(null);
-  Rx<PodcastModel?> hostDetail = Rx<PodcastModel?>(null);
+  RxList<HostModel> hosts = <HostModel>[].obs;
+  RxList<PodcastModel> podcasts = <PodcastModel>[].obs;
+  RxList<PodcastEpisodeModel> podcastEpisodes = <PodcastEpisodeModel>[].obs;
+
+  Rx<PodcastModel?> podcastDetail = Rx<PodcastModel?>(null);
+  Rx<HostModel?> hostDetail = Rx<HostModel?>(null);
+
+  int hostsPage = 1;
+  bool canLoadMoreHosts = true;
+
+  int podcastsPage = 1;
+  bool canLoadMorePodcasts = true;
+
+  int podcastEpisodePage = 1;
+  bool canLoadMorePodcastEpisode = true;
 
   clearCategories() {
-    categories.clear();
     update();
   }
 
@@ -25,19 +36,33 @@ class PodcastStreamingController extends GetxController {
     update();
   }
 
-  clearPodcast() {
+  clearPodcastEpisodes() {
+    podcastEpisodes.clear();
+    podcastEpisodePage = 1;
+    canLoadMorePodcastEpisode = true;
+  }
+
+  clearPodcasts() {
     podcasts.clear();
+    podcastsPage = 1;
+    canLoadMorePodcasts = true;
+  }
+
+  clearHosts() {
+    hosts.clear();
+    hostsPage = 1;
+    canLoadMoreHosts = true;
     update();
   }
 
-  getPodcastCategories() {
-    PodcastApi.getPodcastCategories(resultCallback: (result) {
-      categories.value =
-          result.where((element) => element.podcasts.isNotEmpty).toList();
-      categories.refresh();
-      update();
-    });
-  }
+  // getPodcastCategories() {
+  //   PodcastApi.getPodcastCategories(resultCallback: (result) {
+  //     categories.value =
+  //         result.where((element) => element.podcasts.isNotEmpty).toList();
+  //     categories.refresh();
+  //     update();
+  //   });
+  // }
 
   getPodcastBanners() {
     PodcastApi.getPodcastBanners(resultCallback: (result) {
@@ -46,55 +71,101 @@ class PodcastStreamingController extends GetxController {
     });
   }
 
-  getPodCastList({int? categoryId, String? name}) {
-    PodcastApi.getPodcastList(
-        categoryId: categoryId,
-        name: name,
+  getHostsList(
+      {int? categoryId, String? name, required VoidCallback callback}) {
+    if (canLoadMoreHosts) {
+      PodcastApi.getHostsList(
+          page: hostsPage,
+          categoryId: categoryId,
+          name: name,
+          resultCallback: (result, metadata) {
+            hosts.value = result;
+            hosts.unique((e) => e.id);
+            canLoadMoreHosts = result.length >= metadata.perPage;
+            if (canLoadMoreHosts) {
+              hostsPage += 1;
+            }
+
+            update();
+            callback();
+          });
+    } else {
+      callback();
+    }
+  }
+
+  getPodcasts({int? podcastId, String? name, required VoidCallback callback}) {
+    if (canLoadMorePodcasts) {
+      PodcastApi.getPodcasts(
+          page: podcastsPage,
+          podcastId: podcastId,
+          name: name,
+          resultCallback: (result, metadata) {
+            podcasts.value = result;
+
+            podcasts.unique((e) => e.id);
+            canLoadMorePodcasts = result.length >= metadata.perPage;
+            if (canLoadMorePodcasts) {
+              podcastsPage += 1;
+            }
+
+            callback();
+            update();
+          });
+    } else {
+      callback();
+    }
+  }
+
+  getPodcastEpisode(
+      {int? podcastId,
+      String? name,
+      required VoidCallback callback}) async {
+    if (canLoadMorePodcastEpisode) {
+      PodcastApi.getPodcastEpisode(
+          page: podcastEpisodePage,
+          podcastId: podcastId,
+          name: name,
+          resultCallback: (result, metadata) {
+            podcastEpisodes.value = result;
+            podcastEpisodes.unique((e) => e.id);
+            canLoadMorePodcastEpisode = result.length >= metadata.perPage;
+            if (canLoadMorePodcastEpisode) {
+              podcastEpisodePage += 1;
+            }
+
+            callback();
+            update();
+          });
+    } else {
+      callback();
+    }
+  }
+
+  getPodcastById(int id, Function(PodcastModel) completionCallBack) {
+    EasyLoading.show(status: loadingString.tr);
+
+    PodcastApi.getPodcastById(
+        id: id,
         resultCallback: (result) {
-          podcasts.value = result;
+          EasyLoading.dismiss();
+          podcastDetail.value = result;
           update();
+          completionCallBack(result);
         });
   }
 
-  getPodcastShows({int? podcastId, String? name}) {
-    PodcastApi.getPodcastShows(
-        podcastId: podcastId,
-        name: name,
-        resultCallback: (result) {
-          podcastShows.value = result;
-          podcastShows.refresh();
-          update();
-        });
-  }
+  getHostById(int hostId, Function(HostModel) completionCallBack) {
+    EasyLoading.show(status: loadingString.tr);
 
-  getPodcastShowsEpisode({int? podcastShowId, String? name}) async {
-    PodcastApi.getPodcastShowsEpisode(
-        podcastShowId: podcastShowId,
-        name: name,
-        resultCallback: (result) {
-          podcastShowEpisodes.value = result;
-          podcastShowEpisodes.refresh();
-          update();
-        });
-  }
-
-  getPodcastShowById(int showId, Function() completionCallBack) {
-    PodcastApi.getPodcastShowById(
-        showId: showId,
-        resultCallback: (result) {
-          showDetail.value = result;
-          update();
-          completionCallBack();
-        });
-  }
-
-  getHostById(int hostId, Function() completionCallBack) {
     PodcastApi.getPodcastHostById(
         hostId: hostId,
         resultCallback: (result) {
+          EasyLoading.dismiss();
+
           hostDetail.value = result;
           update();
-          completionCallBack();
+          completionCallBack(result);
         });
   }
 }

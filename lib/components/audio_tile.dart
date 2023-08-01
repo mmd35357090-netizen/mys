@@ -1,8 +1,6 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
-
 import '../../manager/player_manager.dart';
 
 class AudioPostTile extends StatefulWidget {

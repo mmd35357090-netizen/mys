@@ -69,8 +69,6 @@ class SocketManager {
     // if(_socketInstance!.connected == false){
     _socketInstance?.connect();
     // }
-    print('socket connecting');
-
     socketGlobalListeners();
 
     subscription = FGBGEvents.stream.listen((event) {
@@ -86,8 +84,8 @@ class SocketManager {
 //Socket Global Listener Events
   dynamic socketGlobalListeners() {
     _socketInstance?.onAny((event, data) {
-      print('event $event');
-      print('data $data');
+      // print('event $event');
+      // print('data $data');
       // Handle the incoming event and data here
     });
     _socketInstance?.on(SocketConstants.eventConnect, onConnect);
@@ -136,13 +134,6 @@ class SocketManager {
     _socketInstance?.on(
         SocketConstants.newGiftReceivedInLiveCall, newGiftReceivedInLiveCall);
 
-    _socketInstance?.on(SocketConstants.invitedInLive, invitedInLive);
-    _socketInstance?.on(
-        SocketConstants.replyInvitationInLive, repliedInvitationInLive);
-    _socketInstance?.on(
-        SocketConstants.inviteInLiveConfirmation, invitedInLiveConfirmation);
-    _socketInstance?.on(
-        SocketConstants.liveBattleStatusUpdated, liveBattleStatusUpdated);
     _socketInstance?.on(
         SocketConstants.liveBattleHostUpdated, liveBattleHostUpdated);
     _socketInstance?.on(SocketConstants.endLiveBattle, endLiveBattle);
@@ -166,7 +157,7 @@ class SocketManager {
 
 //Get This Event After Successful Connection To Socket
   dynamic onConnect(_) {
-    print('socket connected');
+
 
     emit(SocketConstants.login, {
       'userId': _userProfileManager.user.value!.id,
@@ -180,14 +171,14 @@ class SocketManager {
     cachedRequests.clear();
   }
 
-//Get This Event After Connection Lost To Socket Due To Network Or Any Other Reason
+  //Get This Event After Connection Lost To Socket Due To Network Or Any Other Reason
   dynamic onDisconnect(_) {
-    print("===> Socket Disconnected....................");
+    // print("===> Socket Disconnected....................");
   }
 
-//Get This Event After Connection Error To Socket With Error
+  //Get This Event After Connection Error To Socket With Error
   dynamic onConnectError(error) {
-    print("===> ConnectError socket.................... $error");
+    // print("===> ConnectError socket.................... $error");
   }
 
   //Get This Event When your call is created
@@ -195,7 +186,7 @@ class SocketManager {
     _agoraCallController.outgoingCallConfirmationReceived(response);
   }
 
-//Get This Event When you Received Call From Other User
+  //Get This Event When you Received Call From Other User
   void handleOnCallReceived(dynamic response) {
     // voipController.incomingCall();
     // agoraCallController.incomingCallReceived(response);
@@ -399,7 +390,6 @@ class SocketManager {
   }
 
   void liveCreatedConfirmation(dynamic response) {
-    print('liveCreatedConfirmation: $response');
     _agoraLiveController.liveCreatedConfirmation(response);
   }
 
@@ -413,70 +403,6 @@ class SocketManager {
   void onLiveEnd(dynamic response) {
     _homeController.liveUsersUpdated();
     _agoraLiveController.onLiveEndMessageReceived(response['liveCallId']);
-  }
-
-  void invitedInLive(dynamic response) {
-    UserModel host = UserModel();
-    host.id = response['userId'];
-    host.userName = response['username'];
-    host.picture = response['userImageUrl'];
-
-    Live live = Live(
-        channelName: response['channelName'],
-        mainHostUserDetail: host,
-        // battleUsers: [],
-        token: response['token'],
-        id: response['liveCallId']);
-    live.battleDetail =
-        BattleDetail.fromJson(response['battleInfo']['battleDetail']);
-    _agoraLiveController.invitedForLiveBattle(live);
-  }
-
-  void repliedInvitationInLive(dynamic response) {}
-
-  void invitedInLiveConfirmation(dynamic response) {}
-
-  void liveBattleStatusUpdated(dynamic response) async {
-    int status = response['status'];
-    int liveId = response['liveCallId'];
-
-    if (status == 4) {
-      BattleDetail battleDetail =
-          BattleDetail.fromJson(response['battleInfo']['battleDetail']);
-
-      List<LiveCallHostUser> battleUsers =
-          (response['battleInfo']['liveBattleHosts'] as List)
-              .map((e) => LiveCallHostUser.fromJson(e))
-              .toList();
-
-      print('battleUsers found ${battleUsers.length}');
-
-      // for (Map<String, dynamic> host in response['battleInfo']
-      //     ['liveBattleHosts']) {
-      //   await UsersApi.getOtherUser(
-      //       userId: host['userId'],
-      //       resultCallback: (user) {
-      //         battleUsers.add(LiveCallHostUser(
-      //             battleId: host['battleId'],
-      //             userDetail: user,
-      //             totalCoins: host['totalCoin'] == null
-      //                 ? 0
-      //                 : int.parse(host['totalCoin'].toString()),
-      //             totalGifts: host['totalGift'] == null
-      //                 ? 0
-      //                 : int.parse(host['totalGift'].toString()),
-      //             isMainHost: host['isSuperHost'] == 1));
-      //       });
-      // }
-
-      battleDetail.battleUsers = battleUsers;
-      // invitation request accepted
-      _agoraLiveController.userAcceptedLiveBattle(
-          liveId: liveId, battleDetail: battleDetail);
-    } else if (status == 3) {
-      // invitation request declined
-      _agoraLiveController.userDeclinedLiveBattle(liveId: liveId);
-    }
   }
 
   void liveBattleHostUpdated(dynamic response) async {

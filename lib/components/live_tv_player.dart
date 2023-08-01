@@ -1,6 +1,6 @@
 import 'package:chewie/chewie.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:video_player/video_player.dart';
 import '../controllers/tv/live_tv_streaming_controller.dart';
 import '../model/live_tv_model.dart';
@@ -194,7 +194,7 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                             Get.back();
                           }),
                         ],
-                      ).setPadding(left: 16, top: 28),
+                      ).setPadding(left: DesignConstants.horizontalPadding, top: 28),
                     ),
                   )
                 : Container())
@@ -208,7 +208,7 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
       videoPlayerController!.pause();
     }
 
-    videoPlayerController = VideoPlayerController.network(url);
+    videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
 
     initializeVideoPlayerFuture = videoPlayerController!.initialize().then((_) {
       setState(() {});

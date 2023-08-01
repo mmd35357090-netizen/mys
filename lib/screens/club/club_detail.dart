@@ -5,6 +5,7 @@ import 'package:foap/helper/number_extension.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/actionSheets/action_sheet1.dart';
 import '../../controllers/chat_and_call/chat_detail_controller.dart';
+import '../../controllers/post/select_media.dart';
 import '../../model/generic_item.dart';
 import '../chat/chat_detail.dart';
 import '../post/view_post_insight.dart';
@@ -80,15 +81,15 @@ class ClubDetailState extends State<ClubDetail> {
                     color: Colors.white,
                   ),
                 ).circular.ripple(() {
-                  Future.delayed(
-                    Duration.zero,
-                    () => showGeneralDialog(
-                        context: context,
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            AddPostScreen(
-                                postType: PostType.club,
-                                clubId: _clubDetailController.club.value!.id!)),
-                  );
+            Future.delayed(
+              Duration.zero,
+                  () =>
+                  showGeneralDialog(
+                      context: context,
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          SelectMedia(
+                            clubId: _clubDetailController.club.value!.id!,)
+                  ),);
                 })
               : null,
       body: Stack(
@@ -115,7 +116,7 @@ class ClubDetailState extends State<ClubDetail> {
                       ),
                       BodyLargeText(_clubDetailController.club.value!.name!,
                               weight: TextWeight.medium)
-                          .hP16,
+                          .hp(DesignConstants.horizontalPadding),
                       const SizedBox(
                         height: 12,
                       ),
@@ -141,11 +142,11 @@ class ClubDetailState extends State<ClubDetail> {
                                 club: _clubDetailController.club.value!));
                           })
                         ],
-                      ).hP16,
+                      ).hp(DesignConstants.horizontalPadding),
                       const SizedBox(
                         height: 12,
                       ),
-                      buttonsWidget().hP16,
+                      buttonsWidget().hp(DesignConstants.horizontalPadding),
                     ],
                   );
                 }),
@@ -295,7 +296,7 @@ class ClubDetailState extends State<ClubDetail> {
     return Positioned(
       child: Container(
         height: 150.0,
-        width: MediaQuery.of(context).size.width,
+        width: Get.width,
         decoration: BoxDecoration(
             color: Colors.white,
             gradient: LinearGradient(
@@ -370,7 +371,7 @@ class ClubDetailState extends State<ClubDetail> {
                     width: 20,
                   )
           ],
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
       ),
     );
   }

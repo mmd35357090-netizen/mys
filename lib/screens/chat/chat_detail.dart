@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:get/get.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -82,7 +81,7 @@ class _ChatDetailState extends State<ChatDetail> {
               height: 50,
             ),
             appBar(),
-            divider().tP8,
+            const SizedBox(height: 8,),
             Expanded(child: messagesListView()),
             Obx(() {
               return Column(
@@ -93,8 +92,8 @@ class _ChatDetailState extends State<ChatDetail> {
                             ? 50
                             : 0,
                     child: ListView.separated(
-                        padding: const EdgeInsets.only(
-                            left: 16, right: 16, top: 5, bottom: 10),
+                        padding:  EdgeInsets.only(
+                            left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 5, bottom: 10),
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (ctx, index) {
                           return SizedBox(
@@ -183,10 +182,10 @@ class _ChatDetailState extends State<ChatDetail> {
                   )
                 : Container()),
           ],
-        ).hP16,
+        ).hp(DesignConstants.horizontalPadding),
         Positioned(
-          left: 16,
-          right: 16,
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
           child: Column(
             children: [
               Row(
@@ -264,7 +263,7 @@ class _ChatDetailState extends State<ChatDetail> {
                                                   '',
                                           weight: TextWeight.medium)
                                   : SizedBox(
-                                      width: MediaQuery.of(context).size.width -
+                                      width: Get.width -
                                           120,
                                       child: BodyMediumText(
                                         _chatDetailController
@@ -336,7 +335,7 @@ class _ChatDetailState extends State<ChatDetail> {
                     mode: ChatMessageActionMode.none);
               })
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         ));
   }
 
@@ -379,7 +378,7 @@ class _ChatDetailState extends State<ChatDetail> {
             _chatDetailController.setReplyMessage(message: null);
           })
         ],
-      ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+      ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
     );
   }
 
@@ -416,7 +415,7 @@ class _ChatDetailState extends State<ChatDetail> {
                 mode: ChatMessageActionMode.none);
           })
         ],
-      ).setPadding(left: 16, right: 16, top: 8, bottom: 8),
+      ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
     );
   }
 
@@ -509,7 +508,7 @@ class _ChatDetailState extends State<ChatDetail> {
                 height: 20,
               ),
             ],
-          ).hP16,
+          ).hp(DesignConstants.horizontalPadding),
         )
       ],
     );
@@ -547,8 +546,8 @@ class _ChatDetailState extends State<ChatDetail> {
                             controller: _controller,
                             // itemScrollController: _itemScrollController,
                             // itemPositionsListener: _itemPositionsListener,
-                            padding: const EdgeInsets.only(
-                                top: 10, bottom: 50, left: 16, right: 16),
+                            padding:  EdgeInsets.only(
+                                top: 10, bottom: 50, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                             itemCount: _chatDetailController.messages.length,
                             itemBuilder: (ctx, index) {
                               ChatMessageModel message =
@@ -602,7 +601,7 @@ class _ChatDetailState extends State<ChatDetail> {
     return FocusedMenuHolder(
       key: dataKey,
 
-      menuWidth: MediaQuery.of(context).size.width * 0.50,
+      menuWidth: Get.width * 0.50,
       blurSize: 5.0,
       menuItemExtent: 45,
       menuBoxDecoration: BoxDecoration(

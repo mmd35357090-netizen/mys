@@ -6,7 +6,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import '../../apiHandler/apis/misc_api.dart';
 import '../../model/gift_model.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../../screens/add_on/model/polls_model.dart';
+import '../../model/polls_model.dart';
 import '../../model/post_model.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import 'dart:async';
@@ -32,7 +32,7 @@ class HomeController extends GetxController {
   RxList<BannerAd> bannerAds = <BannerAd>[].obs;
 
   RxInt currentVisibleVideoId = 0.obs;
-  Map<int, double> _mediaVisibilityInfo = {};
+  Map<int, double> mediaVisibilityInfo = {};
   PostSearchQuery postSearchQuery = PostSearchQuery();
 
   RxBool isRefreshingPosts = false.obs;
@@ -160,31 +160,10 @@ class HomeController extends GetxController {
           subHeading: podcastString.tr,
           linkType: QuickLinkType.podcast));
     }
-    if (_settingsController.setting.value!.enableDating) {
-      quickLinks.add(QuickLink(
-          icon: 'assets/dating.png',
-          heading: datingString.tr,
-          subHeading: datingString.tr,
-          linkType: QuickLinkType.dating));
-    }
-    // if (_settingsController.setting.value!.enableReel) {
-    quickLinks.add(QuickLink(
-        icon: 'assets/reel.png',
-        heading: reelString.tr,
-        subHeading: reelString.tr,
-        linkType: QuickLinkType.reel));
-    // }
-    if (_settingsController.setting.value!.enableEvents) {
-      quickLinks.add(QuickLink(
-          icon: 'assets/event.png',
-          heading: eventString.tr,
-          subHeading: eventString.tr,
-          linkType: QuickLinkType.event));
-    }
 
     if (_settingsController.setting.value!.enableChatGPT) {
       quickLinks.add(QuickLink(
-          icon: 'assets/chat.png',
+          icon: 'assets/ai.png',
           heading: chatGPT.tr,
           subHeading: eventString.tr,
           linkType: QuickLinkType.chatGPT));
@@ -296,13 +275,13 @@ class HomeController extends GetxController {
 
   setCurrentVisibleVideo(
       {required PostGallery media, required double visibility}) {
-    _mediaVisibilityInfo[media.id] = visibility;
+    mediaVisibilityInfo[media.id] = visibility;
     double maxVisibility =
-        _mediaVisibilityInfo[_mediaVisibilityInfo.keys.first] ?? 0;
-    int maxVisibilityMediaId = _mediaVisibilityInfo.keys.first;
+        mediaVisibilityInfo[mediaVisibilityInfo.keys.first] ?? 0;
+    int maxVisibilityMediaId = mediaVisibilityInfo.keys.first;
 
-    for (int key in _mediaVisibilityInfo.keys) {
-      double visibility = _mediaVisibilityInfo[key] ?? 0;
+    for (int key in mediaVisibilityInfo.keys) {
+      double visibility = mediaVisibilityInfo[key] ?? 0;
 
       if (visibility >= maxVisibility && visibility > 20) {
         maxVisibility = visibility;
@@ -316,7 +295,6 @@ class HomeController extends GetxController {
     } else if (maxVisibility <= 20) {
       currentVisibleVideoId.value = -1;
     }
-
   }
 
   void reportPost(int postId) {

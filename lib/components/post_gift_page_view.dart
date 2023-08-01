@@ -137,7 +137,7 @@ class _GiftsListingState extends State<GiftsListing> {
       child: Obx(() {
         return ListView.separated(
             padding:
-                const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 50),
+                 EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 20, bottom: 50),
             itemCount: _postGiftController.timelineGift.length,
             itemBuilder: (context, index) {
               PostGiftModel postGift = _postGiftController.timelineGift[index];
@@ -248,8 +248,8 @@ class _PostGiftsReceivedState extends State<PostGiftsReceived> {
           Expanded(
             child: Obx(() {
               return ListView.separated(
-                  padding: const EdgeInsets.only(
-                      left: 16, right: 16, top: 20, bottom: 50),
+                  padding:  EdgeInsets.only(
+                      left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 20, bottom: 50),
                   itemCount: _postGiftController.timelineGift.length,
                   itemBuilder: (context, index) {
                     PostGiftModel postGift =

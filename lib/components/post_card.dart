@@ -170,7 +170,10 @@ class PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      addPostUserInfo().setPadding(left: 16, right: 16, bottom: 16),
+      addPostUserInfo().setPadding(
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
+          bottom: 16),
       // if (widget.model.title.isNotEmpty)
       //   _convertHashtag(widget.model.title).hp(DesignConstants.horizontalPadding),
       // if (widget.model.title.isNotEmpty)
@@ -251,11 +254,11 @@ class PostCardState extends State<PostCard> {
       const SizedBox(
         height: 16,
       ),
-      commentAndLikeWidget().hP16,
+      commentAndLikeWidget().hp(DesignConstants.horizontalPadding),
       const SizedBox(
         height: 12,
       ),
-      commentsCountWidget().hP16,
+      commentsCountWidget().hp(DesignConstants.horizontalPadding),
       const SizedBox(
         height: 16,
       ),
@@ -272,7 +275,7 @@ class PostCardState extends State<PostCard> {
         //   size: 15,
         // ),
         // const SizedBox(width: 5),
-        BodyMediumText(widget.model.postTime.tr, weight: TextWeight.regular),
+        BodyExtraSmallText(widget.model.postTime.tr, weight: TextWeight.regular),
       ],
     );
   }
@@ -321,7 +324,7 @@ class PostCardState extends State<PostCard> {
               })
             : Container(),
       ],
-    ).setPadding(left: 16);
+    ).setPadding(left: DesignConstants.horizontalPadding);
   }
 
   Widget commentAndLikeWidget() {
@@ -516,6 +519,8 @@ class PostCardState extends State<PostCard> {
 
   void addNewMessage() {
     if (commentInputField.text.trim().isNotEmpty) {
+      FocusScope.of(context).unfocus();
+
       final filter = ProfanityFilter();
       bool hasProfanity = filter.hasProfanity(commentInputField.text);
       if (hasProfanity) {
@@ -583,7 +588,7 @@ class PostCardState extends State<PostCard> {
                 : Container()
           ],
         )),
-        postTimeView().hP16,
+        postTimeView().rp(DesignConstants.horizontalPadding),
         SizedBox(
           height: 20,
           width: 20,

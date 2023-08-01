@@ -6,9 +6,8 @@ import 'package:foap/components/place_picker/place_picker.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/drawing_screen.dart';
-import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import 'package:giphy_get/giphy_get.dart';
+// import 'package:giphy_get/giphy_get.dart';
 
 import '../../model/location.dart';
 import '../../util/constant_util.dart';
@@ -110,7 +109,7 @@ class _ChatMediaSharingOptionPopupState
             color: AppColorConstants.backgroundColor,
             child: GridView.builder(
                 itemCount: mediaTypes.length,
-                padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
+                padding:  EdgeInsets.only(top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
@@ -199,27 +198,27 @@ class _ChatMediaSharingOptionPopupState
   }
 
   openGiphy() async {
-    String randomId = 'hsvcewd78djhbejkd';
-
-    GiphyGif? gif = await GiphyGet.getGif(
-      context: context,
-
-      //Required
-      apiKey: _settingsController.setting.value!.giphyApiKey!,
-      //Required.
-      lang: GiphyLanguage.english,
-      //Optional - Language for query.
-      randomID: randomId,
-      // Optional - An ID/proxy for a specific user.
-      tabColor: Colors.teal, // Optional- default accent color.
-    );
-
-    if (gif != null) {
-      _chatDetailController.sendGifMessage(
-          gif: gif.images!.original!.url,
-          mode: _chatDetailController.actionMode.value,
-          room: _chatDetailController.chatRoom.value!);
-    }
+    // String randomId = 'hsvcewd78djhbejkd';
+    //
+    // GiphyGif? gif = await GiphyGet.getGif(
+    //   context: context,
+    //
+    //   //Required
+    //   apiKey: _settingsController.setting.value!.giphyApiKey!,
+    //   //Required.
+    //   lang: GiphyLanguage.english,
+    //   //Optional - Language for query.
+    //   randomID: randomId,
+    //   // Optional - An ID/proxy for a specific user.
+    //   tabColor: Colors.teal, // Optional- default accent color.
+    // );
+    //
+    // if (gif != null) {
+    //   _chatDetailController.sendGifMessage(
+    //       gif: gif.images!.original!.url,
+    //       mode: _chatDetailController.actionMode.value,
+    //       room: _chatDetailController.chatRoom.value!);
+    // }
   }
 
   void openVoiceRecord() {

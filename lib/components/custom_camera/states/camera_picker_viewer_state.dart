@@ -6,7 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/semantics.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 import 'package:path/path.dart' as path;
 import 'package:video_player/video_player.dart';
 

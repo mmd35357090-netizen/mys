@@ -1,10 +1,7 @@
-import 'dart:ui';
+
 import 'package:foap/apiHandler/api_wrapper.dart';
 import '../../helper/imports/common_import.dart';
 import '../../model/api_meta_data.dart';
-import 'package:get/get.dart';
-
-import '../../model/search_model.dart';
 
 class UsersApi {
   static getSuggestedUsers(
@@ -23,20 +20,23 @@ class UsersApi {
   }
 
   static searchUsers(
-      {required UserSearchModel searchModel,
+      {required int isExactMatch,
+      SearchFrom? searchFrom,
+      required String searchText,
       required int page,
       required Function(List<UserModel>, APIMetaData) resultCallback}) {
     var url = NetworkConstantsUtil.findFriends;
     //searchFrom  ----- 1=username,2=email,3=phone
-    String searchFromValue = searchModel.searchFrom == null
+    String searchFromValue = searchFrom == null
         ? ''
-        : searchModel.searchFrom == SearchFrom.username
+        : searchFrom == SearchFrom.username
             ? '1'
-            : searchModel.searchFrom == SearchFrom.email
+            : searchFrom == SearchFrom.email
                 ? '2'
                 : '3';
     url =
-        '${url}searchText=${searchModel.searchText ?? ''}&searchFrom=$searchFromValue&isExactMatch=${searchModel.isExactMatch ?? ''}&is_chat_user_online=${searchModel.isOnline == 1 ? '1' : ''}&page=$page';
+        '${url}searchText=$searchText&searchFrom=$searchFromValue&isExactMatch=$isExactMatch&page=$page';
+
     ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var topUsers = result!.data['user']['items'];
@@ -187,11 +187,9 @@ class UsersApi {
         var items = (result!.data['follower']['items'] as List<dynamic>)
             .map((e) => e['followerUserDetail'])
             .toList();
-        if (items.isNotEmpty) {
-          resultCallback(
-              List<UserModel>.from(items.map((x) => UserModel.fromJson(x))),
-              APIMetaData.fromJson(result.data['follower']['_meta']));
-        }
+        resultCallback(
+            List<UserModel>.from(items.map((x) => UserModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['follower']['_meta']));
       }
     });
   }
@@ -210,11 +208,9 @@ class UsersApi {
         var items = (result!.data['following']['items'] as List<dynamic>)
             .map((e) => e['followingUserDetail'])
             .toList();
-        if (items.isNotEmpty) {
-          resultCallback(
-              List<UserModel>.from(items.map((x) => UserModel.fromJson(x))),
-              APIMetaData.fromJson(result.data['following']['_meta']));
-        }
+        resultCallback(
+            List<UserModel>.from(items.map((x) => UserModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['following']['_meta']));
       }
     });
   }

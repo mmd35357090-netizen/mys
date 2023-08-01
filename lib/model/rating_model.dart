@@ -33,7 +33,6 @@ class RatingModel {
       };
 
   String get timeAgoStr {
-    print('createdAt $createdAt');
     var date = DateTime.fromMillisecondsSinceEpoch(createdAt! * 1000);
     return (date.getTimeAgo); // 15 minutes ago
   }

@@ -49,7 +49,7 @@ class AppThemeButton extends StatelessWidget {
           trailing != null ? trailing!.hP4 : Container()
         ],
       ),
-    ).ripple(() {
+    ).round(10).ripple(() {
       onPress!();
     });
   }

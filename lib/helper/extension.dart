@@ -3,7 +3,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:get/get.dart';
+
 
 extension RoundedHelper on Widget {
   ClipRRect round(double value) => ClipRRect(
@@ -39,7 +39,7 @@ extension PaddingHelper on Widget {
   Padding get hP8 =>
       Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: this);
 
-  Padding get hP16 =>
+  Padding get hp16 =>
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: this);
 
   Padding get hP25 =>
@@ -435,6 +435,6 @@ extension PinchZoomImage on Widget {
 extension AppChip on Widget {
   Widget makeChip({Color? backGroundColor}) => Container(
     color: backGroundColor ?? AppColorConstants.themeColor.withOpacity(0.2),
-    child: setPadding(left: 16, right: 16, top: 8, bottom: 8),
+    child: setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
   ).borderWithRadius(value: 1, radius: 20);
 }

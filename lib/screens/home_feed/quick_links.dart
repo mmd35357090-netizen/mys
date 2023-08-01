@@ -1,16 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/helper/imports/event_imports.dart';
-import 'package:foap/screens/add_on/ui/dating/dating_dashboard.dart';
-import 'package:foap/screens/add_on/ui/dating/profile/upload_profile_picture.dart';
 import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
 import 'package:foap/screens/chatgpt/chat_gpt.dart';
 import 'package:foap/screens/live/live_users_screen.dart';
-
-import 'package:get/get.dart';
 import '../../controllers/home/home_controller.dart';
-import '../add_on/ui/dating/profile/add_name.dart';
-import '../add_on/ui/dating/profile/allow_notifications.dart';
-import '../add_on/ui/reel/create_reel_video.dart';
 import '../chat/random_chat/choose_profile_category.dart';
 
 import '../club/clubs_listing.dart';
@@ -28,14 +20,11 @@ enum QuickLinkType {
   clubs,
   pages,
   tv,
-  event,
   podcast,
   story,
   highlights,
   goLive,
   liveUsers,
-  reel,
-  dating,
   chatGPT
 }
 
@@ -63,7 +52,6 @@ class QuickLinkWidget extends StatefulWidget {
 
 class _QuickLinkWidgetState extends State<QuickLinkWidget> {
   final HomeController _homeController = Get.find();
-  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -124,25 +112,8 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                     Get.to(() => const TvDashboardScreen());
                   } else if (link.linkType == QuickLinkType.liveUsers) {
                     Get.to(() => const LiveUserScreen());
-                  } else if (link.linkType == QuickLinkType.event) {
-                    Get.to(() => const EventsDashboardScreen());
                   } else if (link.linkType == QuickLinkType.podcast) {
                     Get.to(() => const PodcastListDashboard());
-                  } else if (link.linkType == QuickLinkType.reel) {
-                    Get.to(() => const CreateReelScreen());
-                  } else if (link.linkType == QuickLinkType.dating) {
-                    if (_userProfileManager.user.value!.canUseDating) {
-                      Get.to(() => const DatingDashboard());
-                    } else {
-                      AppUtil.showNewConfirmationAlert(
-                          title: enableDatingString,
-                          subTitle: enableDatingProfileToUseString,
-                          okHandler: () {
-                            Get.to(() => const UploadProfilePicture(
-                                isSettingProfile: true));
-                          },
-                          cancelHandler: () {});
-                    }
                   } else if (link.linkType == QuickLinkType.chatGPT) {
                     Get.to(() => const ChatGPT());
                   }

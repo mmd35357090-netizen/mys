@@ -1,7 +1,6 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_gallery.dart';
-import 'package:foap/screens/add_on/model/reel_music_model.dart';
 import 'club_model.dart';
 
 class PostModel {
@@ -23,7 +22,6 @@ class PostModel {
   List<String> tags = [];
   List<MentionedUsers> mentionedUsers = [];
 
-  ReelMusicModel? audio;
   ClubModel? club;
 
   String postTime = '';
@@ -77,8 +75,6 @@ class PostModel {
         // ? timeago.format(model.createDate!)
         ? model.createDate!.getTimeAgo
         : justNowString.tr;
-    model.audio =
-        json['audio'] == null ? null : ReelMusicModel.fromJson(json['audio']);
     model.club = json['clubDetail'] == null
         ? null
         : ClubModel.fromJson(json['clubDetail']);

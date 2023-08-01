@@ -1,7 +1,6 @@
 import 'package:fl_location/fl_location.dart';
 import 'package:get/get.dart';
 import '../model/location.dart';
-import '../util/app_config_constants.dart';
 
 class LocationManager extends GetxController {
   Rx<LocationModel?> currentPosition = Rx<LocationModel?>(null);
@@ -64,9 +63,7 @@ class LocationManager extends GetxController {
           latitude: location.latitude, longitude: location.longitude, name: '');
       locationCallback(currentPosition.value!);
 
-      print('found location: ${location.toJson().toString()}');
     }).onError((error, stackTrace) {
-      print('error: ${error.toString()}');
       // locationCallback(AppConfigConstants.defaultLocationForMap);
     });
   }

@@ -1,10 +1,9 @@
 import 'package:foap/apiHandler/apis/profile_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'dart:async';
-import 'package:foap/screens/add_on/model/verification_request_model.dart';
+import 'package:foap/model/verification_request_model.dart';
 import '../../apiHandler/apis/misc_api.dart';
 
 class RequestVerificationController extends GetxController {
@@ -61,7 +60,6 @@ class RequestVerificationController extends GetxController {
   getVerificationRequests() {
     ProfileApi.getVerificationRequestHistory(resultCallback: (result) {
       verificationRequests.value = result;
-      print('verificationRequests ${verificationRequests.length}');
       verificationRequests.refresh();
       update();
     });

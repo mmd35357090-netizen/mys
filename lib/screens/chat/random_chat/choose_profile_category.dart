@@ -1,6 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
-
 import '../../../controllers/profile/set_profile_category_controller.dart';
 import '../../../model/category_model.dart';
 import 'find_random_user.dart';
@@ -54,8 +52,8 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
           ),
           Expanded(
               child: Obx(() => ListView.separated(
-                  padding: const EdgeInsets.only(
-                      top: 20, bottom: 100, left: 16, right: 16),
+                  padding: EdgeInsets.only(
+                      top: 20, bottom: 100, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                   itemCount: _setProfileCategoryController.categories.length,
                   itemBuilder: (ctx, index) {
                     CategoryModel category =
@@ -82,7 +80,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
               text: skipString.tr,
               onPress: () {
                 Get.to(() => FindRandomUser(isCalling: widget.isCalling));
-              }).hP16,
+              }).hp(DesignConstants.horizontalPadding),
           const SizedBox(
             height: 20,
           ),

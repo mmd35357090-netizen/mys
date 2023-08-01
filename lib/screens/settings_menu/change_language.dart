@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
-import 'package:get/get.dart';
 
 class ChangeLanguage extends StatefulWidget {
   const ChangeLanguage({Key? key}) : super(key: key);
@@ -26,7 +25,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
         children: [
           backNavigationBar(
                title: changeLanguageString.tr),
-          divider().tP8,
+          const SizedBox(height: 8,),
           Expanded(
               child: GetBuilder<SettingsController>(
                   init: _settingsController,
@@ -51,7 +50,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                                     )
                                   : Container()
                             ],
-                          ).hP16.ripple(() {
+                          ).hp(DesignConstants.horizontalPadding).ripple(() {
                             // var locale = Locale(language['language_code']!,
                             //     language['country_code']!);
                             // context.setLocale(locale);

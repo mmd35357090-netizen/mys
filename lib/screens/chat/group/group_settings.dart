@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:get/get.dart';
+
 
 import '../../../components/actionSheets/action_sheet1.dart';
 import '../../../model/generic_item.dart';
@@ -25,7 +25,7 @@ class _GroupSettingsState extends State<GroupSettings> {
 
           backNavigationBar(
                title: groupSettingsString.tr),
-          divider().tP8,
+          const SizedBox(height: 8,),
           const SizedBox(
             height: 20,
           ),

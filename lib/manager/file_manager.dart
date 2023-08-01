@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
 import 'package:foap/components/custom_gallery_picker.dart';
 import 'package:foap/helper/enum.dart';
@@ -9,7 +8,6 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/chat_message_model.dart';
 import 'package:foap/model/chat_room_model.dart';
 import 'package:foap/screens/chat/media.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -178,11 +176,4 @@ class FileManager {
     }
   }
 
-  saveChatMediaImage({
-    required File image,
-    required String roomId,
-    required String localMessageId,
-  }) {
-    GallerySaver.saveImage(image.path, albumName: roomId).then((savedPath) {});
-  }
 }

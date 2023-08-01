@@ -1,11 +1,9 @@
 import 'package:flutter_svg/svg.dart';
-import 'package:foap/components/timer_widget.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
-import 'package:get/get.dart';
 import 'package:pip_view/pip_view.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../controllers/chat_and_call/agora_call_controller.dart';
 
@@ -23,17 +21,17 @@ class AcceptCallScreen extends StatefulWidget {
 
 class _AcceptCallScreenState extends State<AcceptCallScreen> {
   final AgoraCallController agoraCallController = Get.find();
-  final GlobalKey<TimerViewState> _timerKey = GlobalKey();
+  // final GlobalKey<TimerViewState> _timerKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    Wakelock.enable(); // Turn on wakelock feature till call is running
+    WakelockPlus.enable(); // Turn on wakelock feature till call is running
   }
 
   @override
   void dispose() {
-    Wakelock.disable(); // Turn off wakelock feature after call end
+    WakelockPlus.disable(); // Turn off wakelock feature after call end
     super.dispose();
   }
 
@@ -74,7 +72,7 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
               size: 25,
             ).p8.ripple(() {
               // Get.back();
-              PIPView.of(context)!.presentBelow(DashboardScreen());
+              PIPView.of(context)!.presentBelow(const DashboardScreen());
             }),
           ]),
         ),
@@ -158,7 +156,7 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
               height: 80,
               width: 80,
               child: const ThemeIconWidget(
-                ThemeIcon.closeFilled,
+                ThemeIcon.declineCall,
                 size: 30,
                 color: Colors.white,
               ).p16,

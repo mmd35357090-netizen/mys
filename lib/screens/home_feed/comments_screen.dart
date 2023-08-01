@@ -86,8 +86,8 @@ class CommentsScreenState extends State<CommentsScreen> {
                         init: _commentsController,
                         builder: (ctx) {
                           return ListView.separated(
-                            padding: const EdgeInsets.only(
-                                top: 20, left: 16, right: 16),
+                            padding:  EdgeInsets.only(
+                                top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                             itemCount: _commentsController.comments.length,
                             // reverse: true,
                             controller: _controller,
@@ -243,7 +243,7 @@ class CommentsScreenState extends State<CommentsScreen> {
         init: _commentsController,
         builder: (ctx) {
           return ListView.separated(
-              padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
+              padding:  EdgeInsets.only(top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
               itemCount: _commentsController.searchedUsers.length,
               itemBuilder: (BuildContext ctx, int index) {
                 return UserTile(
@@ -275,7 +275,7 @@ class CommentsScreenState extends State<CommentsScreen> {
         init: _commentsController,
         builder: (ctx) {
           return ListView.builder(
-            padding: const EdgeInsets.only(left: 16, right: 16),
+            padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
             itemCount: _commentsController.hashTags.length,
             itemBuilder: (BuildContext ctx, int index) {
               return HashTagTile(
