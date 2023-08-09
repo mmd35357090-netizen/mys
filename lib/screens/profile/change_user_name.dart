@@ -29,14 +29,13 @@ class _ChangeUserNameState extends State<ChangeUserName> {
             height: 50,
           ),
           profileScreensNavigationBar(
-
               title: changeUserNameString.tr,
               rightBtnTitle: doneString.tr,
               completion: () {
                 profileController.updateUserName(
-                    userName: userName.text,
-                    isSigningUp: false,
-                    );
+                  userName: userName.text,
+                  isSigningUp: false,
+                );
               }),
           const SizedBox(
             height: 20,
@@ -44,8 +43,7 @@ class _ChangeUserNameState extends State<ChangeUserName> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading6Text(userNameString.tr,
-                  weight: TextWeight.medium),
+              Heading6Text(userNameString.tr, weight: TextWeight.medium),
               Stack(
                 children: [
                   AppTextField(

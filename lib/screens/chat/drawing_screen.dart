@@ -73,6 +73,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
               controller: _drawingController,
               background: Container(
                   width: Get.width,
+                  height: Get.height,
                   // height: double.infinity,
                   color: _drawingBoardController
                       .selectedBackgroundColor.value),

@@ -85,8 +85,8 @@ Future<void> main() async {
 
   Get.put(PlayerManager());
   Get.put(UsersController());
-  Get.lazyPut(() => ClubsController());
-  Get.lazyPut(() => GiftController());
+  Get.put(ClubsController());
+  Get.put(GiftController());
   Get.put(MiscController());
   Get.put(DashboardController());
   Get.put(UserProfileManager());

@@ -62,7 +62,9 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                 size: 27,
               ).ripple(() {
                 // create highlights
-                Get.to(() => const CreateHighlight());
+                Get.to(() => CreateHighlight(
+                      highlightsController: _highlightsController,
+                    ));
               }),
             ],
           ).hp(20),

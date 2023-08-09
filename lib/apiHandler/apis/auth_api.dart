@@ -177,14 +177,14 @@ class AuthApi {
   static updateFcmToken() async {
     String? fcmToken = await SharedPrefs().getFCMToken();
     String? voipToken = await SharedPrefs().getVoipToken();
-    EasyLoading.show(status: loadingString.tr);
+    // EasyLoading.show(status: loadingString.tr);
 
     ApiWrapper().postApi(url: NetworkConstantsUtil.updatedDeviceToken, param: {
       "device_type": Platform.isAndroid ? '1' : '2',
       "device_token": fcmToken ?? '',
       "device_token_voip_ios": voipToken ?? ''
     }).then((response) {
-      EasyLoading.dismiss();
+      // EasyLoading.dismiss();
 
       if (response?.success == true) {
         // successCallback();

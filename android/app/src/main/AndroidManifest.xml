@@ -1,10 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.foap">
 
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:label="Socialified"
         android:requestLegacyExternalStorage="true"
+        tools:replace="android:label"
         >
         <activity
             android:name=".MainActivity"

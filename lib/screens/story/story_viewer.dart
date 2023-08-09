@@ -47,9 +47,9 @@ class _StoryViewerState extends State<StoryViewer> {
                     ? StoryItem.pageVideo(
                         media.video!,
                         controller: controller,
-                        duration: Duration(
-                            seconds: int.parse(settingsController
-                                .setting.value!.maximumVideoDurationAllowed!)),
+                        // duration: Duration(
+                        //     seconds: int.parse(settingsController
+                        //         .setting.value!.maximumVideoDurationAllowed!)),
                         key: Key(media.id.toString()),
                       )
                     : StoryItem.pageImage(

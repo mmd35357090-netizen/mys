@@ -224,8 +224,8 @@ class ProfileController extends GetxController {
                     message: userNameIsUpdatedString.tr, isSuccess: true);
                 getMyProfile();
                 if (isSigningUp == true) {
-                  Get.to(() => const SetProfileCategoryType(
-                        isFromSignup: false,
+                  Get.to(() => SetProfileCategoryType(
+                        isFromSignup: isSigningUp,
                       ));
                 } else {
                   Future.delayed(const Duration(milliseconds: 1200), () {
@@ -252,14 +252,9 @@ class ProfileController extends GetxController {
               message: categoryTypeUpdatedString.tr, isSuccess: true);
           getMyProfile();
           if (isSigningUp == true) {
-            if (isLoginFirstTime) {
-              Get.to(() => const SetUserName())!
-                  .then((value) {});
-            } else {
-              isLoginFirstTime = false;
-              getIt<LocationManager>().postLocation();
-              Get.offAll(() => const DashboardScreen());
-            }
+            isLoginFirstTime = false;
+            getIt<LocationManager>().postLocation();
+            Get.offAll(() => const DashboardScreen());
           } else {
             Future.delayed(const Duration(milliseconds: 1200), () {
               Get.back();
