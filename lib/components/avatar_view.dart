@@ -113,7 +113,7 @@ class UserAvatarView extends StatelessWidget {
     required double size,
     double? radius,
   }) {
-    return user.picture != null
+    return user.picture != null && user.picture != 'null'
         ? CachedNetworkImage(
             imageUrl: user.picture!,
             fit: BoxFit.cover,

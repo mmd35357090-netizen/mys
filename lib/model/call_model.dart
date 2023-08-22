@@ -181,28 +181,3 @@ class BattleDetail {
   }
 }
 
-// class BattleResultDetail {
-//   final List<LiveCallHostUser> users;
-//   final List<ReceivedGiftModel> gifts;
-//
-//   BattleResultDetail({
-//     required this.users,
-//     required this.gifts,
-//   });
-//
-//   factory BattleResultDetail.fromJson(Map<String, dynamic> json) =>
-//       BattleResultDetail(
-//         users: json["battleUser"] == null
-//             ? []
-//             : (json["battleUser"] as List)
-//                 .map((e) => LiveCallHostUser.fromJson(e))
-//                 .toList(),
-//         gifts: json["gift"] == null
-//             ? []
-//             : (json["gift"]['items'] as List)
-//                 .map((e) => ReceivedGiftModel.fromJson(e))
-//                 .toList(),
-//       );
-//
-//
-// }

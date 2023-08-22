@@ -54,16 +54,19 @@ class PostCardController extends GetxController {
 
   downloadAndShareMedia(PostModel post) async {
     EasyLoading.show(status: loadingString.tr);
+    if (post.gallery.isNotEmpty) {
+      final response = await http.get(Uri.parse(post.gallery.first.filePath));
 
-    final response = await http.get(Uri.parse(post.gallery.first.filePath));
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = post.gallery.first.filePath.split('/').last;
 
-    final directory = await getApplicationDocumentsDirectory();
-    final fileName = post.gallery.first.filePath.split('/').last;
+      final file = File('${directory.path}/$fileName');
+      await file.writeAsBytes(response.bodyBytes);
 
-    final file = File('${directory.path}/$fileName');
-    await file.writeAsBytes(response.bodyBytes);
-
-    EasyLoading.dismiss();
-    Share.shareXFiles([XFile(file.path)], text: post.title);
+      EasyLoading.dismiss();
+      Share.shareXFiles([XFile(file.path)], text: post.title);
+    } else {
+      Share.share(post.title);
+    }
   }
 }

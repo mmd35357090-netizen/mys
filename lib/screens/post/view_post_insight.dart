@@ -19,7 +19,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
   @override
   void initState() {
     // _postController.viewInsight(widget.post.id);
-    _postController.viewInsight(1);
+    _postController.viewInsight(widget.post.id);
 
     super.initState();
   }

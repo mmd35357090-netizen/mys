@@ -47,17 +47,17 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
                     SizedBox(
                       height: Get.height * 0.1,
                     ),
-                    Obx(() => AppMobileTextField(
-                          controller: phone,
-                          // showDivider: true,
-                          hintText: phoneNumberString.tr,
-                          // cornerRadius: 5,
-                          // phoneCodeText: controller.phoneCountryCode.value,
-                          onChanged: (String value) {},
-                          countryCodeValueChanged: (String value) {
-                            controller.phoneCodeSelected(value);
-                          },
-                        )),
+                    AppMobileTextField(
+                      controller: phone,
+                      // showDivider: true,
+                      hintText: phoneNumberString.tr,
+                      // cornerRadius: 5,
+                      // phoneCodeText: controller.phoneCountryCode.value,
+                      onChanged: (String value) {},
+                      countryCodeValueChanged: (String value) {
+                        controller.phoneCodeSelected(value);
+                      },
+                    ),
 
                     SizedBox(
                       height: Get.height * 0.04,

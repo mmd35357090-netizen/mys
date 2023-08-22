@@ -31,7 +31,9 @@ class NotificationManager {
 
   NotificationManager._internal();
 
-  initializeFCM() {
+  initializeFCM() async{
+    await FirebaseMessaging.instance.requestPermission();
+
     FirebaseMessaging.onMessage.listen(
       (message) async {
         NotificationManager().parseNotificationMessage(message.data);

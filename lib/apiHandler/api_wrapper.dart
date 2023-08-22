@@ -25,12 +25,18 @@ class ApiResponse {
     model.success = json['status'] == 200;
     model.data = json['data'];
 
-    if (model.success != true) {
-      Map errors = model.data['errors'];
-      List errorsArr = errors[errors.keys.first] ?? [];
-      if (errorsArr.isNotEmpty) {
-        String error = errorsArr.first ?? errorMessageString.tr;
-        model.message = error;
+    if (model.success != true && model.data != null  && model.message?.isEmpty == true) {
+      var errors = model.data['errors'];
+      if (errors != null) {
+        var messages = model.data['errors']['message'];
+        if (messages != null) {
+          model.message = (messages as List).first;
+        } else {
+          if (model.data['errors'] is Map) {
+            List errors = (model.data['errors'] as Map).values.first;
+            model.message = errors.first;
+          }
+        }
       }
     }
 

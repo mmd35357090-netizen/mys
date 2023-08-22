@@ -85,11 +85,12 @@ Future<void> main() async {
 
   Get.put(PlayerManager());
   Get.put(UsersController());
-  Get.put(ClubsController());
   Get.put(GiftController());
   Get.put(MiscController());
   Get.put(DashboardController());
   Get.put(UserProfileManager());
+  Get.put(ClubsController());
+
   Get.put(PlayerManager());
   Get.put(SettingsController());
   Get.put(SubscriptionPackageController());

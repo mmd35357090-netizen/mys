@@ -1,5 +1,9 @@
+import '../helper/color_extension.dart';
 import '../helper/imports/common_import.dart';
+import '../screens/settings_menu/settings_controller.dart';
 import 'constant_util.dart';
+
+final SettingsController settingsController = Get.find();
 
 class AppConfigConstants {
   // Name of app
@@ -15,7 +19,7 @@ class AppConfigConstants {
       'https://product.fwdtechnology.co/socialified/api/web/v1/';
 
   // Socket api url
-  static const socketApiBaseUrl = "http://product.fwdtechnology.co:4000/";
+  static const socketApiBaseUrl = "https://product.fwdtechnology.co:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';
@@ -40,16 +44,21 @@ class DesignConstants {
 }
 
 class AppColorConstants {
-  static Color themeColor = const Color(0xff367C88);
+  static Color themeColor = settingsController.setting.value == null
+      ? Colors.blue
+      : HexColor.fromHex(settingsController.setting.value!.themeColor!);
 
-  static Color get backgroundColor =>
-      isDarkMode ? const Color(0xFF1A1A1A) : Colors.white;
+  static Color get backgroundColor => isDarkMode
+      ? HexColor.fromHex(
+          settingsController.setting.value?.bgColorForDarkTheme ?? '000000')
+      : HexColor.fromHex(
+          settingsController.setting.value?.bgColorForLightTheme ?? 'FFFFFF');
 
   static Color get cardColor =>
       isDarkMode ? const Color(0xFF424242) : const Color(0xFFF9F9F9);
 
   static Color get dividerColor =>
-      isDarkMode ? Colors.white.withOpacity(0.2) : Colors.grey.withOpacity(0.2);
+      isDarkMode ? Colors.white.withOpacity(0.7) : Colors.grey.withOpacity(0.7);
 
   static Color get borderColor =>
       isDarkMode ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.2);
@@ -62,7 +71,7 @@ class AppColorConstants {
       : Colors.black.withOpacity(0.2);
 
   static Color get inputFieldBackgroundColor =>
-      isDarkMode ? const Color(0xFF212121) : const Color(0xFFdfe6e9);
+      isDarkMode ? const Color(0xFF212121) : const Color(0xFF212121);
 
   static Color get iconColor =>
       isDarkMode ? Colors.white : const Color(0xFF212121);
@@ -79,32 +88,111 @@ class AppColorConstants {
 
   // text colors
 
-  static Color get grayscale900 =>
-      isDarkMode ? const Color(0xFFFAFAFA) : const Color(0xFF212121);
+  static Color get grayscale900 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white
+          : HexColor.fromHex(
+              settingsController.setting.value!.textColorForDarkTheme!)
+      : settingsController.setting.value == null
+          ? Colors.black
+          : HexColor.fromHex(
+              settingsController.setting.value!.textColorForLightTheme!);
 
-  static Color get grayscale800 =>
-      isDarkMode ? const Color(0xFFF5F5F5) : const Color(0xFF424242);
+  static Color get grayscale800 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.8)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.8)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.8)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.8);
 
-  static Color get grayscale700 =>
-      isDarkMode ? const Color(0xFFEEEEEE) : const Color(0xFF616161);
+  static Color get grayscale700 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.7)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.7)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.7)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.7);
 
-  static Color get grayscale600 =>
-      isDarkMode ? const Color(0xFFE0E0E0) : const Color(0xFF757575);
+  static Color get grayscale600 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.6)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.6)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.6)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.6);
 
-  static Color get grayscale500 =>
-      isDarkMode ? const Color(0xFFBDBDBD) : const Color(0xFF9E9E9E);
+  static Color get grayscale500 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.5)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.5)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.5)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.5);
 
-  static Color get grayscale400 =>
-      isDarkMode ? const Color(0xFF9E9E9E) : const Color(0xFFBDBDBD);
+  static Color get grayscale400 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.4)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.4)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.4)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.4);
 
-  static Color get grayscale300 =>
-      isDarkMode ? const Color(0xFF757575) : const Color(0xFFE0E0E0);
+  static Color get grayscale300 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.3)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.3)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.3)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.3);
 
-  static Color get grayscale200 =>
-      isDarkMode ? const Color(0xFF616161) : const Color(0xFFEEEEEE);
+  static Color get grayscale200 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.2)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.2)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.2)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.2);
 
-  static Color get grayscale100 =>
-      isDarkMode ? const Color(0xFF424242) : const Color(0xFFF5F5F5);
+  static Color get grayscale100 => isDarkMode
+      ? settingsController.setting.value == null
+          ? Colors.white.withOpacity(0.1)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForDarkTheme!)
+              .withOpacity(0.1)
+      : settingsController.setting.value == null
+          ? Colors.black.withOpacity(0.1)
+          : HexColor.fromHex(
+                  settingsController.setting.value!.textColorForLightTheme!)
+              .withOpacity(0.1);
 }
 
 class DatingProfileConstants {
