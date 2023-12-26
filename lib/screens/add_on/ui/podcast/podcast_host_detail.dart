@@ -92,15 +92,15 @@ class _PodcastHostDetailState extends State<PodcastHostDetail> {
                                   trimExpandedText: '    ${showLessString.tr}',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: AppColorConstants.grayscale900,
+                                    color: AppColorConstants.mainTextColor,
                                   ),
                                   moreStyle: TextStyle(
                                       fontSize: 14,
-                                      color: AppColorConstants.grayscale900,
+                                      color: AppColorConstants.mainTextColor,
                                       fontWeight: FontWeight.bold),
                                   lessStyle: TextStyle(
                                       fontSize: 14,
-                                      color: AppColorConstants.grayscale900,
+                                      color: AppColorConstants.mainTextColor,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Heading6Text(

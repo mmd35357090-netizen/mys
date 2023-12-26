@@ -130,17 +130,19 @@ class CompetitionController extends GetxController {
 
   submitMedia(CompetitionModel competition) async {
     if (competition.competitionMediaType == 1) {
-      Get.to(() => SelectMedia(
-            // postType: PostType.competition,
-            mediaType: PostMediaType.photo,
-            competitionId: competition.id,
-          ));
+      Get.to(() => AddPostScreen(
+        postType: PostType.competition,
+        // mediaType: PostMediaType.photo,
+        competitionId: competition.id,
+      ));
     } else {
-      Get.to(() => SelectMedia(
-            // postType: PostType.competition,
-            mediaType: PostMediaType.video,
-            competitionId: competition.id,
-          ));
+      Get.to(() => AddPostScreen(
+        postType: PostType.competition,
+
+        // mediaType: PostMediaType.video,
+        competitionId: competition.id,
+      ));
     }
   }
+
 }

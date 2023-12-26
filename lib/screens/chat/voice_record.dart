@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 export 'package:path_provider/path_provider.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'dart:typed_data';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../util/constant_util.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:record/record.dart';
 
 class VoiceRecord extends StatefulWidget {
   final Function(Media) recordingCallback;
@@ -21,7 +21,9 @@ class VoiceRecord extends StatefulWidget {
 class _VoiceRecordState extends State<VoiceRecord> {
   bool isRecorded = false;
   String? recordingPath;
-  final FlutterSoundRecorder recorder = FlutterSoundRecorder();
+
+  // final FlutterSoundRecorder recorder = FlutterSoundRecorder();
+  final record = Record();
 
   int _seconds = 0;
   late Timer _timer;
@@ -38,23 +40,46 @@ class _VoiceRecordState extends State<VoiceRecord> {
 
   startRecording() async {
     Directory tempDir = await getTemporaryDirectory();
-    recordingPath = '${tempDir.path}/${randomId()}.wav';
+    recordingPath = '${tempDir.path}/${randomId()}.m4a';
     File audioFile = File(recordingPath!);
     if (!audioFile.existsSync()) {
       audioFile.createSync();
     }
 
-    Map<Permission, PermissionStatus> statuses =
-        await [Permission.microphone].request();
+    // Map<Permission, PermissionStatus> statuses =
+    //     await [Permission.microphone].request();
 
-    if (statuses[Permission.microphone] == PermissionStatus.granted) {
-      await recorder.openRecorder();
-      await recorder.startRecorder(toFile: recordingPath);
+    if (await record.hasPermission()) {
+      await record.start(
+        path: recordingPath,
+        encoder: AudioEncoder.aacLc, // by default
+        bitRate: 128000, // by default
+        // sampleRate: 44100, // by default
+      );
       _startTimer();
     } else {
       AppUtil.showToast(
           message: 'Recording permissions are not provided', isSuccess: false);
     }
+
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+      avAudioSessionCategoryOptions:
+      AVAudioSessionCategoryOptions.allowBluetooth |
+      AVAudioSessionCategoryOptions.defaultToSpeaker,
+      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionRouteSharingPolicy:
+      AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+      androidAudioAttributes: const AndroidAudioAttributes(
+        contentType: AndroidAudioContentType.speech,
+        flags: AndroidAudioFlags.none,
+        usage: AndroidAudioUsage.voiceCommunication,
+      ),
+      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+      androidWillPauseWhenDucked: true,
+    ));
   }
 
   void _startTimer() {
@@ -70,11 +95,14 @@ class _VoiceRecordState extends State<VoiceRecord> {
   }
 
   @override
-  void dispose() {
-    recorder.stopRecorder();
-    setState(() {
-      _seconds = 0;
-    });
+  void dispose() async {
+    bool isRecording = await record.isRecording();
+    if (isRecording) {
+      await record.stop();
+    }
+    // setState(() {
+    //   _seconds = 0;
+    // });
     super.dispose();
   }
 
@@ -86,7 +114,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
         children: [
           // const Spacer(),
           Container(
-            height: 200,
+            height: 150,
             color: AppColorConstants.backgroundColor,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -168,8 +196,10 @@ class _VoiceRecordState extends State<VoiceRecord> {
   }
 
   stopRecording() async {
-    await recorder.stopRecorder();
-    await recorder.closeRecorder();
+    // await recorder.stopRecorder();
+    // await recorder.closeRecorder();
+    await record.stop();
+
     _stopTimer();
   }
 
@@ -183,9 +213,9 @@ class _VoiceRecordState extends State<VoiceRecord> {
     if (recordingPath != null) {
       Media media = Media(
         file: File(recordingPath!),
-        fileUrl: recordingPath!,
+        filePath: recordingPath!,
         fileSize: data.length,
-        mediaByte: data,
+        mainFileBytes: data,
         id: randomId(),
         creationTime: DateTime.now(),
         mediaType: GalleryMediaType.audio,

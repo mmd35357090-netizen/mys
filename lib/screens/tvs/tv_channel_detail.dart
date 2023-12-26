@@ -144,17 +144,17 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                           fontSize: FontSizes.b2,
                                           fontWeight: TextWeight.regular,
                                           color:
-                                              AppColorConstants.grayscale900),
+                                              AppColorConstants.mainTextColor),
                                       moreStyle: TextStyle(
                                           fontSize: FontSizes.b2,
                                           fontWeight: TextWeight.bold,
                                           color:
-                                              AppColorConstants.grayscale900),
+                                              AppColorConstants.mainTextColor),
                                       lessStyle: TextStyle(
                                           fontSize: FontSizes.b2,
                                           fontWeight: TextWeight.bold,
                                           color:
-                                              AppColorConstants.grayscale900)),
+                                              AppColorConstants.mainTextColor)),
                                   Heading5Text(
                                           '${moreFromString.tr} ${widget.tvModel.name}',
                                           weight: TextWeight.bold,

@@ -11,9 +11,11 @@ enum SearchFrom {
   phone,
 }
 
-enum PostSource { posts, mentions }
+enum PostSource { posts, mentions, videos, saved }
 
-enum PostType { basic, competition, club, reel }
+enum PostingStatus { none, posting, posted, error }
+
+enum PostType { basic, competition, club, reel, reshare }
 
 enum PostContentType { text, media, location }
 
@@ -44,10 +46,19 @@ enum MessageContentType {
   profile,
   group,
   groupAction,
-  gift
+  gift,
+  textReplyOnStory,
+  reactedOnStory,
 }
 
-enum UploadMediaType { post, storyOrHighlights, chat, club, verification }
+enum UploadMediaType {
+  shop,
+  storyOrHighlights,
+  chat,
+  club,
+  verification,
+  uploadResume,
+}
 
 ///Media picker selection type
 enum GalleryMediaType {
@@ -89,13 +100,14 @@ enum AgoraCallType {
 
 enum PaymentGateway {
   creditCard,
-  applePay,
+  // applePay,
   paypal,
   razorpay,
   wallet,
   stripe,
-  googlePay,
-  inAppPurchase
+  // googlePay,
+  inAppPurchase,
+  // flutterWave
 }
 
 enum BookingStatus { confirmed, cancelled }
@@ -114,13 +126,60 @@ enum NotificationType {
   like,
   comment,
   follow,
+  followRequest,
   gift,
   clubInvitation,
   competitionAdded,
   relationInvite,
-  none
+  none,
+  verification,
+  supportRequest
 }
 
 enum CommentType { text, image, video, gif }
+
 enum LiveBattleResultType { winner, draw }
+
 enum BattleStatus { none, accepted, started, completed }
+
+enum OfferSource { normal, fav }
+
+enum GoalType { profile, website, message }
+
+enum ItemViewSource { normal, promotion }
+
+enum UserViewSourceType { post, reel, story }
+
+enum TransactionType {
+  credit,
+  debit,
+}
+
+enum PaymentType {
+  withdrawal,
+  gift,
+  redeemCoin,
+}
+
+enum PaymentMode {
+  inAppPurchase,
+  paypal,
+  wallet,
+  stripe,
+  razorpay,
+  flutterWave
+}
+
+enum DatingActions {
+  liked,
+  rejected,
+  undoLiked,
+}
+
+enum FollowingStatus {
+  notFollowing,
+  requested,
+  following,
+}
+
+enum PlayStateState { paused, playing, loading, idle }

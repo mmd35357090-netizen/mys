@@ -1,6 +1,7 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_gallery.dart';
+import '../screens/add_on/model/reel_music_model.dart';
 import 'club_model.dart';
 
 class PostModel {
@@ -16,27 +17,31 @@ class PostModel {
   int totalShare = 0;
   int isWinning = 0;
   bool isLike = false;
+  bool isSaved = false;
+  bool commentsEnabled = true;
+  int type = 1;
+
   bool isReported = false;
+  bool isSharePost = false;
 
   List<PostGallery> gallery = [];
   List<String> tags = [];
   List<MentionedUsers> mentionedUsers = [];
 
+  ReelMusicModel? audio;
   ClubModel? club;
 
   String postTime = '';
   DateTime? createDate;
+  PostModel? sharedPost;
 
   PostModel();
-
-  // bool isVideoPost(){
-  //   return gallery.first.mediaType == 2;
-  // }
 
   factory PostModel.fromJson(dynamic json) {
     PostModel model = PostModel();
     model.id = json['id'];
     model.title = json['title'] ?? 'No title';
+    model.type = json['type'];
 
     model.user =
         json['user'] == null ? UserModel() : UserModel.fromJson(json['user']);
@@ -49,8 +54,10 @@ class PostModel {
 
     model.isLike = json['is_like'] == 1;
     model.isReported = json['is_reported'] == 1;
+    model.isSharePost = json['is_share_post'] == 1;
+    model.isSaved = json['isFavorite'] == 1;
+    model.commentsEnabled = json['is_comment_enable'] == 1;
 
-    // model.imageUrl = json['imageUrl'];
     model.tags = [];
     if (json['hashtags'] != null && json['hashtags'].length > 0) {
       model.tags = List<String>.from(json['hashtags'].map((x) => '#$x'));
@@ -72,27 +79,17 @@ class PostModel {
             .toUtc();
 
     model.postTime = model.createDate != null
-        // ? timeago.format(model.createDate!)
         ? model.createDate!.getTimeAgo
         : justNowString.tr;
+    model.audio =
+        json['audio'] == null ? null : ReelMusicModel.fromJson(json['audio']);
     model.club = json['clubDetail'] == null
         ? null
         : ClubModel.fromJson(json['clubDetail']);
-    // final days = model.createDate!.difference(DateTime.now()).inDays;
-    // if (days == 0) {
-    //   model.postTime = ApplicationLocalizations.of(
-    //           NavigationService.instance.getCurrentStateContext())
-    //       .translate('today_text');
-    // } else if (days == 1) {
-    //   model.postTime = ApplicationLocalizations.of(
-    //           NavigationService.instance.getCurrentStateContext())
-    //       .translate('yesterday_text');
-    // } else {
-    //   String dateString = DateFormat('MMM dd, yyyy').format(model.createDate!);
-    //   String timeString = DateFormat('hh:ss a').format(model.createDate!);
-    //   model.postTime =
-    //       '$dateString ${ApplicationLocalizations.of(NavigationService.instance.getCurrentStateContext()).translate('at_text')} $timeString';
-    // }
+    model.sharedPost = json['originPost'] == null
+        ? null
+        : PostModel.fromJson(json['originPost']);
+
     return model;
   }
 
@@ -104,6 +101,10 @@ class PostModel {
     final UserProfileManager userProfileManager = Get.find();
 
     return user.id == userProfileManager.user.value!.id;
+  }
+
+  bool get isReel {
+    return type == 4;
   }
 }
 
@@ -124,6 +125,8 @@ class MentionedUsers {
 class PostInsight {
   int totalView;
   int totalImpression;
+  int totalShare;
+
   int viewFromFollowers;
   int viewFromNonFollowers;
   int viewFromMale;
@@ -139,6 +142,7 @@ class PostInsight {
   PostInsight({
     required this.totalView,
     required this.totalImpression,
+    required this.totalShare,
     required this.viewFromFollowers,
     required this.viewFromNonFollowers,
     required this.viewFromMale,
@@ -155,6 +159,7 @@ class PostInsight {
   factory PostInsight.fromJson(dynamic json) => PostInsight(
       totalView: json['total_view'],
       totalImpression: json['total_impression'],
+      totalShare: json['total_share'] ?? 0,
       viewFromFollowers: json['follower'],
       viewFromNonFollowers: json['nonfollower'],
       viewFromMale: json['male'],

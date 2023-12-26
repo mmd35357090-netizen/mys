@@ -63,4 +63,11 @@ class HighlightsApi {
     await ApiWrapper().postApi(url: url, param: param).then((result) {});
     return;
   }
+
+  static Future<void> deleteHighlight(int id) async {
+    var url = '${NetworkConstantsUtil.deleteHighlight}$id';
+
+    await ApiWrapper().deleteApi(url: url).then((result) {});
+    return;
+  }
 }

@@ -9,51 +9,60 @@ class EnterGroupInfoController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
 
   RxString groupImagePath = ''.obs;
+  RxBool isPublicGroup = false.obs;
 
   groupImageSelected(String imagePath) {
     groupImagePath.value = imagePath;
     groupImagePath.refresh();
   }
 
+  togglePublicGroup() {
+    isPublicGroup.value = !isPublicGroup.value;
+    update();
+  }
+
   createGroup(
       {required String name,
       required String? description,
       required String image,
-      required List<UserModel> users}) {
+        required bool isPublicGroup,
+
+        required List<UserModel> users}) {
     EasyLoading.show(
-        status: loadingString.tr,
-        maskType: EasyLoadingMaskType.black);
+        status: loadingString.tr, maskType: EasyLoadingMaskType.black);
 
     if (image.isEmpty) {
-      publishGroup(name: name, description: description, users: users);
+      publishGroup(name: name,isPublicGroup:isPublicGroup, description: description, users: users);
     } else {
       // EasyLoading.show(status: loadingString.tr);
-      MiscApi.uploadFile(image, type: UploadMediaType.chat,
-          resultCallback: (filename, filepath) {
+      MiscApi.uploadFile(image,
+          mediaType: GalleryMediaType.photo,
+          type: UploadMediaType.chat, resultCallback: (filename, filepath) {
         publishGroup(
             name: name,
             image: filename,
+            isPublicGroup:isPublicGroup,
             description: description,
             users: users);
       });
     }
   }
 
-  updateGroup(
-      {required ChatRoomModel group,
-      required String name,
-      required String? description,
-      required String image,
-     }) {
+  updateGroup({
+    required ChatRoomModel group,
+    required String name,
+    required String? description,
+    required String image,
+  }) {
     EasyLoading.show(
-        status: loadingString.tr,
-        maskType: EasyLoadingMaskType.black);
+        status: loadingString.tr, maskType: EasyLoadingMaskType.black);
 
     if (image.isEmpty) {
       publishUpdatedGroup(group: group, name: name, description: description);
     } else {
-      MiscApi.uploadFile(image, type: UploadMediaType.chat,
-          resultCallback: (filename, filepath) {
+      MiscApi.uploadFile(image,
+          mediaType: GalleryMediaType.photo,
+          type: UploadMediaType.chat, resultCallback: (filename, filepath) {
         publishUpdatedGroup(
           group: group,
           name: name,
@@ -77,11 +86,14 @@ class EnterGroupInfoController extends GetxController {
   publishGroup(
       {required String name,
       required String? description,
-      String? image,
+        required bool isPublicGroup,
+
+        String? image,
       required List<UserModel> users}) {
     ChatApi.createGroupChatRoom(
         image: image,
         description: description,
+        isPublicGroup:isPublicGroup,
         title: name,
         resultCallback: (roomId) {
           String allUsersIds = users.map((e) => e.id.toString()).join(',');
@@ -99,6 +111,7 @@ class EnterGroupInfoController extends GetxController {
             await getIt<DBManager>().saveRooms([result]);
 
             _chatHistoryController.getChatRooms();
+            _chatHistoryController.getPublicChatRooms(() {});
           });
         });
   }

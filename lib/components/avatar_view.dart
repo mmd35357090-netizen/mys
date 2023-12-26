@@ -132,7 +132,7 @@ class UserAvatarView extends StatelessWidget {
                 )),
           ).borderWithRadius(
             value: hideBorder ? 0 : 1,
-            radius: size / 3,
+            radius: 100,
             color: AppColorConstants.themeColor)
         : SizedBox(
             height: double.infinity,
@@ -145,7 +145,7 @@ class UserAvatarView extends StatelessWidget {
             ),
           ).borderWithRadius(
             value: hideBorder ? 0 : 1,
-            radius: size / 3,
+            radius: 100,
             color: AppColorConstants.themeColor);
   }
 

@@ -1,5 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/post/view_post_insight.dart';
 import '../../components/post_card.dart';
 import '../../controllers/post/single_post_detail_controller.dart';
 
@@ -34,8 +33,10 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar( title: postString.tr),
-          const SizedBox(height: 8,),
+          backNavigationBar(title: postString.tr),
+          const SizedBox(
+            height: 8,
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -54,12 +55,6 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
                     : singlePostDetailController.isLoading == false
                         ? PostCard(
                             model: singlePostDetailController.post.value!,
-
-                            viewInsightHandler: () {
-                              Get.to(() => ViewPostInsights(
-                                  post:
-                                      singlePostDetailController.post.value!));
-                            },
                             removePostHandler: () {
                               Get.back();
                             },

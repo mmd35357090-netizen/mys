@@ -2,6 +2,7 @@
 import 'package:foap/apiHandler/api_wrapper.dart';
 import '../../helper/imports/common_import.dart';
 import '../../model/api_meta_data.dart';
+import '../../model/search_model.dart';
 
 class UsersApi {
   static getSuggestedUsers(
@@ -20,24 +21,21 @@ class UsersApi {
   }
 
   static searchUsers(
-      {required int isExactMatch,
-      SearchFrom? searchFrom,
-      required String searchText,
-      required int page,
-      required Function(List<UserModel>, APIMetaData) resultCallback}) {
+      {required UserSearchModel searchModel,
+        required int page,
+        required Function(List<UserModel>, APIMetaData) resultCallback}) async {
     var url = NetworkConstantsUtil.findFriends;
     //searchFrom  ----- 1=username,2=email,3=phone
-    String searchFromValue = searchFrom == null
+    String searchFromValue = searchModel.searchFrom == null
         ? ''
-        : searchFrom == SearchFrom.username
-            ? '1'
-            : searchFrom == SearchFrom.email
-                ? '2'
-                : '3';
+        : searchModel.searchFrom == SearchFrom.username
+        ? '1'
+        : searchModel.searchFrom == SearchFrom.email
+        ? '2'
+        : '3';
     url =
-        '${url}searchText=$searchText&searchFrom=$searchFromValue&isExactMatch=$isExactMatch&page=$page';
-
-    ApiWrapper().getApi(url: url).then((result) {
+    '${url}searchText=${searchModel.searchText ?? ''}&searchFrom=$searchFromValue&isExactMatch=${searchModel.isExactMatch ?? ''}&is_chat_user_online=${searchModel.isOnline == 1 ? '1' : ''}&page=$page';
+    await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var topUsers = result!.data['user']['items'];
         resultCallback(
@@ -70,14 +68,16 @@ class UsersApi {
     });
   }
 
-  static Future<void> followUnfollowUser(
-      {required bool isFollowing, required int userId}) async {
+  static Future<void> followUnfollowUser({required bool isFollowing,
+    required UserModel user}) async {
     var url = (isFollowing
-        ? NetworkConstantsUtil.followUser
+        ? user.isPrivate
+        ? NetworkConstantsUtil.followRequest
+        : NetworkConstantsUtil.followUser
         : NetworkConstantsUtil.unfollowUser);
 
     await ApiWrapper().postApi(url: url, param: {
-      "user_id": userId.toString(),
+      "user_id": user.id.toString(),
     }).then((result) {
       if (result?.success == true) {
         return;

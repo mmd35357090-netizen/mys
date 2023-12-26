@@ -31,7 +31,6 @@ class _FaqListState extends State<FaqList> {
       body: Column(
         children: [
           backNavigationBar(title: faqString.tr),
-          divider().tP8,
           Expanded(
               child: Obx(
             () => ListView.builder(

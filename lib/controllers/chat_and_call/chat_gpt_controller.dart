@@ -62,7 +62,7 @@ class ChatGPTController extends GetxController {
           "Authorization": "Bearer ${_settingsController.setting.value!.chatGPTKey}",
           'Content-Type': 'application/json'
         }).then((http.Response response) async {
-      dynamic data = _decoder.convert(response.body);
+      dynamic data = _decoder.convert(utf8.decode(response.bodyBytes));
       if (data['status'] == 401 && data['data'] == null) {
       } else {
         ChatGPTApiResponse response = ChatGPTApiResponse.fromJson(data);

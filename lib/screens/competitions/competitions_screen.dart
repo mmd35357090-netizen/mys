@@ -54,7 +54,7 @@ class CompetitionsState extends State<CompetitionsScreen> {
           divider().vP8,
           TabBar(
             labelColor: AppColorConstants.themeColor,
-            unselectedLabelColor: AppColorConstants.grayscale900,
+            unselectedLabelColor: AppColorConstants.mainTextColor,
             indicatorColor: AppColorConstants.themeColor,
             indicatorWeight: 2,
             unselectedLabelStyle: TextStyle(

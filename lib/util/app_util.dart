@@ -1,6 +1,5 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import '../components/timer_view.dart';
 
 class AppUtil {
@@ -11,11 +10,12 @@ class AppUtil {
         backgroundColor: isSuccess == true
             ? AppColorConstants.themeColor.darken()
             : AppColorConstants.red.lighten(),
-        icon: Icon(Icons.error, color: AppColorConstants.iconColor));
+        icon: Icon(isSuccess ? Icons.done_all : Icons.error,
+            color: isSuccess ? Colors.white : AppColorConstants.red));
   }
 
-  static void hideKeyboard(BuildContext context) {
-    FocusScope.of(context).requestFocus(FocusNode());
+  static void hideKeyboard() {
+    FocusScope.of(Get.context!).requestFocus(FocusNode());
   }
 
   static Widget addProgressIndicator({double? size}) {
@@ -163,10 +163,10 @@ class AppUtil {
                   children: [
                     BodyLargeText(
                       okString,
-                      color: AppColorConstants.grayscale100,
+                      color: AppColorConstants.subHeadingTextColor,
                     )
                         .makeChip(
-                            backGroundColor: AppColorConstants.grayscale900)
+                            backGroundColor: AppColorConstants.mainTextColor)
                         .ripple(() {
                       Get.back(closeOverlays: true);
                       okHandler();
@@ -258,10 +258,10 @@ class AppUtil {
                   children: [
                     BodyLargeText(
                       acceptString,
-                      color: AppColorConstants.grayscale100,
+                      color: AppColorConstants.subHeadingTextColor,
                     )
                         .makeChip(
-                            backGroundColor: AppColorConstants.grayscale900)
+                            backGroundColor: AppColorConstants.mainTextColor)
                         .ripple(() {
                       Get.back(closeOverlays: true);
                       okHandler();

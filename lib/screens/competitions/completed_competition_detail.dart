@@ -226,7 +226,7 @@ class CompletedCompetitionDetailState
           ? Heading4Text(
               submittedPhotosString.tr,
               weight: FontWeight.bold,
-              color: AppColorConstants.grayscale500,
+              color: AppColorConstants.subHeadingTextColor,
             ).tP25
           : Container(),
       competition.posts.isNotEmpty

@@ -31,7 +31,7 @@ class NotificationManager {
 
   NotificationManager._internal();
 
-  initializeFCM() async{
+  initializeFCM() async {
     await FirebaseMessaging.instance.requestPermission();
 
     FirebaseMessaging.onMessage.listen(
@@ -281,6 +281,7 @@ class NotificationManager {
                       postId: referenceId,
                       handler: () {},
                       commentPostedCallback: () {},
+                      commentDeletedCallback: () {},
                     ));
               }),
             ).setPadding(top: 50, left: 8, right: 8).round(10),
@@ -347,6 +348,7 @@ class NotificationManager {
               postId: referenceId,
               handler: () {},
               commentPostedCallback: () {},
+              commentDeletedCallback: () {},
             ));
       } else if (notificationType == 4) {
         int referenceId = int.parse(data['reference_id'] as String);

@@ -5,6 +5,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
+import '../../apiHandler/apis/profile_api.dart';
 import '../../manager/location_manager.dart';
 import '../../util/shared_prefs.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
@@ -25,6 +26,8 @@ class SettingsController extends GetxController {
 
   var localAuth = LocalAuthentication();
   RxInt bioMetricType = 0.obs;
+  RxBool isPrivateAccount = false.obs;
+
   // RateMyApp rateMyApp = RateMyApp(
   //   preferencesPrefix: 'rateMyApp_',
   //   minDays: 0, // Show rate popup on first day of install.
@@ -49,7 +52,6 @@ class SettingsController extends GetxController {
   }
 
   changeLanguage(Map<String, String> language) async {
-
     var locale = Locale(language['language_code']!);
     Get.updateLocale(locale);
     currentLanguage.value = language['language_code']!;
@@ -65,6 +67,7 @@ class SettingsController extends GetxController {
     bool isDarkTheme = await SharedPrefs().isDarkMode();
     bioMetricAuthStatus.value = await SharedPrefs().getBioMetricAuthStatus();
     shareLocation.value = _userProfileManager.user.value!.latitude != null;
+    isPrivateAccount.value = _userProfileManager.user.value!.isPrivate;
 
     setDarkMode(isDarkTheme);
     checkBiometric();
@@ -93,21 +96,18 @@ class SettingsController extends GetxController {
   }
 
   getSettings() async {
-    String? authKey = await SharedPrefs().getAuthorizationKey();
+    // if (authKey != null) {
+    await MiscApi.getSettings(resultCallback: (result) {
+      setting.value = result;
 
-    if (authKey != null) {
-      await MiscApi.getSettings(resultCallback: (result) {
-        setting.value = result;
+      if (setting.value?.latestVersion! != AppConfigConstants.currentVersion) {
+        forceUpdate.value = true;
+        forceUpdate.value = false;
+      }
 
-        if (setting.value?.latestVersion! !=
-            AppConfigConstants.currentVersion) {
-          forceUpdate.value = true;
-          forceUpdate.value = false;
-        }
-
-        update();
-      });
-    }
+      update();
+    });
+    // }
   }
 
   Future checkBiometric() async {
@@ -146,11 +146,20 @@ class SettingsController extends GetxController {
     }
   }
 
+  void toggleAccountPrivacy(bool isPrivate) async {
+    isPrivateAccount.value = isPrivate;
+    updateAccountPrivacy(isPrivate);
+  }
+
+  updateAccountPrivacy(bool isPrivate) {
+    ProfileApi.updateAccountPrivacy(
+        isPrivate: isPrivate, resultCallback: () {});
+  }
+
   deleteAccount() {
     AuthApi.deleteAccount(successCallback: () {
       _userProfileManager.logout();
-      AppUtil.showToast(
-          message: accountIsDeletedString.tr, isSuccess: true);
+      AppUtil.showToast(message: accountIsDeletedString.tr, isSuccess: true);
     });
   }
 

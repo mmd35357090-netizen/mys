@@ -3,7 +3,7 @@ import 'package:just_audio/just_audio.dart';
 import 'dart:io';
 import 'package:foap/manager/progress_notifier.dart';
 
-enum PlayStateState { paused, playing, loading, idle }
+import '../screens/add_on/model/reel_music_model.dart';
 
 class Audio {
   String id;
@@ -25,11 +25,21 @@ class PlayerManager extends GetxController {
   Rx<ProgressBarState?> progress = Rx<ProgressBarState?>(null);
   RxBool isPlaying = false.obs;
 
-  playAudio(Audio audio) async {
+  playNetworkAudio(Audio audio) async {
     if (currentlyPlayingAudio.value?.id != audio.id) {
       currentlyPlayingAudio.value = audio;
       await player.setUrl(audio.url);
 
+      listenToStates();
+    }
+    isPlaying.value = true;
+    player.play();
+  }
+
+  playLocalAudio(Audio audio) async {
+    if (currentlyPlayingAudio.value?.id != audio.id) {
+      currentlyPlayingAudio.value = audio;
+      await player.setFilePath(audio.url);
       listenToStates();
     }
     isPlaying.value = true;
@@ -79,7 +89,7 @@ class PlayerManager extends GetxController {
     isPlaying.value = false;
   }
 
-  updateProgress(Duration currentPosition){
+  updateProgress(Duration currentPosition) {
     // progress.value =
     //     ProgressBarState(current: currentPosition, total: totalDuration);
     player.seek(currentPosition);
@@ -92,4 +102,13 @@ class PlayerManager extends GetxController {
     listenToStates();
   }
 
+  playAudioFileTimeIntervalBased(
+      ReelMusicModel audio, double startTime, double endTime) async {
+    await player.setUrl(audio.url);
+    await player.setClip(
+        start: Duration(seconds: startTime.toInt()),
+        end: Duration(seconds: endTime.toInt()));
+    player.play();
+    listenToStates();
+  }
 }

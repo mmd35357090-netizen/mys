@@ -4,13 +4,14 @@ import 'package:foap/model/user_model.dart';
 // import 'package:timeago/timeago.dart' as timeago;
 
 import '../helper/enum.dart';
+import '../helper/localization_strings.dart';
 import 'club_model.dart';
 import 'competition_model.dart';
+import 'package:get/get.dart';
 
 class NotificationModel {
   int id;
 
-  // int type;
   String title;
   String message;
 
@@ -20,17 +21,18 @@ class NotificationModel {
   CompetitionModel? competition;
   PostModel? post;
   NotificationType type;
+  String notificationDate = earlierString.tr;
 
   NotificationModel(
       {required this.id,
-      required this.title,
-      required this.message,
-      required this.date,
-      required this.type,
-      this.actionBy,
-      this.competition,
-      this.post,
-      this.club});
+        required this.title,
+        required this.message,
+        required this.date,
+        required this.type,
+        this.actionBy,
+        this.competition,
+        this.post,
+        this.club});
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       NotificationModel(
@@ -52,8 +54,7 @@ class NotificationModel {
         // club: json["type"] == 11 ? ClubModel.fromJson(json["reference"]) : null,
       );
 
-  String notificationTime() {
-    // return timeago.format(date);
+  String get notificationTime {
     return date.getTimeAgo;
   }
 
@@ -70,14 +71,23 @@ class NotificationModel {
     if (type == 4) {
       return NotificationType.competitionAdded;
     }
+    if (type == 6) {
+      return NotificationType.supportRequest;
+    }
     if (type == 8) {
       return NotificationType.gift;
+    }
+    if (type == 9) {
+      return NotificationType.verification;
     }
     if (type == 11) {
       return NotificationType.clubInvitation;
     }
     if (type == 13) {
       return NotificationType.relationInvite;
+    }
+    if (type == 15) {
+      return NotificationType.followRequest;
     }
     return NotificationType.none;
   }

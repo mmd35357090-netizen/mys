@@ -6,3 +6,18 @@ Widget divider({double? height, Color? color}) {
     color: color ?? AppColorConstants.dividerColor,
   );
 }
+
+Widget verifiedUserTag() {
+  return Row(
+    children: [
+      const SizedBox(
+        width: 5,
+      ),
+      Image.asset(
+        'assets/verified.png',
+        height: 15,
+        width: 15,
+      )
+    ],
+  );
+}

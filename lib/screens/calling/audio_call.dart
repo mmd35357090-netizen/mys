@@ -136,7 +136,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
               child: Center(
                   child: Heading3Text(
                     reConnectingString.tr,
-                    color: AppColorConstants.grayscale100,
+                    color: AppColorConstants.subHeadingTextColor,
                   )))
               : const SizedBox(),
           Center(child: opponentInfo(isFloating)),
@@ -186,7 +186,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
         Heading3Text(
           widget.call.opponent.userName,
           weight: TextWeight.bold,
-          color: AppColorConstants.grayscale900,
+          color: AppColorConstants.mainTextColor,
         ),
         const SizedBox(
           height: 5,
@@ -197,7 +197,7 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
               ? ringingString.tr
               : incomingCallString.tr,
           weight: TextWeight.medium,
-          color: AppColorConstants.grayscale800,
+          color: AppColorConstants.mainTextColor,
         )
             : _timerView(),
       ],

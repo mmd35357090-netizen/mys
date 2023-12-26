@@ -166,11 +166,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
     return Container(
       color: AppColorConstants.cardColor,
       width: double.infinity,
-      child: Heading6Text(
-        _chatDetailController.chatRoom.value!.description!,
-          weight: TextWeight.regular
-      ).p16,
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
+      child: Heading6Text(_chatDetailController.chatRoom.value!.description!,
+              weight: TextWeight.regular)
+          .p16,
+    )
+        .round(10)
+        .backgroundCard(shadowOpacity: 0.1)
+        .hp(DesignConstants.horizontalPadding);
   }
 
   Widget groupSettingWidget() {
@@ -194,10 +196,8 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading6Text(
-                    groupSettingsString.tr,
-                      weight: TextWeight.regular
-                  ),
+                  Heading6Text(groupSettingsString.tr,
+                      weight: TextWeight.regular),
                 ],
               ),
               ThemeIconWidget(
@@ -211,7 +211,10 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Get.to(() => const GroupSettings());
         }),
       ],
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
+    )
+        .round(10)
+        .backgroundCard(shadowOpacity: 0.1)
+        .hp(DesignConstants.horizontalPadding);
   }
 
   Widget commonOptionsWidget() {
@@ -235,10 +238,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading6Text(
-                    mediaString.tr,
-                      weight: TextWeight.regular
-                  ),
+                  Heading6Text(mediaString.tr, weight: TextWeight.regular),
                 ],
               ),
               ThemeIconWidget(
@@ -272,10 +272,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading6Text(
-                    wallpaperString.tr,
-                      weight: TextWeight.regular
-                  ),
+                  Heading6Text(wallpaperString.tr, weight: TextWeight.regular),
                 ],
               ),
               ThemeIconWidget(
@@ -311,10 +308,8 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                           const SizedBox(
                             width: 10,
                           ),
-                          Heading6Text(
-                            starredMessagesString.tr,
-                              weight: TextWeight.regular
-                          ),
+                          Heading6Text(starredMessagesString.tr,
+                              weight: TextWeight.regular),
                         ],
                       ),
                       Row(
@@ -338,7 +333,10 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 }))
             : Container(),
       ],
-    ).round(10).backgroundCard(shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
+    )
+        .round(10)
+        .backgroundCard(shadowOpacity: 0.1)
+        .hp(DesignConstants.horizontalPadding);
   }
 
   Widget extraOptionsWidget() {
@@ -350,10 +348,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Heading6Text(
-                exportChatString.tr,
-                  weight: TextWeight.regular
-              )
+              Heading6Text(exportChatString.tr, weight: TextWeight.regular)
             ],
           ).hP8,
         ).ripple(() {
@@ -372,12 +367,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         ).ripple(() {
           _chatRoomDetailController.deleteRoomChat(widget.chatRoom);
           _chatDetailController.deleteChat(widget.chatRoom.id);
-          AppUtil.showToast(
-              message: chatDeletedString.tr,
-              isSuccess: true);
+          AppUtil.showToast(message: chatDeletedString.tr, isSuccess: true);
         })
       ],
-    ).round(10).backgroundCard(shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
+    )
+        .round(10)
+        .backgroundCard(shadowOpacity: 0.1)
+        .hp(DesignConstants.horizontalPadding);
   }
 
   Widget exitAndDeleteGroup() {
@@ -390,17 +386,15 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Heading5Text(
-              widget.chatRoom.amIMember
-                  ? leaveGroupString.tr
-                  : deleteGroupString.tr,
-    weight: TextWeight.medium,
-    color: AppColorConstants.red
-
-            ).hP8,
+                    widget.chatRoom.amIMember
+                        ? leaveGroupString.tr
+                        : deleteGroupString.tr,
+                    weight: TextWeight.medium,
+                    color: AppColorConstants.red)
+                .hP8,
           ),
         ).ripple(() {
           if (widget.chatRoom.amIMember) {
-
             // AppUtil.showConfirmationAlert(
             //     title: leaveGroup,
             //     subTitle: leaveGroupConfirmation,
@@ -422,7 +416,10 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Get.back();
         }),
       ],
-    ).round(10).backgroundCard( shadowOpacity: 0.1).hp(DesignConstants.horizontalPadding);
+    )
+        .round(10)
+        .backgroundCard(shadowOpacity: 0.1)
+        .hp(DesignConstants.horizontalPadding);
   }
 
   Widget callWidgets() {
@@ -440,12 +437,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 const SizedBox(
                   height: 5,
                 ),
-                BodyMediumText(
-                  audioString.tr,
-                    weight: TextWeight.medium
-                ),
+                BodyMediumText(audioString.tr, weight: TextWeight.medium),
               ],
-            ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
+            ).setPadding(
+                left: DesignConstants.horizontalPadding,
+                right: DesignConstants.horizontalPadding,
+                top: 8,
+                bottom: 8),
           ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
             audioCall();
           }).rp(20),
@@ -460,12 +458,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 const SizedBox(
                   height: 5,
                 ),
-                BodyMediumText(
-                  videoString.tr,
-                    weight: TextWeight.medium
-                ),
+                BodyMediumText(videoString.tr, weight: TextWeight.medium),
               ],
-            ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
+            ).setPadding(
+                left: DesignConstants.horizontalPadding,
+                right: DesignConstants.horizontalPadding,
+                top: 8,
+                bottom: 8),
           ).round(10).backgroundCard(shadowOpacity: 0.1).ripple(() {
             videoCall();
           }),
@@ -486,10 +485,8 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               const SizedBox(
                 height: 10,
               ),
-              Heading6Text(
-                _chatDetailController.chatRoom.value!.name!,
-                  weight: TextWeight.bold
-              )
+              Heading6Text(_chatDetailController.chatRoom.value!.name!,
+                  weight: TextWeight.bold)
             ],
           ));
   }
@@ -509,10 +506,16 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               const SizedBox(
                 height: 10,
               ),
-              Heading6Text(
-                _chatDetailController
-                    .chatRoom.value!.opponent.userDetail.userName,
-                  weight: TextWeight.bold
+              Row(
+                children: [
+                  Heading6Text(
+                      _chatDetailController
+                          .chatRoom.value!.opponent.userDetail.userName,
+                      weight: TextWeight.bold),
+                  if (_chatDetailController
+                      .chatRoom.value!.opponent.userDetail.isVerified)
+                    verifiedUserTag()
+                ],
               )
             ],
           ));
@@ -521,7 +524,6 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
   void exportChatActionPopup() {
     showModalBottomSheet(
         context: context,
-
         builder: (context) => Wrap(
               children: [
                 ListTile(
@@ -554,9 +556,8 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Heading5Text(
-                '${_chatDetailController.chatRoom.value!.roomMembers.length} ${participantsString.tr}',
-                  weight: TextWeight.bold
-              ),
+                  '${_chatDetailController.chatRoom.value!.roomMembers.length} ${participantsString.tr}',
+                  weight: TextWeight.bold),
               const SizedBox(
                 height: 20,
               ),
@@ -593,16 +594,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                             const SizedBox(
                               width: 15,
                             ),
-                            Heading6Text(
-                              addParticipantsString.tr,
-                                weight: TextWeight.medium
-                            )
+                            Heading6Text(addParticipantsString.tr,
+                                weight: TextWeight.medium)
                           ],
                         ).hP8.ripple(() {
                           showModalBottomSheet(
                               backgroundColor: Colors.transparent,
                               context: context,
-
                               isScrollControlled: true,
                               builder: (context) => FractionallySizedBox(
                                   heightFactor: 0.9,
@@ -634,16 +632,20 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Heading6Text(
-                                member.userDetail.isMe
-                                    ? youString.tr
-                                    : member.userDetail.userName,
-                                  weight: TextWeight.regular
+                              Row(
+                                children: [
+                                  Heading6Text(
+                                      member.userDetail.isMe
+                                          ? youString.tr
+                                          : member.userDetail.userName,
+                                      weight: TextWeight.regular),
+                                  if (member.userDetail.isVerified)
+                                    verifiedUserTag()
+                                ],
                               ).bP4,
                               member.userDetail.country != null
                                   ? BodyLargeText(
                                       '${member.userDetail.city!}, ${member.userDetail.country!}',
-
                                     )
                                   : Container()
                             ],
@@ -651,10 +653,9 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
 
                           const Spacer(),
                           member.isAdmin == 1
-                              ? Heading6Text(
-                                  adminString.tr,
-                              weight: TextWeight.medium
-                                ).bP4
+                              ? Heading6Text(adminString.tr,
+                                      weight: TextWeight.medium)
+                                  .bP4
                               : Container()
                           // const Spacer(),
                         ],
@@ -720,7 +721,6 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
 
     showModalBottomSheet(
         context: context,
-
         backgroundColor: Colors.transparent,
         builder: (context) => ActionSheet1(
               items: items,
@@ -737,7 +737,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                       member.userDetail, widget.chatRoom);
                 } else if (item.id == '4') {
                   _chatRoomDetailController.removeUserFormGroup(
-                      member.userDetail, widget.chatRoom);
+                      user: member.userDetail, chatRoom: widget.chatRoom);
                 }
               },
             ));

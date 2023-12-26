@@ -107,14 +107,22 @@ class OtherUserProfileState extends State<OtherUserProfile>
                       ],
                       backgroundColor: AppColorConstants.backgroundColor,
                       pinned: true,
-                      expandedHeight: 470.0,
+                      expandedHeight: 550,
                       flexibleSpace: FlexibleSpaceBar(
-                        background: addProfileView(),
+                        background: Column(
+                          children: [
+                            addProfileView(),
+                            addHighlightsView().tP25
+                          ],
+                        ),
                       ),
                     ),
                     SliverPersistentHeader(
                       delegate: _SliverAppBarDelegate(
-                        getTextTabBar(tabs: tabs, controller: controller),
+                        getTextTabBar(
+                            tabs: tabs,
+                            controller: controller,
+                            canScroll: false),
                       ),
                       pinned: true,
                       // floating: true,
@@ -124,7 +132,9 @@ class OtherUserProfileState extends State<OtherUserProfile>
                 body: TabBarView(
                   controller: controller,
                   children: [
-                    PostList(),
+                    PostList(
+                      postSource: PostSource.posts,
+                    ),
                     MentionsList(),
                   ],
                 )),
@@ -132,7 +142,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
         ));
   }
 
-  addProfileView() {
+  Widget addProfileView() {
     return GetBuilder<ProfileController>(
         init: _profileController,
         builder: (ctx) {
@@ -182,18 +192,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
                   Heading6Text(_profileController.user.value!.userName,
                       weight: TextWeight.medium),
                   if (_profileController.user.value!.isVerified)
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Image.asset(
-                          'assets/verified.png',
-                          height: 15,
-                          width: 15,
-                        )
-                      ],
-                    ),
+                    verifiedUserTag()
                 ],
               ).bP4,
               if (_profileController.user.value!.profileCategoryTypeId != 0)
@@ -237,17 +236,22 @@ class OtherUserProfileState extends State<OtherUserProfile>
         Expanded(
           child: AppThemeButton(
               height: 35,
-              backgroundColor: _profileController.user.value!.isFollowing
+              backgroundColor: _profileController.user.value!.followingStatus ==
+                      FollowingStatus.following
                   ? AppColorConstants.themeColor
-                  : AppColorConstants.themeColor.lighten(0.1),
-              text: _profileController.user.value!.isFollowing
+                  : AppColorConstants.cardColor,
+              text: _profileController.user.value!.followingStatus ==
+                      FollowingStatus.following
                   ? unFollowString.tr
-                  : _profileController.user.value!.isFollower
-                      ? followBackString.tr
-                      : followString.tr.toUpperCase(),
+                  : _profileController.user.value!.followingStatus ==
+                          FollowingStatus.requested
+                      ? requestedString.tr
+                      : _profileController.user.value!.isFollower
+                          ? followBackString.tr
+                          : followString.tr,
               onPress: () {
-                _profileController.followUnFollowUserApi(
-                    isFollowing: !_profileController.user.value!.isFollowing);
+                _profileController.followUnFollowUser(
+                    user: _profileController.user.value!);
               }),
         ),
 
@@ -396,7 +400,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
             ));
   }
 
-  addHighlightsView() {
+  Widget addHighlightsView() {
     return GetBuilder<HighlightsController>(
         init: _highlightsController,
         builder: (ctx) {

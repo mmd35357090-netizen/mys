@@ -19,24 +19,13 @@ class PostOptionsPopup extends StatelessWidget {
   final Function(Media)? selectGif;
   final Function(Media)? recordedAudio;
 
-  // final Function(UnsplashImage)? selectedWallpaper;
-
-  // final bool isInTabBar;
-  // final VoidCallback? mentionsCallback;
-  // final VoidCallback? hashtagCallback;
   final ImagePicker _picker = ImagePicker();
 
   PostOptionsPopup({
     Key? key,
-    // required this.postContext,
-    // required this.isInTabBar,
     this.selectedMediaList,
     this.selectGif,
-    // this.selectedWallpaper,
     this.recordedAudio,
-    // this.reference,
-    // this.mentionsCallback,
-    // this.hashtagCallback,
   }) : super(key: key);
 
   @override
@@ -44,14 +33,14 @@ class PostOptionsPopup extends StatelessWidget {
     List<Widget> options = [];
 
     if (_settingsController.setting.value!.enableImagePost) {
-      options.add(photoButton());
+      options.add(cameraButton());
+      options.add(photoGalleryButton());
     }
     if (_settingsController.setting.value!.enableVideoPost) {
       options.add(videoButton());
     }
 
     options.add(drawButton());
-    options.add(audioButton());
     options.add(gifButton());
 
     return Container(
@@ -66,29 +55,26 @@ class PostOptionsPopup extends StatelessWidget {
     ).topRounded(40);
   }
 
-  Widget photoButton() {
+  Widget photoGalleryButton() {
     return ModalComponents(
       check: true,
-      icon: ThemeIcon.camera,
-      // name: isInTabBar ? null : LocalizationString.cameraModal,
+      icon: ThemeIcon.gallery,
       onPress: () async {
         selectPhoto(
           source: ImageSource.gallery,
         );
-        // _openActionSheet((source, mediaType) async {
-        //   Navigator.of(Get.context!).pop();
-        //   if (mediaType == 1) {
-        //     // photo
-        //     selectPhoto(
-        //       source: source,
-        //     );
-        //   } else {
-        //     // video
-        //     selectVideo(
-        //       source: source,
-        //     );
-        //   }
-        // });
+      },
+    );
+  }
+
+  Widget cameraButton() {
+    return ModalComponents(
+      check: true,
+      icon: ThemeIcon.camera,
+      onPress: () async {
+        selectPhoto(
+          source: ImageSource.camera,
+        );
       },
     );
   }
@@ -106,21 +92,6 @@ class PostOptionsPopup extends StatelessWidget {
     );
   }
 
-  // Widget wallpaperButton() {
-  //   return ModalComponents(
-  //     check: true,
-  //     icon: 'assets/images/post/wallpaper.png',
-  //     onPress: () async {
-  //       Get.bottomSheet(SelectWallpaper(
-  //         selectedImageHandler: (image) {
-  //           Get.back();
-  //           selectedWallpaper!(image);
-  //         },
-  //       ));
-  //     },
-  //   );
-  // }
-
   Widget drawButton() {
     return ModalComponents(
       check: true,
@@ -129,17 +100,6 @@ class PostOptionsPopup extends StatelessWidget {
       // name: isInTabBar ? null : LocalizationString.draw,
       onPress: () {
         openDrawingBoard();
-      },
-    );
-  }
-
-  Widget audioButton() {
-    return ModalComponents(
-      check: true,
-      icon: ThemeIcon.mic,
-      // name: isInTabBar ? null : LocalizationString.audio,
-      onPress: () {
-        openVoiceRecord();
       },
     );
   }
@@ -183,15 +143,15 @@ class PostOptionsPopup extends StatelessWidget {
         backgroundColor: Colors.transparent,
         context: Get.context!,
         builder: (context) => FractionallySizedBox(
-          heightFactor: 0.7,
-          child: VoiceRecord(
+              heightFactor: 0.7,
+              child: VoiceRecord(
                 recordingCallback: (media) {
                   if (recordedAudio != null) {
                     recordedAudio!(media);
                   }
                 },
               ),
-        ));
+            ));
   }
 
   void openGify() async {
@@ -211,7 +171,7 @@ class PostOptionsPopup extends StatelessWidget {
 
     if (gif != null) {
       Media media = Media();
-      media.fileUrl = 'https://i.giphy.com/media/${gif.id}/200.gif';
+      media.filePath = 'https://i.giphy.com/media/${gif.id}/200.gif';
       media.mediaType = GalleryMediaType.gif;
       if (selectGif != null) {
         selectGif!(media);
@@ -284,6 +244,8 @@ class PostOptionsPopup extends StatelessWidget {
           // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
           quality: 25,
         );
+      } else {
+        media.thumbnail = file.readAsBytesSync();
       }
 
       media.id = randomId();

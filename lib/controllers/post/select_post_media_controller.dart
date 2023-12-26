@@ -26,4 +26,15 @@ class SelectPostMediaController extends GetxController {
     currentIndex.value = index;
     update();
   }
+
+  replaceMediaWithEditedMedia(
+      {required Media originalMedia, required Media editedMedia}) {
+    int indexOfItemToReplace = selectedMediaList
+        .indexWhere((element) => element.id == originalMedia.id);
+    selectedMediaList.removeAt(indexOfItemToReplace);
+    selectedMediaList.insert(indexOfItemToReplace, editedMedia);
+    selectedMediaList.refresh();
+    update();
+  }
+
 }

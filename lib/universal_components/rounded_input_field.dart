@@ -31,32 +31,36 @@ class InputField extends StatefulWidget {
   final bool? showBorder;
   final Color? borderColor;
   final double? cornerRadius;
-
   final Color? cursorColor;
+  final int? maxLength;
 
-  InputField({
-    Key? key,
-    this.label,
-    this.showLabelInNewLine = true,
-    this.hintText,
-    this.defaultText,
-    this.controller,
-    this.onChanged,
-    this.onSubmitted,
-    this.icon,
-    this.maxLines,
-    this.showDivider = false,
-    this.iconColor,
-    this.isDisabled,
-    this.startedEditing = false,
-    this.isError = false,
-    this.iconOnRightSide = false,
-    this.backgroundColor,
-    this.showBorder = false,
-    this.borderColor,
-    this.cornerRadius = 12,
-    this.cursorColor,
-  }) : super(key: key);
+  final Function(bool)? focusStatusChangeHandler;
+
+  InputField(
+      {Key? key,
+        this.label,
+        this.showLabelInNewLine = true,
+        this.hintText,
+        this.defaultText,
+        this.controller,
+        this.onChanged,
+        this.onSubmitted,
+        this.icon,
+        this.maxLines,
+        this.showDivider = false,
+        this.iconColor,
+        this.isDisabled,
+        this.startedEditing = false,
+        this.isError = false,
+        this.iconOnRightSide = false,
+        this.backgroundColor,
+        this.showBorder = false,
+        this.borderColor,
+        this.cornerRadius = 12,
+        this.cursorColor,
+        this.maxLength,
+        this.focusStatusChangeHandler})
+      : super(key: key);
 
   @override
   State<InputField> createState() => _InputFieldState();
@@ -120,6 +124,7 @@ class _InputFieldState extends State<InputField> {
                         controller: widget.controller,
                         keyboardType: TextInputType.text,
                         textAlign: TextAlign.left,
+                        maxLength: widget.maxLength,
                         style: TextStyle(
                             fontSize: FontSizes.b3,
                             color: AppColorConstants.inputFieldTextColor),
@@ -138,6 +143,9 @@ class _InputFieldState extends State<InputField> {
                       ),
                       onFocusChange: (hasFocus) {
                         widget.startedEditing = hasFocus;
+                        if (widget.focusStatusChangeHandler != null) {
+                          widget.focusStatusChangeHandler!(hasFocus);
+                        }
                         setState(() {});
                       },
                     ),
@@ -1310,7 +1318,7 @@ class _DropdownBorderedState extends State<DropdownBorderedField> {
                 style: widget.textStyle ??
                     TextStyle(
                         fontSize: FontSizes.b3,
-                        color: AppColorConstants.grayscale900),
+                        color: AppColorConstants.mainTextColor),
                 decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     border: InputBorder.none,
@@ -1319,11 +1327,11 @@ class _DropdownBorderedState extends State<DropdownBorderedField> {
                     // labelText: hintText,
                     labelStyle: TextStyle(
                         fontSize: FontSizes.b2,
-                        color: AppColorConstants.grayscale900),
+                        color: AppColorConstants.mainTextColor),
                     hintStyle: widget.textStyle ??
                         TextStyle(
                             fontSize: FontSizes.b3,
-                            color: AppColorConstants.grayscale900),
+                            color: AppColorConstants.mainTextColor),
                     hintText: hintText),
               )),
         ),

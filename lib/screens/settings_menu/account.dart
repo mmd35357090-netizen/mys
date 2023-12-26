@@ -25,7 +25,7 @@ class _AppAccountState extends State<AppAccount> {
       body: Column(
         children: [
           backNavigationBar(title: accountString.tr),
-          divider().tP8,
+
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,

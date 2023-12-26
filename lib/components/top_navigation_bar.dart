@@ -37,6 +37,51 @@ Widget backNavigationBar({required String title}) {
   );
 }
 
+Widget backNavigationBarWithTrailingWidget(
+    {required String title, required Widget widget}) {
+  return Container(
+    height: 100,
+    color: AppColorConstants.cardColor,
+    width: double.infinity,
+    child: Stack(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+                width: 50,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: ThemeIconWidget(
+                    ThemeIcon.backArrow,
+                    size: 18,
+                    color: AppColorConstants.iconColor,
+                  ),
+                )).ripple(() {
+              Get.back();
+            }),
+            widget,
+          ],
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          top: 0,
+          child: Center(
+            child: BodyLargeText(
+              title,
+            ),
+          ),
+        )
+      ],
+    ).setPadding(
+        left: DesignConstants.horizontalPadding,
+        right: DesignConstants.horizontalPadding,
+        top: 40),
+  );
+}
+
 Widget backNavigationBarWithIcon(
     {required ThemeIcon icon,
     required String title,
@@ -155,12 +200,15 @@ Widget titleNavigationBarWithIcon(
       bottom: 16);
 }
 
-Widget titleNavigationBar({
-  required String title,
-}) {
-  return BodyLargeText(title.tr, weight: TextWeight.medium).setPadding(
-      left: DesignConstants.horizontalPadding,
-      right: DesignConstants.horizontalPadding,
-      top: 8,
-      bottom: 16);
+Widget titleNavigationBar({required String title}) {
+  return Container(
+    height: 100,
+    width: Get.width,
+    color: AppColorConstants.themeColor.withOpacity(0.1),
+    child: Center(
+      child: BodyLargeText(title.tr, weight: TextWeight.medium)
+          .setPadding(top: 40),
+    ),
+  );
 }
+

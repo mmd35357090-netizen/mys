@@ -17,6 +17,7 @@ class SelectUserForGroupChat extends StatefulWidget {
 class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
   final SelectUserForGroupChatController selectUserForGroupChatController =
       Get.find();
+  final ChatRoomDetailController _chatRoomDetailController = Get.find();
 
   @override
   void initState() {
@@ -64,8 +65,10 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                               isSuccess: false);
                         }
                       } else {
-                        selectUserForGroupChatController
-                            .addUsersToRoom(widget.group!);
+                        _chatRoomDetailController.addUsersToRoom(
+                            room: widget.group!,
+                            selectedFriends: selectUserForGroupChatController
+                                .selectedFriends);
                         widget.invitedUserCallback!();
                         Get.back();
                       }

@@ -22,10 +22,10 @@ Widget noUserFound(BuildContext context) {
   );
 }
 
-Widget emptyPost(
-    {required String title,
-    required String subTitle,
-    }) {
+Widget emptyPost({
+  required String title,
+  required String subTitle,
+}) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -51,10 +51,10 @@ Widget emptyPost(
   );
 }
 
-Widget emptyUser(
-    {required String title,
-    required String subTitle,
-    }) {
+Widget emptyUser({
+  required String title,
+  required String subTitle,
+}) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [

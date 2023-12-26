@@ -1,13 +1,9 @@
 import 'package:foap/apiHandler/apis/users_api.dart';
 import 'package:get/get.dart';
-import 'package:foap/helper/imports/chat_imports.dart';
-import '../../manager/socket_manager.dart';
 import '../../model/user_model.dart';
 import 'package:foap/helper/list_extension.dart';
 
 class SelectUserForGroupChatController extends GetxController {
-  final ChatDetailController _chatDetailController = Get.find();
-
   RxList<UserModel> friends = <UserModel>[].obs;
   RxList<UserModel> selectedFriends = <UserModel>[].obs;
 
@@ -22,18 +18,6 @@ class SelectUserForGroupChatController extends GetxController {
     canLoadMore = true;
     isLoading = false;
     selectedFriends.clear();
-  }
-
-  addUsersToRoom(ChatRoomModel room) {
-    for (UserModel user in selectedFriends) {
-      getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom,
-          {'userId': user.id.toString(), 'room': room.id});
-
-      _chatDetailController.chatRoom.value!.roomMembers
-          .add(user.toChatRoomMember);
-    }
-
-    _chatDetailController.update();
   }
 
   searchTextChanged(String text) {

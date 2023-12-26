@@ -1,10 +1,12 @@
-import 'package:foap/helper/imports/common_import.dart';
 import '../../components/notification_tile.dart';
 import '../../controllers/notification/notifications_controller.dart';
+import '../../controllers/profile/profile_controller.dart';
+import '../../helper/imports/common_import.dart';
 import '../../model/notification_modal.dart';
 import '../competitions/competition_detail_screen.dart';
 import '../home_feed/comments_screen.dart';
 import '../post/single_post_detail.dart';
+import '../profile/follow_requests.dart';
 import '../profile/other_user_profile.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -17,62 +19,289 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final NotificationController _notificationController =
       NotificationController();
+  final ProfileController _profileController = Get.find();
 
   @override
   void initState() {
     _notificationController.getNotifications();
+    _notificationController.getFollowRequests(() {});
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            backNavigationBar(
-                 title: notificationsString.tr),
-            const SizedBox(height: 8,),
+            backNavigationBarWithTrailingWidget(
+              title: notificationsString,
+              widget: BodyLargeText(
+                filterString,
+                weight: TextWeight.semiBold,
+              ).ripple(() {
+                filterNotifications();
+              }),
+            ),
+            Obx(() => _notificationController.followRequests.isEmpty
+                ? Container()
+                : Container(
+                    height: 80,
+                    color: AppColorConstants.themeColor.withOpacity(0.1),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const ThemeIconWidget(
+                          ThemeIcon.request,
+                          size: 20,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BodyMediumText(
+                                followRequestsString.tr,
+                                weight: TextWeight.semiBold,
+                              ),
+                              BodySmallText(
+                                acceptFollowRequestsString.tr,
+                                weight: TextWeight.semiBold,
+                              )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const ThemeIconWidget(ThemeIcon.nextArrow),
+                      ],
+                    ).hp(DesignConstants.horizontalPadding),
+                  ).round(20).ripple(() {
+                    Get.to(() => const FollowRequestList());
+                  }).p(DesignConstants.horizontalPadding)),
             Expanded(
               child: GetBuilder<NotificationController>(
                   init: _notificationController,
                   builder: (ctx) {
-                    return _notificationController.notifications.isNotEmpty
+                    return _notificationController
+                            .groupedNotifications.keys.isNotEmpty
                         ? ListView.separated(
-                            padding: const EdgeInsets.only(bottom: 100),
-                            itemCount:
-                                _notificationController.notifications.length,
+                            padding: EdgeInsets.only(
+                                top: 20,
+                                left: DesignConstants.horizontalPadding,
+                                right: DesignConstants.horizontalPadding,
+                                bottom: 50),
+                            itemCount: _notificationController
+                                .groupedNotifications.keys.length,
                             itemBuilder: (BuildContext context, int index) {
+                              String key = _notificationController
+                                  .groupedNotifications.keys
+                                  .toList()[index];
+                              List<NotificationModel> notifications =
+                                  _notificationController
+                                          .groupedNotifications[key] ??
+                                      [];
+
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  index == 0
-                                      ? const SizedBox(height: 20)
-                                      : Container(),
-                                  NotificationTileType4(
-                                          notification: _notificationController
-                                              .notifications[index])
-                                      .hp(DesignConstants.horizontalPadding)
-                                      .ripple(() {
-                                    handleNotificationTap(
-                                        _notificationController
-                                            .notifications[index]);
-                                  }),
+                                  Heading5Text(
+                                    key,
+                                    weight: TextWeight.bold,
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  for (NotificationModel notification
+                                      in notifications)
+                                    Column(
+                                      children: [
+                                        NotificationTileType4(
+                                          notification: notification,
+                                          followBackUserHandler: () {
+                                            _profileController.followUser(
+                                                notification.actionBy!);
+                                            _notificationController
+                                                .getNotifications();
+                                          },
+                                        ).ripple(() {
+                                          handleNotificationTap(notification);
+                                        }),
+                                        const SizedBox(
+                                          height: 10,
+                                        )
+                                      ],
+                                    ),
                                 ],
                               );
                             },
                             separatorBuilder:
                                 (BuildContext context, int index) {
-                              return const SizedBox(height: 20);
+                              return divider(height: 0.2).vP8;
                             })
                         : emptyData(
-                            title: noNotificationFoundString.tr,
+                            title: noNotificationFoundString,
                             subTitle: '',
                           );
                   }),
             ),
           ],
         ));
+  }
+
+  filterNotifications() {
+    Get.bottomSheet(Container(
+      color: AppColorConstants.cardColor,
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          BodyLargeText(
+            filterString,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          divider().vP8,
+          Column(
+            children: [
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BodyLargeText(
+                        commentsString,
+                        weight: TextWeight.regular,
+                      ),
+                      ThemeIconWidget(_notificationController
+                              .selectedNotificationsTypes
+                              .contains(NotificationType.comment)
+                          ? ThemeIcon.checkMarkWithCircle
+                          : ThemeIcon.circleOutline)
+                    ],
+                  )).ripple(() {
+                _notificationController
+                    .selectNotificationType(NotificationType.comment);
+              }),
+              const SizedBox(
+                height: 20,
+              ),
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BodyLargeText(
+                        likesString,
+                        weight: TextWeight.regular,
+                      ),
+                      ThemeIconWidget(_notificationController
+                              .selectedNotificationsTypes
+                              .contains(NotificationType.like)
+                          ? ThemeIcon.checkMarkWithCircle
+                          : ThemeIcon.circleOutline)
+                    ],
+                  )).ripple(() {
+                _notificationController
+                    .selectNotificationType(NotificationType.like);
+              }),
+              const SizedBox(
+                height: 20,
+              ),
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BodyLargeText(
+                        followsString,
+                        weight: TextWeight.regular,
+                      ),
+                      ThemeIconWidget(_notificationController
+                              .selectedNotificationsTypes
+                              .contains(NotificationType.follow)
+                          ? ThemeIcon.checkMarkWithCircle
+                          : ThemeIcon.circleOutline)
+                    ],
+                  )).ripple(() {
+                _notificationController
+                    .selectNotificationType(NotificationType.follow);
+              }),
+              const SizedBox(
+                height: 20,
+              ),
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BodyLargeText(
+                        giftsString,
+                        weight: TextWeight.regular,
+                      ),
+                      ThemeIconWidget(_notificationController
+                              .selectedNotificationsTypes
+                              .contains(NotificationType.gift)
+                          ? ThemeIcon.checkMarkWithCircle
+                          : ThemeIcon.circleOutline)
+                    ],
+                  )).ripple(() {
+                _notificationController
+                    .selectNotificationType(NotificationType.gift);
+              }),
+              const SizedBox(
+                height: 20,
+              ),
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BodyLargeText(
+                        clubsString,
+                        weight: TextWeight.regular,
+                      ),
+                      ThemeIconWidget(_notificationController
+                              .selectedNotificationsTypes
+                              .contains(NotificationType.clubInvitation)
+                          ? ThemeIcon.checkMarkWithCircle
+                          : ThemeIcon.circleOutline)
+                    ],
+                  )).ripple(() {
+                _notificationController
+                    .selectNotificationType(NotificationType.clubInvitation);
+              }),
+              const SizedBox(
+                height: 20,
+              ),
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BodyLargeText(
+                        competitionString,
+                        weight: TextWeight.regular,
+                      ),
+                      ThemeIconWidget(_notificationController
+                              .selectedNotificationsTypes
+                              .contains(NotificationType.competitionAdded)
+                          ? ThemeIcon.checkMarkWithCircle
+                          : ThemeIcon.circleOutline)
+                    ],
+                  )).ripple(() {
+                _notificationController
+                    .selectNotificationType(NotificationType.competitionAdded);
+              }),
+              const SizedBox(
+                height: 20,
+              ),
+              AppThemeButton(
+                  text: doneString,
+                  onPress: () {
+                    _notificationController.filterNotifications();
+                    Get.back();
+                  })
+            ],
+          ).hp16,
+        ],
+      ),
+    ).topRounded(40));
   }
 
   handleNotificationTap(NotificationModel notification) {
@@ -83,8 +312,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       int postId = notification.post!.id;
       Get.to(() => CommentsScreen(
             postId: postId,
+            isPopup: false,
             handler: () {},
             commentPostedCallback: () {},
+            commentDeletedCallback: () {},
           ));
     } else if (notification.type == NotificationType.like) {
       Get.to(() => SinglePostDetail(postId: notification.post!.id));

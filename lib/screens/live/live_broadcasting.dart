@@ -940,7 +940,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
         Heading4Text(
           mainHostDetail.userName,
           weight: TextWeight.bold,
-          color: AppColorConstants.grayscale700,
+          color: AppColorConstants.mainTextColor,
         ),
         const SizedBox(
           height: 20,
@@ -997,7 +997,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: FontSizes.b2,
-                              color: AppColorConstants.grayscale900),
+                              color: AppColorConstants.mainTextColor),
                           maxLines: 50,
                           onChanged: (text) {
                             // _agoraLiveController.messageChanges();
@@ -1202,7 +1202,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
                   child: Center(
                       child: Heading6Text(
                     videoPausedString.tr,
-                    color: AppColorConstants.grayscale600,
+                    color: AppColorConstants.subHeadingTextColor,
                   )))
               : _agoraLiveController.engine != null
                   ? AgoraVideoView(
@@ -1228,7 +1228,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
                   // child: Center(
                   //     child: Heading6Text(
                   //   reConnectingString.tr,
-                  //   // color: AppColorConstants.grayscale900,
+                  //   // color: AppColorConstants.mainTextColor,
                   // ))
                 )
               : _agoraLiveController.videoPausedUsers
@@ -1239,7 +1239,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
                       child: Center(
                           child: Heading6Text(
                         videoPausedString.tr,
-                        color: AppColorConstants.grayscale600,
+                        color: AppColorConstants.subHeadingTextColor,
                       )))
                   : _agoraLiveController.engine != null
                       ? AgoraVideoView(

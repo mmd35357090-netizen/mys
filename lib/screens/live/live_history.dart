@@ -42,9 +42,7 @@ class LiveHistoryState extends State<LiveHistory> {
     return Scaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
         backNavigationBar(title: liveString.tr),
-        divider().tP8,
         Expanded(
           child: Obx(() => ListView.separated(
               controller: _controller,

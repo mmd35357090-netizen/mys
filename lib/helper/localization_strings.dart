@@ -35,6 +35,8 @@ String newMessageString = 'New Message';
 String replyString = 'Reply';
 String forwardString = 'Forward';
 String chatsString = 'Chats';
+String groupGroupInfoString =
+    "Anyone can view this group and can join this group, You can remove any member in future";
 
 String callLogString = 'Call log';
 String contactInfoString = 'Contact info';
@@ -208,6 +210,13 @@ String userNameCanNotHaveSpaceString = 'Username can not have spaces';
 String enterNewPasswordString = 'Enter new password';
 String enterConfirmPasswordString = 'Enter confirm password';
 String enterOldPasswordString = 'Enter old password';
+String pleaseEnterYourPassword = 'Please enter you password';
+String passwordIsToShort = 'Your password is too short';
+String passwordIsShortButAcceptable =
+    'Your password is acceptable but not strong';
+String passwordMustByAlphanumeric =
+    'Your password must contain letter and number';
+String passwordIsGreat = 'Your password is great';
 String pleaseEnterCategoryNameString = 'Please enter category name';
 String pleaseEnterSliderNameString = 'Please enter slider name';
 
@@ -359,7 +368,7 @@ String transactionString = 'Transactions';
 String phoneNumberString = 'Phone number';
 String changePhoneNumberString = 'Change Phone number';
 
-String updateStrString = 'Update';
+String updateString = 'Update';
 String goPremiumString = 'Go Premium';
 String restorePurchaseString = 'Restore in app purchases';
 String aboutUsString = 'About us';
@@ -529,6 +538,8 @@ String editString = "Edit";
 String publicString = "Public";
 String privateString = "Private";
 String privacyString = "Privacy";
+String openGroupsString = 'Open Groups';
+
 String nameString = "Name";
 String hideString = "Hide";
 String choosePrivacyString = "Choose Privacy";
@@ -649,6 +660,8 @@ String pleaseAuthenticateToRemoveBiometricString =
     'Please authenticate to remove biometric login into app';
 
 String deletePostString = 'Delete Post';
+String editPostString = 'Edit Post';
+
 String postDeletedSuccessfullyString = 'Post is deleted successfully';
 
 // new keys version 3
@@ -667,6 +680,8 @@ String shareAppSubtitleString = 'Share the app with your friends';
 String shareAppMessageString = 'Install this cool app';
 
 String adminString = 'Admin';
+String youAreAdminString = 'You are Admin';
+
 String leaveGroupString = 'Leave group';
 String deleteGroupString = 'Delete group';
 String onlyAdminCanSendMessageString = 'Only admins can send message';
@@ -1130,3 +1145,38 @@ String uploadPhotoString = 'Upload photo';
 String rateString = 'Rate';
 String ratingsString = 'Ratings';
 String ratingSubmittedString = "Rating submitted successfully";
+String noViewString = 'No view';
+String savedPostsString = 'Saved Posts';
+String videosString = 'Videos';
+String noVideoFoundString = 'No video found';
+String typeHereString = 'Type here';
+String tapToEditString = 'Tap to edit';
+
+String replyingToString = 'Replying to';
+String moreRepliesString = 'more replies';
+String commentIsDeletedString = 'Comment is deleted successfully';
+String commentIsReportedString = 'Comment is reported successfully';
+String reactedToYourStory = 'Reacted to your story';
+String repliedToYourStory = 'Replied to your story';
+String storyPostedSuccessfullyString = 'Story is posted successfully';
+String privateAccountString = 'Private Account';
+String privateAccountMsgString =
+    'When your account is private, only people you approve can see your posts';
+String startedFollowingYouString = 'started following you';
+String sentYourFollowRequestString = 'sent you follow request';
+String commentedOnYourPostString = 'commented on your post';
+String likedYourPostString = 'liked your post';
+String adminAddedNewCompetitionString = 'Admin Added new competition';
+String adminRepliedOnYourSupportRequestString = 'Replied on your support request';
+String congratsYourVerificationIsApprovedString = 'Congratulations, Your verification request has been approved.';
+
+String followRequestsString = 'Follow requests';
+String acceptFollowRequestsString = 'Accept reject the pending Follow requests';
+String deletedString = 'Deleted';
+String postedString = 'Posted';
+String audioIsShorterString = 'Audio is shorter than';
+String secondsString = "seconds";
+String noAudioFound = 'No audio found';
+String searchAnotherAudio = 'Please search another audio';
+
+

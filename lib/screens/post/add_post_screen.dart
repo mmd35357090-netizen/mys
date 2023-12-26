@@ -1,13 +1,23 @@
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../../components/hashtag_tile.dart';
-import '../../components/user_card.dart';
+import 'package:foap/screens/post/post_option_popup.dart';
+import 'package:foap/screens/post/tag_hashtag_view.dart';
+import 'package:foap/screens/post/tag_users_view.dart';
+import 'package:photo_editor_sdk/photo_editor_sdk.dart';
+import 'package:video_editor_sdk/video_editor_sdk.dart';
+import '../../components/smart_text_field.dart';
+import '../../components/video_widget.dart';
 import '../../controllers/post/add_post_controller.dart';
+import '../../controllers/post/select_post_media_controller.dart';
 import '../chat/media.dart';
+import '../settings_menu/settings_controller.dart';
 
 class AddPostScreen extends StatefulWidget {
-  final List<Media> items;
+  final PostType postType;
+  final List<Media>? items;
   final int? competitionId;
   final int? clubId;
   final bool? isReel;
@@ -17,13 +27,14 @@ class AddPostScreen extends StatefulWidget {
 
   const AddPostScreen(
       {Key? key,
-        required this.items,
-        this.competitionId,
-        this.clubId,
-        this.isReel,
-        this.audioId,
-        this.audioStartTime,
-        this.audioEndTime})
+      required this.postType,
+      this.items,
+      this.competitionId,
+      this.clubId,
+      this.isReel,
+      this.audioId,
+      this.audioStartTime,
+      this.audioEndTime})
       : super(key: key);
 
   @override
@@ -32,31 +43,16 @@ class AddPostScreen extends StatefulWidget {
 
 class AddPostState extends State<AddPostScreen> {
   TextEditingController descriptionText = TextEditingController();
-
+  final SelectPostMediaController _selectPostMediaController =
+      SelectPostMediaController();
+  final SmartTextFieldController _smartTextFieldController = Get.find();
+  final SettingsController settingController = Get.find();
   final AddPostController addPostController = Get.find();
-
-  final RefreshController _usersRefreshController =
-  RefreshController(initialRefresh: false);
-  final RefreshController _hashtagRefreshController =
-  RefreshController(initialRefresh: false);
-
-  // RateMyApp rateMyApp = RateMyApp(
-  //   preferencesPrefix: 'rateMyApp_',
-  //   minDays: 0, // Show rate popup on first day of install.
-  //   minLaunches:
-  //       0, // Show rate popup after 5 launches of app after minDays is passed.
-  // );
 
   @override
   void initState() {
+    _smartTextFieldController.clear();
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // await rateMyApp.init();
-      // if (mounted && rateMyApp.shouldOpenDialog) {
-      //   rateMyApp.showRateDialog(context);
-      // }
-    });
   }
 
   @override
@@ -67,7 +63,7 @@ class AddPostState extends State<AddPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: GetBuilder<AddPostController>(
           init: addPostController,
@@ -84,134 +80,212 @@ class AddPostState extends State<AddPostScreen> {
                       Row(
                         children: [
                           InkWell(
-                              onTap: () => Get.back(),
+                              onTap: () {
+                                Get.back();
+                                addPostController.clear();
+                              },
                               child:
-                              const ThemeIconWidget(ThemeIcon.backArrow)),
+                                  const ThemeIconWidget(ThemeIcon.backArrow)),
                           const Spacer(),
-                          Heading5Text(
-                            widget.competitionId == null
-                                ? shareString.tr
-                                : submitString.tr,
-                            weight: TextWeight.medium,
-                            color: AppColorConstants.themeColor,
-                          ).ripple(() {
-                            addPostController.uploadAllPostFiles(
-                                isReel: widget.isReel ?? false,
-                                audioId: widget.audioId,
-                                audioStartTime: widget.audioStartTime,
-                                audioEndTime: widget.audioEndTime,
-                                items: widget.items,
-                                title: descriptionText.text,
-                                competitionId: widget.competitionId,
-                                clubId: widget.clubId);
-                          })
+                          Container(
+                                  color: AppColorConstants.themeColor,
+                                  child: BodyLargeText(
+                                    widget.competitionId == null
+                                        ? postString.tr
+                                        : submitString.tr,
+                                    weight: TextWeight.medium,
+                                    color: Colors.white,
+                                  ).setPadding(
+                                      left: 8, right: 8, top: 5, bottom: 5))
+                              .round(10)
+                              .ripple(() {
+                            if ((widget.items ??
+                                        _selectPostMediaController
+                                            .selectedMediaList)
+                                    .isNotEmpty ||
+                                descriptionText.text.isNotEmpty) {
+                              addPostController.startUploadingPost(
+                                  allowComments:
+                                      addPostController.enableComments.value,
+                                  postType: widget.postType,
+                                  isReel: widget.isReel ?? false,
+                                  audioId: widget.audioId,
+                                  audioStartTime: widget.audioStartTime,
+                                  audioEndTime: widget.audioEndTime,
+                                  items: widget.items ??
+                                      _selectPostMediaController
+                                          .selectedMediaList,
+                                  title: descriptionText.text,
+                                  competitionId: widget.competitionId,
+                                  clubId: widget.clubId);
+                            }
+                          }),
                         ],
                       ).hp(DesignConstants.horizontalPadding),
                       const SizedBox(
                         height: 30,
                       ),
+                      addDescriptionView()
+                          .hp(DesignConstants.horizontalPadding),
+                      const SizedBox(
+                        height: 30,
+                      ),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          mediaListView(isLarge: false).ripple(() {
-                            addPostController.togglePreviewMode();
-                          }),
-                          Expanded(child: addDescriptionView()),
+                          BodyMediumText(
+                            allowCommentsString.tr,
+                            weight: TextWeight.semiBold,
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Obx(() => ThemeIconWidget(
+                                      addPostController.enableComments.value
+                                          ? ThemeIcon.selectedCheckbox
+                                          : ThemeIcon.emptyCheckbox)
+                                  .ripple(() {
+                                addPostController.toggleEnableComments();
+                              })),
                         ],
                       ).hp(DesignConstants.horizontalPadding),
-                      Obx(() {
-                        return addPostController.isEditing.value == 1
-                            ? Expanded(
-                          child: Container(
-                            // height: 500,
-                            width: double.infinity,
-                            color: AppColorConstants.disabledColor
-                                .withOpacity(0.1),
-                            child: addPostController
-                                .currentHashtag.isNotEmpty
-                                ? hashTagView()
-                                : addPostController
-                                .currentUserTag.isNotEmpty
-                                ? usersView()
-                                : Container(),
-                          ),
-                        )
-                            : Container();
-                      }),
                       const SizedBox(
-                        height: 20,
+                        height: 10,
                       ),
+                      Obx(() {
+                        return _smartTextFieldController.isEditing.value == 1
+                            ? Expanded(
+                                child: Container(
+                                  // height: 500,
+                                  width: double.infinity,
+                                  color: AppColorConstants.disabledColor
+                                      .withOpacity(0.1),
+                                  child: _smartTextFieldController
+                                          .currentHashtag.isNotEmpty
+                                      ? TagHashtagView()
+                                      : _smartTextFieldController
+                                              .currentUserTag.isNotEmpty
+                                          ? TagUsersView()
+                                          : Container().ripple(() {
+                                              FocusManager.instance.primaryFocus
+                                                  ?.unfocus();
+                                            }),
+                                ),
+                              )
+                            : mediaList();
+                      }),
+                      Obx(() => _smartTextFieldController.isEditing.value == 0
+                          ? const Spacer()
+                          : Container()),
+                      if (widget.isReel != true)
+                        Obx(() => _smartTextFieldController.isEditing.value == 0
+                            ? PostOptionsPopup(
+                                selectedMediaList: (medias) {
+                                  _selectPostMediaController
+                                      .mediaSelected(medias);
+                                },
+                                selectGif: (gifMedia) {
+                                  _selectPostMediaController
+                                      .mediaSelected([gifMedia]);
+                                },
+                                recordedAudio: (audioMedia) {
+                                  _selectPostMediaController
+                                      .mediaSelected([audioMedia]);
+                                },
+                              )
+                            : Container())
                     ]),
-                addPostController.isPreviewMode.value
-                    ? Stack(
-                  children: [
-                    Container(
-                      height: Get.height,
-                      width: Get.width,
-                      color: AppColorConstants.backgroundColor
-                          .withOpacity(0.2),
-                      child: mediaListView(isLarge: true),
-                    ),
-                    Positioned(
-                        top: 50,
-                        left: DesignConstants.horizontalPadding,
-                        child: const ThemeIconWidget(
-                          ThemeIcon.close,
-                          size: 20,
-                        ).ripple(() {
-                          addPostController.togglePreviewMode();
-                        }))
-                  ],
-                )
-                    : Container()
               ],
             );
           }),
     );
   }
 
-  Widget mediaListView({required bool isLarge}) {
-    return SizedBox(
-      width: isLarge ? Get.width : 80,
-      height: isLarge ? Get.height : 80,
-      child: Stack(
-        children: [
-          CarouselSlider(
-            items: [
-              for (Media media in widget.items)
-                isLarge
-                    ? Image.file(media.file!,
-                    fit: BoxFit.cover, width: double.infinity)
-                    : Image.memory(
-                  media.thumbnail!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ).round(5)
+  Widget mediaList() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: Get.height * 0.4,
+          child: Stack(
+            children: [
+              Obx(() {
+                return CarouselSlider(
+                  items: [
+                    for (Media media
+                        in _selectPostMediaController.selectedMediaList)
+                      media.mediaType == GalleryMediaType.photo
+                          ? Image.file(
+                              media.file!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ).ripple(() {
+                              if (settingController
+                                  .setting.value!.canEditPhotoVideo) {
+                                openImageEditor(media);
+                              }
+                            })
+                          : VideoPostTile(
+                              width: Get.width,
+                              url: media.file!.path,
+                              isLocalFile: true,
+                              play: true,
+                              onTapActionHandler: () {
+                                if (settingController
+                                    .setting.value!.canEditPhotoVideo) {
+                                  openVideoEditor(media);
+                                }
+                              },
+                            )
+                  ],
+                  options: CarouselOptions(
+                    aspectRatio: 1,
+                    enlargeCenterPage: false,
+                    enableInfiniteScroll: false,
+                    height: double.infinity,
+                    viewportFraction: 1,
+                    onPageChanged: (index, reason) {
+                      _selectPostMediaController.updateGallerySlider(index);
+                    },
+                  ),
+                );
+              }),
+              Obx(() {
+                return _selectPostMediaController.selectedMediaList.length > 1
+                    ? Positioned(
+                        bottom: 10,
+                        left: 0,
+                        right: 0,
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                                    height: 25,
+                                    color: AppColorConstants.cardColor,
+                                    child: DotsIndicator(
+                                      dotsCount: _selectPostMediaController
+                                          .selectedMediaList.length,
+                                      position: _selectPostMediaController
+                                          .currentIndex.value,
+                                      decorator: DotsDecorator(
+                                          activeColor:
+                                              AppColorConstants.themeColor),
+                                    ).hP8)
+                                .round(20)),
+                      )
+                    : Container();
+              })
             ],
-            options: CarouselOptions(
-              enlargeCenterPage: false,
-              enableInfiniteScroll: false,
-              height: double.infinity,
-              viewportFraction: 1,
-              onPageChanged: (index, reason) {
-                addPostController.updateGallerySlider(index);
-              },
-            ),
+          ).p16,
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        if (_selectPostMediaController.selectedMediaList.isNotEmpty &&
+            settingController.setting.value!.canEditPhotoVideo)
+          Heading2Text(
+            tapToEditString.tr,
+            weight: TextWeight.bold,
           ),
-          widget.items.length > 1 && isLarge == false
-              ? Positioned(
-            right: 5,
-            top: 5,
-            child: Container(
-                height: 30,
-                width: 30,
-                color: AppColorConstants.backgroundColor,
-                child: const ThemeIconWidget(ThemeIcon.multiplePosts))
-                .circular,
-          )
-              : Container()
-        ],
-      ),
+      ],
     );
   }
 
@@ -220,106 +294,60 @@ class AddPostState extends State<AddPostScreen> {
       height: 100,
       child: Obx(() {
         descriptionText.value = TextEditingValue(
-            text: addPostController.searchText.value,
-            selection: TextSelection.fromPosition(
-                TextPosition(offset: addPostController.position.value)));
+            text: _smartTextFieldController.searchText.value,
+            selection: TextSelection.fromPosition(TextPosition(
+                offset: _smartTextFieldController.position.value)));
 
-        return Focus(
-          child: TextField(
-            controller: descriptionText,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-                fontSize: FontSizes.h5, color: AppColorConstants.grayscale900),
-            maxLines: 5,
-            onChanged: (text) {
-              addPostController.textChanged(
-                  text, descriptionText.selection.baseOffset);
-            },
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.only(left: 10, right: 10),
-                counterText: "",
-                labelStyle: TextStyle(
-                    fontSize: FontSizes.b2,
-                    color: AppColorConstants.themeColor),
-                hintStyle: TextStyle(
-                    fontSize: FontSizes.h5,
-                    color: AppColorConstants.themeColor),
-                hintText: addSomethingAboutPostString.tr),
-          ),
-          onFocusChange: (hasFocus) {
-            if (hasFocus == true) {
-              addPostController.startedEditing();
-            } else {
-              addPostController.stoppedEditing();
-            }
-          },
-        );
+        return Container(
+          color: AppColorConstants.cardColor,
+          child: SmartTextField(
+              maxLine: 5,
+              controller: descriptionText,
+              onTextChangeActionHandler: (text, offset) {
+                _smartTextFieldController.textChanged(text, offset);
+              },
+              onFocusChangeActionHandler: (status) {
+                if (status == true) {
+                  _smartTextFieldController.startedEditing();
+                } else {
+                  _smartTextFieldController.stoppedEditing();
+                }
+              }),
+        ).round(5);
       }),
     );
   }
 
-  usersView() {
-    return GetBuilder<AddPostController>(
-        init: addPostController,
-        builder: (ctx) {
-          return ListView.separated(
-              padding: EdgeInsets.only(top:20,left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
-              itemCount: addPostController.searchedUsers.length,
-              itemBuilder: (BuildContext ctx, int index) {
-                return UserTile(
-                  profile: addPostController.searchedUsers[index],
-                  viewCallback: () {
-                    addPostController.addUserTag(
-                        addPostController.searchedUsers[index].userName);
-                  },
-                );
-              },
-              separatorBuilder: (BuildContext ctx, int index) {
-                return const SizedBox(
-                  height: 20,
-                );
-              }).addPullToRefresh(
-              refreshController: _usersRefreshController,
-              onRefresh: () {},
-              onLoading: () {
-                addPostController.searchUsers(
-                    text: addPostController.currentUserTag.value,callBackHandler: (){
-                  _usersRefreshController.loadComplete();
-                });
-              },
-              enablePullUp: true,
-              enablePullDown: false);
-        });
+  openImageEditor(Media media) async {
+    // PESDK.unlockWithLicense('');
+    final result = await PESDK.openEditor(image: media.file!.path);
+
+    if (result != null) {
+      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+      Media editedMedia = media.copy;
+      editedMedia.file = File(result.image.replaceAll('file://', ''));
+      _selectPostMediaController.replaceMediaWithEditedMedia(
+          originalMedia: media, editedMedia: editedMedia);
+    } else {
+      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+      return;
+    }
   }
 
-  hashTagView() {
-    return GetBuilder<AddPostController>(
-        init: addPostController,
-        builder: (ctx) {
-          return ListView.builder(
-            padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
-            itemCount: addPostController.hashTags.length,
-            itemBuilder: (BuildContext ctx, int index) {
-              return HashTagTile(
-                hashtag: addPostController.hashTags[index],
-                onItemCallback: () {
-                  addPostController
-                      .addHashTag(addPostController.hashTags[index].name);
-                },
-              );
-            },
-          ).addPullToRefresh(
-              refreshController: _hashtagRefreshController,
-              onRefresh: () {},
-              onLoading: () {
-                addPostController.searchHashTags(
-                    text: addPostController.currentHashtag.value,callBackHandler: (){
-                  _hashtagRefreshController.loadComplete();
-                });
-              },
-              enablePullUp: true,
-              enablePullDown: false);
-        });
+  openVideoEditor(Media media) async {
+    // PESDK.unlockWithLicense('');
+    final video = Video(media.file!.path);
+    final result = await VESDK.openEditor(video);
+
+    if (result != null) {
+      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+      Media editedMedia = media.copy;
+      editedMedia.file = File(result.video.replaceAll('file://', ''));
+      _selectPostMediaController.replaceMediaWithEditedMedia(
+          originalMedia: media, editedMedia: editedMedia);
+    } else {
+      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+      return;
+    }
   }
 }

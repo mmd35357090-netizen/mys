@@ -52,8 +52,7 @@ class LoginController extends GetxController {
             getIt<SocketManager>().connect();
 
             if (_userProfileManager.user.value!.userName.isEmpty) {
-              Get.to(() => const SetUserName())!
-                  .then((value) {});
+              Get.to(() => const SetUserName())!.then((value) {});
             } else {
               Get.offAll(() => const DashboardScreen());
               getIt<SocketManager>().connect();
@@ -108,35 +107,36 @@ class LoginController extends GetxController {
 
     if (password.isEmpty) {
       passwordStrength.value = 0;
-      passwordStrengthText.value = 'Please enter you password';
+      passwordStrengthText.value = pleaseEnterYourPassword.tr;
     } else if (password.length < 6) {
       passwordStrength.value = 1 / 4;
-      passwordStrengthText.value = 'Your password is too short';
+      passwordStrengthText.value = passwordIsToShort.tr;
     } else if (password.length < 8) {
       passwordStrength.value = 2 / 4;
-      passwordStrengthText.value = 'Your password is acceptable but not strong';
+      passwordStrengthText.value = passwordIsShortButAcceptable.tr;
     } else {
       if (!letterReg.hasMatch(password) || !numReg.hasMatch(password)) {
         // Password length >= 8
         // But doesn't contain both letter and digit characters
         passwordStrength.value = 3 / 4;
-        passwordStrengthText.value =
-            'Your password must contain letter and number';
+        passwordStrengthText.value = passwordMustByAlphanumeric.tr;
       } else {
         // Password length >= 8
         // Password contains both letter and digit characters
         passwordStrength.value = 1;
-        passwordStrengthText.value = 'Your password is great';
+        passwordStrengthText.value = passwordIsGreat.tr;
       }
     }
+
+    update();
   }
 
-  void register(
-      {required String email,
-      required String name,
-      required String password,
-      required String confirmPassword,
-      }) {
+  void register({
+    required String email,
+    required String name,
+    required String password,
+    required String confirmPassword,
+  }) {
     if (FormValidator().isTextEmpty(name) || userNameCheckStatus != 1) {
       showErrorMessage(
         pleaseEnterValidUserNameString.tr,
@@ -181,11 +181,11 @@ class LoginController extends GetxController {
     }
   }
 
-  void resetPassword(
-      {required String newPassword,
-      required String confirmPassword,
-      required String token,
-      }) {
+  void resetPassword({
+    required String newPassword,
+    required String confirmPassword,
+    required String token,
+  }) {
     if (FormValidator().isTextEmpty(newPassword)) {
       showErrorMessage(
         pleaseEnterPasswordString.tr,
@@ -212,6 +212,7 @@ class LoginController extends GetxController {
   void verifyUsername(String userName) {
     if (userName.contains(' ')) {
       userNameCheckStatus = 0;
+      update();
       return;
     }
 
@@ -219,9 +220,11 @@ class LoginController extends GetxController {
         username: userName,
         successCallback: () {
           userNameCheckStatus = 1;
+          update();
         },
         failureCallback: () {
           userNameCheckStatus = 0;
+          update();
         });
   }
 
@@ -270,7 +273,6 @@ class LoginController extends GetxController {
             EasyLoading.dismiss();
 
             Future.delayed(const Duration(milliseconds: 500), () async {
-              SharedPrefs().setUserLoggedIn(true);
               await SharedPrefs().setAuthorizationKey(authKey);
               await _userProfileManager.refreshProfile();
               await _settingsController.getSettings();
@@ -314,7 +316,6 @@ class LoginController extends GetxController {
         successCallback: (authKey) {
           EasyLoading.dismiss();
           Future.delayed(const Duration(milliseconds: 500), () async {
-            SharedPrefs().setUserLoggedIn(true);
             await SharedPrefs().setAuthorizationKey(authKey);
             await _userProfileManager.refreshProfile();
             await _settingsController.getSettings();
@@ -347,8 +348,7 @@ class LoginController extends GetxController {
 
   void forgotPassword({required String email}) {
     if (FormValidator().isTextEmpty(email)) {
-      AppUtil.showToast(
-          message: pleaseEnterEmailString.tr, isSuccess: false);
+      AppUtil.showToast(message: pleaseEnterEmailString.tr, isSuccess: false);
     } else if (FormValidator().isNotValidEmail(email)) {
       AppUtil.showToast(
           message: pleaseEnterValidEmailString.tr, isSuccess: false);

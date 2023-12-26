@@ -1,8 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/highlights_imports.dart';
-import 'package:story_view/controller/story_controller.dart';
-import 'package:story_view/utils.dart';
-import 'package:story_view/widgets/story_view.dart';
 
 class HighlightViewer extends StatefulWidget {
   final HighlightsModel highlight;
@@ -14,17 +11,18 @@ class HighlightViewer extends StatefulWidget {
 }
 
 class _HighlightViewerState extends State<HighlightViewer> {
-  final controller = StoryController();
   final HighlightsController highlightController = Get.find();
+  final controller = FlutterStoryViewController();
 
   @override
   void initState() {
+    highlightController.setCurrentHighlight(widget.highlight);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       resizeToAvoidBottomInset: false,
       body: storyWidget(),
@@ -34,42 +32,42 @@ class _HighlightViewerState extends State<HighlightViewer> {
   Widget storyWidget() {
     return Stack(
       children: [
-        StoryView(
-            storyItems: [
-              for (HighlightMediaModel media
-                  in widget.highlight.medias.reversed)
-                media.story.isVideoPost() == true
-                    ? StoryItem.pageImage(
-                        key: Key(media.id.toString()),
-                        url: media.story.video!,
-                        controller: controller,
-                      )
-                    : StoryItem.pageImage(
-                        key: Key(media.id.toString()),
-                        url: media.story.image!,
-                        controller: controller,
-                      ),
-            ],
-            controller: controller,
-            // pass controller here too
-            repeat: true,
-            // should the stories be slid forever
-            onStoryShow: (s) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                highlightController.setCurrentStoryMedia(widget.highlight.medias
-                    .where(
-                        (element) => Key(element.id.toString()) == s.view.key)
-                    .first);
-              });
-            },
-            onComplete: () {
-              Get.back();
-            },
-            onVerticalSwipeComplete: (direction) {
-              if (direction == Direction.down) {
-                Get.back();
-              }
-            }),
+        FlutterStoryView(
+          controller: controller,
+
+          // userInfo: UserInfo(
+          //     username: highlightController
+          //         .storyMediaModel.value!.story.user!.userName,
+          //     // give your username
+          //     profileUrl: highlightController.storyMediaModel.value!.story.user!
+          //         .picture // give your profile url
+          //     ),
+          storyItems: [
+            for (HighlightMediaModel media in widget.highlight.medias.reversed)
+              media.story.isVideoPost() == true
+                  ? StoryItem(
+                      url: media.story.video!,
+                      type: StoryItemType.video,
+                      viewers: [],
+                      duration: media.story.videoDuration != null
+                          ? media.story.videoDuration! ~/ 1000
+                          : null)
+                  : StoryItem(
+                      url: media.story.image!,
+                      type: StoryItemType.image,
+                      viewers: [],
+                    )
+          ],
+          onPageChanged: (s) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              highlightController
+                  .setCurrentStoryMedia(widget.highlight.medias[s]);
+            });
+          },
+          onComplete: () {
+            Get.back();
+          },
+        ),
         Positioned(top: 70, left: 20, right: 0, child: userProfileView()),
       ],
     );
@@ -96,11 +94,13 @@ class _HighlightViewerState extends State<HighlightViewer> {
                         highlightController
                             .storyMediaModel.value!.story.user!.userName,
                         weight: TextWeight.medium,
+                        color: Colors.white,
                       ),
                       BodyMediumText(
                         highlightController.storyMediaModel.value!.createdAt,
                         weight: TextWeight.medium,
-                        color: AppColorConstants.grayscale600,
+                        color: Colors.white,
+                        // color: AppColorConstants.subHeadingTextColor,
                       )
                     ],
                   )),
@@ -111,9 +111,9 @@ class _HighlightViewerState extends State<HighlightViewer> {
         SizedBox(
           height: 25,
           width: 40,
-          child: ThemeIconWidget(
+          child: const ThemeIconWidget(
             ThemeIcon.more,
-            color: AppColorConstants.iconColor,
+            color: Colors.white,
             size: 20,
           ).ripple(() {
             openActionPopup();
@@ -131,23 +131,23 @@ class _HighlightViewerState extends State<HighlightViewer> {
         builder: (context) => Wrap(
               children: [
                 ListTile(
-                    title: Center(child: BodyLargeText(deleteFromHighlightString.tr)),
+                    title: Center(child: Text(deleteFromHighlightString.tr)),
                     onTap: () async {
                       Get.back();
-                      controller.play();
+                      controller.resume();
 
                       highlightController.deleteStoryFromHighlight();
                     }),
                 divider(),
                 ListTile(
-                    title: Center(child: BodyLargeText(cancelString.tr)),
+                    title: Center(child: Text(cancelString.tr)),
                     onTap: () {
-                      controller.play();
+                      controller.resume();
                       Get.back();
                     }),
               ],
             )).then((value) {
-      controller.play();
+      controller.resume();
     });
   }
 }

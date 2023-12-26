@@ -7,7 +7,6 @@ import 'package:foap/model/location.dart';
 import 'package:foap/screens/chat/media.dart';
 import 'package:intl/intl.dart';
 
-
 class ChatContentJson {
   int originalMessageId = 0;
 
@@ -489,9 +488,9 @@ class ChatMessageModel {
 
     final difference = DateTime.now().difference(createDate).inDays;
 
-    if (createDate.isToday()) {
+    if (createDate.isToday) {
       return DateFormat('hh:mm a').format(createDate);
-    } else if (createDate.isYesterday()) {
+    } else if (createDate.isYesterday) {
       return yesterdayString.tr;
     } else if (difference < 7) {
       return DateFormat('EEEE').format(createDate);

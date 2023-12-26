@@ -6,6 +6,8 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import '../model/story_model.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../screens/story/story_updates_bar.dart';
+
 class MediaThumbnailView extends StatefulWidget {
   final StoryMediaModel media;
 
@@ -27,50 +29,50 @@ class _MediaThumbnailViewState extends State<MediaThumbnailView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-            height: widget.size ?? 50,
-            width: widget.size ?? 50,
-            child: widget.media.type ==
-                    2 // 1 for text, 2 for image, 3 for video
-                ? CachedNetworkImage(
-                    imageUrl: widget.media.image!,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: const CircularProgressIndicator().p16),
-                    errorWidget: (context, url, error) => const SizedBox(
-                        height: 20, width: 20, child: Icon(Icons.error)),
-                  ).round(18).p(1)
-                : FutureBuilder<ThumbnailResult>(
-                    future: genThumbnail(widget.media.video!),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {
-                        final image = snapshot.data.image;
+        height: widget.size ?? storyCircleSize,
+        width: widget.size ?? storyCircleSize,
+        child: widget.media.type ==
+            2 // 1 for text, 2 for image, 3 for video
+            ? CachedNetworkImage(
+          imageUrl: widget.media.image!,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => SizedBox(
+              height: 20,
+              width: 20,
+              child: const CircularProgressIndicator().p16),
+          errorWidget: (context, url, error) => const SizedBox(
+              height: 20, width: 20, child: Icon(Icons.error)),
+        ).round(40).p(1)
+            : FutureBuilder<ThumbnailResult>(
+          future: genThumbnail(widget.media.video!),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              final image = snapshot.data.userImage;
 
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            image,
-                          ],
-                        );
-                      } else if (snapshot.hasError) {
-                        return Container(
-                          padding: const EdgeInsets.all(8.0),
-                          color: Colors.red,
-                          child: Text(
-                            "Error:\n${snapshot.error.toString()}",
-                          ),
-                        );
-                      } else {
-                        return const CircularProgressIndicator().p16;
-                      }
-                    },
-                  ))
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  image,
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Container(
+                padding: const EdgeInsets.all(8.0),
+                color: Colors.red,
+                child: Text(
+                  "Error:\n${snapshot.error.toString()}",
+                ),
+              );
+            } else {
+              return const CircularProgressIndicator().p16;
+            }
+          },
+        ))
         .borderWithRadius(
-            value: 2,
-            radius: 20,
-            color: widget.borderColor ?? AppColorConstants.themeColor);
+        value: 2,
+        radius: 40,
+        color: widget.borderColor ?? AppColorConstants.themeColor);
   }
 }
 

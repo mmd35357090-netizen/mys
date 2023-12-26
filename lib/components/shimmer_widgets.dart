@@ -311,7 +311,7 @@ class StoryAndHighlightsShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 85,
+      height: 90,
       child: ListView.separated(
           padding: EdgeInsets.only(left: DesignConstants.horizontalPadding),
           scrollDirection: Axis.horizontal,
@@ -344,7 +344,7 @@ class ShimmerUsers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding:  EdgeInsets.only(
+      padding: EdgeInsets.only(
           left: DesignConstants.horizontalPadding,
           right: DesignConstants.horizontalPadding,
           top: 20,
@@ -495,7 +495,7 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-        padding:  EdgeInsets.only(
+        padding: EdgeInsets.only(
             top: 16,
             left: DesignConstants.horizontalPadding,
             right: DesignConstants.horizontalPadding,

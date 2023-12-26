@@ -48,7 +48,7 @@ class ExploreController extends GetxController {
       PostSearchQuery query = PostSearchQuery();
       query.title = searchText.value;
       _postController.setPostSearchQuery(query: query, callback: () {});
-      _usersController.setSearchTextFilter(searchText.value);
+      _usersController.setSearchTextFilter(searchText.value,(){});
       _miscController.searchHashTags(searchText.value);
       _clubsController.setSearchText(searchText.value);
     } else {

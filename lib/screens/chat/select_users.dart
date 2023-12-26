@@ -311,6 +311,7 @@ class SelectFollowingUserForMessageSendingState
       children: [
         Container(
           height: 340,
+          width: Get.width,
           color: AppColorConstants.backgroundColor,
           child: GetBuilder<SelectUserForChatController>(
               init: selectUserForChatController,

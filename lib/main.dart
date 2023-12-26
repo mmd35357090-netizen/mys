@@ -5,15 +5,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:foap/apiHandler/apis/auth_api.dart';
+import 'package:foap/controllers/story/story_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:foap/controllers/live/live_users_controller.dart';
+import 'package:foap/helper/imports/reel_imports.dart';
+import 'package:foap/screens/add_on/controller/reel/reels_controller.dart';
+import 'package:foap/screens/login_sign_up/ask_to_follow.dart';
 import 'package:foap/screens/settings_menu/help_support_contorller.dart';
 import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
 import 'package:foap/util/constant_util.dart';
 
 import 'components/giphy/src/l10n/l10n.dart';
 import 'components/reply_chat_cells/post_gift_controller.dart';
+import 'components/smart_text_field.dart';
 import 'controllers/clubs/clubs_controller.dart';
 import 'controllers/misc/faq_controller.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
@@ -117,12 +122,19 @@ Future<void> main() async {
   Get.put(HelpSupportController());
   Get.put(PodcastStreamingController());
   Get.put(SelectUserForGroupChatController());
+  Get.put(AppStoryController());
+  Get.put(SmartTextFieldController());
+  Get.put(ReelsController());
+  Get.put(CreateReelController());
 
   setupServiceLocator();
 
   final UserProfileManager userProfileManager = Get.find();
+  String? authKey = await SharedPrefs().getAuthorizationKey();
 
-  await userProfileManager.refreshProfile();
+  if (authKey != null) {
+    await userProfileManager.refreshProfile();
+  }
 
   final SettingsController settingsController = Get.find();
   await settingsController.getSettings();
@@ -145,7 +157,7 @@ Future<void> main() async {
   } else {
     runApp(Phoenix(
         child: const SocialifiedApp(
-      startScreen: SplashScreen(),
+      startScreen: AskToFollow(),
     )));
   }
 }

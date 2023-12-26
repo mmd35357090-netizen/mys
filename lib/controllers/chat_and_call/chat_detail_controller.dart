@@ -12,16 +12,17 @@ import 'package:google_mlkit_smart_reply/google_mlkit_smart_reply.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import '../../components/notification_banner.dart';
+import '../../helper/enum_linking.dart';
 import '../../helper/permission_utils.dart';
 import '../../manager/socket_manager.dart';
 import '../../model/call_model.dart';
 import '../../model/gallery_media.dart';
 import '../../model/location.dart';
 import '../../model/post_model.dart';
+import '../../model/story_model.dart';
 import '../../util/constant_util.dart';
 import '../../util/shared_prefs.dart';
 import 'agora_call_controller.dart';
-
 
 class ChatDetailController extends GetxController {
   final AgoraCallController agoraCallController = Get.find();
@@ -294,7 +295,9 @@ class ChatDetailController extends GetxController {
 
   sendMessageAsRead(ChatMessageModel message) {
     messages.value = messages.map((element) {
-      element.status = 3;
+      if (element.id == message.id) {
+        element.status = 3;
+      }
       return element;
     }).toList();
 
@@ -373,8 +376,7 @@ class ChatDetailController extends GetxController {
     final filter = ProfanityFilter();
     bool hasProfanity = filter.hasProfanity(messageText);
     if (hasProfanity) {
-      AppUtil.showToast(
-          message: notAllowedMessageString.tr, isSuccess: true);
+      AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
       return false;
     }
 
@@ -1157,6 +1159,131 @@ class ChatDetailController extends GetxController {
     return status;
   }
 
+  Future<bool> sendStoryTextReplyMessage(
+      {required String messageText,
+      required StoryMediaModel storyMedia,
+      required ChatRoomModel room}) async {
+    bool status = true;
+
+    final filter = ProfanityFilter();
+    bool hasProfanity = filter.hasProfanity(messageText);
+    if (hasProfanity) {
+      AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
+      return false;
+    }
+
+    String encryptedTextMessage = messageText.encrypted();
+    var content = {
+      'messageType': messageTypeId(MessageContentType.text),
+      'text': encryptedTextMessage,
+    };
+
+    String repliedOnStory = jsonEncode(storyMedia.toJson()).encrypted();
+
+    if (encryptedTextMessage.removeAllWhitespace.trim().isNotEmpty) {
+      String localMessageId = randomId();
+      var message = {
+        'userId': _userProfileManager.user.value!.id,
+        'localMessageId': localMessageId,
+        'is_encrypted': AppConfigConstants.enableEncryption,
+        'messageType': messageTypeId(MessageContentType.textReplyOnStory),
+        'message': json.encode(content).encrypted(),
+        'replied_on_message': repliedOnStory,
+        'chat_version': AppConfigConstants.chatVersion,
+        'room': room.id,
+        'created_by': _userProfileManager.user.value!.id,
+        'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
+      };
+
+      //save message to socket server
+      status =
+          getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+
+      ChatMessageModel currentMessageModel = ChatMessageModel();
+      currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
+      currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
+
+      currentMessageModel.localMessageId = localMessageId;
+      currentMessageModel.sender = _userProfileManager.user.value!;
+
+      currentMessageModel.roomId = room.id;
+
+      currentMessageModel.userName = youString.tr;
+      currentMessageModel.senderId = _userProfileManager.user.value!.id;
+      currentMessageModel.messageType =
+          messageTypeId(MessageContentType.textReplyOnStory);
+      currentMessageModel.messageContent = json.encode(content).encrypted();
+      currentMessageModel.repliedOnMessageContent = repliedOnStory;
+
+      currentMessageModel.createdAt =
+          (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
+      getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+
+      update();
+    }
+
+    return status;
+  }
+
+  Future<bool> sendStoryReactionReplyMessage(
+      {required String emoji,
+      required StoryMediaModel storyMedia,
+      required ChatRoomModel room}) async {
+    bool status = true;
+
+    String encryptedTextMessage = emoji.encrypted();
+    var content = {
+      'messageType': messageTypeId(MessageContentType.text),
+      'text': encryptedTextMessage,
+    };
+
+    String reactedOnStory = jsonEncode(storyMedia.toJson()).encrypted();
+
+    if (encryptedTextMessage.removeAllWhitespace.trim().isNotEmpty) {
+      String localMessageId = randomId();
+      var message = {
+        'userId': _userProfileManager.user.value!.id,
+        'localMessageId': localMessageId,
+        'is_encrypted': AppConfigConstants.enableEncryption,
+        'messageType': messageTypeId(MessageContentType.reactedOnStory),
+        'message': json.encode(content).encrypted(),
+        'replied_on_message': reactedOnStory,
+        'chat_version': AppConfigConstants.chatVersion,
+        'room': room.id,
+        'created_by': _userProfileManager.user.value!.id,
+        'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
+      };
+
+      //save message to socket server
+      status =
+          getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+
+      ChatMessageModel currentMessageModel = ChatMessageModel();
+      currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
+      currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
+
+      currentMessageModel.localMessageId = localMessageId;
+      currentMessageModel.sender = _userProfileManager.user.value!;
+
+      currentMessageModel.roomId = room.id;
+
+      currentMessageModel.userName = youString.tr;
+      currentMessageModel.senderId = _userProfileManager.user.value!.id;
+      currentMessageModel.messageType =
+          messageTypeId(MessageContentType.reactedOnStory);
+      currentMessageModel.messageContent = json.encode(content).encrypted();
+      currentMessageModel.repliedOnMessageContent = reactedOnStory;
+
+      currentMessageModel.createdAt =
+          (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
+      getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    }
+
+    return status;
+  }
+
   addNewMessage(
       {required ChatMessageModel message, required int roomId}) async {
     if (roomId != message.roomId) {
@@ -1225,6 +1352,7 @@ class ChatDetailController extends GetxController {
         if (media.mediaType == GalleryMediaType.photo) {
         } else if (media.mediaType == GalleryMediaType.video) {
           await MiscApi.uploadFile(thumbnailFile!.path,
+              mediaType: GalleryMediaType.photo,
               type: UploadMediaType.chat, resultCallback: (filename, filepath) {
             videoThumbnailPath = filepath;
           });
@@ -1260,8 +1388,9 @@ class ChatDetailController extends GetxController {
           //     media, messageId, false, chatRoom.value!.id);
         }
 
-        await MiscApi.uploadFile(mainFile.path, type: UploadMediaType.chat,
-            resultCallback: (filename, filepath) {
+        await MiscApi.uploadFile(mainFile.path,
+            mediaType: media.mediaType!,
+            type: UploadMediaType.chat, resultCallback: (filename, filepath) {
           String mainFileUploadedPath = filepath;
 
           // await mainFile.delete();
@@ -1287,8 +1416,7 @@ class ChatDetailController extends GetxController {
           callback(uploadedGalleryMedia);
         });
       } else {
-        AppUtil.showToast(
-            message: noInternetString.tr, isSuccess: false);
+        AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
       }
     });
     return gallery;
@@ -1476,7 +1604,7 @@ class ChatDetailController extends GetxController {
       if (chatRoom.value?.isGroupChat == false) {
         chatRoom.value!.roomMembers = chatRoom.value!.roomMembers.map((member) {
           if (member.userDetail.id == userId) {
-            member.userDetail.isOnline = true;
+            member.userDetail.isOnline = isOnline;
           }
           return member;
         }).toList();
@@ -1507,8 +1635,8 @@ class ChatDetailController extends GetxController {
 // call
   void initiateVideoCall() {
     PermissionUtils.requestPermission(
-        [Permission.camera, Permission.microphone],
-        isOpenSettings: false, permissionGrant: () async {
+        [Permission.camera, Permission.microphone], isOpenSettings: false,
+        permissionGrant: () async {
       Call call = Call(
           uuid: '',
           callId: 0,

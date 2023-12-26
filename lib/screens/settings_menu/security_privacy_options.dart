@@ -20,21 +20,23 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar(
-               title: privacyString.tr),
-          divider().tP8,
+          backNavigationBar(title: privacyString.tr),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.zero,
+              padding: const EdgeInsets.only(top: 20),
               children: [
                 Column(
                   children: [
-                    shareLocationTile(),
+                    // shareLocationTile(),
                     bioMetricLoginTile(),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    accountPrivacyTile()
                   ],
                 ),
                 const SizedBox(
@@ -52,38 +54,28 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
     return Column(
       children: [
         SizedBox(
-          height: 65,
+          height: 50,
           child: Row(children: [
-            Container(
-                    color: AppColorConstants.themeColor.withOpacity(0.2),
-                    child: Image.asset(
-                      'assets/dark-mode.png',
-                      height: 20,
-                      width: 20,
-                      color: AppColorConstants.themeColor,
-                    ).p8)
-                .circular,
-            const SizedBox(width: 10),
             Expanded(
               child: BodyLargeText(shareLocationString.tr,
                   weight: TextWeight.medium),
             ),
             // const Spacer(),
             Obx(() => FlutterSwitch(
-                  inactiveColor: AppColorConstants.disabledColor,
-                  activeColor: AppColorConstants.themeColor,
-                  width: 50.0,
-                  height: 30.0,
-                  valueFontSize: 15.0,
-                  toggleSize: 20.0,
-                  value: settingsController.shareLocation.value,
-                  borderRadius: 30.0,
-                  padding: 8.0,
-                  // showOnOff: true,
-                  onToggle: (val) {
-                    settingsController.shareLocationToggle(val);
-                  },
-                )),
+              inactiveColor: AppColorConstants.disabledColor,
+              activeColor: AppColorConstants.themeColor,
+              width: 50.0,
+              height: 30.0,
+              valueFontSize: 15.0,
+              toggleSize: 20.0,
+              value: settingsController.shareLocation.value,
+              borderRadius: 30.0,
+              padding: 8.0,
+              // showOnOff: true,
+              onToggle: (val) {
+                settingsController.shareLocationToggle(val);
+              },
+            )),
           ]).hp(DesignConstants.horizontalPadding),
         ),
         divider()
@@ -94,57 +86,79 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
   bioMetricLoginTile() {
     return Obx(() => settingsController.bioMetricType.value == 0
         ? Container()
-        : Column(
+        : SizedBox(
+      height: 50,
+      child: Row(children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                height: 75,
-                child: Row(children: [
-                  Container(
-                          color: AppColorConstants.themeColor.withOpacity(0.2),
-                          child: Image.asset(
-                            settingsController.bioMetricType.value == 1
-                                ? 'assets/face-id.png'
-                                : 'assets/fingerprint.png',
-                            height: 20,
-                            width: 20,
-                            color: AppColorConstants.themeColor,
-                          ).p8)
-                      .circular,
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        BodyLargeText(faceIdOrTouchIdString.tr,
-                                weight: TextWeight.medium)
-                            .bP4,
-                        BodySmallText(
-                          unlockYourAppUsingBiometricLoginString.tr,
-                        ),
-                      ],
-                    ),
-                  ),
-                  // const Spacer(),
-                  FlutterSwitch(
-                    inactiveColor: AppColorConstants.disabledColor,
-                    activeColor: AppColorConstants.themeColor,
-                    width: 50.0,
-                    height: 30.0,
-                    valueFontSize: 15.0,
-                    toggleSize: 20.0,
-                    value: settingsController.bioMetricAuthStatus.value,
-                    borderRadius: 30.0,
-                    padding: 8.0,
-                    // showOnOff: true,
-                    onToggle: (value) {
-                      settingsController.biometricLogin(value);
-                    },
-                  ),
-                ]).hp(DesignConstants.horizontalPadding),
+              BodyLargeText(faceIdOrTouchIdString.tr,
+                  weight: TextWeight.medium)
+                  .bP4,
+              BodySmallText(
+                unlockYourAppUsingBiometricLoginString.tr,
               ),
-              divider()
             ],
-          ));
+          ),
+        ),
+        // const Spacer(),
+        FlutterSwitch(
+          inactiveColor: AppColorConstants.disabledColor,
+          activeColor: AppColorConstants.themeColor,
+          width: 50.0,
+          height: 30.0,
+          valueFontSize: 15.0,
+          toggleSize: 20.0,
+          value: settingsController.bioMetricAuthStatus.value,
+          borderRadius: 30.0,
+          padding: 8.0,
+          // showOnOff: true,
+          onToggle: (value) {
+            settingsController.biometricLogin(value);
+          },
+        ),
+      ]).hp(DesignConstants.horizontalPadding),
+    ));
+  }
+
+  accountPrivacyTile() {
+    return Obx(() => settingsController.isPrivateAccount.value == 0
+        ? Container()
+        : SizedBox(
+      height: 70,
+      child: Row(children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              BodyLargeText(privateAccountString.tr,
+                  weight: TextWeight.medium)
+                  .bP4,
+              BodySmallText(
+                privateAccountMsgString.tr,
+              ),
+            ],
+          ),
+        ),
+        // const Spacer(),
+        FlutterSwitch(
+          inactiveColor: AppColorConstants.disabledColor,
+          activeColor: AppColorConstants.themeColor,
+          width: 50.0,
+          height: 30.0,
+          valueFontSize: 15.0,
+          toggleSize: 20.0,
+          value: settingsController.isPrivateAccount.value,
+          borderRadius: 30.0,
+          padding: 8.0,
+          onToggle: (isPrivate) {
+            settingsController.toggleAccountPrivacy(isPrivate);
+          },
+        ),
+      ]).hp(DesignConstants.horizontalPadding),
+    ));
   }
 }

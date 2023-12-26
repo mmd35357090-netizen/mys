@@ -1,4 +1,3 @@
-
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
 import '../../components/sm_tab_bar.dart';
@@ -28,12 +27,10 @@ class _AuthTabState extends State<AuthTab> with SingleTickerProviderStateMixin {
               bottom: 20,
               child: Container(
                 color: AppColorConstants.cardColor.withOpacity(0.8),
-                child: SMTabBar(
-                  tabs: [
-                    signInString,
-                    signUpString,
-                  ],
-                ),
+                child: SMTabBar(tabs: [
+                  signInString,
+                  signUpString,
+                ], canScroll: false),
               ).round(40),
             )
           ],

@@ -143,15 +143,15 @@ class _PodcastDetailState extends State<PodcastDetail> {
           trimMode: read_more.TrimMode.Line,
           colorClickableText: Colors.white,
           trimCollapsedText: showMoreString.tr,
-          style: TextStyle(fontSize: 14, color: AppColorConstants.grayscale900),
+          style: TextStyle(fontSize: 14, color: AppColorConstants.mainTextColor),
           trimExpandedText: '    ${showLessString.tr}',
           moreStyle: TextStyle(
               fontSize: 14,
-              color: AppColorConstants.grayscale900,
+              color: AppColorConstants.mainTextColor,
               fontWeight: FontWeight.bold),
           lessStyle: TextStyle(
               fontSize: 14,
-              color: AppColorConstants.grayscale900,
+              color: AppColorConstants.mainTextColor,
               fontWeight: FontWeight.bold),
         ),
       ]).setPadding(

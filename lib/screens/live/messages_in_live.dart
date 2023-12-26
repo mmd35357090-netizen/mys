@@ -61,13 +61,13 @@ class MessagesInLive extends StatelessWidget {
               BodyMediumText(
                 message.userName,
                 weight: TextWeight.semiBold,
-                color: AppColorConstants.grayscale600,
+                color: AppColorConstants.subHeadingTextColor,
               ),
               Row(
                 children: [
                   BodySmallText(
                     sentAGiftString.tr,
-                    color: AppColorConstants.grayscale600,
+                    color: AppColorConstants.subHeadingTextColor,
                   ),
                   const SizedBox(
                     width: 5,
@@ -83,7 +83,7 @@ class MessagesInLive extends StatelessWidget {
                   ),
                   BodySmallText(
                     message.giftContent.coins.toString(),
-                    color: AppColorConstants.grayscale600,
+                    color: AppColorConstants.subHeadingTextColor,
                   ),
                   const SizedBox(
                     width: 5,
@@ -116,11 +116,11 @@ class MessagesInLive extends StatelessWidget {
               BodyMediumText(
                 message.userName,
                 weight: TextWeight.semiBold,
-                color: AppColorConstants.grayscale500,
+                color: AppColorConstants.subHeadingTextColor,
               ),
               BodySmallText(
                 message.decrypt,
-                color: AppColorConstants.grayscale500,
+                color: AppColorConstants.subHeadingTextColor,
               ),
             ],
           ),

@@ -67,6 +67,7 @@ class RequestVerificationController extends GetxController {
 
   setSelectedDocumentType(String document) {
     documentType.value.text = document;
+    documentType.refresh();
   }
 
   addDocument(File file) {
@@ -80,13 +81,11 @@ class RequestVerificationController extends GetxController {
   submitRequest(BuildContext context) async {
     if (documentType.value.text.isEmpty) {
       AppUtil.showToast(
-          message: pleaseSelectDocumentTypeString.tr,
-          isSuccess: false);
+          message: pleaseSelectDocumentTypeString.tr, isSuccess: false);
       return;
     }
     if (selectedImages.isEmpty) {
-      AppUtil.showToast(
-          message: pleaseUploadProofString.tr, isSuccess: false);
+      AppUtil.showToast(message: pleaseUploadProofString.tr, isSuccess: false);
       return;
     }
 
@@ -94,7 +93,8 @@ class RequestVerificationController extends GetxController {
 
     EasyLoading.show(status: loadingString.tr);
     for (File file in selectedImages) {
-      await MiscApi.uploadFile(file.path, type: UploadMediaType.verification,
+      await MiscApi.uploadFile(file.path,
+          mediaType: GalleryMediaType.photo, type: UploadMediaType.verification,
           resultCallback: (fileName, filePath) {
         Map<String, String> proof = {
           'filename': fileName,
@@ -115,8 +115,7 @@ class RequestVerificationController extends GetxController {
           getVerificationRequests();
 
           AppUtil.showToast(
-              message: verificationRequestSentString.tr,
-              isSuccess: true);
+              message: verificationRequestSentString.tr, isSuccess: true);
 
           clear();
           Timer(const Duration(seconds: 2), () {

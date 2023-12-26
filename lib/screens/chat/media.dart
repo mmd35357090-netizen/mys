@@ -8,7 +8,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class Media {
   ///File saved on local storage
   File? file;
-  String? fileUrl;
+  String? filePath;
 
   ///Unique id to identify
   String? id;
@@ -17,7 +17,7 @@ class Media {
   Uint8List? thumbnail;
 
   // ///The image file in bytes format
-  Uint8List? mediaByte;
+  Uint8List? mainFileBytes;
 
   ///Image Dimensions
   Size? size;
@@ -62,15 +62,31 @@ class Media {
   Media({
     this.id,
     this.file,
-    this.fileUrl,
+    this.filePath,
 
     this.thumbnail,
-    this.mediaByte,
+    this.mainFileBytes,
     this.size,
     this.creationTime,
     this.title,
     this.mediaType,
     this.fileSize,
   });
+
+  Media get copy {
+    Media media = Media();
+    media.id = id;
+    media.file = file;
+    media.filePath = filePath;
+    media.thumbnail = thumbnail;
+    media.mainFileBytes = mainFileBytes;
+    media.size = size;
+    media.creationTime = creationTime;
+    media.title = title;
+    media.mediaType = mediaType;
+    media.fileSize = fileSize;
+    return media;
+  }
+
 }
 

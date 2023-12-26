@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../components/user_card.dart';
 
 class EnterGroupInfo extends StatefulWidget {
   const EnterGroupInfo({Key? key}) : super(key: key);
@@ -100,6 +99,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                     )
                   ],
                 ),
+                const SizedBox(height: 20,),
                 AppTextField(
                   maxLines: 5,
                   controller: groupDescription,
@@ -108,36 +108,39 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
               ],
             ),
           ).hp(DesignConstants.horizontalPadding),
-          Expanded(
-            child: GetBuilder<SelectUserForGroupChatController>(
-                init: selectUserForGroupChatController,
-                builder: (ctx) {
-                  List<UserModel> usersList =
-                      selectUserForGroupChatController.selectedFriends;
-                  return GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 5,
-                            crossAxisSpacing: 5.0,
-                            mainAxisSpacing: 5.0,
-                            childAspectRatio: 0.8),
-                    padding: const EdgeInsets.only(left: 8, right: 8),
-                    itemCount: usersList.length,
-                    itemBuilder: (context, index) {
-                      return SelectableUserCard(
-                        model: usersList[index],
-                        isSelected: selectUserForGroupChatController
-                            .selectedFriends
-                            .contains(usersList[index]),
-                        selectionHandler: () {
-                          selectUserForGroupChatController
-                              .selectFriend(usersList[index]);
-                        },
-                      );
-                    },
-                  );
-                }),
+          const SizedBox(
+            height: 20,
           ),
+          Obx(() => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  BodyMediumText(
+                    publicGroupString.tr,
+                    weight: TextWeight.semiBold,
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  ThemeIconWidget(
+                      enterGroupInfoController.isPublicGroup.value
+                          ? ThemeIcon.selectedCheckbox
+                          : ThemeIcon.emptyCheckbox)
+                      .ripple(() {
+                    enterGroupInfoController.togglePublicGroup();
+                  }),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              if (enterGroupInfoController.isPublicGroup.value)
+                BodySmallText(
+                  groupGroupInfoString.tr,
+                ),
+            ],
+          ).hp(DesignConstants.horizontalPadding)),
         ],
       ),
     );
@@ -158,7 +161,8 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
         name: groupName.text,
         description: groupDescription.text,
         users: selectUserForGroupChatController.selectedFriends,
-        image: enterGroupInfoController.groupImagePath.value);
+        image: enterGroupInfoController.groupImagePath.value,
+        isPublicGroup: enterGroupInfoController.isPublicGroup.value);
   }
 
   void openImagePickingPopup() {

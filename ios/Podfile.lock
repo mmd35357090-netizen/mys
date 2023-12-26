@@ -47,41 +47,12 @@ PODS:
     - Flutter
   - background_downloader (0.0.1):
     - Flutter
-  - Braintree/ApplePay (5.6.3):
-    - Braintree/Core
-  - Braintree/Card (5.6.3):
-    - Braintree/Core
-  - Braintree/Core (5.6.3)
-  - Braintree/PaymentFlow (5.6.3):
-    - Braintree/Core
-    - Braintree/PayPalDataCollector
-  - Braintree/PayPal (5.6.3):
-    - Braintree/Core
-    - Braintree/PayPalDataCollector
-  - Braintree/PayPalDataCollector (5.6.3)
-  - Braintree/ThreeDSecure (5.6.3):
-    - Braintree/Card
-    - Braintree/PaymentFlow
-  - Braintree/UnionPay (5.6.3):
-    - Braintree/Card
-  - Braintree/Venmo (5.6.3):
-    - Braintree/Core
-  - BraintreeDropIn (9.4.0):
-    - Braintree/ApplePay (~> 5.6.1)
-    - Braintree/Card (~> 5.6.1)
-    - Braintree/Core (~> 5.6.1)
-    - Braintree/PayPal (~> 5.6.1)
-    - Braintree/ThreeDSecure (~> 5.6.1)
-    - Braintree/UnionPay (~> 5.6.1)
-    - Braintree/Venmo (~> 5.6.1)
   - camera_avfoundation (0.0.1):
     - Flutter
   - connectivity (0.0.1):
     - Flutter
     - Reachability
   - CryptoSwift (1.7.1)
-  - device_info_plus (0.0.1):
-    - Flutter
   - DKImagePickerController/Core (4.3.4):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -198,11 +169,6 @@ PODS:
   - flutter_archive (0.0.1):
     - Flutter
     - ZIPFoundation (= 0.9.13)
-  - flutter_braintree (1.0.0):
-    - Braintree/ApplePay (~> 5.6.3)
-    - Braintree/PayPal (~> 5.6.3)
-    - BraintreeDropIn (= 9.4.0)
-    - Flutter
   - flutter_callkit_incoming (0.0.1):
     - CryptoSwift
     - Flutter
@@ -228,9 +194,8 @@ PODS:
     - Flutter
     - flutter_sound_core (= 9.2.13)
   - flutter_sound_core (9.2.13)
-  - fluttertoast (0.0.2):
+  - flutter_video_info (1.1.0):
     - Flutter
-    - Toast
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -336,6 +301,10 @@ PODS:
   - GTMSessionFetcher/Core (2.3.0)
   - image_picker_ios (0.0.1):
     - Flutter
+  - imgly_sdk (3.0.0):
+    - Flutter
+    - imglyKit (~> 11.4)
+  - imglyKit (11.7.0)
   - in_app_purchase_storekit (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -400,6 +369,9 @@ PODS:
     - FlutterMacOS
   - permission_handler_apple (9.1.1):
     - Flutter
+  - photo_editor_sdk (3.0.0):
+    - Flutter
+    - imgly_sdk (= 3.0.0)
   - photo_manager (2.0.0):
     - Flutter
     - FlutterMacOS
@@ -408,11 +380,9 @@ PODS:
     - PromisesObjC (= 2.3.1)
   - push_ios (0.0.1):
     - Flutter
-  - razorpay-pod (1.3.3)
-  - razorpay_flutter (1.1.10):
-    - Flutter
-    - razorpay-pod
   - Reachability (3.2)
+  - record (0.0.1):
+    - Flutter
   - SDWebImage (5.17.0):
     - SDWebImage/Core (= 5.17.0)
   - SDWebImage/Core (5.17.0)
@@ -429,48 +399,14 @@ PODS:
   - sqflite (0.0.3):
     - Flutter
     - FMDB (>= 2.7.5)
-  - Stripe (23.8.0):
-    - StripeApplePay (= 23.8.0)
-    - StripeCore (= 23.8.0)
-    - StripePayments (= 23.8.0)
-    - StripePaymentsUI (= 23.8.0)
-    - StripeUICore (= 23.8.0)
-  - stripe_ios (0.0.1):
-    - Flutter
-    - Stripe (~> 23.8.0)
-    - StripeApplePay (~> 23.8.0)
-    - StripeFinancialConnections (~> 23.8.0)
-    - StripePayments (~> 23.8.0)
-    - StripePaymentSheet (~> 23.8.0)
-    - StripePaymentsUI (~> 23.8.0)
-  - StripeApplePay (23.8.0):
-    - StripeCore (= 23.8.0)
-  - StripeCore (23.8.0)
-  - StripeFinancialConnections (23.8.0):
-    - StripeCore (= 23.8.0)
-    - StripeUICore (= 23.8.0)
-  - StripePayments (23.8.0):
-    - StripeCore (= 23.8.0)
-    - StripePayments/Stripe3DS2 (= 23.8.0)
-  - StripePayments/Stripe3DS2 (23.8.0):
-    - StripeCore (= 23.8.0)
-  - StripePaymentSheet (23.8.0):
-    - StripeApplePay (= 23.8.0)
-    - StripeCore (= 23.8.0)
-    - StripePayments (= 23.8.0)
-    - StripePaymentsUI (= 23.8.0)
-  - StripePaymentsUI (23.8.0):
-    - StripeCore (= 23.8.0)
-    - StripePayments (= 23.8.0)
-    - StripeUICore (= 23.8.0)
-  - StripeUICore (23.8.0):
-    - StripeCore (= 23.8.0)
   - SwiftyGif (5.4.4)
-  - Toast (4.0.0)
   - url_launcher_ios (0.0.1):
     - Flutter
   - video_compress_ds (0.3.0):
     - Flutter
+  - video_editor_sdk (3.0.0):
+    - Flutter
+    - imgly_sdk (= 3.0.0)
   - video_player_avfoundation (0.0.1):
     - Flutter
   - video_thumbnail (0.0.1):
@@ -490,7 +426,6 @@ DEPENDENCIES:
   - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
-  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - facebook_audience_network (from `.symlinks/plugins/facebook_audience_network/ios`)
   - ffmpeg_kit_flutter (from `.symlinks/plugins/ffmpeg_kit_flutter/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
@@ -500,7 +435,6 @@ DEPENDENCIES:
   - fl_location (from `.symlinks/plugins/fl_location/ios`)
   - Flutter (from `Flutter`)
   - flutter_archive (from `.symlinks/plugins/flutter_archive/ios`)
-  - flutter_braintree (from `.symlinks/plugins/flutter_braintree/ios`)
   - flutter_callkit_incoming (from `.symlinks/plugins/flutter_callkit_incoming/ios`)
   - flutter_contacts (from `.symlinks/plugins/flutter_contacts/ios`)
   - flutter_fgbg (from `.symlinks/plugins/flutter_fgbg/ios`)
@@ -510,7 +444,7 @@ DEPENDENCIES:
   - flutter_login_facebook (from `.symlinks/plugins/flutter_login_facebook/ios`)
   - flutter_ringtone_player (from `.symlinks/plugins/flutter_ringtone_player/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
-  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
+  - flutter_video_info (from `.symlinks/plugins/flutter_video_info/ios`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
@@ -518,6 +452,7 @@ DEPENDENCIES:
   - google_mobile_ads (from `.symlinks/plugins/google_mobile_ads/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - imgly_sdk (from `.symlinks/plugins/imgly_sdk/ios`)
   - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - iris_method_channel (from `.symlinks/plugins/iris_method_channel/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
@@ -527,16 +462,17 @@ DEPENDENCIES:
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - photo_editor_sdk (from `.symlinks/plugins/photo_editor_sdk/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - push_ios (from `.symlinks/plugins/push_ios/ios`)
-  - razorpay_flutter (from `.symlinks/plugins/razorpay_flutter/ios`)
+  - record (from `.symlinks/plugins/record/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
-  - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - video_compress_ds (from `.symlinks/plugins/video_compress_ds/ios`)
+  - video_editor_sdk (from `.symlinks/plugins/video_editor_sdk/ios`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/ios`)
   - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
@@ -547,8 +483,6 @@ SPEC REPOS:
     - AgoraIrisRTC_iOS
     - AgoraRtcEngine_iOS
     - AppAuth
-    - Braintree
-    - BraintreeDropIn
     - CryptoSwift
     - DKImagePickerController
     - DKPhotoGallery
@@ -580,6 +514,7 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
+    - imglyKit
     - libwebp
     - Mantle
     - MLImage
@@ -591,20 +526,10 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - PromisesSwift
-    - razorpay-pod
     - Reachability
     - SDWebImage
     - SDWebImageWebPCoder
-    - Stripe
-    - StripeApplePay
-    - StripeCore
-    - StripeFinancialConnections
-    - StripePayments
-    - StripePaymentSheet
-    - StripePaymentsUI
-    - StripeUICore
     - SwiftyGif
-    - Toast
     - ZIPFoundation
 
 EXTERNAL SOURCES:
@@ -622,8 +547,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
-  device_info_plus:
-    :path: ".symlinks/plugins/device_info_plus/ios"
   facebook_audience_network:
     :path: ".symlinks/plugins/facebook_audience_network/ios"
   ffmpeg_kit_flutter:
@@ -642,8 +565,6 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_archive:
     :path: ".symlinks/plugins/flutter_archive/ios"
-  flutter_braintree:
-    :path: ".symlinks/plugins/flutter_braintree/ios"
   flutter_callkit_incoming:
     :path: ".symlinks/plugins/flutter_callkit_incoming/ios"
   flutter_contacts:
@@ -662,8 +583,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_ringtone_player/ios"
   flutter_sound:
     :path: ".symlinks/plugins/flutter_sound/ios"
-  fluttertoast:
-    :path: ".symlinks/plugins/fluttertoast/ios"
+  flutter_video_info:
+    :path: ".symlinks/plugins/flutter_video_info/ios"
   geocoding_ios:
     :path: ".symlinks/plugins/geocoding_ios/ios"
   google_maps_flutter_ios:
@@ -678,6 +599,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_sign_in_ios/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  imgly_sdk:
+    :path: ".symlinks/plugins/imgly_sdk/ios"
   in_app_purchase_storekit:
     :path: ".symlinks/plugins/in_app_purchase_storekit/darwin"
   iris_method_channel:
@@ -696,12 +619,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
+  photo_editor_sdk:
+    :path: ".symlinks/plugins/photo_editor_sdk/ios"
   photo_manager:
     :path: ".symlinks/plugins/photo_manager/ios"
   push_ios:
     :path: ".symlinks/plugins/push_ios/ios"
-  razorpay_flutter:
-    :path: ".symlinks/plugins/razorpay_flutter/ios"
+  record:
+    :path: ".symlinks/plugins/record/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
@@ -710,12 +635,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sign_in_with_apple/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
-  stripe_ios:
-    :path: ".symlinks/plugins/stripe_ios/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   video_compress_ds:
     :path: ".symlinks/plugins/video_compress_ds/ios"
+  video_editor_sdk:
+    :path: ".symlinks/plugins/video_editor_sdk/ios"
   video_player_avfoundation:
     :path: ".symlinks/plugins/video_player_avfoundation/ios"
   video_thumbnail:
@@ -734,12 +659,9 @@ SPEC CHECKSUMS:
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   auto_orientation: 102ed811a5938d52c86520ddd7ecd3a126b5d39d
   background_downloader: 6f55e5548875be2ad4bb91b542558b5be22f339a
-  Braintree: cef7388a3647515f1e0861e52200c2f3dad0f98f
-  BraintreeDropIn: 89df35f840004affa22ebb8f06b12d20615411bf
   camera_avfoundation: 3125e8cd1a4387f6f31c6c63abb8a55892a9eeeb
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   CryptoSwift: d3d18dc357932f7e6d580689e065cf1f176007c1
-  device_info_plus: 7545d84d8d1b896cb16a4ff98c19f07ec4b298ea
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   facebook_audience_network: bb22bdda913d419d8c3247c9570bda4563302417
@@ -765,7 +687,6 @@ SPEC CHECKSUMS:
   fl_location: 68b4a6c4aad2a453493ff66f196e0748280cf43e
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_archive: 1805fdd3a695fd284b43edb53dc35ca843fb761c
-  flutter_braintree: 72276002464c36b1d5a6266fbdb94c0b600e62fd
   flutter_callkit_incoming: 417dd1b46541cdd5d855ad795ccbe97d1c18155e
   flutter_contacts: edb1c5ce76aa433e20e6cb14c615f4c0b66e0983
   flutter_fgbg: 31c0d1140a131daea2d342121808f6aa0dcd879d
@@ -776,7 +697,7 @@ SPEC CHECKSUMS:
   flutter_ringtone_player: 15eba85187230b87b2512f0e1b92225618bc03e7
   flutter_sound: c60effa2a350fb977885f0db2fbc4c1ad5160900
   flutter_sound_core: 26c10e5832e76aaacfae252d8925232281c486ae
-  fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
+  flutter_video_info: a932e1b0da369bba95c3a14b7f61d5f8b0d03280
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   geocoding_ios: a389ea40f6f548de6e63006a2e31bf66ff80769a
   Google-Mobile-Ads-SDK: 32fe7836431a06a29f7734ae092b600137c8108d
@@ -797,6 +718,8 @@ SPEC CHECKSUMS:
   GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
+  imgly_sdk: a114555e1d98e4a4fa5cc8f2b258353198c64e8b
+  imglyKit: dd45e9a23af6154a6780360251dc545d8723b479
   in_app_purchase_storekit: 4fb7ee9e824b1f09107fbfbbce8c4b276366dc43
   iris_method_channel: 0617c689164d8154c020c50f63ca79f92b8a7b9d
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
@@ -815,32 +738,23 @@ SPEC CHECKSUMS:
   package_info_plus: fd030dabf36271f146f1f3beacd48f564b0f17f7
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  photo_editor_sdk: d5eea1abfd23930ec45163f95d92e2570434e4cc
   photo_manager: 4f6810b7dfc4feb03b461ac1a70dacf91fba7604
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   push_ios: 2bd1b4d3f782209da1f571db1250af236957e807
-  razorpay-pod: a0a0de741488584dcc9513b9c3999bbb08d4e95d
-  razorpay_flutter: 84b3bfd206ae9c9c2a9ba585524a1b3d8102b6c1
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  record: cae05d8dd3cdb1dea3511b20e5a5811a1ae00d0d
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageWebPCoder: af09429398d99d524cae2fe00f6f0f6e491ed102
   share_plus: 599aa54e4ea31d4b4c0e9c911bcc26c55e791028
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
-  Stripe: 5432fbab660595a3bee937235dd71a99028ac68c
-  stripe_ios: c731dafb26f3736baebde37ba45db708943d5229
-  StripeApplePay: 5e686f50ee07c439b79b907dffeb144135e601c9
-  StripeCore: 91164d69b8593f44df9ee93e56a00355592068b6
-  StripeFinancialConnections: b30a494579271f33f38d9a934288c2ad617bfc26
-  StripePayments: c19d94c55723894e1f47dadb40a6f1bfa7fac214
-  StripePaymentSheet: 1fef5afa050bfd684e84553cba613041a2b3d7b7
-  StripePaymentsUI: 7d2fc8fe17c3fdc63508bc54df2b7cc3f45c8ef7
-  StripeUICore: 1dc4d2f9afcd908db85190e9091dfe260a1861fe
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
-  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
   video_compress_ds: bb434c35e9ffdb4106a92b9115cd8fa8d5c555a4
+  video_editor_sdk: f113d4a2fc8838fdeee99a8461fb4c55ba6b9e3f
   video_player_avfoundation: 81e49bb3d9fb63dccf9fa0f6d877dc3ddbeac126
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
   wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47

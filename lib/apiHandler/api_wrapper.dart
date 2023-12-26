@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../helper/enum.dart';
+import '../helper/enum_linking.dart';
 import '../helper/localization_strings.dart';
 import '../util/shared_prefs.dart';
 import 'network_constant.dart';
@@ -24,8 +25,11 @@ class ApiResponse {
     ApiResponse model = ApiResponse();
     model.success = json['status'] == 200;
     model.data = json['data'];
+    model.message = json['message'];
 
-    if (model.success != true && model.data != null  && model.message?.isEmpty == true) {
+    if (model.success != true &&
+        model.data != null &&
+        model.message?.isEmpty == true) {
       var errors = model.data['errors'];
       if (errors != null) {
         var messages = model.data['errors']['message'];
@@ -46,6 +50,22 @@ class ApiResponse {
 
 class ApiWrapper {
   final JsonDecoder _decoder = const JsonDecoder();
+
+  Future<ApiResponse?> getApiWithoutToken({required String url}) async {
+    String urlString = '${NetworkConstantsUtil.baseUrl}$url';
+
+    return http.get(Uri.parse(urlString)).then((http.Response response) async {
+      dynamic data = _decoder.convert(response.body);
+      EasyLoading.dismiss();
+      log(data.toString());
+      if (data['status'] == 401 && data['data'] == null) {
+        //Get.offAll(() => LoginForExpiredToken());
+      } else {
+        return ApiResponse.fromJson(data);
+      }
+      return null;
+    });
+  }
 
   Future<ApiResponse?> getApi({required String url}) async {
     String? authKey = await SharedPrefs().getAuthorizationKey();
@@ -173,16 +193,17 @@ class ApiWrapper {
 
       dynamic data = _decoder.convert(respStr);
 
-      if (data['status'] == 401 && data['data'] == null) {
-        // Get.offAll(() => LoginForExpiredToken());
-      } else {
-        return ApiResponse.fromJson(data);
-      }
+      // if (data['status'] == 401 && data['data'] == null) {
+      //   // Get.offAll(() => LoginForExpiredToken());
+      // } else {
+      return ApiResponse.fromJson(data);
+      // }
     });
   }
 
   Future<ApiResponse?> uploadFile(
       {required String file,
+      required GalleryMediaType mediaType,
       required UploadMediaType type,
       required String url}) async {
     EasyLoading.show(status: loadingString.tr);
@@ -192,7 +213,12 @@ class ApiWrapper {
     String? authKey = await SharedPrefs().getAuthorizationKey();
     request.headers.addAll({"Authorization": "Bearer ${authKey!}"});
     request.fields.addAll({'type': uploadMediaTypeId(type).toString()});
-    request.files.add(await http.MultipartFile.fromPath('mediaFile', file));
+    if (mediaType == GalleryMediaType.video) {
+      request.files.add(await http.MultipartFile.fromPath('mediaFile', file,
+          contentType: MediaType('video', 'mp4')));
+    } else {
+      request.files.add(await http.MultipartFile.fromPath('mediaFile', file));
+    }
     var res = await request.send();
     var responseData = await res.stream.toBytes();
     var responseString = String.fromCharCodes(responseData);
@@ -208,40 +234,30 @@ class ApiWrapper {
   }
 
   Future<ApiResponse?> uploadPostFile(
-      {required String file, required String url}) async {
-    EasyLoading.show(status: loadingString.tr);
-
+      {required String file,
+      required GalleryMediaType mediaType,
+      required String url}) async {
     var request = http.MultipartRequest(
         'POST', Uri.parse('${NetworkConstantsUtil.baseUrl}$url'));
     String? authKey = await SharedPrefs().getAuthorizationKey();
     request.headers.addAll({"Authorization": "Bearer ${authKey!}"});
-    request.files.add(await http.MultipartFile.fromPath('filenameFile', file));
+
+    if (mediaType == GalleryMediaType.video) {
+      request.files.add(await http.MultipartFile.fromPath('filenameFile', file,
+          contentType: MediaType('video', 'mp4')));
+    } else if (mediaType == GalleryMediaType.audio) {
+      request.files.add(await http.MultipartFile.fromPath('filenameFile', file,
+          contentType: MediaType('audio', 'mp3')));
+    } else {
+      request.files.add(await http.MultipartFile.fromPath('filenameFile', file,
+          contentType: MediaType('image', 'png')));
+    }
+
     var res = await request.send();
     var responseData = await res.stream.toBytes();
     var responseString = String.fromCharCodes(responseData);
     dynamic data = _decoder.convert(responseString);
 
-    EasyLoading.dismiss();
-    if (data['status'] == 401 && data['data'] == null) {
-      // Get.offAll(() => LoginForExpiredToken());
-    } else {
-      return ApiResponse.fromJson(data);
-    }
-    return null;
-  }
-
-  int uploadMediaTypeId(UploadMediaType type) {
-    switch (type) {
-      case UploadMediaType.post:
-        return 1;
-      case UploadMediaType.storyOrHighlights:
-        return 3;
-      case UploadMediaType.chat:
-        return 5;
-      case UploadMediaType.club:
-        return 5;
-      case UploadMediaType.verification:
-        return 12;
-    }
+    return ApiResponse.fromJson(data);
   }
 }

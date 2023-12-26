@@ -51,12 +51,10 @@ class FollowerFollowingState extends State<FollowerFollowingList> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-
             backNavigationBar(
                 title: widget.isFollowersList
                     ? followersString.tr
                     : followingString.tr),
-            divider().tP8,
             Expanded(
               child: GetBuilder<UserNetworkController>(
                   init: _userNetworkController,

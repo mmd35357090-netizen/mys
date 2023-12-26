@@ -50,7 +50,7 @@
 //     _textStoryMakerController.setBackgroundColor(Colors.black);
 //     _textStoryMakerController.setStrokeColor(Colors.white);
 //
-//     return Obx(() => Scaffold(
+//     return Obx(() => AppScaffold(
 //           backgroundColor:
 //               _textStoryMakerController.selectedBackgroundColor.value ??
 //                   ColorConstants.backgroundColor,
@@ -111,7 +111,7 @@
 //                         height: 30,
 //                         width: 30,
 //                         color: ColorConstants.themeColor,
-//                         child: const ThemeIconWidget(
+//                         child: ThemeIconWidget(
 //                           ThemeIcon.close,
 //                           size: 20,
 //                         ),
@@ -122,7 +122,7 @@
 //                         height: 30,
 //                         width: 30,
 //                         color: ColorConstants.themeColor,
-//                         child: const ThemeIconWidget(
+//                         child: ThemeIconWidget(
 //                           ThemeIcon.send,
 //                           size: 20,
 //                         ),
@@ -220,7 +220,7 @@
 //           height: 30,
 //           width: 30,
 //           color: ColorConstants.backgroundColor,
-//           child: const ThemeIconWidget(ThemeIcon.edit),
+//           child: ThemeIconWidget(ThemeIcon.edit),
 //         ).borderWithRadius( value: 5, radius: 1).lP16,
 //         SizedBox(
 //           width: Get.width - 80,

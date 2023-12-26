@@ -42,7 +42,7 @@ class TextChatTile extends StatelessWidget {
                 text: messageString,
                 style: TextStyle(
                     fontSize: FontSizes.b2,
-                    color: AppColorConstants.grayscale900),
+                    color: AppColorConstants.mainTextColor),
               )
             ],
           )
@@ -56,7 +56,7 @@ class TextChatTile extends StatelessWidget {
             },
             text: messageString,
             style: TextStyle(
-                fontSize: FontSizes.b2, color: AppColorConstants.grayscale900),
+                fontSize: FontSizes.b2, color: AppColorConstants.mainTextColor),
           );
   }
 }

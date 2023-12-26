@@ -30,7 +30,6 @@ class _HelpScreenState extends State<HelpScreen> {
                 iconBtnClicked: () {
                   Get.to(() => const SupportRequestsScreen());
                 }),
-            divider().tP8,
             SingleChildScrollView(
               child: GestureDetector(
                 onTap: () {
@@ -73,7 +72,7 @@ class _HelpScreenState extends State<HelpScreen> {
                     ),
                     _submitBtn(),
                   ],
-                ).extended,
+                ),
               ),
             ).p25
           ],

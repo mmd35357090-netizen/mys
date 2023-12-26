@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:foap/apiHandler/apis/highlights_api.dart';
 import 'package:foap/apiHandler/apis/misc_api.dart';
 import 'package:foap/apiHandler/apis/story_api.dart';
-import 'package:foap/components/custom_gallery_picker.dart';
+import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/highlights_imports.dart';
 import '../../model/story_model.dart';
@@ -16,6 +16,7 @@ class HighlightsController extends GetxController {
   RxList<StoryMediaModel> stories = <StoryMediaModel>[].obs;
 
   Rx<HighlightMediaModel?> storyMediaModel = Rx<HighlightMediaModel?>(null);
+  Rx<HighlightsModel?> currentHighlight = Rx<HighlightsModel?>(null);
 
   String coverImage = '';
   String coverImageName = '';
@@ -28,6 +29,10 @@ class HighlightsController extends GetxController {
 
   clear() {
     selectedStoriesMedia.clear();
+  }
+
+  setCurrentHighlight(HighlightsModel highlight) {
+    currentHighlight.value = highlight;
   }
 
   setCurrentStoryMedia(HighlightMediaModel storyMedia) {
@@ -95,7 +100,8 @@ class HighlightsController extends GetxController {
   Future uploadCoverImage() async {
     Uint8List compressedData = await pickedImage!.compress();
     File file = File.fromRawPath(compressedData);
-    await MiscApi.uploadFile(file.path, type: UploadMediaType.storyOrHighlights,
+    await MiscApi.uploadFile(file.path,          mediaType: GalleryMediaType.photo,
+        type: UploadMediaType.storyOrHighlights,
         resultCallback: (fileName, filePath) {
       coverImageName = fileName;
     });
@@ -103,5 +109,8 @@ class HighlightsController extends GetxController {
 
   deleteStoryFromHighlight() async {
     await HighlightsApi.deleteStoryFromHighlights(storyMediaModel.value!.id);
+    if (currentHighlight.value!.medias.length == 1) {
+      await HighlightsApi.deleteHighlight(currentHighlight.value!.id);
+    }
   }
 }

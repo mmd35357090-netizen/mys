@@ -46,7 +46,7 @@ class ForceUpdateView extends StatelessWidget {
             width: 280,
             child: AppThemeButton(
               cornerRadius: 25,
-              text: updateStrString.tr,
+              text: updateString.tr,
               onPress: () async {
                 await launchUrl(
                     Uri.parse(settingsController.setting.value!.latestAppDownloadLink!));

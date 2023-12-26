@@ -63,8 +63,8 @@ class VerifyRegistrationOTPState extends State<VerifyRegistrationOTP> {
                 onDone: (text) {
                   loginController.otpCompleted();
                 },
-                pinBoxWidth: 50,
-                pinBoxHeight: 50,
+                pinBoxWidth: 60,
+                pinBoxHeight: 60,
                 // hasUnderline: true,
                 wrapAlignment: WrapAlignment.spaceAround,
                 pinBoxDecoration:

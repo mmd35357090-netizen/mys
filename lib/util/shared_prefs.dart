@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
 class SharedPrefs {
-  //Set/Get UserLoggedIn Status
   void setTutorialSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('tutorialSeen', true);
@@ -16,17 +15,12 @@ class SharedPrefs {
 
   Future<bool> isDarkMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.get('darkMode') as bool? ?? false;
+    return prefs.get('darkMode') as bool? ?? true;
   }
 
   setDarkMode(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('darkMode', value);
-  }
-
-  void setUserLoggedIn(bool loggedIn) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', loggedIn);
   }
 
   void setBioMetricAuthStatus(bool status) async {
@@ -37,11 +31,6 @@ class SharedPrefs {
   Future<bool> getBioMetricAuthStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('bioMetricAuthStatus') ?? false;
-  }
-
-  Future<bool> isUserLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isLoggedIn') ?? false;
   }
 
   //Set/Get UserLoggedIn Status
@@ -86,27 +75,13 @@ class SharedPrefs {
         "assets/chatbg/chatbg3.jpg";
   }
 
-  //Set/Get UserLoggedIn Status
-  // Future<bool> setLanguageCode(String code) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   return await prefs.setString('language', code);
-  // }
-
   Future<String> getLanguageCode() async {
     return 'en';
   }
 
   void clearPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setUserLoggedIn(false);
     prefs.remove('authKey');
-
-    //
-    // prefs.clear();
-    //
-    // if (fcmToken != null) {
-    //   setFCMToken(fcmToken);
-    // }
   }
 
   void setLanguage(String lang) async {
@@ -146,5 +121,27 @@ class SharedPrefs {
 
     // If no data is found, return an empty map or null, depending on your requirements
     return null; // or return null;
+  }
+
+  void setAppleIdEmail(
+      {required String forAppleId, required String email}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('${forAppleId}_email', email);
+  }
+
+  Future<String?> getAppleIdEmail({required String forAppleId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('${forAppleId}_email') as String?;
+  }
+
+  void setAppleIdName(
+      {required String forAppleId, required String email}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('${forAppleId}_name', email);
+  }
+
+  Future<String?> getAppleIdName({required String forAppleId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('${forAppleId}_name') as String?;
   }
 }

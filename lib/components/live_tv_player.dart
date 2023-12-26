@@ -109,7 +109,7 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                               return Center(
                                 child: BodyLargeText(
                                   errorMessage,
-                                  color: AppColorConstants.grayscale100,
+                                  color: AppColorConstants.subHeadingTextColor,
                                 ),
                               );
                             },

@@ -174,7 +174,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                   child: Center(
                       child: Heading6Text(
                     reConnectingString.tr,
-                    color: AppColorConstants.grayscale700,
+                    color: AppColorConstants.mainTextColor,
                   )))
               : agoraCallController.videoPaused.value
                   ? Container(
@@ -182,7 +182,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                       child: Center(
                           child: Heading6Text(
                         videoPausedString.tr,
-                        color: AppColorConstants.grayscale700,
+                        color: AppColorConstants.mainTextColor,
                       )))
                   : AgoraVideoView(
                       controller: VideoViewController.remote(
@@ -243,7 +243,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
         Heading3Text(
           widget.call.opponent.userName,
           weight: TextWeight.bold,
-          color: AppColorConstants.grayscale900,
+          color: AppColorConstants.mainTextColor,
         ),
         const SizedBox(
           height: 5,
@@ -254,7 +254,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                     ? ringingString.tr
                     : incomingCallString.tr,
                 weight: TextWeight.medium,
-                color: AppColorConstants.grayscale800,
+                color: AppColorConstants.mainTextColor,
               )
             : _timerView(),
       ],

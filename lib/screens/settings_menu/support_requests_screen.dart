@@ -25,10 +25,8 @@ class _SupportRequestsScreenState extends State<SupportRequestsScreen> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBar(
                title: supportRequestsString.tr),
-          divider().tP8,
           Expanded(
             child: Obx(
               () => ListView.builder(

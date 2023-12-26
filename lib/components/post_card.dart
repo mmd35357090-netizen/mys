@@ -25,7 +25,10 @@ import '../screens/dashboard/posts.dart';
 import '../screens/home_feed/comments_screen.dart';
 import '../screens/home_feed/post_media_full_screen.dart';
 import '../screens/live/gifts_list.dart';
+import '../screens/post/edit_post.dart';
+import '../screens/post/liked_by_users.dart';
 import '../screens/post/received_gifts.dart';
+import '../screens/post/view_post_insight.dart';
 import '../screens/profile/my_profile.dart';
 import '../screens/profile/other_user_profile.dart';
 
@@ -114,6 +117,8 @@ class PostMediaTile extends StatelessWidget {
             url: media.filePath,
             isLocalFile: false,
             play: homeController.currentVisibleVideoId.value == media.id,
+            width: Get.width,
+            onTapActionHandler: () {},
           )),
     );
   }
@@ -134,15 +139,13 @@ class PostCard extends StatefulWidget {
 
   final VoidCallback removePostHandler;
   final VoidCallback blockUserHandler;
-  final VoidCallback viewInsightHandler;
 
-  const PostCard(
-      {Key? key,
-      required this.model,
-      required this.removePostHandler,
-      required this.blockUserHandler,
-      required this.viewInsightHandler})
-      : super(key: key);
+  const PostCard({
+    Key? key,
+    required this.model,
+    required this.removePostHandler,
+    required this.blockUserHandler,
+  }) : super(key: key);
 
   @override
   PostCardState createState() => PostCardState();
@@ -174,10 +177,7 @@ class PostCardState extends State<PostCard> {
           left: DesignConstants.horizontalPadding,
           right: DesignConstants.horizontalPadding,
           bottom: 16),
-      // if (widget.model.title.isNotEmpty)
-      //   _convertHashtag(widget.model.title).hp(DesignConstants.horizontalPadding),
-      // if (widget.model.title.isNotEmpty)
-      //   const SizedBox(height: 20,),
+
       GestureDetector(
           onDoubleTap: () {
             //   widget.model.isLike = !widget.model.isLike;
@@ -219,7 +219,7 @@ class PostCardState extends State<PostCard> {
                         viewInsightsString.tr,
                         weight: TextWeight.semiBold,
                       ).p16.ripple(() {
-                        widget.viewInsightHandler();
+                        Get.to(() => ViewPostInsights(post: widget.model));
                       }),
                     )
                 ],
@@ -255,14 +255,12 @@ class PostCardState extends State<PostCard> {
         height: 16,
       ),
       commentAndLikeWidget().hp(DesignConstants.horizontalPadding),
-      const SizedBox(
-        height: 12,
-      ),
+      // const SizedBox(
+      //   height: 8,
+      // ),
       commentsCountWidget().hp(DesignConstants.horizontalPadding),
-      const SizedBox(
-        height: 16,
-      ),
-      buildMessageTextField(),
+      postTimeView().hp(DesignConstants.horizontalPadding)
+      // if (widget.model.commentsEnabled) buildMessageTextField(),
     ]).vP16;
   }
 
@@ -275,30 +273,24 @@ class PostCardState extends State<PostCard> {
         //   size: 15,
         // ),
         // const SizedBox(width: 5),
-        BodyExtraSmallText(widget.model.postTime.tr, weight: TextWeight.regular),
+        BodyExtraSmallText(widget.model.postTime.tr,
+            weight: TextWeight.regular),
       ],
-    );
+    ).tP8;
   }
 
   Widget commentsCountWidget() {
     return InkWell(
         onTap: () => openComments(),
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          // ThemeIconWidget(
-          //   ThemeIcon.message,
-          //   color: AppColorConstants.iconColor,
-          // ),
-          // const SizedBox(
-          //   width: 5,
-          // ),
-          widget.model.totalComment > 0
-              ? BodyMediumText(
+          widget.model.totalComment > 0 && widget.model.commentsEnabled
+              ? BodySmallText(
                   '$viewString ${widget.model.totalComment} $commentsString',
                   weight: TextWeight.semiBold,
-                  color: AppColorConstants.grayscale700,
+                  color: AppColorConstants.mainTextColor,
                 )
               : Container(),
-        ]));
+        ]).tP8);
   }
 
   Widget viewGifts() {
@@ -363,32 +355,24 @@ class PostCardState extends State<PostCard> {
             ? BodyLargeText(
                 '${widget.model.totalLike}',
                 weight: TextWeight.bold,
-              )
+              ).ripple(() {
+                Get.to(() => LikedByUsers(
+                      postId: widget.model.id,
+                    ));
+              })
             : Container();
       }),
-      // const SizedBox(
-      //   width: 40,
-      // ),
-      // InkWell(
-      //     onTap: () => openComments(),
-      //     child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      //       ThemeIconWidget(
-      //         ThemeIcon.message,
-      //         color: AppColorConstants.iconColor,
-      //       ),
-      //       const SizedBox(
-      //         width: 5,
-      //       ),
-      //       widget.model.totalComment > 0
-      //           ? BodyLargeText('${widget.model.totalComment}',
-      //                   weight: TextWeight.bold)
-      //               .ripple(() {
-      //               openComments();
-      //             })
-      //           : Container(),
-      //     ])),
       const SizedBox(
-        width: 40,
+        width: 20,
+      ),
+      ThemeIconWidget(
+        ThemeIcon.chat,
+        color: AppColorConstants.iconColor,
+      ).ripple(() {
+        openComments();
+      }),
+      const SizedBox(
+        width: 20,
       ),
       ThemeIconWidget(
         ThemeIcon.share,
@@ -398,123 +382,48 @@ class PostCardState extends State<PostCard> {
             backgroundColor: Colors.transparent,
             context: context,
             builder: (context) => SelectFollowingUserForMessageSending(
-                    // post: widget.model,
                     sendToUserCallback: (user) {
                   selectUserForChatController.sendMessage(
                       toUser: user, post: widget.model);
                 }));
       }),
-      !widget.model.isMyPost
-          ? const ThemeIconWidget(
-              ThemeIcon.gift,
-            ).lp(40).ripple(() {
-              showModalBottomSheet<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return FractionallySizedBox(
-                        heightFactor: 0.8,
-                        child: GiftsPageView(giftSelectedCompletion: (gift) {
-                          Get.back();
-                          homeController.sendPostGift(
-                              gift, widget.model.user.id, widget.model.id);
-                          Get.back();
-                        }));
-                  });
-            })
-          : Container(),
+      if (!widget.model.isMyPost)
+        const ThemeIconWidget(
+          ThemeIcon.gift,
+        ).hp(20).ripple(() {
+          showModalBottomSheet<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return FractionallySizedBox(
+                    heightFactor: 0.8,
+                    child: GiftsPageView(giftSelectedCompletion: (gift) {
+                      Get.back();
+                      homeController.sendPostGift(
+                          gift, widget.model.user.id, widget.model.id);
+                      Get.back();
+                    }));
+              });
+        }),
+      SizedBox(
+        height: 20,
+        width: 20,
+        child: Obx(() => ThemeIconWidget(
+              postCardController.savedPosts.contains(widget.model) ||
+                      widget.model.isSaved
+                  ? ThemeIcon.bookMarked
+                  : ThemeIcon.bookMark,
+              color: widget.model.isSaved ||
+                      postCardController.savedPosts.contains(widget.model)
+                  ? AppColorConstants.themeColor
+                  : AppColorConstants.iconColor,
+              // size: 25,
+            )),
+      ).ripple(() {
+        postCardController.saveUnSavePost(post: widget.model);
+      }),
       const Spacer(),
       viewGifts(),
     ]);
-  }
-
-  Widget buildMessageTextField() {
-    return Container(
-      height: 50.0,
-      margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-              child: Container(
-            color: AppColorConstants.cardColor.withOpacity(0.5),
-            child: Row(children: <Widget>[
-              Expanded(child: Obx(() {
-                TextEditingValue(
-                    text: _commentsController.searchText.value,
-                    selection: TextSelection.fromPosition(TextPosition(
-                        offset: _commentsController.position.value)));
-
-                return TextField(
-                  controller: commentInputField,
-                  onChanged: (text) {
-                    _commentsController.textChanged(
-                        text, commentInputField.selection.baseOffset);
-                  },
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: writeCommentString.tr,
-                    hintStyle: TextStyle(
-                        fontSize: FontSizes.b2,
-                        color: AppColorConstants.grayscale700),
-                  ),
-                  textInputAction: TextInputAction.send,
-                  style: TextStyle(
-                      fontSize: FontSizes.b2,
-                      color: AppColorConstants.grayscale900),
-                  onSubmitted: (_) {
-                    addNewMessage();
-                  },
-                  onTap: () {},
-                );
-              })),
-              ThemeIconWidget(
-                ThemeIcon.camera,
-                color: AppColorConstants.grayscale900,
-              ).rP8.ripple(() => _commentsController.selectPhoto(handler: () {
-                    _commentsController.postMediaCommentsApiCall(
-                        type: CommentType.image,
-                        postId: widget.model.id,
-                        commentPosted: () {
-                          setState(() {
-                            widget.model.totalComment += 1;
-                          });
-                        });
-                    commentInputField.text = '';
-                  })),
-              ThemeIconWidget(
-                ThemeIcon.gif,
-                color: AppColorConstants.grayscale900,
-              ).rP8.ripple(() {
-                commentInputField.text = '';
-                _commentsController.openGify(() {
-                  _commentsController.postMediaCommentsApiCall(
-                      type: CommentType.gif,
-                      postId: widget.model.id,
-                      commentPosted: () {
-                        setState(() {
-                          widget.model.totalComment += 1;
-                        });
-                      });
-                  commentInputField.text = '';
-                });
-              }),
-            ]).hP8,
-          ).borderWithRadius(value: 0.5, radius: 15)),
-          const SizedBox(width: 20),
-          Container(
-            width: 45,
-            height: 45,
-            color: AppColorConstants.grayscale900,
-            child: InkWell(
-              onTap: addNewMessage,
-              child: Icon(
-                Icons.send,
-                color: AppColorConstants.themeColor,
-              ),
-            ),
-          ).circular
-        ],
-      ),
-    );
   }
 
   void addNewMessage() {
@@ -545,10 +454,10 @@ class PostCardState extends State<PostCard> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-            height: 35,
-            width: 35,
+            height: 30,
+            width: 30,
             child: UserAvatarView(
-              size: 35,
+              size: 30,
               user: widget.model.user,
               onTapHandler: () {
                 openProfile();
@@ -562,12 +471,13 @@ class PostCardState extends State<PostCard> {
           children: [
             Row(
               children: [
-                BodyLargeText(
+                BodySmallText(
                   widget.model.user.userName,
                   weight: TextWeight.medium,
                 ).ripple(() {
                   openProfile();
                 }),
+                if (widget.model.user.isVerified) verifiedUserTag().rP8,
                 if (widget.model.club != null)
                   Expanded(
                     child: BodyLargeText(
@@ -588,16 +498,16 @@ class PostCardState extends State<PostCard> {
                 : Container()
           ],
         )),
-        postTimeView().rp(DesignConstants.horizontalPadding),
+        // postTimeView().rp(DesignConstants.horizontalPadding),
         SizedBox(
           height: 20,
           width: 20,
           child: ThemeIconWidget(
             ThemeIcon.more,
             color: AppColorConstants.iconColor,
-            size: 15,
+            size: 25,
           ),
-        ).borderWithRadius(value: 1, radius: 15).ripple(() {
+        ).ripple(() {
           openActionPopup();
         })
       ],
@@ -612,7 +522,7 @@ class PostCardState extends State<PostCard> {
       // TextSpan(
       //   text: '${widget.model.user.userName}  ',
       //   style: TextStyle(
-      //       color: AppColorConstants.grayscale900, fontWeight: FontWeight.w900),
+      //       color: AppColorConstants.mainTextColor, fontWeight: FontWeight.w900),
       //   recognizer: TapGestureRecognizer()
       //     ..onTap = () {
       //       openProfile();
@@ -648,7 +558,7 @@ class PostCardState extends State<PostCard> {
                 : TextSpan(
                     text: '$text ',
                     style: TextStyle(
-                        color: AppColorConstants.grayscale900,
+                        color: AppColorConstants.mainTextColor,
                         fontSize: FontSizes.b1,
                         fontWeight: FontWeight.w400))
     ]));
@@ -686,6 +596,16 @@ class PostCardState extends State<PostCard> {
       child: widget.model.user.isMe
           ? Wrap(
               children: [
+                ListTile(
+                    title: Center(
+                        child: Heading6Text(
+                      editPostString.tr,
+                      weight: TextWeight.semiBold,
+                    )),
+                    onTap: () async {
+                      Get.back();
+                      Get.to(() => EditPostScreen(post: widget.model));
+                    }),
                 ListTile(
                     title: Center(
                         child: Heading6Text(
@@ -794,15 +714,20 @@ class PostCardState extends State<PostCard> {
   }
 
   void openComments() {
-    Get.bottomSheet(CommentsScreen(
-      isPopup: true,
-      model: widget.model,
-      commentPostedCallback: () {
-        setState(() {
-          widget.model.totalComment += 1;
-        });
-      },
-    ).round(40));
+    Get.to(() => CommentsScreen(
+          isPopup: true,
+          model: widget.model,
+          commentPostedCallback: () {
+            setState(() {
+              widget.model.totalComment += 1;
+            });
+          },
+          commentDeletedCallback: () {
+            setState(() {
+              widget.model.totalComment -= 1;
+            });
+          },
+        ));
   }
 
   void openProfile() async {

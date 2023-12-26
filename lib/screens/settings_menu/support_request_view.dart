@@ -18,10 +18,8 @@ class _SupportRequestViewState extends State<SupportRequestView> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           backNavigationBar(
                title: supportRequestsString.tr),
-          divider().tP8,
           SingleChildScrollView(
             child: GestureDetector(
               onTap: () {
@@ -57,7 +55,7 @@ class _SupportRequestViewState extends State<SupportRequestView> {
                     weight: TextWeight.regular,
                   )
                 ],
-              ).extended,
+              ),
             ),
           ).p25
         ],

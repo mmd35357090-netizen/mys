@@ -34,8 +34,9 @@ class CreateClubController extends GetxController {
       ClubModel club, BuildContext context, VoidCallback callback) async {
     EasyLoading.show(status: loadingString.tr);
 
-    await MiscApi.uploadFile(imageFile.value!.path, type: UploadMediaType.club,
-        resultCallback: (filename, filepath) {
+    await MiscApi.uploadFile(imageFile.value!.path,
+        mediaType: GalleryMediaType.photo,
+        type: UploadMediaType.club, resultCallback: (filename, filepath) {
       ClubApi.createClub(
           categoryId: club.categoryId!,
           isOnRequestType: privacyType.value == 3 ? 1 : 0,
@@ -55,7 +56,9 @@ class CreateClubController extends GetxController {
     });
 
     await MiscApi.uploadFile(imageFile.value!.path,
-        type: UploadMediaType.club, resultCallback: (fileName, filePath) {});
+        mediaType: GalleryMediaType.photo,
+        type: UploadMediaType.club,
+        resultCallback: (fileName, filePath) {});
   }
 
   void editClubImageAction(XFile pickedFile, BuildContext context) async {
@@ -67,8 +70,9 @@ class CreateClubController extends GetxController {
       Function(ClubModel) callback) async {
     EasyLoading.show(status: loadingString.tr);
 
-    await MiscApi.uploadFile(imageFile.value!.path, type: UploadMediaType.club,
-        resultCallback: (fileName, filePath) {
+    await MiscApi.uploadFile(imageFile.value!.path,
+        mediaType: GalleryMediaType.photo,
+        type: UploadMediaType.club, resultCallback: (fileName, filePath) {
       club.imageName = fileName;
       club.image = filePath;
 

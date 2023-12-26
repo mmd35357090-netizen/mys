@@ -33,7 +33,6 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
           child: Column(
         children: [
           backNavigationBar(title: liveUsersString.tr),
-          divider().tP8,
           const SizedBox(
             height: 20,
           ),

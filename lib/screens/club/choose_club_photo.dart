@@ -43,7 +43,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
               ),
               BodyMediumText(
                 addClubPhotoSubHeadingString.tr,
-                color: AppColorConstants.grayscale500,
+                color: AppColorConstants.subHeadingTextColor,
               ),
               const SizedBox(
                 height: 20,
@@ -112,7 +112,7 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
           AppThemeButton(
               text: widget.club.id == null
                   ? createClubString.tr
-                  : updateStrString.tr,
+                  : updateString.tr,
               onPress: () {
                 if (widget.club.id == null) {
                   createBtnClicked();

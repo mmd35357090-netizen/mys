@@ -29,11 +29,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    packageController.initiate();
   }
 
   openNextScreen() {
     if (_userProfileManager.isLogin == true) {
+      packageController.initiate();
       if (_userProfileManager.user.value!.userName.isNotEmpty) {
         Get.offAll(() => const DashboardScreen());
 

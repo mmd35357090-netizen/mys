@@ -8,7 +8,7 @@ class UsersController extends GetxController {
   RxList<UserModel> searchedUsers = <UserModel>[].obs;
   int accountsPage = 1;
   bool canLoadMoreAccounts = true;
-  bool accountsIsLoading = false;
+  RxBool accountsIsLoading = false.obs;
   String searchText = '';
 
   UserSearchModel searchModel = UserSearchModel();
@@ -21,26 +21,26 @@ class UsersController extends GetxController {
 
   setIsOnlineFilter() {
     searchModel.isOnline = 1;
-    loadUsers();
+    loadUsers(() {});
   }
 
   setSearchFromParam(SearchFrom source) {
     searchModel.searchFrom = source;
-    loadUsers();
+    loadUsers(() {});
   }
 
   setIsExactMatchFilter() {
     searchModel.isExactMatch = 1;
-    loadUsers();
+    loadUsers(() {});
   }
 
-  setSearchTextFilter(String text) {
+  setSearchTextFilter(String text, VoidCallback callback) {
     if (text != searchText) {
       searchText = text;
       searchModel.searchText = text;
 
       clearPagingInfo();
-      loadUsers();
+      loadUsers(callback);
     }
   }
 
@@ -48,36 +48,38 @@ class UsersController extends GetxController {
     searchedUsers.clear();
     accountsPage = 1;
     canLoadMoreAccounts = true;
-    accountsIsLoading = false;
+    accountsIsLoading.value = false;
   }
 
-  loadUsers() {
+  loadUsers(VoidCallback callback) {
     if (canLoadMoreAccounts) {
-      accountsIsLoading = true;
+      accountsIsLoading.value = true;
 
       UsersApi.searchUsers(
-        // searchModel: searchModel,
+          searchModel: searchModel,
           page: accountsPage,
-          isExactMatch: 0,
-          searchText: searchText,
           resultCallback: (result, metadata) {
-            accountsIsLoading = false;
+            accountsIsLoading.value = false;
             searchedUsers.addAll(result);
             searchedUsers.unique((e) => e.id);
 
             canLoadMoreAccounts = result.length >= metadata.perPage;
             accountsPage += 1;
+            callback();
 
             update();
           });
+    } else {
+      callback();
     }
   }
 
   followUser(UserModel user) {
-    user.isFollowing = true;
+    user.followingStatus =
+    user.isPrivate ? FollowingStatus.requested : FollowingStatus.following;
     if (searchedUsers.where((e) => e.id == user.id).isNotEmpty) {
       searchedUsers[
-          searchedUsers.indexWhere((element) => element.id == user.id)] = user;
+      searchedUsers.indexWhere((element) => element.id == user.id)] = user;
     }
     // if (suggestedUsers.where((e) => e.id == user.id).isNotEmpty) {
     //   suggestedUsers[
@@ -85,20 +87,20 @@ class UsersController extends GetxController {
     // }
     update();
 
-    UsersApi.followUnfollowUser(isFollowing: true, userId: user.id);
+    UsersApi.followUnfollowUser(isFollowing: true, user: user);
   }
 
   unFollowUser(UserModel user) {
-    user.isFollowing = false;
+    user.followingStatus = FollowingStatus.notFollowing;
     if (searchedUsers.where((e) => e.id == user.id).isNotEmpty) {
       searchedUsers[
-          searchedUsers.indexWhere((element) => element.id == user.id)] = user;
+      searchedUsers.indexWhere((element) => element.id == user.id)] = user;
     }
     // if (suggestedUsers.where((e) => e.id == user.id).isNotEmpty) {
     //   suggestedUsers[
     //   suggestedUsers.indexWhere((element) => element.id == user.id)] = user;
     // }
     update();
-    UsersApi.followUnfollowUser(isFollowing: false, userId: user.id);
+    UsersApi.followUnfollowUser(isFollowing: false, user: user);
   }
 }

@@ -106,7 +106,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
                     initialIndex: 0,
                     child: Column(
                       children: [
-                        SMTabBar(tabs: tabs),
+                        SMTabBar(tabs: tabs,canScroll: false),
                         divider(),
                         SizedBox(
                           height: Get.height * 0.5,

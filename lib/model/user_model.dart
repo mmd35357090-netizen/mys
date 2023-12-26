@@ -30,7 +30,7 @@ class UserModel {
   int commentPushNotificationStatus = 0;
   int likePushNotificationStatus = 0;
 
-  bool isFollowing = false;
+  FollowingStatus followingStatus = FollowingStatus.notFollowing;
   bool isFollower = false;
   bool isVerified = false;
 
@@ -39,6 +39,11 @@ class UserModel {
   int accountCreatedWith = 0;
 
   int totalPost = 0;
+  int totalMentions = 0;
+
+  int totalReels = 0;
+  int totalClubs = 0;
+
   int totalFollowing = 0;
   int totalFollower = 0;
   int totalWinnerPost = 0;
@@ -73,6 +78,7 @@ class UserModel {
   List<UserSetting>? userSetting;
 
   GenderType? genderType;
+  bool isPrivate = false;
 
   UserModel();
 
@@ -86,11 +92,15 @@ class UserModel {
     // model.category = json['category'] ?? 'Other';
 
     model.email = json['email'];
-    model.picture = json['picture'];
+    model.picture = json['picture'] ?? json['campaginImage'];
     model.coverImage = json['coverImageUrl'];
 
     model.bio = json['bio'];
-    model.isFollowing = json['isFollowing'] == 1;
+    model.followingStatus = json['isFollowing'] == 0
+        ? FollowingStatus.notFollowing
+        : json['isFollowing'] == 1
+        ? FollowingStatus.following
+        : FollowingStatus.requested;
     model.isFollower = json['isFollower'] == 1;
 
     model.latitude = json['latitude'];
@@ -104,10 +114,14 @@ class UserModel {
     model.genderType = model.gender == '1'
         ? GenderType.male
         : model.gender == '2'
-            ? GenderType.female
-            : GenderType.other;
+        ? GenderType.female
+        : GenderType.other;
 
     model.totalPost = json['totalActivePost'] ?? json['totalPost'] ?? 0;
+    model.totalReels = json['totalReel'] ?? 0;
+    model.totalClubs = json['totalClub'] ?? 0;
+    model.totalMentions = json['totalMention'] ?? 0;
+
     model.totalFollower = json['totalFollower'] ?? 0;
     model.totalFollowing = json['totalFollowing'] ?? 0;
     model.coins = json['available_coin'] ?? 0;
@@ -115,6 +129,8 @@ class UserModel {
 
     model.isReported = json['is_reported'] == 1;
     model.isOnline = json['is_chat_user_online'] == 1;
+    model.isPrivate = json['profile_visibility'] == 2;
+
     model.chatLastTimeOnline = json['chat_last_time_online'];
     model.accountCreatedWith = json['account_created_with'] ?? 1;
     model.isVerified = json['is_verified'] == 1;
@@ -152,11 +168,11 @@ class UserModel {
 
     model.interests = json['interest'] != null
         ? List<InterestModel>.from(
-            json['interest'].map((x) => InterestModel.fromJson(x)))
+        json['interest'].map((x) => InterestModel.fromJson(x)))
         : null;
     model.languages = json['language'] != null
         ? List<LanguageModel>.from(
-            json['language'].map((x) => LanguageModel.fromJson(x)))
+        json['language'].map((x) => LanguageModel.fromJson(x)))
         : null;
 
     model.profileCategoryTypeId = json['profile_category_type'] ?? 0;
@@ -164,29 +180,29 @@ class UserModel {
 
     model.userSetting = json['userSetting'] != null
         ? List<UserSetting>.from(
-            json['userSetting'].map((x) => UserSetting.fromJson(x)))
+        json['userSetting'].map((x) => UserSetting.fromJson(x)))
         : null;
 
     return model;
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "username": userName,
-        "email": email,
-        "picture": picture,
-        "bio": bio,
-        "phone": phone,
-        "country": country,
-        "country_code": countryCode,
-        "city": city,
-        "sex": gender,
-        "totalPost": totalPost,
-        "available_coin": coins,
-        "is_reported": isReported,
-        "paypal_id": paypalId,
-        "available_balance": balance
-      };
+    "id": id,
+    "username": userName,
+    "email": email,
+    "picture": picture,
+    "bio": bio,
+    "phone": phone,
+    "country": country,
+    "country_code": countryCode,
+    "city": city,
+    "sex": gender,
+    "totalPost": totalPost,
+    "available_coin": coins,
+    "is_reported": isReported,
+    "paypal_id": paypalId,
+    "available_balance": balance
+  };
 
   static UserModel placeholderUser() {
     UserModel model = UserModel();
@@ -196,7 +212,7 @@ class UserModel {
     model.email = loadingString.tr;
     model.picture = loadingString.tr;
     model.bio = loadingString.tr;
-    model.isFollowing = false;
+    model.followingStatus = FollowingStatus.notFollowing;
     model.isFollower = false;
 
     model.phone = loadingString.tr;
@@ -236,7 +252,7 @@ class UserModel {
     }
 
     DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(chatLastTimeOnline! * 1000).toUtc();
+    DateTime.fromMillisecondsSinceEpoch(chatLastTimeOnline! * 1000).toUtc();
     // return '${lastSeenString.tr} ${timeago.format(dateTime)}';
     return '${lastSeenString.tr} ${dateTime.getTimeAgo}';
   }
@@ -271,7 +287,7 @@ class UserModel {
     if (relationsRevealSetting == RelationsRevealSetting.none) {
       return false;
     } else if (relationsRevealSetting == RelationsRevealSetting.followers &&
-        isFollowing) {
+        followingStatus == FollowingStatus.following) {
       return true;
     } else {
       return true;

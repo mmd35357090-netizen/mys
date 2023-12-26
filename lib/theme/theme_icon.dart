@@ -15,14 +15,13 @@ enum ThemeIcon {
   // cameraFront,
   // cameraRear,
   cameraSwitch,
-
   videoCameraOff,
   videoCamera,
-
   emptyCheckbox,
   selectedCheckbox,
   search,
   downArrow,
+  arrowUp,
   star,
   filledStar,
   checkMark,
@@ -58,6 +57,7 @@ enum ThemeIcon {
   add,
   selectedRadio,
   more,
+  moreVertical,
   wallet,
   dashboard,
   nextArrow,
@@ -74,6 +74,7 @@ enum ThemeIcon {
   name,
   showPwd,
   notification,
+  language,
   discount,
   share,
   addressType,
@@ -93,18 +94,16 @@ enum ThemeIcon {
   location,
   drawing,
   fullScreen,
-
   play,
   stop,
-
   videoPost,
+  reels,
   delete,
   message,
   chat,
   chatBordered,
   randomChat,
   closeCircle,
-
   bed,
   map,
   news,
@@ -115,11 +114,9 @@ enum ThemeIcon {
   fwd,
   reply,
   bookMark,
+  bookMarked,
   lock,
-
   selectionType,
-
-
   report,
   hide,
   addCircle,
@@ -178,6 +175,12 @@ class ThemeIconWidget extends StatelessWidget {
           Icons.keyboard_arrow_down,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.arrowUp:
+        return SvgPicture.asset(
+          'assets/svg/outline/Arrow - Up 2.svg',
+          height: size ?? 20,
+          // color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.star:
         return Icon(
@@ -361,6 +364,12 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
+      case ThemeIcon.moreVertical:
+        return Icon(
+          Icons.more_vert,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
       case ThemeIcon.wallet:
         return Icon(
           Icons.account_balance_wallet,
@@ -441,7 +450,12 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-
+      case ThemeIcon.language:
+        return Icon(
+          Icons.language,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
       case ThemeIcon.discount:
         return Icon(
           Icons.local_offer_outlined,
@@ -536,6 +550,13 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
+      case ThemeIcon.reels:
+        return Icon(
+          Icons.play_arrow_outlined,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+
       case ThemeIcon.delete:
         return Icon(
           Icons.delete_outline,
@@ -594,6 +615,12 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.bookMark:
         return Icon(
           Icons.bookmark_border_outlined,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.bookMarked:
+        return Icon(
+          Icons.bookmark,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -867,13 +894,13 @@ class ThemeIconWidget extends StatelessWidget {
         return SvgPicture.asset(
           'assets/svg/bold/Call.svg',
           height: size ?? 20,
-          color: color ?? AppColorConstants.iconColor,
+          // color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.declineCall:
         return SvgPicture.asset(
           'assets/svg/bold/Close Square.svg',
           height: size ?? 20,
-          color: color ?? AppColorConstants.iconColor,
+          // color: color ?? AppColorConstants.iconColor,
         );
     }
   }

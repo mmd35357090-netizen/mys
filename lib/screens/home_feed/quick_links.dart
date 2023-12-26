@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/ui/podcast/podcast_list_dashboard.dart';
 import 'package:foap/screens/chatgpt/chat_gpt.dart';
+import 'package:foap/screens/home_feed/story_uploader.dart';
 import 'package:foap/screens/live/live_users_screen.dart';
 import '../../controllers/home/home_controller.dart';
 import '../chat/random_chat/choose_profile_category.dart';
@@ -9,7 +10,6 @@ import '../club/clubs_listing.dart';
 import '../competitions/competitions_screen.dart';
 import '../highlights/choose_stories.dart';
 import '../live/checking_feasibility.dart';
-import '../story/choose_media_for_story.dart';
 import '../tvs/tv_dashboard.dart';
 
 enum QuickLinkType {
@@ -105,7 +105,7 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                           successCallbackHandler: () {},
                         ));
                   } else if (link.linkType == QuickLinkType.story) {
-                    Get.to(() => const ChooseMediaForStory());
+                    openStoryUploader();
                   } else if (link.linkType == QuickLinkType.highlights) {
                     Get.to(() => const ChooseStoryForHighlights());
                   } else if (link.linkType == QuickLinkType.tv) {
@@ -127,25 +127,21 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Expanded(
+            child: Image.asset(
+              link.icon,
+            ),
+          ),
           const SizedBox(
-            height: 20,
+            height: 10,
           ),
-          Image.asset(
-            link.icon,
-            height: 80,
-            width: 80,
-          ),
-          // const Spacer(),
-          const Spacer(),
           Heading6Text(
             link.heading.tr,
           ),
-          const SizedBox(
-            height: 20,
-          ),
         ],
-      ),
+      ).p16,
     ).round(20);
   }
 }

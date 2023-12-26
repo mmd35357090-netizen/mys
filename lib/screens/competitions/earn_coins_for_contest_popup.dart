@@ -19,9 +19,7 @@ class _EarnCoinForContestPopupState extends State<EarnCoinForContestPopup> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBar( title: coinsString.tr),
-          divider().tP8,
           const Spacer(),
           Container(
                   height: 450,

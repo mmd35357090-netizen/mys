@@ -2,9 +2,9 @@ import 'package:camera/camera.dart';
 import 'package:foap/apiHandler/apis/gift_api.dart';
 import 'package:foap/apiHandler/apis/profile_api.dart';
 import 'package:foap/apiHandler/apis/wallet_api.dart';
+import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
-import 'package:foap/screens/login_sign_up/set_user_name.dart';
 import '../../apiHandler/apis/auth_api.dart';
 import '../../apiHandler/apis/post_api.dart';
 import '../../apiHandler/apis/users_api.dart';
@@ -14,7 +14,6 @@ import 'dart:io';
 import 'dart:async';
 import 'package:foap/manager/location_manager.dart';
 import 'package:foap/util/form_validator.dart';
-import 'package:foap/components/custom_gallery_picker.dart';
 import 'package:foap/controllers/auth/login_controller.dart';
 import 'package:foap/controllers/post/post_controller.dart';
 import 'package:foap/model/payment_model.dart';
@@ -325,12 +324,24 @@ class ProfileController extends GetxController {
         });
   }
 
-  void followUnFollowUserApi({required bool isFollowing}) {
-    user.value!.isFollowing = isFollowing;
+  void followUnFollowUser({required UserModel user}) {
+    if (user.isPrivate &&
+        user.followingStatus == FollowingStatus.notFollowing) {
+      this.user.value!.followingStatus = FollowingStatus.requested;
+    } else if (user.followingStatus == FollowingStatus.notFollowing) {
+      this.user.value!.followingStatus = FollowingStatus.following;
+    } else {
+      this.user.value!.followingStatus = FollowingStatus.notFollowing;
+    }
+
     update();
 
     UsersApi.followUnfollowUser(
-            isFollowing: isFollowing, userId: user.value!.id)
+        isFollowing:
+        this.user.value!.followingStatus == FollowingStatus.notFollowing
+            ? false
+            : true,
+        user: user)
         .then((value) {
       update();
     });
@@ -371,19 +382,19 @@ class ProfileController extends GetxController {
   }
 
   followUser(UserModel user) {
-    user.isFollowing = true;
+    user.followingStatus = FollowingStatus.following;
     update();
-    UsersApi.followUnfollowUser(isFollowing: true, userId: user.id)
+    UsersApi.followUnfollowUser(isFollowing: true, user: user)
         .then((value) {
       update();
     });
   }
 
   unFollowUser(UserModel user) {
-    user.isFollowing = false;
+    user.followingStatus = FollowingStatus.notFollowing;
 
     update();
-    UsersApi.followUnfollowUser(isFollowing: false, userId: user.id)
+    UsersApi.followUnfollowUser(isFollowing: false, user: user)
         .then((value) {
       update();
     });

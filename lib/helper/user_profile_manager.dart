@@ -34,6 +34,7 @@ class UserProfileManager extends GetxController {
     Future.delayed(const Duration(seconds: 2), () {
       _dashboardController.indexChanged(0);
     });
+    SharedPrefs().setBioMetricAuthStatus(false);
   }
 
   Future refreshProfile() async {

@@ -24,7 +24,7 @@ class HomeController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
 
   RxList<PostModel> posts = <PostModel>[].obs;
-  RxList<PollsQuestionModel> polls = <PollsQuestionModel>[].obs;
+  RxList<PollsModel> polls = <PollsModel>[].obs;
   RxList<StoryModel> stories = <StoryModel>[].obs;
   RxList<UserModel> liveUsers = <UserModel>[].obs;
   RxList<GiftModel> timelineGift = <GiftModel>[].obs;
@@ -179,15 +179,8 @@ class HomeController extends GetxController {
       if (index == 1) {
         postSearchQuery.isFollowing = 1;
         postSearchQuery.isRecent = 1;
-      }
-      // else if (index == 2) {
-      //   postSearchQuery.isPopular = 1;
-      // }
-      else if (index == 2) {
-        postSearchQuery.isRecent = 1;
-      } else if (index == 3) {
-        postSearchQuery.isMine = 1;
-        postSearchQuery.isRecent = 1;
+      } else if (index == 2) {
+        postSearchQuery.isVideo = 1;
       } else {
         postSearchQuery.isRecent = 1;
       }
@@ -218,11 +211,9 @@ class HomeController extends GetxController {
     });
   }
 
-  void postPollAnswer(
-      int pollId, int pollQuestionId, int questionOptionId) async {
+  void postPollAnswer(int pollId, int questionOptionId) async {
     MiscApi.postPollAnswer(
         pollId: pollId,
-        pollQuestionId: pollQuestionId,
         questionOptionId: questionOptionId,
         resultCallback: (result) {
           polls.addAll(result);
@@ -251,6 +242,7 @@ class HomeController extends GetxController {
           title: postSearchQuery.title,
           hashtag: postSearchQuery.hashTag,
           clubId: postSearchQuery.clubId,
+          isVideo: postSearchQuery.isVideo,
           page: _postsCurrentPage,
           resultCallback: (result, metadata) {
             posts.addAll(
@@ -270,6 +262,8 @@ class HomeController extends GetxController {
             callback();
             update();
           });
+    } else {
+      callback();
     }
   }
 
@@ -306,25 +300,12 @@ class HomeController extends GetxController {
         });
   }
 
-  // void likeUnlikePost(PostModel post, BuildContext context) {
-  //   post.isLike = !post.isLike;
-  //   post.totalLike = post.isLike ? (post.totalLike) + 1 : (post.totalLike) - 1;
-  //   AppUtil.checkInternet().then((value) async {
-  //     if (value) {
-  //       ApiController()
-  //           .likeUnlike(post.isLike, post.id)
-  //           .then((response) async {});
-  //     } else {
-  //       AppUtil.showToast(
-  //
-  //           message: noInternet,
-  //           isSuccess: true);
-  //     }
-  //   });
-  //
-  //   posts.refresh();
-  //   update();
-  // }
+  postEdited(PostModel post) {
+    int oldPostIndex = posts.indexWhere((element) => element.id == post.id);
+    posts.removeAt(oldPostIndex);
+    posts.insert(oldPostIndex, post);
+    posts.refresh();
+  }
 
   postTextTapHandler({required PostModel post, required String text}) {
     if (text.startsWith('#')) {
@@ -358,33 +339,29 @@ class HomeController extends GetxController {
     isRefreshingStories.value = true;
     update();
 
-    AppUtil.checkInternet().then((value) async {
-      if (value) {
-        var responses = await Future.wait([
-          getCurrentActiveStories(),
-          getFollowersStories(),
-          getLiveUsers()
-        ]).whenComplete(() {});
-        stories.clear();
+    var responses = await Future.wait([
+      getCurrentActiveStories(),
+      getFollowersStories(),
+    ]).whenComplete(() {});
+    stories.clear();
 
-        StoryModel story = StoryModel(
-            id: 1,
-            name: '',
-            userName: _userProfileManager.user.value!.userName,
-            email: '',
-            image: _userProfileManager.user.value!.picture,
-            media: responses[0] as List<StoryMediaModel>);
+    StoryModel story = StoryModel(
+        id: 1,
+        name: '',
+        userName: _userProfileManager.user.value!.userName,
+        // email: '',
+        userImage: _userProfileManager.user.value!.picture,
+        media: responses[0] as List<StoryMediaModel>);
 
-        stories.add(story);
-        stories.addAll(responses[1] as List<StoryModel>);
-        stories.unique((e) => e.id);
-
-        liveUsers.value = responses[2] as List<UserModel>;
-      }
-
-      isRefreshingStories.value = false;
-      update();
-    });
+    if ((responses[0] as List<StoryMediaModel>).isNotEmpty) {
+      stories.add(story);
+      stories.addAll(responses[1] as List<StoryModel>);
+    } else {
+      stories.addAll(responses[1] as List<StoryModel>);
+    }
+    stories.unique((e) => e.id);
+    isRefreshingStories.value = false;
+    update();
   }
 
   Future<List<UserModel>> getLiveUsers() async {

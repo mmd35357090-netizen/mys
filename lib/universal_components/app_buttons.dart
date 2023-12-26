@@ -90,13 +90,13 @@ class AppThemeBorderButton extends StatelessWidget {
               TextStyle(
                   fontSize: FontSizes.b2,
                   fontWeight: TextWeight.medium,
-                  color: AppColorConstants.grayscale900),
+                  color: AppColorConstants.mainTextColor),
         ).hP8,
       ),
     )
         .borderWithRadius(
             value: 1,
-            radius: 0,
+            radius: 10,
             color: borderColor ?? AppColorConstants.dividerColor)
         .ripple(onPress!);
   }

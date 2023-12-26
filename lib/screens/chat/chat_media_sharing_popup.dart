@@ -7,8 +7,10 @@ import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/drawing_screen.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
+import 'package:image_picker/image_picker.dart';
 // import 'package:giphy_get/giphy_get.dart';
 
+import '../../components/giphy/giphy_get.dart';
 import '../../model/location.dart';
 import '../../util/constant_util.dart';
 import '../settings_menu/settings_controller.dart';
@@ -36,6 +38,7 @@ class _ChatMediaSharingOptionPopupState
   final SettingsController _settingsController = Get.find();
 
   List<SharingMediaType> mediaTypes = [];
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -44,12 +47,23 @@ class _ChatMediaSharingOptionPopupState
   }
 
   loadChatSharingOptions() {
-    if (_settingsController.setting.value!.enablePhotoSharingInChat ||
-        _settingsController.setting.value!.enableVideoSharingInChat) {
+    if (_settingsController.setting.value!.enablePhotoSharingInChat) {
       mediaTypes.add(SharingMediaType(
           icon: ThemeIcon.camera,
+          text: cameraString.tr,
+          contentType: MessageContentType.photo));
+    }
+    if (_settingsController.setting.value!.enablePhotoSharingInChat) {
+      mediaTypes.add(SharingMediaType(
+          icon: ThemeIcon.gallery,
           text: photoString.tr,
           contentType: MessageContentType.photo));
+    }
+    if (_settingsController.setting.value!.enableVideoSharingInChat) {
+      mediaTypes.add(SharingMediaType(
+          icon: ThemeIcon.videoCamera,
+          text: photoString.tr,
+          contentType: MessageContentType.video));
     }
     if (_settingsController.setting.value!.enableFileSharingInChat) {
       mediaTypes.add(SharingMediaType(
@@ -109,7 +123,10 @@ class _ChatMediaSharingOptionPopupState
             color: AppColorConstants.backgroundColor,
             child: GridView.builder(
                 itemCount: mediaTypes.length,
-                padding:  EdgeInsets.only(top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
+                padding: EdgeInsets.only(
+                    top: 20,
+                    left: DesignConstants.horizontalPadding,
+                    right: DesignConstants.horizontalPadding),
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
@@ -170,7 +187,15 @@ class _ChatMediaSharingOptionPopupState
   handleAction(SharingMediaType mediaType) {
     if (mediaType.contentType == MessageContentType.photo) {
       Get.back();
-      openGallery();
+
+      if (mediaType.text == cameraString.tr) {
+        openCamera();
+      } else {
+        openPhotoPicker();
+      }
+    } else if (mediaType.contentType == MessageContentType.video) {
+      Get.back();
+      openVideoPicker();
     } else if (mediaType.contentType == MessageContentType.gif) {
       Get.back();
       openGiphy();
@@ -198,27 +223,27 @@ class _ChatMediaSharingOptionPopupState
   }
 
   openGiphy() async {
-    // String randomId = 'hsvcewd78djhbejkd';
-    //
-    // GiphyGif? gif = await GiphyGet.getGif(
-    //   context: context,
-    //
-    //   //Required
-    //   apiKey: _settingsController.setting.value!.giphyApiKey!,
-    //   //Required.
-    //   lang: GiphyLanguage.english,
-    //   //Optional - Language for query.
-    //   randomID: randomId,
-    //   // Optional - An ID/proxy for a specific user.
-    //   tabColor: Colors.teal, // Optional- default accent color.
-    // );
-    //
-    // if (gif != null) {
-    //   _chatDetailController.sendGifMessage(
-    //       gif: gif.images!.original!.url,
-    //       mode: _chatDetailController.actionMode.value,
-    //       room: _chatDetailController.chatRoom.value!);
-    // }
+    String randomId = 'hsvcewd78djhbejkd';
+
+    GiphyGif? gif = await GiphyGet.getGif(
+      context: context,
+
+      //Required
+      apiKey: _settingsController.setting.value!.giphyApiKey!,
+      //Required.
+      lang: GiphyLanguage.english,
+      //Optional - Language for query.
+      randomID: randomId,
+      // Optional - An ID/proxy for a specific user.
+      tabColor: Colors.teal, // Optional- default accent color.
+    );
+
+    if (gif != null) {
+      _chatDetailController.sendGifMessage(
+          gif: gif.images!.original!.url,
+          mode: _chatDetailController.actionMode.value,
+          room: _chatDetailController.chatRoom.value!);
+    }
   }
 
   void openVoiceRecord() {
@@ -293,29 +318,51 @@ class _ChatMediaSharingOptionPopupState
             heightFactor: 0.9, child: DrawingScreen()));
   }
 
-  void openGallery() {
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context) => ChooseMediaForChat(
-              selectedMediaCompletetion: (medias) {
-                for (Media media in medias) {
-                  if (media.mediaType == GalleryMediaType.photo) {
-                    _chatDetailController.sendImageMessage(
-                        media: media,
-                        mode: _chatDetailController.actionMode.value,
-                        room: _chatDetailController.chatRoom.value!);
-                    Navigator.of(context).pop();
-                  } else {
-                    Get.back();
-                    _chatDetailController.sendVideoMessage(
-                        media: media,
-                        mode: _chatDetailController.actionMode.value,
-                        room: _chatDetailController.chatRoom.value!);
-                  }
-                }
-              },
-            ));
+  void openCamera() async {
+    XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    if (photo != null) {
+      Media media = await photo.toMedia(GalleryMediaType.photo);
+
+      _chatDetailController.sendImageMessage(
+          media: media,
+          mode: _chatDetailController.actionMode.value,
+          room: _chatDetailController.chatRoom.value!);
+    }
+  }
+
+  void openPhotoPicker() async {
+    List<XFile> images = await _picker.pickMultiImage();
+    List<Media> medias = [];
+    for (XFile image in images) {
+      Media media = await image.toMedia(GalleryMediaType.photo);
+      medias.add(media);
+    }
+
+    for (Media media in medias) {
+      if (media.mediaType == GalleryMediaType.photo) {
+        _chatDetailController.sendImageMessage(
+            media: media,
+            mode: _chatDetailController.actionMode.value,
+            room: _chatDetailController.chatRoom.value!);
+      } else {
+        _chatDetailController.sendVideoMessage(
+            media: media,
+            mode: _chatDetailController.actionMode.value,
+            room: _chatDetailController.chatRoom.value!);
+      }
+    }
+  }
+
+  void openVideoPicker() async {
+    XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      Media media = await video.toMedia(GalleryMediaType.video);
+
+      _chatDetailController.sendVideoMessage(
+          media: media,
+          mode: _chatDetailController.actionMode.value,
+          room: _chatDetailController.chatRoom.value!);
+    }
   }
 
   void openUsersList() {
@@ -376,7 +423,7 @@ class _ChatMediaSharingOptionPopupState
       Media media = Media();
       media.id = randomId();
       media.file = file;
-      media.mediaByte = data;
+      media.mainFileBytes = data;
       media.fileSize = sizeInBytes;
 
       // media.thumbnail = thumbnailData!;

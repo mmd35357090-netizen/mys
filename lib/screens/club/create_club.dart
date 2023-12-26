@@ -99,7 +99,7 @@ class CreateClubState extends State<CreateClub> {
                 child: AppThemeButton(
                     text: widget.club.id == null
                         ? nextString.tr
-                        : updateStrString.tr,
+                        : updateString.tr,
                     onPress: () {
                       nextBtnClicked();
                     }).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 25, top: 25),

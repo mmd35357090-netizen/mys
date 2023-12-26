@@ -59,7 +59,7 @@ class Heading1Text extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.left,
       style: TextStyle(
           fontSize: FontSizes.h1,
-          color: color ?? AppColorConstants.grayscale900,
+          color: color ?? AppColorConstants.mainTextColor,
           fontWeight: weight ?? TextWeight.medium),
     );
   }
@@ -86,7 +86,7 @@ class Heading2Text extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.left,
       style: TextStyle(
           fontSize: FontSizes.h2,
-          color: color ?? AppColorConstants.grayscale900,
+          color: color ?? AppColorConstants.mainTextColor,
           fontWeight: weight ?? TextWeight.medium),
     );
   }
@@ -112,7 +112,7 @@ class Heading3Text extends StatelessWidget {
         textAlign: textAlign ?? TextAlign.left,
         style: TextStyle(
             fontSize: FontSizes.h3,
-            color: color ?? AppColorConstants.grayscale900,
+            color: color ?? AppColorConstants.mainTextColor,
             fontWeight: weight ?? TextWeight.medium));
   }
 }
@@ -138,7 +138,7 @@ class Heading4Text extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.left,
       style: TextStyle(
           fontSize: FontSizes.h4,
-          color: color ?? AppColorConstants.grayscale900,
+          color: color ?? AppColorConstants.mainTextColor,
           fontWeight: weight ?? TextWeight.medium),
     );
   }
@@ -165,7 +165,7 @@ class Heading5Text extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.left,
       style: TextStyle(
           fontSize: FontSizes.h5,
-          color: color ?? AppColorConstants.grayscale900,
+          color: color ?? AppColorConstants.mainTextColor,
           fontWeight: weight ?? TextWeight.medium),
     );
   }
@@ -192,7 +192,7 @@ class Heading6Text extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.left,
       style: TextStyle(
           fontSize: FontSizes.h6,
-          color: color ?? AppColorConstants.grayscale900,
+          color: color ?? AppColorConstants.mainTextColor,
           fontWeight: weight ?? TextWeight.medium),
     );
   }
@@ -219,7 +219,7 @@ class BodyExtraLargeText extends StatelessWidget {
         maxLines: maxLines,
         style: TextStyle(
             fontSize: FontSizes.b1,
-            color: color ?? AppColorConstants.grayscale900,
+            color: color ?? AppColorConstants.mainTextColor,
             fontWeight: weight ?? TextWeight.medium));
   }
 }
@@ -244,7 +244,7 @@ class BodyLargeText extends StatelessWidget {
         maxLines: maxLines,
         style: TextStyle(
             fontSize: FontSizes.b2,
-            color: color ?? AppColorConstants.grayscale900,
+            color: color ?? AppColorConstants.mainTextColor,
             fontWeight: weight ?? TextWeight.medium));
   }
 }
@@ -269,7 +269,7 @@ class BodyMediumText extends StatelessWidget {
         maxLines: maxLines,
         style: TextStyle(
             fontSize: FontSizes.b3,
-            color: color ?? AppColorConstants.grayscale900,
+            color: color ?? AppColorConstants.mainTextColor,
             fontWeight: weight ?? TextWeight.medium));
   }
 }
@@ -294,7 +294,7 @@ class BodySmallText extends StatelessWidget {
         overflow: TextOverflow.clip,
         style: TextStyle(
             fontSize: FontSizes.b4,
-            color: color ?? AppColorConstants.grayscale900,
+            color: color ?? AppColorConstants.mainTextColor,
             fontWeight: weight ?? TextWeight.medium));
   }
 }
@@ -319,7 +319,7 @@ class BodyExtraSmallText extends StatelessWidget {
         maxLines: maxLines,
         style: TextStyle(
             fontSize: FontSizes.b5,
-            color: color ?? AppColorConstants.grayscale900,
+            color: color ?? AppColorConstants.mainTextColor,
             fontWeight: weight ?? TextWeight.medium));
   }
 }

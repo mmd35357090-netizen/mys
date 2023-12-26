@@ -72,11 +72,10 @@ class MentionsList extends StatelessWidget {
                     //     mainAxisSpacing: 8.0,
                     //     mainAxisExtent: 100),
                     itemBuilder: (BuildContext context, int index) => PostCard(
-                            model: posts[index],
-                            removePostHandler: () {},
-                            blockUserHandler: () {},
-                            viewInsightHandler: () {})
-                        .ripple(() {
+                      model: posts[index],
+                      removePostHandler: () {},
+                      blockUserHandler: () {},
+                    ).ripple(() {
                       Get.to(() => Mentions(
                           posts: List.from(posts),
                           index: index,

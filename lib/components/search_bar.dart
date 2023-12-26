@@ -119,13 +119,13 @@ class _SFSearchBarState extends State<SFSearchBar> {
                   style: textStyle ??
                       TextStyle(
                           fontSize: FontSizes.b3,
-                          color: AppColorConstants.grayscale900),
+                          color: AppColorConstants.mainTextColor),
                   cursorColor: AppColorConstants.iconColor,
                   decoration: InputDecoration(
                     hintStyle: textStyle ??
                         TextStyle(
                             fontSize: FontSizes.b3,
-                            color: AppColorConstants.grayscale700),
+                            color: AppColorConstants.mainTextColor),
                     hintText: hintText ?? searchAnythingString.tr,
                     border: InputBorder.none,
                   )).setPadding(bottom: 4, left: 8),

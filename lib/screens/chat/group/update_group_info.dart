@@ -51,7 +51,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Heading5Text(updateStrString.tr,
+                    Heading5Text(updateString.tr,
                             weight: TextWeight.medium)
                         .ripple(() {
                       updateGroup();
@@ -118,6 +118,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                     )
                   ],
                 ),
+                const SizedBox(height: 20,),
                 AppTextField(
                   maxLines: 5,
                   controller: groupDescription,

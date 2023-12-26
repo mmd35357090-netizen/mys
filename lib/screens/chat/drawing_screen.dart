@@ -370,7 +370,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
           id: randomId(),
           file: file,
           fileSize: imageBytes.length,
-          mediaByte: imageBytes,
+          mainFileBytes: imageBytes,
           mediaType: GalleryMediaType.photo,
           creationTime: DateTime.now());
       if (widget.drawingCompleted != null) {

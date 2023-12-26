@@ -14,6 +14,7 @@ class PostCardController extends GetxController {
   RxInt currentIndex = 0.obs;
   int currentPostId = 0;
   RxList<PostModel> likedPosts = <PostModel>[].obs;
+  RxList<PostModel> savedPosts = <PostModel>[].obs;
 
   updateGallerySlider(int index, int postId) {
     postScrollIndexMapping[postId] = index;
@@ -50,6 +51,20 @@ class PostCardController extends GetxController {
     post.totalLike = post.isLike ? (post.totalLike) + 1 : (post.totalLike) - 1;
 
     PostApi.likeUnlikePost(like: post.isLike, postId: post.id);
+  }
+
+  void saveUnSavePost({
+    required PostModel post,
+  }) {
+    post.isSaved = !post.isSaved;
+    if (post.isSaved) {
+      savedPosts.add(post);
+    } else {
+      savedPosts.remove(post);
+    }
+    savedPosts.refresh();
+
+    PostApi.saveUnSavePost(save: post.isSaved, postId: post.id);
   }
 
   downloadAndShareMedia(PostModel post) async {

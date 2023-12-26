@@ -24,7 +24,7 @@ class _AudioPostTileState extends State<AudioPostTile> {
     Audio audio = Audio(
         id: widget.post.gallery.first.id.toString(),
         url: widget.post.gallery.first.filePath);
-    _playerManager.playAudio(audio);
+    _playerManager.playNetworkAudio(audio);
   }
 
   stopAudio() {
@@ -44,22 +44,22 @@ class _AudioPostTileState extends State<AudioPostTile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _playerManager.currentlyPlayingAudio.value?.id ==
-                  widget.post.gallery.first.id.toString() &&
-                  _playerManager.isPlaying.value
+                          widget.post.gallery.first.id.toString() &&
+                      _playerManager.isPlaying.value
                   ? const ThemeIconWidget(
-                ThemeIcon.pause,
-                color: Colors.white,
-                size: 30,
-              ).ripple(() {
-                pauseAudio();
-              })
+                      ThemeIcon.pause,
+                      color: Colors.white,
+                      size: 30,
+                    ).ripple(() {
+                      pauseAudio();
+                    })
                   : const ThemeIconWidget(
-                ThemeIcon.play,
-                color: Colors.white,
-                size: 30,
-              ).ripple(() {
-                playAudio();
-              }),
+                      ThemeIcon.play,
+                      color: Colors.white,
+                      size: 30,
+                    ).ripple(() {
+                      playAudio();
+                    }),
               const SizedBox(
                 width: 15,
               ),
@@ -97,10 +97,10 @@ class AudioProgressBar extends StatelessWidget {
             const Duration(seconds: 0),
         // buffered: value.buffered,
         total:
-        _playerManager.progress.value?.total ?? const Duration(seconds: 0),
+            _playerManager.progress.value?.total ?? const Duration(seconds: 0),
         timeLabelPadding: 5,
         timeLabelTextStyle:
-        TextStyle(fontSize: FontSizes.b4, fontWeight: TextWeight.bold),
+            TextStyle(fontSize: FontSizes.b4, fontWeight: TextWeight.bold),
         onDragUpdate: (detail) {
           _playerManager.pauseAudio();
           _playerManager

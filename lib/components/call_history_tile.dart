@@ -18,9 +18,14 @@ class CallHistoryTile extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BodyLargeText(
-              model.opponent.userName,
-              weight:TextWeight.medium,
+            Row(
+              children: [
+                BodyLargeText(
+                  model.opponent.userName,
+                  weight: TextWeight.medium,
+                ),
+                if (model.opponent.isVerified) verifiedUserTag()
+              ],
             ),
             const SizedBox(
               height: 5,
@@ -44,7 +49,7 @@ class CallHistoryTile extends StatelessWidget {
                           : incomingString.tr,
                   color: model.isMissedCall
                       ? AppColorConstants.red
-                      : AppColorConstants.grayscale900,
+                      : AppColorConstants.mainTextColor,
                 ),
               ],
             )

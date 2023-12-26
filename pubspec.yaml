@@ -34,7 +34,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cached_network_image: ^3.2.3
+  cached_network_image: ^3.3.0
   carousel_slider: ^4.2.1
   connectivity: ^3.0.6
   cupertino_icons: ^1.0.5
@@ -57,7 +57,6 @@ dependencies:
   get: ^4.6.5
   dots_indicator: ^3.0.0
   flutter_easyloading: ^3.0.5
-  story_view: ^0.15.0
   keyboard_attachable: ^2.1.0
   detectable_text_field: ^2.1.0
   firebase_crashlytics: ^3.3.4
@@ -113,14 +112,14 @@ dependencies:
   auto_orientation: ^2.3.1
   flutter_keyboard_visibility: ^5.4.1
   animate_do: ^3.0.2
-  flutter_braintree: ^3.0.0
-  razorpay_flutter: ^1.3.5
-  flutter_stripe: ^9.3.0
+#  flutter_braintree: ^3.0.0
+#  razorpay_flutter: ^1.3.5
+#  flutter_stripe: ^9.3.0
   sqflite: ^2.2.8+4
   readmore: ^2.2.0
   qr_flutter: ^4.1.0
   widgets_to_image: ^0.0.2
-  device_info_plus: ^9.0.2
+#  device_info_plus: ^9.0.2
   encrypt: ^5.0.1
   video_compress_ds: ^3.1.6
   aescryptojs: ^1.0.0
@@ -130,7 +129,7 @@ dependencies:
   latlng: ^1.0.0
   open_filex: ^4.3.2
   flutter_rating_bar: ^4.0.1
-  extended_image: ^8.0.2
+  extended_image: ^8.1.0
   visibility_detector: ^0.3.3
   lottie: ^2.5.0
   http: ^1.1.0
@@ -143,6 +142,10 @@ dependencies:
   syncfusion_flutter_sliders: ^22.1.39
   any_link_preview: ^3.0.1
   flutter_staggered_grid_view: ^0.6.2
+  record: ^4.4.4
+  flutter_video_info: ^1.3.1
+  photo_editor_sdk: ^3.0.0
+  video_editor_sdk: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -175,6 +178,8 @@ flutter:
     - assets/images/
     - assets/tv/
     - assets/svg/
+    - assets/svg/bold/
+    - assets/svg/outline/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

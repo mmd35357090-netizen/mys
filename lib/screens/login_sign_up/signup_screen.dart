@@ -82,6 +82,9 @@ class SignUpScreenState extends State<SignUpScreen> {
                 AppPasswordTextField(
                   controller: password,
                   hintText: passwordString.tr,
+                  onChanged: (value) {
+                    loginController.checkPassword(value);
+                  },
                 ),
                 Obx(() {
                   return loginController.passwordStrength.value < 0.8 &&
@@ -124,6 +127,8 @@ class SignUpScreenState extends State<SignUpScreen> {
                 AppPasswordTextField(
                   controller: confirmPassword,
                   hintText: confirmPasswordString.tr,
+                  onChanged: (value){
+                  },
                 ),
                 SizedBox(
                   height: Get.height * 0.015,
@@ -135,7 +140,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                           text: signingInTermsString.tr,
                           style: TextStyle(
                               fontSize: FontSizes.b4,
-                              color: AppColorConstants.grayscale900)),
+                              color: AppColorConstants.mainTextColor)),
                       TextSpan(
                           text: ' ${termsOfServiceString.tr}',
                           recognizer: TapGestureRecognizer()
@@ -151,7 +156,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                           text: ' ${andString.tr}',
                           style: TextStyle(
                               fontSize: FontSizes.b4,
-                              color: AppColorConstants.grayscale900)),
+                              color: AppColorConstants.mainTextColor)),
                       TextSpan(
                           text: ' ${privacyPolicyString.tr}',
                           recognizer: TapGestureRecognizer()

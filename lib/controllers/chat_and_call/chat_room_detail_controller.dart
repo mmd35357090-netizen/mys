@@ -10,10 +10,15 @@ class ChatRoomDetailController extends GetxController {
   RxList<ChatMessageModel> videos = <ChatMessageModel>[].obs;
   RxList<ChatMessageModel> starredMessages = <ChatMessageModel>[].obs;
   final ChatDetailController _chatDetailController = Get.find();
+  final ChatHistoryController _chatHistoryController = Get.find();
 
-  // Rx<ChatRoomModel?> room = Rx<ChatRoomModel?>(null);
+  Rx<ChatRoomModel?> currentRoom = Rx<ChatRoomModel?>(null);
 
   RxInt selectedSegment = 0.obs;
+
+  setCurrentRoom(ChatRoomModel? room) {
+    currentRoom.value = room;
+  }
 
   makeUserAsAdmin(UserModel user, ChatRoomModel chatRoom) {
     getIt<SocketManager>().emit(SocketConstants.makeUserAdmin,
@@ -29,12 +34,74 @@ class ChatRoomDetailController extends GetxController {
         room: chatRoom, callback: () {});
   }
 
-  removeUserFormGroup(UserModel user, ChatRoomModel chatRoom) {
+  removeUserFormGroup(
+      {required UserModel user, required ChatRoomModel chatRoom}) {
     getIt<SocketManager>().emit(SocketConstants.removeUserFromGroupChat,
         {'room': chatRoom.id, 'userId': user.id});
 
     _chatDetailController.getUpdatedChatRoomDetail(
         room: chatRoom, callback: () {});
+  }
+
+  addUsersToPublicRoom(
+      {required ChatRoomModel room, required List<UserModel> selectedFriends}) {
+    final UserProfileManager userProfileManager = Get.find();
+
+    for (UserModel user in selectedFriends) {
+      // add user in group via socket api
+
+      getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom,
+          {'userId': user.id.toString(), 'room': room.id});
+    }
+
+    // add member in current viewing group
+    if (currentRoom.value != null) {
+      ChatRoomMember member = ChatRoomMember(
+          id: 0,
+          userDetail: userProfileManager.user.value!,
+          roomId: room.id,
+          userId: userProfileManager.user.value!.id,
+          isAdmin: 0);
+
+      currentRoom.value!.roomMembers.add(member);
+      currentRoom.refresh();
+    }
+
+    // add member in group showing in listing
+    _chatHistoryController.joinPublicGroup(room);
+  }
+
+  addUsersToRoom(
+      {required ChatRoomModel room, required List<UserModel> selectedFriends}) {
+    for (UserModel user in selectedFriends) {
+      // add user in group via socket api
+
+      getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom,
+          {'userId': user.id.toString(), 'room': room.id});
+
+      _chatDetailController.chatRoom.value?.roomMembers
+          .add(user.toChatRoomMember);
+    }
+
+    _chatDetailController.update();
+  }
+
+  leavePublicGroup(ChatRoomModel chatRoom) {
+    final UserProfileManager userProfileManager = Get.find();
+
+    // remove user from group via socket api
+    getIt<SocketManager>()
+        .emit(SocketConstants.leaveGroupChat, {'room': chatRoom.id});
+
+    // remove member from current viewing group
+    if (currentRoom.value != null) {
+      currentRoom.value!.roomMembers.removeWhere((element) =>
+      element.userDetail.id == userProfileManager.user.value!.id);
+      currentRoom.refresh();
+    }
+
+    // remove member from group showing in listing
+    _chatHistoryController.leavePublicGroup(chatRoom);
   }
 
   leaveGroup(ChatRoomModel chatRoom) {
@@ -68,7 +135,7 @@ class ChatRoomDetailController extends GetxController {
 
   getStarredMessages(ChatRoomModel room) async {
     starredMessages.value =
-        await getIt<DBManager>().getStarredMessages(roomId: room.id);
+    await getIt<DBManager>().getStarredMessages(roomId: room.id);
     update();
   }
 
@@ -109,7 +176,7 @@ class ChatRoomDetailController extends GetxController {
       await Directory(mediaFolderPath).create();
     }
     List messages =
-        await getIt<DBManager>().getAllMessages(roomId: roomId, offset: 0);
+    await getIt<DBManager>().getAllMessages(roomId: roomId, offset: 0);
 
     File chatTextFile = File('${chatMediaDirectory.path}/chat.text');
     if (chatTextFile.existsSync()) {
@@ -123,7 +190,7 @@ class ChatRoomDetailController extends GetxController {
           message.isDateSeparator == false) {
         messagesString += '\n';
         messagesString +=
-            '[${message.messageTime}] ${message.isMineMessage ? 'Me' : message.userName}: ${message.isDeleted == true ? thisMessageIsDeletedString.tr : message.messageContent}';
+        '[${message.messageTime}] ${message.isMineMessage ? 'Me' : message.userName}: ${message.isDeleted == true ? thisMessageIsDeletedString.tr : message.messageContent}';
       }
     }
 

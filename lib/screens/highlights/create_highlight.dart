@@ -75,7 +75,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
             child: TextField(
               controller: nameText,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: FontSizes.b3),
+              style: TextStyle(fontSize: FontSizes.b3, color: AppColorConstants.mainTextColor),
               maxLines: 5,
               onChanged: (text) {},
               decoration: InputDecoration(

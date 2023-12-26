@@ -1,5 +1,7 @@
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/string_extension.dart';
+
 class ChatHistoryTile extends StatelessWidget {
   final ChatRoomModel model;
 
@@ -109,3 +111,99 @@ class ChatHistoryTile extends StatelessWidget {
         ));
   }
 }
+
+class PublicChatGroupCard extends StatelessWidget {
+  final ChatRoomModel room;
+  final VoidCallback joinBtnClicked;
+  final VoidCallback previewBtnClicked;
+  final VoidCallback leaveBtnClicked;
+
+  const PublicChatGroupCard(
+      {Key? key,
+        required this.room,
+        required this.joinBtnClicked,
+        required this.leaveBtnClicked,
+        required this.previewBtnClicked})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColorConstants.cardColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: double.infinity,
+              width: double.infinity,
+              child: room.image!.isNotEmpty
+                  ? CachedNetworkImage(
+                imageUrl: room.image!,
+                fit: BoxFit.cover,
+              )
+                  : Center(child: Heading1Text(room.name!.getInitials)),
+            ).topRounded(10).ripple(() {
+              previewBtnClicked();
+            }),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          !room.amIGroupAdmin
+              ? Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    BodyLargeText(
+                      room.name!,
+                      maxLines: 1,
+                      weight: TextWeight.semiBold,
+                    ).hP8,
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    // BodySmallText(
+                    //   '${room.totalMembers!.formatNumber} ${clubMembersString.tr}',
+                    // ).hP8,
+                  ],
+                ),
+              ),
+              Container(
+                  height: 50,
+                  width: 50,
+                  color: room.amIMember == true
+                      ? AppColorConstants.red
+                      : AppColorConstants.themeColor,
+                  child: ThemeIconWidget(
+                    room.amIMember == true
+                        ? ThemeIcon.checkMark
+                        : ThemeIcon.plus,
+                    color: Colors.white,
+                  )).topLeftDiognalRounded(20).ripple(() {
+                if (room.amIMember == true) {
+                  leaveBtnClicked();
+                } else {
+                  joinBtnClicked();
+                }
+              }),
+            ],
+          )
+              : SizedBox(
+              height: 50,
+              width: 100,
+              child: Center(
+                child: BodyLargeText(
+                  youAreAdminString,
+                  color: AppColorConstants.themeColor,
+                  weight: TextWeight.bold,
+                ),
+              )).hP4,
+        ],
+      ),
+    ).round(15);
+  }
+}
+

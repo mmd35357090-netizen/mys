@@ -53,12 +53,9 @@ class LoginScreenState extends State<LoginScreen> {
                       height: Get.height * 0.025,
                     ),
                     AppPasswordTextField(
-                      // onChanged: (value) {},
-                      // showDivider: true,
                       controller: password,
-                      // cornerRadius: 5,
                       hintText: passwordString.tr,
-                      // showRevealPasswordIcon: true,
+                      onChanged: (value) {},
                     ),
                     SizedBox(
                       height: Get.height * 0.04,

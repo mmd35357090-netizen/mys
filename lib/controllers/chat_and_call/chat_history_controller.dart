@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:foap/apiHandler/apis/chat_api.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:get/get.dart';
+import '../../helper/user_profile_manager.dart';
+import '../../model/data_wrapper.dart';
 import '../../screens/dashboard/dashboard_screen.dart';
 
 class ChatHistoryController extends GetxController {
@@ -9,34 +12,68 @@ class ChatHistoryController extends GetxController {
   final DashboardController _dashboardController = Get.find();
 
   List<ChatRoomModel> allRooms = [];
+  RxList<ChatRoomModel> publicGroups = <ChatRoomModel>[].obs;
+
   RxList<ChatRoomModel> searchedRooms = <ChatRoomModel>[].obs;
 
   Map<String, dynamic> typingStatus = {};
-  bool isLoading = false;
+  DataWrapper publicGroupsDataWrapper = DataWrapper();
+  DataWrapper chatRoomDataWrapper = DataWrapper();
 
   getChatRooms() async {
-    isLoading = true;
     allRooms = await getIt<DBManager>().getAllRooms();
 
     searchedRooms.value = allRooms;
-    update();
+     update();
 
     // if (allRooms.isEmpty) {
-      ChatApi.getChatRooms(resultCallback: (result) async {
-        isLoading = false;
-        List<ChatRoomModel> groupChatRooms = result
-            // .where((element) => element.isGroupChat == true)
-            .toList();
-        await getIt<DBManager>().saveRooms(groupChatRooms);
+    ChatApi.getChatRooms(resultCallback: (result) async {
+      List<ChatRoomModel> groupChatRooms = result
+          // .where((element) => element.isGroupChat == true)
+          .toList();
+      await getIt<DBManager>().saveRooms(groupChatRooms);
 
-        allRooms = await getIt<DBManager>().getAllRooms();
-        // allRooms = await getIt<DBManager>().mapUnReadCount(groupChatRooms);
-        searchedRooms.value = allRooms;
-        update();
-      });
+      allRooms = await getIt<DBManager>().getAllRooms();
+      // allRooms = await getIt<DBManager>().mapUnReadCount(groupChatRooms);
+      searchedRooms.value = allRooms;
+      searchedRooms.value = searchedRooms
+          .where((e) => e.isGroupChat == true || (e.roomMembers.length > 1))
+          .toList();
+      update();
+    });
     // } else {
     //   isLoading = false;
     // }
+  }
+
+  refreshPublicGroups(VoidCallback callback) {
+    publicGroupsDataWrapper = DataWrapper();
+    getPublicChatRooms(callback);
+  }
+
+  loadMorePublicGroups(VoidCallback callback) {
+    if (publicGroupsDataWrapper.haveMoreData.value) {
+      getPublicChatRooms(callback);
+    } else {
+      callback();
+    }
+  }
+
+  getPublicChatRooms(VoidCallback callback) async {
+    publicGroupsDataWrapper.isLoading.value = true;
+
+    ChatApi.getPublicChatRooms(
+        page: publicGroupsDataWrapper.page,
+        resultCallback: (result, metaData) async {
+          publicGroupsDataWrapper.isLoading.value = false;
+          publicGroups.addAll(result);
+
+          publicGroupsDataWrapper.haveMoreData.value =
+              metaData.currentPage <= metaData.pageCount;
+          publicGroupsDataWrapper.page += 1;
+          callback();
+          update();
+        });
   }
 
   searchTextChanged(String text) {
@@ -141,5 +178,37 @@ class ChatHistoryController extends GetxController {
       searchedRooms.refresh();
       // update();
     }
+  }
+
+  joinPublicGroup(ChatRoomModel room) {
+    final UserProfileManager userProfileManager = Get.find();
+
+    publicGroups.value = publicGroups.map((element) {
+      if (element.id == room.id) {
+        ChatRoomMember member = ChatRoomMember(
+            id: 0,
+            userDetail: userProfileManager.user.value!,
+            roomId: room.id,
+            userId: userProfileManager.user.value!.id,
+            isAdmin: 0);
+
+        element.roomMembers.add(member);
+      }
+      return element;
+    }).toList();
+    publicGroups.refresh();
+  }
+
+  leavePublicGroup(ChatRoomModel room) {
+    final UserProfileManager userProfileManager = Get.find();
+
+    publicGroups.value = publicGroups.map((element) {
+      if (element.id == room.id) {
+        element.roomMembers.removeWhere((element) =>
+            element.userDetail.id == userProfileManager.user.value!.id);
+      }
+      return element;
+    }).toList();
+    publicGroups.refresh();
   }
 }

@@ -136,6 +136,8 @@ class DBManager {
     for (ChatRoomModel chatRoom in chatRooms) {
       ChatRoomModel? room = await getRoomById(chatRoom.id);
       if (room == null) {
+        batch.rawDelete('DELETE FROM ChatRooms WHERE id = ${chatRoom.id}');
+
         batch.rawInsert(
             'INSERT INTO ChatRooms(id, title, status,type,is_chat_user_online,created_by,created_at,updated_at,imageUrl,description,chat_access_group) VALUES(${chatRoom.id},"${chatRoom.name}", ${chatRoom.status},${chatRoom.type}, ${chatRoom.isOnline == true ? 1 : 0},${chatRoom.createdBy},${chatRoom.createdAt},${chatRoom.createdAt},"${chatRoom.image}","${chatRoom.description}",${chatRoom.groupAccess})');
 

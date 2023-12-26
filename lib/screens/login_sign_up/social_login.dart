@@ -209,7 +209,6 @@ class _SocialLoginState extends State<SocialLogin> {
         email: email,
         successCallback: (authKey) async {
           EasyLoading.dismiss();
-          SharedPrefs().setUserLoggedIn(true);
           await SharedPrefs().setAuthorizationKey(authKey);
           await _userProfileManager.refreshProfile();
           await _settingsController.getSettings();
@@ -244,15 +243,24 @@ class _SocialLoginState extends State<SocialLogin> {
       nonce: nonce,
     );
 
+    if (appleCredential.givenName != null) {
+      SharedPrefs().setAppleIdName(
+          forAppleId: '${appleCredential.userIdentifier}',
+          email: appleCredential.givenName!);
+    }
+    if (appleCredential.email != null) {
+      SharedPrefs().setAppleIdEmail(
+          forAppleId: '${appleCredential.userIdentifier}',
+          email: appleCredential.email!);
+    }
+
+    String? email = await SharedPrefs()
+        .getAppleIdEmail(forAppleId: '${appleCredential.userIdentifier}');
+    String? name = await SharedPrefs()
+        .getAppleIdName(forAppleId: '${appleCredential.userIdentifier}');
+
     if (appleCredential.userIdentifier != null) {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          socialLogin('apple', appleCredential.userIdentifier!, '',
-              appleCredential.email ?? '');
-        } else {
-          AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
-        }
-      });
+      socialLogin('apple', appleCredential.userIdentifier!, name!, email!);
     }
   }
 }

@@ -165,11 +165,14 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
   }
 
   void openComments() {
-    Get.bottomSheet(CommentsScreen(
+    Get.to(() => CommentsScreen(
         model: model!,
         isPopup: true,
         commentPostedCallback: () {
           model!.totalComment += 1;
+        },
+        commentDeletedCallback: () {
+          model!.totalComment -= 1;
         },
         handler: () {
           if (widget.handler != null) {

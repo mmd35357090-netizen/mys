@@ -449,7 +449,7 @@ class _ChatDetailState extends State<ChatDetail> {
                                   style: TextStyle(
                                       fontSize: FontSizes.h5,
                                       fontWeight: TextWeight.regular,
-                                      color: AppColorConstants.grayscale900),
+                                      color: AppColorConstants.mainTextColor),
                                   maxLines: 50,
                                   onChanged: (text) {
                                     _chatDetailController.messageChanges();

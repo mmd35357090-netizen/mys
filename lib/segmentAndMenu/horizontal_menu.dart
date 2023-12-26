@@ -32,8 +32,6 @@ class HorizontalMenuBarState extends State<HorizontalMenuBar> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
     super.initState();
   }
 
@@ -55,16 +53,18 @@ class HorizontalMenuBarState extends State<HorizontalMenuBar> {
                     color: index == widget.selectedIndex
                         ? AppColorConstants.themeColor
                         : AppColorConstants.cardColor.darken(),
-                    child: BodyLargeText(
+                    child: BodySmallText(
                       widget.menus[index].tr,
-                      color: index == widget.selectedIndex
-                          ? AppColorConstants.grayscale100
-                          : AppColorConstants.grayscale900,
+                      color: AppColorConstants.mainTextColor,
                       weight: index == widget.selectedIndex
                           ? TextWeight.semiBold
                           : TextWeight.medium,
                     )
-                        .setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 5, bottom: 5)
+                        .setPadding(
+                            left: DesignConstants.horizontalPadding,
+                            right: DesignConstants.horizontalPadding,
+                            top: 5,
+                            bottom: 5)
                         .ripple(() {
                       setState(() {
                         // selectedMenu = menus[index];
@@ -212,7 +212,7 @@ class _HorizontalSegmentBarState extends State<HorizontalSegmentBar> {
                         widget.segments[index],
                         color: index == selectedMenuIndex
                             ? AppColorConstants.themeColor
-                            : AppColorConstants.grayscale900,
+                            : AppColorConstants.mainTextColor,
                         weight: index == selectedMenuIndex
                             ? TextWeight.bold
                             : TextWeight.medium,
@@ -379,7 +379,7 @@ class _HorizontalSegmentBarWithPointerState
                       menus[index],
                       color: index == selectedMenuIndex
                           ? AppColorConstants.themeColor
-                          : AppColorConstants.grayscale900,
+                          : AppColorConstants.mainTextColor,
                       weight: index == selectedMenuIndex
                           ? TextWeight.bold
                           : TextWeight.medium,

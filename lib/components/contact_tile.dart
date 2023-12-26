@@ -23,7 +23,7 @@ class ContactTile extends StatelessWidget {
               ),
               BodyLargeText(
                 contact.phones.map((e) => e.number).toList().join(','),
-                color: AppColorConstants.grayscale400,
+                color: AppColorConstants.subHeadingTextColor,
               )
             ],
           ),

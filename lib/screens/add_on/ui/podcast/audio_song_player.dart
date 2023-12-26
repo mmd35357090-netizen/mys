@@ -106,13 +106,13 @@ class _AudioSongPlayerState extends State<AudioSongPlayer> {
                 Heading3Text(
                   widget.songsArray?[currentSongIndex].name ?? '',
                   weight: TextWeight.bold,
-                  color: AppColorConstants.grayscale100,
+                  color: AppColorConstants.subHeadingTextColor,
                 ),
                 const SizedBox(height: 10),
                 BodySmallText(
                   widget.show?.name ?? '',
                   maxLines: 2,
-                  color: AppColorConstants.grayscale100,
+                  color: AppColorConstants.subHeadingTextColor,
                 ),
                 const SizedBox(height: 10),
                 StreamBuilder<SeekbarData>(
@@ -281,13 +281,13 @@ class _AudioSongPlayerState extends State<AudioSongPlayer> {
                               offset: const Offset(0, 3),
                               child: BodyLargeText(
                                 (index + 1).toString(),
-                               color: AppColorConstants.grayscale100,
+                               color: AppColorConstants.subHeadingTextColor,
                               )),
                           title: Transform.translate(
                               offset: const Offset(-30, 0),
                               child: BodyLargeText(
                                 widget.songsArray?[index].name ?? '',
-                                color: AppColorConstants.grayscale100,
+                                color: AppColorConstants.subHeadingTextColor,
                               )),
                           trailing: const Icon(Icons.favorite),
 

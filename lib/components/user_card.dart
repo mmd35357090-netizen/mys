@@ -1,16 +1,64 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
-
 import '../controllers/live/agora_live_controller.dart';
 import '../controllers/profile/profile_controller.dart';
 import '../model/call_model.dart';
 import '../model/club_join_request.dart';
 import '../model/club_member_model.dart';
 import '../model/gift_model.dart';
+import '../model/story_model.dart';
 import '../screens/profile/other_user_profile.dart';
 import '../screens/profile/update_profile.dart';
 import '../screens/settings_menu/settings_controller.dart';
+
+class FollowUnfollowButton extends StatelessWidget {
+  final UserModel user;
+  final VoidCallback? followCallback;
+  final VoidCallback? unFollowCallback;
+
+  const FollowUnfollowButton(
+      {Key? key,
+      required this.user,
+      required this.followCallback,
+      required this.unFollowCallback})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 35,
+      width: 120,
+      child: user.followingStatus == FollowingStatus.notFollowing
+          ? AppThemeBorderButton(
+              text: user.isFollower == true
+                  ? followBackString.tr
+                  : followString.tr,
+              onPress: () {
+                if (followCallback != null) {
+                  followCallback!();
+                }
+              })
+          : user.followingStatus == FollowingStatus.requested
+              ? AppThemeBorderButton(
+                  text: requestedString.tr,
+                  backgroundColor:
+                      AppColorConstants.themeColor.withOpacity(0.2),
+                  onPress: () {
+                    if (unFollowCallback != null) {
+                      unFollowCallback!();
+                    }
+                  })
+              : AppThemeButton(
+                  text: unFollowString.tr,
+                  onPress: () {
+                    if (unFollowCallback != null) {
+                      unFollowCallback!();
+                    }
+                  }),
+    );
+  }
+}
 
 class UserInfo extends StatelessWidget {
   final UserModel model;
@@ -30,10 +78,15 @@ class UserInfo extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BodyLargeText(
-                model.userName,
-                weight: TextWeight.semiBold,
-                maxLines: 1,
+              Row(
+                children: [
+                  BodyLargeText(
+                    model.name ?? model.userName,
+                    weight: TextWeight.semiBold,
+                    maxLines: 1,
+                  ),
+                  if (model.isVerified) verifiedUserTag()
+                ],
               ),
               const SizedBox(
                 height: 5,
@@ -110,8 +163,13 @@ class SelectableUserCardState extends State<SelectableUserCard> {
           ),
         ),
         const SizedBox(height: 10),
-        BodyLargeText(widget.model.userName,
-            maxLines: 1, weight: TextWeight.medium)
+        Row(
+          children: [
+            BodyLargeText(widget.model.userName,
+                maxLines: 1, weight: TextWeight.medium),
+            if (widget.model.isVerified) verifiedUserTag()
+          ],
+        )
       ],
     );
   }
@@ -239,10 +297,15 @@ class UserTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    BodyLargeText(
-                      profile.userName,
-                      // weight: TextWeight.regular,
-                      maxLines: 1,
+                    Row(
+                      children: [
+                        BodyLargeText(
+                          profile.userName,
+                          // weight: TextWeight.regular,
+                          maxLines: 1,
+                        ),
+                        if (profile.isVerified) verifiedUserTag()
+                      ],
                     ).bP4,
                     profile.country != null
                         ? BodyMediumText(
@@ -265,31 +328,10 @@ class UserTile extends StatelessWidget {
         ),
         // const Spacer(),
         if (followCallback != null && profile.isMe == false)
-          SizedBox(
-            height: 35,
-            width: 120,
-            child: profile.isFollowing == false
-                ? AppThemeBorderButton(
-                    // icon: ThemeIcon.message,
-                    text: profile.isFollower == true
-                        ? followBackString.tr
-                        : followString.tr,
-                    textStyle: TextStyle(
-                        fontSize: FontSizes.b2,
-                        fontWeight: TextWeight.medium,
-                        color: AppColorConstants.themeColor),
-                    onPress: () {
-                      if (followCallback != null) {
-                        followCallback!();
-                      }
-                    })
-                : AppThemeButton(
-                    text: unFollowString.tr,
-                    onPress: () {
-                      if (unFollowCallback != null) {
-                        unFollowCallback!();
-                      }
-                    }),
+          FollowUnfollowButton(
+            user: profile,
+            followCallback: followCallback,
+            unFollowCallback: unFollowCallback,
           ),
         if (chatCallback != null)
           Row(
@@ -387,10 +429,15 @@ class InviteUserTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    BodyLargeText(
-                      profile.userName,
-                      // weight: TextWeight.regular,
-                      maxLines: 1,
+                    Row(
+                      children: [
+                        BodyLargeText(
+                          profile.userName,
+                          // weight: TextWeight.regular,
+                          maxLines: 1,
+                        ),
+                        if (profile.isVerified) verifiedUserTag()
+                      ],
                     ).bP4,
                     profile.country != null
                         ? BodyMediumText(
@@ -460,9 +507,14 @@ class RelationUserTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BodyLargeText(
-                    profile.userName,
-                    weight: TextWeight.bold,
+                  Row(
+                    children: [
+                      BodyLargeText(
+                        profile.userName,
+                        weight: TextWeight.bold,
+                      ),
+                      if (profile.isVerified) verifiedUserTag()
+                    ],
                   ).bP4,
                   profile.country != null
                       ? BodyMediumText(
@@ -548,8 +600,13 @@ class ClubMemberTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BodyLargeText(member.user!.userName, weight: TextWeight.bold)
-                      .bP4,
+                  Row(
+                    children: [
+                      BodyLargeText(member.user!.userName,
+                          weight: TextWeight.bold),
+                      if (member.user!.isVerified) verifiedUserTag()
+                    ],
+                  ).bP4,
                   member.user!.country != null
                       ? BodyMediumText(
                           '${member.user!.city!}, ${member.user!.country!}',
@@ -629,7 +686,9 @@ class SendMessageUserTile extends StatelessWidget {
           }),
         ),
         // const Spacer(),
-        const SizedBox(width: 10,),
+        const SizedBox(
+          width: 10,
+        ),
         sendCallback != null
             ? AbsorbPointer(
                 absorbing: state == ButtonState.success,
@@ -774,8 +833,13 @@ class ClubJoinRequestTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BodyLargeText(request.user!.userName, weight: TextWeight.bold)
-                      .bP4,
+                  Row(
+                    children: [
+                      BodyLargeText(request.user!.userName,
+                          weight: TextWeight.bold),
+                      if (request.user!.isVerified) verifiedUserTag()
+                    ],
+                  ).bP4,
                   request.user!.country != null
                       ? BodyMediumText(
                           '${request.user!.city!}, ${request.user!.country!}',
@@ -823,5 +887,125 @@ class ClubJoinRequestTile extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class StoryViewerTile extends StatelessWidget {
+  final StoryViewerModel viewer;
+
+  const StoryViewerTile({
+    Key? key,
+    required this.viewer,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(child: UserInfo(model: viewer.user!)),
+        BodyMediumText(
+          viewer.viewedAt,
+          maxLines: 1,
+          color: AppColorConstants.subHeadingTextColor,
+        )
+        // const Spacer(),
+      ],
+    );
+  }
+}
+
+class FollowRequestSenderUserTile extends StatelessWidget {
+  final UserModel profile;
+
+  final VoidCallback acceptCallback;
+  final VoidCallback declineCallback;
+
+  const FollowRequestSenderUserTile({
+    Key? key,
+    required this.profile,
+    required this.acceptCallback,
+    required this.declineCallback,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColorConstants.cardColor,
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              UserAvatarView(
+                user: profile,
+                size: 40,
+                hideLiveIndicator: true,
+                hideOnlineIndicator: true,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        BodyLargeText(
+                          profile.userName,
+                          // weight: TextWeight.regular,
+                          maxLines: 1,
+                        ),
+                        if (profile.isVerified) verifiedUserTag()
+                      ],
+                    ).bP4,
+                    profile.country != null
+                        ? BodyMediumText(
+                      '${profile.city!}, ${profile.country!}',
+                    )
+                        : Container()
+                  ],
+                ).hP8,
+              ),
+              // const Spacer(),
+            ],
+          ).ripple(() {
+            Get.to(() => OtherUserProfile(
+              userId: profile.id,
+            ));
+          }),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                height: 35,
+                width: 120,
+                child: AppThemeButton(
+                  // icon: ThemeIcon.message,
+                    text: acceptString.tr,
+                    onPress: () {
+                      acceptCallback();
+                    }),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                height: 35,
+                width: 120,
+                child: AppThemeBorderButton(
+                    backgroundColor: AppColorConstants.cardColor,
+                    // icon: ThemeIcon.message,
+                    text: declineString.tr,
+                    onPress: () {
+                      declineCallback();
+                    }),
+              )
+            ],
+          ),
+        ],
+      ).p(DesignConstants.horizontalPadding),
+    ).round(20);
   }
 }

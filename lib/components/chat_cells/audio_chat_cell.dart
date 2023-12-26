@@ -1,9 +1,7 @@
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
-
 import '../../manager/player_manager.dart';
+import '../audio_progress_bar.dart';
 
 class AudioChatTile extends StatefulWidget {
   final ChatMessageModel message;
@@ -26,77 +24,59 @@ class _AudioChatTileState extends State<AudioChatTile> {
     Audio audio = Audio(
         id: widget.message.localMessageId,
         url: widget.message.mediaContent.audio!);
-    _playerManager.playAudio(audio);
+    _playerManager.playNetworkAudio(audio);
   }
 
   stopAudio() {
     _playerManager.stopAudio();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _playerManager.currentlyPlayingAudio.value?.id ==
-                        widget.message.id.toString()
-                    ? const ThemeIconWidget(
-                        ThemeIcon.stop,
-                        color: Colors.white,
-                        size: 30,
-                      ).ripple(() {
-                        stopAudio();
-                      })
-                    : const ThemeIconWidget(
-                        ThemeIcon.play,
-                        color: Colors.white,
-                        size: 30,
-                      ).ripple(() {
-                        playAudio();
-                      }),
-                const SizedBox(
-                  width: 15,
-                ),
-                SizedBox(
-                  width: 230,
-                  height: 20,
-                  child: AudioProgressBar(),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            )
-          ],
-        ));
+  pauseAudio() {
+    _playerManager.pauseAudio();
   }
-}
-
-class AudioProgressBar extends StatelessWidget {
-  final PlayerManager _playerManager = Get.find();
-
-  AudioProgressBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => ProgressBar(
-          thumbColor: AppColorConstants.themeColor.darken(),
-          progressBarColor: AppColorConstants.themeColor,
-          baseBarColor: AppColorConstants.backgroundColor.lighten(),
-          thumbRadius: 8,
-          barHeight: 2,
-          progress: _playerManager.progress.value?.current ??
-              const Duration(seconds: 0),
-          // buffered: value.buffered,
-          total: _playerManager.progress.value?.total ??
-              const Duration(seconds: 0),
-          timeLabelPadding: 5,
-          timeLabelTextStyle: TextStyle(
-              fontSize: FontSizes.b4, fontWeight: TextWeight.bold)
-
-          // onSeek: pageManager.seek,
-        ));
+    return Obx(() {
+      return Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _playerManager.currentlyPlayingAudio.value?.id ==
+                  widget.message.localMessageId.toString() &&
+                  _playerManager.isPlaying.value
+                  ? const ThemeIconWidget(
+                ThemeIcon.pause,
+                // color: Colors.white,
+                size: 30,
+              ).ripple(() {
+                pauseAudio();
+              })
+                  : const ThemeIconWidget(
+                ThemeIcon.play,
+                // color: Colors.white,
+                size: 30,
+              ).ripple(() {
+                playAudio();
+              }),
+              const SizedBox(
+                width: 15,
+              ),
+              SizedBox(
+                width: 200,
+                height: 20,
+                child: AudioProgressBar(
+                  id: widget.message.localMessageId.toString(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          )
+        ],
+      );
+    });
   }
 }

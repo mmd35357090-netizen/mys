@@ -61,7 +61,9 @@ class UserNetworkController extends GetxController {
   }
 
   followUser(UserModel user) {
-    user.isFollowing = true;
+    user.followingStatus =
+    user.isPrivate ? FollowingStatus.requested : FollowingStatus.following;
+
     if (following.where((e) => e.id == user.id).isNotEmpty) {
       following[following.indexWhere((element) => element.id == user.id)] =
           user;
@@ -71,24 +73,26 @@ class UserNetworkController extends GetxController {
           user;
     }
     update();
-    UsersApi.followUnfollowUser(isFollowing: true, userId: user.id)
+    UsersApi.followUnfollowUser(isFollowing: true, user: user)
         .then((value) {
       update();
     });
   }
 
   unFollowUser(UserModel user) {
-    user.isFollowing = false;
+    user.followingStatus = FollowingStatus.notFollowing;
     if (following.where((e) => e.id == user.id).isNotEmpty) {
-      following[following.indexWhere((element) => element.id == user.id)] =
-          user;
+      UserModel matchedUser =
+          following.where((element) => element.id == user.id).first;
+      matchedUser.followingStatus = FollowingStatus.notFollowing;
     }
     if (followers.where((e) => e.id == user.id).isNotEmpty) {
-      followers[followers.indexWhere((element) => element.id == user.id)] =
-          user;
+      UserModel matchedUser =
+          followers.where((element) => element.id == user.id).first;
+      matchedUser.followingStatus = FollowingStatus.notFollowing;
     }
     update();
-    UsersApi.followUnfollowUser(isFollowing: false, userId: user.id)
+    UsersApi.followUnfollowUser(isFollowing: false, user: user)
         .then((value) {
       update();
     });

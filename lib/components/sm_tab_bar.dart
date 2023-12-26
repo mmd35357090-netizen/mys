@@ -3,8 +3,10 @@ import 'package:foap/helper/imports/common_import.dart';
 class SMTabBar extends StatelessWidget {
   final TabController? controller;
   final List<String> tabs;
+  final bool canScroll;
 
-  const SMTabBar({Key? key, required this.tabs, this.controller})
+  const SMTabBar(
+      {Key? key, required this.tabs, required this.canScroll, this.controller})
       : super(key: key);
 
   @override
@@ -19,7 +21,7 @@ class SMTabBar extends StatelessWidget {
               height: 2,
               color: AppColorConstants.dividerColor,
             ).round(5)),
-        getTextTabBar(tabs: tabs, controller: controller)
+        getTextTabBar(tabs: tabs, controller: controller,canScroll: canScroll)
       ],
     );
   }
@@ -83,12 +85,13 @@ class SMIconAndTextTabBar extends StatelessWidget {
   }
 }
 
-TabBar getTextTabBar({
-  TabController? controller,
-  required List<String> tabs,
-}) {
+TabBar getTextTabBar(
+    {TabController? controller,
+      required List<String> tabs,
+      required bool canScroll}) {
   return TabBar(
     controller: controller,
+    isScrollable: canScroll,
     indicator: UnderlineTabIndicator(
       borderSide: BorderSide(width: 3.0, color: AppColorConstants.themeColor),
       insets: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -97,11 +100,11 @@ TabBar getTextTabBar({
       FocusScope.of(Get.context!).requestFocus(FocusNode());
     },
     labelStyle: TextStyle(
-        fontSize: FontSizes.h6,
+        fontSize: FontSizes.b2,
         color: AppColorConstants.themeColor,
-        fontWeight: TextWeight.semiBold),
+        fontWeight: TextWeight.regular),
     labelColor: AppColorConstants.themeColor,
-    unselectedLabelColor: AppColorConstants.grayscale500,
+    unselectedLabelColor: AppColorConstants.subHeadingTextColor,
     tabs: List.generate(tabs.length, (int index) {
       return Tab(
         text: tabs[index],
@@ -121,14 +124,14 @@ TabBar getIconTabBar(
       insets: const EdgeInsets.symmetric(horizontal: 16.0),
     ),
     labelColor: AppColorConstants.themeColor,
-    unselectedLabelColor: AppColorConstants.grayscale500,
+    unselectedLabelColor: AppColorConstants.subHeadingTextColor,
     tabs: List.generate(icons.length, (int index) {
       return Tab(
         icon: ThemeIconWidget(
           icons[index],
           color: index == selectedTab
               ? AppColorConstants.themeColor
-              : AppColorConstants.grayscale900,
+              : AppColorConstants.mainTextColor,
         ),
         // text: tabs[index],
       );
@@ -148,7 +151,7 @@ TabBar getIconAndTexTabBar(
       insets: const EdgeInsets.symmetric(horizontal: 16.0),
     ),
     labelColor: AppColorConstants.themeColor,
-    unselectedLabelColor: AppColorConstants.grayscale500,
+    unselectedLabelColor: AppColorConstants.subHeadingTextColor,
     tabs: List.generate(icons.length, (int index) {
       return Tab(
         icon: Row(
@@ -158,7 +161,7 @@ TabBar getIconAndTexTabBar(
               icons[index],
               color: index == selectedTab
                   ? AppColorConstants.themeColor
-                  : AppColorConstants.grayscale900,
+                  : AppColorConstants.mainTextColor,
             ),
             const SizedBox(
               width: 5,
@@ -167,7 +170,7 @@ TabBar getIconAndTexTabBar(
               texts[index],
               color: index == selectedTab
                   ? AppColorConstants.themeColor
-                  : AppColorConstants.grayscale900,
+                  : AppColorConstants.mainTextColor,
               weight: TextWeight.semiBold,
             )
           ],

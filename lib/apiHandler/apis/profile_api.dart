@@ -249,4 +249,15 @@ class ProfileApi {
       }
     });
   }
+
+  static updateAccountPrivacy(
+      {required bool isPrivate, required VoidCallback resultCallback}) async {
+    var url = NetworkConstantsUtil.updateAccountPrivacy;
+
+    await ApiWrapper().postApi(url: url, param: {
+      'profile_visibility': isPrivate ? 2 : 1,
+    }).then((result) {
+      resultCallback();
+    });
+  }
 }
