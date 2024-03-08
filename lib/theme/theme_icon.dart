@@ -80,6 +80,7 @@ enum ThemeIcon {
   addressType,
   addressPin,
   plus,
+  plusSymbol,
   minus,
   avatar,
   card,
@@ -128,7 +129,11 @@ enum ThemeIcon {
   music,
   dating,
   acceptCall,
-  declineCall
+  declineCall,
+  copyToClipboard,
+  bannedAccount,
+  competition
+
 }
 
 class ThemeIconWidget extends StatelessWidget {
@@ -468,7 +473,6 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-
       case ThemeIcon.addressType:
         return Icon(
           Icons.location_city_outlined,
@@ -476,6 +480,12 @@ class ThemeIconWidget extends StatelessWidget {
           color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.plus:
+        return Icon(
+          Icons.add,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.plusSymbol:
         return Icon(
           Icons.add,
           size: size ?? 20,
@@ -901,6 +911,24 @@ class ThemeIconWidget extends StatelessWidget {
           'assets/svg/bold/Close Square.svg',
           height: size ?? 20,
           // color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.copyToClipboard:
+        return Icon(
+          Icons.copy,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.bannedAccount:
+        return Icon(
+          Icons.person_off,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.competition:
+        return Icon(
+          Icons.emoji_events,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
         );
     }
   }

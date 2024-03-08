@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:foap/apiHandler/apis/post_api.dart';
-import 'package:foap/apiHandler/apis/users_api.dart';
+import 'package:foap/api_handler/apis/post_api.dart';
+import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:share_plus/share_plus.dart';
 import '../controllers/post/post_controller.dart';
@@ -15,6 +15,12 @@ class PostCardController extends GetxController {
   int currentPostId = 0;
   RxList<PostModel> likedPosts = <PostModel>[].obs;
   RxList<PostModel> savedPosts = <PostModel>[].obs;
+  RxBool enableComments = true.obs;
+
+  toggleEnableComments() {
+    enableComments.value = !enableComments.value;
+    update();
+  }
 
   updateGallerySlider(int index, int postId) {
     postScrollIndexMapping[postId] = index;
@@ -31,7 +37,9 @@ class PostCardController extends GetxController {
   }
 
   sharePost({required PostModel post}) {
-    downloadAndShareMedia(post);
+    Share.share(post.shareLink);
+
+    // downloadAndShareMedia(post);
   }
 
   void blockUser({required int userId, required VoidCallback callback}) {
@@ -67,21 +75,21 @@ class PostCardController extends GetxController {
     PostApi.saveUnSavePost(save: post.isSaved, postId: post.id);
   }
 
-  downloadAndShareMedia(PostModel post) async {
+  reSharePost(
+      {required int postId,
+        required String comment,
+        required bool enableComments}) {
     EasyLoading.show(status: loadingString.tr);
-    if (post.gallery.isNotEmpty) {
-      final response = await http.get(Uri.parse(post.gallery.first.filePath));
-
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName = post.gallery.first.filePath.split('/').last;
-
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsBytes(response.bodyBytes);
-
-      EasyLoading.dismiss();
-      Share.shareXFiles([XFile(file.path)], text: post.title);
-    } else {
-      Share.share(post.title);
-    }
+    PostApi.addPost(
+        sharingPostId: postId,
+        allowComments: enableComments,
+        postType: PostType.reshare,
+        postContentType: PostContentType.text,
+        gallery: [],
+        title: comment,
+        resultCallback: (value) {
+          EasyLoading.dismiss();
+          update();
+        });
   }
 }

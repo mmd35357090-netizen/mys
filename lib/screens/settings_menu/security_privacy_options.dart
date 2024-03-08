@@ -36,7 +36,11 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                     const SizedBox(
                       height: 10,
                     ),
-                    accountPrivacyTile()
+                    accountPrivacyTile(),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    onlineStatusTile()
                   ],
                 ),
                 const SizedBox(
@@ -161,4 +165,42 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
       ]).hp(DesignConstants.horizontalPadding),
     ));
   }
+
+  onlineStatusTile() {
+    return Obx(() => SizedBox(
+      height: 80,
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              BodyLargeText(shareOnlineStatusStaring.tr,
+                  weight: TextWeight.medium)
+                  .bP4,
+              BodySmallText(
+                shareOnlineStatusMsgString.tr,
+              ),
+            ],
+          ),
+        ),
+        // const Spacer(),
+        FlutterSwitch(
+          inactiveColor: AppColorConstants.disabledColor,
+          activeColor: AppColorConstants.themeColor,
+          width: 50.0,
+          height: 30.0,
+          valueFontSize: 15.0,
+          toggleSize: 20.0,
+          value: settingsController.isShareOnlineStatus.value,
+          borderRadius: 30.0,
+          padding: 8.0,
+          onToggle: (status) {
+            settingsController.toggleShowOnlineStatusSetting(status);
+          },
+        ),
+      ]).hp(DesignConstants.horizontalPadding),
+    ));
+  }
+
 }

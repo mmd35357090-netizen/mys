@@ -1,13 +1,13 @@
 import 'package:camera/camera.dart';
-import 'package:foap/apiHandler/apis/gift_api.dart';
-import 'package:foap/apiHandler/apis/profile_api.dart';
-import 'package:foap/apiHandler/apis/wallet_api.dart';
+import 'package:foap/api_handler/apis/gift_api.dart';
+import 'package:foap/api_handler/apis/profile_api.dart';
+import 'package:foap/api_handler/apis/wallet_api.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
-import '../../apiHandler/apis/auth_api.dart';
-import '../../apiHandler/apis/post_api.dart';
-import '../../apiHandler/apis/users_api.dart';
+import '../../api_handler/apis/auth_api.dart';
+import '../../api_handler/apis/post_api.dart';
+import '../../api_handler/apis/users_api.dart';
 import '../../util/shared_prefs.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
@@ -55,8 +55,6 @@ class ProfileController extends GetxController {
   int mentionsPostPage = 1;
   bool canLoadMoreMentionsPosts = true;
   bool mentionsPostsIsLoading = false;
-
-  Rx<GiftModel?> sendingGift = Rx<GiftModel?>(null);
 
   clear() {
     selectedSegment.value = 0;
@@ -337,11 +335,11 @@ class ProfileController extends GetxController {
     update();
 
     UsersApi.followUnfollowUser(
-        isFollowing:
-        this.user.value!.followingStatus == FollowingStatus.notFollowing
-            ? false
-            : true,
-        user: user)
+            isFollowing:
+                this.user.value!.followingStatus == FollowingStatus.notFollowing
+                    ? false
+                    : true,
+            user: user)
         .then((value) {
       update();
     });
@@ -384,8 +382,7 @@ class ProfileController extends GetxController {
   followUser(UserModel user) {
     user.followingStatus = FollowingStatus.following;
     update();
-    UsersApi.followUnfollowUser(isFollowing: true, user: user)
-        .then((value) {
+    UsersApi.followUnfollowUser(isFollowing: true, user: user).then((value) {
       update();
     });
   }
@@ -394,8 +391,7 @@ class ProfileController extends GetxController {
     user.followingStatus = FollowingStatus.notFollowing;
 
     update();
-    UsersApi.followUnfollowUser(isFollowing: false, user: user)
-        .then((value) {
+    UsersApi.followUnfollowUser(isFollowing: false, user: user).then((value) {
       update();
     });
   }
@@ -483,19 +479,15 @@ class ProfileController extends GetxController {
 
   sendGift(GiftModel gift) {
     if (_userProfileManager.user.value!.coins > gift.coins) {
-      sendingGift.value = gift;
       GiftApi.sendStickerGift(
           gift: gift,
           liveId: null,
           postId: null,
           receiverId: user.value!.id,
           resultCallback: () {
-            Timer(const Duration(seconds: 1), () {
-              sendingGift.value = null;
-            });
-
             // refresh profile to get updated wallet info
             _userProfileManager.refreshProfile();
+            AppUtil.showToast(message: giftSentString.tr, isSuccess: true);
           });
     } else {}
   }

@@ -1,7 +1,7 @@
 import 'package:foap/controllers/post/post_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
-import '../../components/post_card.dart';
+import '../../components/post_card/post_card.dart';
 import '../../model/post_model.dart';
 
 class ViewPostInsights extends StatefulWidget {
@@ -31,9 +31,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          backNavigationBar(
-               title: insightsString.tr),
+          backNavigationBar(title: insightsString.tr),
           divider(),
           Expanded(
             child: ListView(
@@ -46,6 +44,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     width: 150,
                     child: PostMediaTile(
                       model: widget.post,
+                      isSharedPostMedia: false,
                     ),
                   ),
                 ),
@@ -162,8 +161,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BodyMediumText(viewsString.tr,
-                      weight: TextWeight.medium),
+                  BodyMediumText(viewsString.tr, weight: TextWeight.medium),
                   BodyMediumText(
                       _postController.insight.value!.totalView.toString()),
                 ],

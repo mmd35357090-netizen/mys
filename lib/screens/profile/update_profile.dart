@@ -103,7 +103,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                   divider().vP16,
                   if (profileController.user.value!.accountCreatedWith == 1)
                       Column(
-                        childern:[
+                        children:[
                           Row(
                             children: [
                               BodyLargeText(

@@ -1,7 +1,7 @@
 import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/widgets/detectable_text.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import '../apiHandler/apis/users_api.dart';
+import '../api_handler/apis/users_api.dart';
 import '../model/comment_model.dart';
 import '../model/post_gallery.dart';
 import '../model/search_model.dart';

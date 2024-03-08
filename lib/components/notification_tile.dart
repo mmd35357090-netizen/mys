@@ -14,13 +14,13 @@ class NotificationTileType4 extends StatelessWidget {
 
   const NotificationTileType4(
       {Key? key,
-        required this.notification,
-        this.backgroundColor,
-        this.titleTextStyle,
-        this.subTitleTextStyle,
-        this.dateTextStyle,
-        this.followBackUserHandler,
-        this.borderColor})
+      required this.notification,
+      this.backgroundColor,
+      this.titleTextStyle,
+      this.subTitleTextStyle,
+      this.dateTextStyle,
+      this.followBackUserHandler,
+      this.borderColor})
       : super(key: key);
 
   @override
@@ -55,7 +55,7 @@ class NotificationTileType4 extends StatelessWidget {
                         },
                     ),
                     TextSpan(
-                      text: ' ${notificationMessage(notification.type)}',
+                      text: ' ${notificationMessage(notification)}',
                       style: TextStyle(
                           fontSize: FontSizes.b3,
                           color: AppColorConstants.mainTextColor,
@@ -65,7 +65,7 @@ class NotificationTileType4 extends StatelessWidget {
                       text: ' ${notification.notificationTime}',
                       style: TextStyle(
                           fontSize: FontSizes.b3,
-                          color: AppColorConstants.mainTextColor,
+                          color: AppColorConstants.themeColor,
                           fontWeight: TextWeight.semiBold),
                     ),
                   ]))
@@ -73,13 +73,13 @@ class NotificationTileType4 extends StatelessWidget {
           ).setPadding(top: 16, bottom: 16, left: 12, right: 12),
         ),
         if ((notification.type == NotificationType.like ||
-            notification.type == NotificationType.comment) &&
+                notification.type == NotificationType.comment) &&
             notification.post!.gallery.isNotEmpty)
           CachedNetworkImage(
-              height: 60,
-              width: 60,
-              fit: BoxFit.cover,
-              imageUrl: notification.post!.gallery.first.thumbnail)
+                  height: 60,
+                  width: 60,
+                  fit: BoxFit.cover,
+                  imageUrl: notification.post!.gallery.first.thumbnail)
               .round(20),
       ],
     ).hP8;
@@ -93,22 +93,25 @@ class NotificationTileType4 extends StatelessWidget {
     followBackUserHandler!();
   }
 
-  String notificationMessage(NotificationType type) {
-    if (type == NotificationType.follow) {
+  String notificationMessage(NotificationModel notification) {
+    if (notification.type == NotificationType.follow) {
       return startedFollowingYouString.tr;
-    } else if (type == NotificationType.followRequest) {
+    } else if (notification.type == NotificationType.followRequest) {
       return sentYourFollowRequestString.tr;
-    } else if (type == NotificationType.comment) {
+    } else if (notification.type == NotificationType.comment) {
       return commentedOnYourPostString.tr;
-    } else if (type == NotificationType.like) {
+    } else if (notification.type == NotificationType.like) {
       return likedYourPostString.tr;
-    } else if (type == NotificationType.competitionAdded) {
-
+    } else if (notification.type == NotificationType.competitionAdded) {
       return adminAddedNewCompetitionString.tr;
-    } else if (type == NotificationType.supportRequest) {
+    } else if (notification.type == NotificationType.supportRequest) {
       return adminRepliedOnYourSupportRequestString.tr;
-    } else if (type == NotificationType.verification) {
+    } else if (notification.type == NotificationType.verification) {
       return congratsYourVerificationIsApprovedString.tr;
+    } else if (notification.type == NotificationType.gift) {
+      return sentAGiftString.tr;
+    } else if (notification.type == NotificationType.clubInvitation) {
+      return '${invitedYouToClubString.tr} ${notification.club?.name ?? ''}';
     }
     return '';
   }

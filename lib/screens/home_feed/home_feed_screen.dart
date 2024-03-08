@@ -3,14 +3,14 @@ import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/home_feed/story_uploader.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_polls/flutter_polls.dart';
-import '../../components/post_card.dart';
+import '../../components/post_card/post_card.dart';
 import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/live/agora_live_controller.dart';
 import '../../controllers/home/home_controller.dart';
-import '../../model/call_model.dart';
+import '../../model/live_model.dart';
 import '../../model/post_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
-import '../post/add_post_screen.dart';
+import '../post/content_creator_view.dart';
 import '../story/story_updates_bar.dart';
 import '../story/story_viewer.dart';
 
@@ -40,7 +40,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadData(isRecent: true);
-
       _homeController.loadQuickLinksAccordingToSettings();
     });
 
@@ -52,6 +51,10 @@ class HomeFeedState extends State<HomeFeedScreen> {
           loadData(isRecent: false);
         }
       }
+
+      _homeController.scrollOffsetChanged(
+          value: _controller.position.pixels,
+          direction: _controller.position.userScrollDirection);
     });
   }
 
@@ -99,157 +102,76 @@ class HomeFeedState extends State<HomeFeedScreen> {
           onTap: () {
             FocusScope.of(context).unfocus();
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Stack(
             children: [
-              // menuView(),
-              const SizedBox(
-                height: 55,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Heading3Text(
-                        AppConfigConstants.appName,
-                        weight: TextWeight.regular,
-                        color: AppColorConstants.themeColor,
-                      )
-                    ],
-                  ),
-                  const Spacer(),
-                  const ThemeIconWidget(
-                    ThemeIcon.plus,
-                    size: 25,
-                  ).ripple(() {
-                    Future.delayed(
-                      Duration.zero,
-                      () => showGeneralDialog(
-                          context: context,
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const AddPostScreen(
-                                    postType: PostType.basic,
-                                  )),
-                    );
-                  }),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  const ThemeIconWidget(
-                    ThemeIcon.notification,
-                    size: 25,
-                  ).ripple(() {
-                    Get.to(() => const NotificationsScreen());
-                  }),
-                ],
-              ).hp(20),
-              const SizedBox(
-                height: 20,
-              ),
               Expanded(
                 child: postsView(),
               ),
+              Obx(() => Positioned(
+                  top: _homeController.scrollOffsetValue.value,
+                  // Adjust this value according to your header height
+                  left: 0,
+                  right: 0,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    color: AppColorConstants.backgroundColor,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Heading4Text(
+                                  AppConfigConstants.appName,
+                                  weight: TextWeight.semiBold,
+                                )
+                              ],
+                            ),
+                            const Spacer(),
+                            const ThemeIconWidget(
+                              ThemeIcon.plus,
+                              size: 25,
+                            ).ripple(() {
+                              Future.delayed(
+                                Duration.zero,
+                                () => showGeneralDialog(
+                                    context: context,
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const ContentCreatorView()),
+                              );
+                            }),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            const ThemeIconWidget(
+                              ThemeIcon.notification,
+                              size: 25,
+                            ).ripple(() {
+                              Get.to(() => const NotificationsScreen());
+                            }),
+                          ],
+                        ).hp(20),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ))),
             ],
           ),
         ));
-  }
-
-  Widget postingView() {
-    return Obx(
-        () => _addPostController.postingStatus.value == PostingStatus.posting
-            ? Container(
-                height: 55,
-                color: AppColorConstants.cardColor,
-                child: Row(
-                  children: [
-                    _addPostController.postingMedia.isNotEmpty
-                        ? Image.memory(
-                            _addPostController.postingMedia.first.thumbnail!,
-                            fit: BoxFit.cover,
-                            width: 40,
-                            height: 40,
-                          ).round(5)
-                        : BodyLargeText(_addPostController.postingTitle),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Heading5Text(
-                      _addPostController.isErrorInPosting.value
-                          ? postFailedString.tr
-                          : postingString.tr,
-                    ),
-                    const Spacer(),
-                    _addPostController.isErrorInPosting.value
-                        ? Row(
-                            children: [
-                              Heading5Text(
-                                discardString.tr,
-                                weight: TextWeight.medium,
-                              ).ripple(() {
-                                _addPostController.discardFailedPost();
-                              }),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Heading5Text(
-                                retryString.tr,
-                                weight: TextWeight.medium,
-                              ).ripple(() {
-                                _addPostController.retryPublish();
-                              }),
-                            ],
-                          )
-                        : Container()
-                  ],
-                ).hP8,
-              ).backgroundCard(radius: 10).bp(20)
-            : Container());
-  }
-
-  Widget storiesView() {
-    return SizedBox(
-      height: 110,
-      child: GetBuilder<HomeController>(
-          init: _homeController,
-          builder: (ctx) {
-            return StoryUpdatesBar(
-              stories: _homeController.stories,
-              liveUsers: _homeController.liveUsers,
-              addStoryCallback: () {
-                openStoryUploader();
-              },
-              viewStoryCallback: (story) {
-                Get.to(() => StoryViewer(
-                      story: story,
-                      storyDeleted: () {
-                        _homeController.getStories();
-                      },
-                    ));
-              },
-              joinLiveUserCallback: (user) {
-                Live live = Live(
-                    channelName: user.liveCallDetail!.channelName,
-                    // isHosting: false,
-                    mainHostUserDetail: user,
-                    // battleUsers: [],
-                    token: user.liveCallDetail!.token,
-                    id: user.liveCallDetail!.id);
-                _agoraLiveController.joinAsAudience(
-                  live: live,
-                );
-              },
-            ).vP16;
-          }),
-    );
   }
 
   postsView() {
     return Obx(() {
       return ListView.separated(
               controller: _controller,
-              padding: const EdgeInsets.only(bottom: 100),
+              padding: const EdgeInsets.only(top: 100, bottom: 100),
               itemCount: _homeController.posts.length + 3,
               itemBuilder: (context, index) {
                 if (index == 0) {
@@ -328,6 +250,107 @@ class HomeFeedState extends State<HomeFeedScreen> {
     });
   }
 
+  Widget postingView() {
+    return Obx(() => _addPostController.postingStatus.value ==
+            PostingStatus.posting
+        ? Container(
+            height: 55,
+            color: AppColorConstants.cardColor,
+            child: Row(
+              children: [
+                _addPostController.postingMedia.isNotEmpty &&
+                        _addPostController.postingMedia.first.mediaType !=
+                            GalleryMediaType.gif
+                    ? _addPostController.postingMedia.first.thumbnail != null
+                        ? Image.memory(
+                            _addPostController.postingMedia.first.thumbnail!,
+                            fit: BoxFit.cover,
+                            width: 40,
+                            height: 40,
+                          ).round(5)
+                        : _addPostController.postingMedia.first.mediaType ==
+                                GalleryMediaType.photo
+                            ? Image.file(
+                                _addPostController.postingMedia.first.file!,
+                                fit: BoxFit.cover,
+                                width: 40,
+                                height: 40,
+                              ).round(5)
+                            // : BodyLargeText(_addPostController.postingTitle)
+                            : Container()
+                    // : BodyLargeText(_addPostController.postingTitle),
+                    : Container(),
+                const SizedBox(
+                  width: 10,
+                ),
+                Heading5Text(
+                  _addPostController.isErrorInPosting.value
+                      ? postFailedString.tr
+                      : postingString.tr,
+                ),
+                const Spacer(),
+                _addPostController.isErrorInPosting.value
+                    ? Row(
+                        children: [
+                          Heading5Text(
+                            discardString.tr,
+                            weight: TextWeight.medium,
+                          ).ripple(() {
+                            _addPostController.discardFailedPost();
+                          }),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Heading5Text(
+                            retryString.tr,
+                            weight: TextWeight.medium,
+                          ).ripple(() {
+                            _addPostController.retryPublish();
+                          }),
+                        ],
+                      )
+                    : Container()
+              ],
+            ).hP8,
+          ).backgroundCard(radius: 10).bp(20)
+        : Container());
+  }
+
+  Widget storiesView() {
+    return SizedBox(
+      height: 110,
+      child: GetBuilder<HomeController>(
+          init: _homeController,
+          builder: (ctx) {
+            return StoryUpdatesBar(
+              stories: _homeController.stories,
+              liveUsers: _homeController.liveUsers,
+              addStoryCallback: () {
+                openStoryUploader();
+              },
+              viewStoryCallback: (story) {
+                Get.to(() => StoryViewer(
+                      story: story,
+                      storyDeleted: () {
+                        _homeController.getStories();
+                      },
+                    ));
+              },
+              joinLiveUserCallback: (user) {
+                LiveModel live = LiveModel();
+                live.channelName = user.liveCallDetail!.channelName;
+                live.mainHostUserDetail = user;
+                live.token = user.liveCallDetail!.token;
+                live.id = user.liveCallDetail!.id;
+                _agoraLiveController.joinAsAudience(
+                  live: live,
+                );
+              },
+            ).vP16;
+          }),
+    );
+  }
+
   polls(int index) {
     int postIndex = index > 2 ? index - 3 : 0;
     if (postIndex % pollFrequencyIndex == 0 && postIndex != 0) {
@@ -339,12 +362,12 @@ class HomeFeedState extends State<HomeFeedScreen> {
             pollId: _homeController.polls[pollIndex].id.toString(),
             hasVoted: _homeController.polls[pollIndex].isVote! > 0,
             userVotedOptionId: _homeController.polls[pollIndex].isVote! > 0
-                ? _homeController.polls[pollIndex].isVote
+                ? _homeController.polls[pollIndex].isVote.toString()
                 : null,
             onVoted: (PollOption pollOption, int newTotalVotes) async {
               await Future.delayed(const Duration(seconds: 1));
               _homeController.postPollAnswer(
-                  _homeController.polls[pollIndex].id!, pollOption.id!);
+                  _homeController.polls[pollIndex].id!, int.parse(pollOption.id!));
 
               /// If HTTP status is success, return true else false
               return true;
@@ -373,7 +396,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
               (_homeController.polls[pollIndex].pollOptions ?? []).map(
                 (option) {
                   var a = PollOption(
-                    id: option.id,
+                    id: option.id.toString(),
                     title: BodyLargeText(option.title ?? '',
                         weight: TextWeight.medium),
                     votes: option.totalOptionVoteCount ?? 0,

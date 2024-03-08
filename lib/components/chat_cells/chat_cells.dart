@@ -1,3 +1,5 @@
+import 'package:foap/components/chat_cells/story_chat_cell.dart';
+import 'package:foap/components/chat_cells/story_reply_chat_cell.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -48,13 +50,20 @@ class ChatMessageTile extends StatelessWidget {
                 child: Container(
                   color: message.messageContentType == MessageContentType.gif ||
                           message.messageContentType ==
-                              MessageContentType.sticker
+                              MessageContentType.sticker ||
+                          message.messageContentType ==
+                              MessageContentType.textReplyOnStory ||
+                          message.messageContentType ==
+                              MessageContentType.reactedOnStory ||
+                          message.messageContentType == MessageContentType.story
                       ? Colors.transparent
                       : message.isMineMessage
                           ? AppColorConstants.backgroundColor
                           : AppColorConstants.themeColor.darken(0.05),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: message.isMineMessage
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
                     children: [
                       showName ? nameWidget(context) : Container(),
                       message.messageContentType == MessageContentType.forward
@@ -130,8 +139,7 @@ class ChatMessageTile extends StatelessWidget {
           message: message,
           messageTapHandler: messageTapHandler,
           replyMessageTapHandler: replyMessageTapHandler);
-    } else if (message.messageReplyContentType ==
-        MessageContentType.location) {
+    } else if (message.messageReplyContentType == MessageContentType.location) {
       return ReplyLocationChatTile(
           message: message,
           messageTapHandler: messageTapHandler,
@@ -173,6 +181,12 @@ class ChatMessageTile extends StatelessWidget {
       return UserProfileChatTile(message: messageModel);
     } else if (messageModel.messageContentType == MessageContentType.file) {
       return FileChatTile(message: messageModel);
+    } else if (messageModel.messageContentType == MessageContentType.story) {
+      return StoryChatTile(message: messageModel);
+    } else if (messageModel.messageContentType ==
+            MessageContentType.textReplyOnStory ||
+        messageModel.messageContentType == MessageContentType.reactedOnStory) {
+      return StoryReplyChatTile(message: messageModel);
     }
     return TextChatTile(message: message);
   }
@@ -181,7 +195,6 @@ class ChatMessageTile extends StatelessWidget {
     return BodyLargeText(
       message.isMineMessage ? youString.tr : message.sender!.userName,
       weight: TextWeight.bold,
-
     );
   }
 }
@@ -223,7 +236,7 @@ class MessageDeliveryStatusView extends StatelessWidget {
                 : Container(),
             BodySmallText(
               message.messageTime,
-              weight:TextWeight.medium,
+              weight: TextWeight.medium,
             ),
             const SizedBox(
               width: 5,

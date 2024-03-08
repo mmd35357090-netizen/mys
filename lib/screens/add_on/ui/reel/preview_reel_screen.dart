@@ -147,13 +147,14 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
 
     chewieController?.pause();
 
-    Get.to(() => AddPostScreen(
+    Get.to(() =>
+        AddPostScreen(
           items: [media],
           isReel: true,
           audioId: widget.audioId,
           audioStartTime: widget.audioStartTime,
           audioEndTime: widget.audioEndTime,
-          postType: PostType.reel,
+          postType: PostType.reel, postCompletionHandler: () {  },
         ));
   }
 }

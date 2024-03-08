@@ -7,12 +7,9 @@ import 'package:foap/segmentAndMenu/horizontal_menu.dart';
 import 'package:foap/helper/imports/reel_imports.dart';
 
 class SelectMusic extends StatefulWidget {
-  final int duration;
   final Function(File, ReelMusicModel) selectedAudioCallback;
 
-  const SelectMusic(
-      {Key? key, required this.selectedAudioCallback, required this.duration})
-      : super(key: key);
+  const SelectMusic({super.key, required this.selectedAudioCallback});
 
   @override
   State<SelectMusic> createState() => _SelectMusicState();
@@ -42,81 +39,81 @@ class _SelectMusicState extends State<SelectMusic> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: KeyboardDismissOnTap(
           child: Column(
+        children: [
+          const SizedBox(
+            height: 40,
+          ),
+          Row(
             children: [
+              const ThemeIconWidget(
+                ThemeIcon.backArrow,
+                size: 25,
+              ).ripple(() {
+                Get.back();
+              }),
               const SizedBox(
-                height: 40,
+                width: 10,
               ),
-              Row(
-                children: [
-                  const ThemeIconWidget(
-                    ThemeIcon.backArrow,
-                    size: 25,
-                  ).ripple(() {
-                    Get.back();
-                  }),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: SFSearchBar(
-                        showSearchIcon: true,
-                        iconColor: AppColorConstants.themeColor,
-                        onSearchChanged: (value) {
-                          _createReelController.searchTextChanged(value);
-                        },
-                        onSearchStarted: () {
-                          //controller.startSearch();
-                        },
-                        onSearchCompleted: (searchTerm) {}),
-                  ),
-                  Obx(() => _createReelController.searchText.isNotEmpty
-                      ? Row(
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        height: 50,
-                        width: 50,
-                        color: AppColorConstants.themeColor,
-                        child: ThemeIconWidget(
-                          ThemeIcon.close,
-                          color: AppColorConstants.backgroundColor,
-                          size: 25,
+              Expanded(
+                child: SFSearchBar(
+                    showSearchIcon: true,
+                    iconColor: AppColorConstants.themeColor,
+                    onSearchChanged: (value) {
+                      _createReelController.searchTextChanged(value);
+                    },
+                    onSearchStarted: () {
+                      //controller.startSearch();
+                    },
+                    onSearchCompleted: (searchTerm) {}),
+              ),
+              Obx(() => _createReelController.searchText.isNotEmpty
+                  ? Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
                         ),
-                      ).round(20).ripple(() {
-                        _createReelController.closeSearch();
-                      }),
-                    ],
-                  )
-                      : Container())
-                ],
-              ).setPadding(
-                  left: DesignConstants.horizontalPadding,
-                  right: DesignConstants.horizontalPadding,
-                  top: 25,
-                  bottom: 20),
-              GetBuilder<CreateReelController>(
-                  init: _createReelController,
-                  builder: (ctx) {
-                    return Expanded(
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          segmentView(),
-                          divider(height: 0.2).tP25,
-                          musicListView()
-                          // searchedResult(segment: exploreController.selectedSegment),
-                        ],
-                      ),
-                    );
-                  })
+                        Container(
+                          height: 50,
+                          width: 50,
+                          color: AppColorConstants.themeColor,
+                          child: ThemeIconWidget(
+                            ThemeIcon.close,
+                            color: AppColorConstants.backgroundColor,
+                            size: 25,
+                          ),
+                        ).round(20).ripple(() {
+                          _createReelController.closeSearch();
+                        }),
+                      ],
+                    )
+                  : Container())
             ],
-          )),
+          ).setPadding(
+              left: DesignConstants.horizontalPadding,
+              right: DesignConstants.horizontalPadding,
+              top: 25,
+              bottom: 20),
+          GetBuilder<CreateReelController>(
+              init: _createReelController,
+              builder: (ctx) {
+                return Expanded(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      segmentView(),
+                      divider(height: 0.2).tP25,
+                      musicListView()
+                      // searchedResult(segment: exploreController.selectedSegment),
+                    ],
+                  ),
+                );
+              })
+        ],
+      )),
     );
   }
 
@@ -146,66 +143,62 @@ class _SelectMusicState extends State<SelectMusic> {
 
     return _createReelController.isLoadingAudios.value
         ? Expanded(
-        child: const ShimmerUsers().hp(DesignConstants.horizontalPadding))
+            child: const ShimmerUsers().hp(DesignConstants.horizontalPadding))
         : _createReelController.audios.isNotEmpty
-        ? Expanded(
-      child: ListView.separated(
-          controller: scrollController,
-          padding: EdgeInsets.only(
-              top: 20,
-              bottom: 50,
-              left: DesignConstants.horizontalPadding,
-              right: DesignConstants.horizontalPadding),
-          itemCount: _createReelController.audios.length,
-          itemBuilder: (BuildContext ctx, int index) {
-            ReelMusicModel audio =
-            _createReelController.audios[index];
-            return Obx(() {
-              return AudioTile(
-                audio: audio,
-                isPlaying:
-                _playerManager.currentlyPlayingAudio.value?.id ==
-                    audio.id.toString(),
-                playCallBack: () {
-                  _createReelController.playAudio(audio);
-                },
-                stopBack: () {
-                  _createReelController.stopPlayingAudio();
-                },
-                useAudioBack: () {
-                  if (_createReelController.recordingLength.value >
-                      audio.duration) {
-                    AppUtil.showToast(
-                        message:
-                        'Audio is shorter than ${_createReelController.recordingLength}seconds',
-                        isSuccess: false);
-                    return;
-                  }
-                  openCropAudio(audio);
-                },
+            ? Expanded(
+                child: ListView.separated(
+                    controller: scrollController,
+                    padding: EdgeInsets.only(
+                        top: 20,
+                        bottom: 50,
+                        left: DesignConstants.horizontalPadding,
+                        right: DesignConstants.horizontalPadding),
+                    itemCount: _createReelController.audios.length,
+                    itemBuilder: (BuildContext ctx, int index) {
+                      ReelMusicModel audio =
+                          _createReelController.audios[index];
+                      return Obx(() {
+                        return AudioTile(
+                          audio: audio,
+                          isPlaying:
+                              _playerManager.currentlyPlayingAudio.value?.id ==
+                                  audio.id.toString(),
+                          playCallBack: () {
+                            _createReelController.playAudio(audio);
+                          },
+                          stopBack: () {
+                            _createReelController.stopPlayingAudio();
+                          },
+                          useAudioBack: () {
+                            if (_createReelController.recordingLength.value >
+                                audio.duration) {
+                              AppUtil.showToast(
+                                  message:
+                                      'Audio is shorter than ${_createReelController.recordingLength}seconds',
+                                  isSuccess: false);
+                              return;
+                            }
+                            openCropAudio(audio);
+                          },
+                        );
+                      });
+                    },
+                    separatorBuilder: (BuildContext ctx, int index) {
+                      return const SizedBox(
+                        height: 20,
+                      );
+                    }),
+              )
+            : emptyData(
+                title: noDataString.tr,
+                subTitle: 'Please search another audio',
               );
-            });
-          },
-          separatorBuilder: (BuildContext ctx, int index) {
-            return const SizedBox(
-              height: 20,
-            );
-          }),
-    )
-        : emptyData(
-      title: noAudioFound.tr,
-      subTitle: searchAnotherAudio.tr,
-    );
   }
 
   void openCropAudio(ReelMusicModel audio) async {
     _createReelController.selectReelAudio(audio);
     File audioFile = await Get.bottomSheet(FractionallySizedBox(
-        heightFactor: 0.7,
-        child: CropAudioScreen(
-          reelMusicModel: audio,
-          duration: widget.duration,
-        )));
+        heightFactor: 0.7, child: CropAudioScreen(reelMusicModel: audio)));
     widget.selectedAudioCallback(audioFile, audio);
     Get.back();
   }

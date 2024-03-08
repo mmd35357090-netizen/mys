@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_fgbg/flutter_fgbg.dart';
-import 'package:foap/apiHandler/apis/users_api.dart';
+import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:foap/controllers/chat_and_call/agora_call_controller.dart';
 import 'package:foap/controllers/live/agora_live_controller.dart';
 import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
@@ -123,6 +123,7 @@ class SocketManager {
 
     // live end point handlers
     _socketInstance?.on(SocketConstants.joinLive, liveJoinedByUser);
+
     // _socketInstance?.on(SocketConstants.sendMessageInLive, onOnlineStatusEvent);
     _socketInstance?.on(
         SocketConstants.liveCreatedConfirmation, liveCreatedConfirmation);
@@ -132,9 +133,21 @@ class SocketManager {
     _socketInstance?.on(
         SocketConstants.newGiftReceivedInLiveCall, newGiftReceivedInLiveCall);
 
+    _socketInstance?.on(SocketConstants.invitedInLive, invitedInLive);
+    _socketInstance?.on(
+        SocketConstants.replyInvitationInLive, repliedInvitationInLive);
+    _socketInstance?.on(
+        SocketConstants.inviteInLiveConfirmation, invitedInLiveConfirmation);
+    _socketInstance?.on(
+        SocketConstants.liveBattleStatusUpdated, liveBattleStatusUpdated);
     _socketInstance?.on(
         SocketConstants.liveBattleHostUpdated, liveBattleHostUpdated);
     _socketInstance?.on(SocketConstants.endLiveBattle, endLiveBattle);
+    _socketInstance?.on(
+        SocketConstants.userRoleChangeUpdateInLive, userRoleChangeUpdateInLive);
+    _socketInstance?.on(SocketConstants.userRoleChangeUpdateConfirmationInLive,
+        userRoleChangeUpdateConfirmationInLive);
+    _socketInstance?.on(SocketConstants.cantJoinLiveCall, cantJoinLiveCall);
     // live tv
     _socketInstance?.on(
         SocketConstants.sendMessageInLiveTv, onReceiveMessageInLiveTv);
@@ -155,8 +168,6 @@ class SocketManager {
 
 //Get This Event After Successful Connection To Socket
   dynamic onConnect(_) {
-
-
     emit(SocketConstants.login, {
       'userId': _userProfileManager.user.value!.id,
       'username': _userProfileManager.user.value!.userName
@@ -234,11 +245,10 @@ class SocketManager {
     int deleteScope = response['deleteScope'] as int;
     int roomId = response['room'] as int;
     int messageId = response['id'] as int;
-    int userId = response['user_id'] as int;
 
     if (deleteScope == 2) {
       _chatDetailController.messagedDeleted(
-          messageId: messageId, roomId: roomId, userId: userId);
+          messageId: messageId, roomId: roomId);
     }
   }
 
@@ -375,10 +385,13 @@ class SocketManager {
 
   void liveJoinedByUser(dynamic response) {
     int userId = response['userId'];
+    int liveCallId = response['liveCallId'];
+    int totalUser = response['totalUser'];
+
     UsersApi.getOtherUser(
         userId: userId,
         resultCallback: (result) {
-          _agoraLiveController.onNewUserJoined(result);
+          _agoraLiveController.onNewUserJoined(result, liveCallId, totalUser);
         });
   }
 
@@ -394,13 +407,58 @@ class SocketManager {
   void onUserLeaveLive(dynamic response) {
     int userId = response['userId'];
     int liveId = response['liveCallId'];
+    int totalUser = response['totalUser'];
 
-    _agoraLiveController.onUserLeave(userId: userId, liveId: liveId);
+    _agoraLiveController.onUserLeave(
+        userId: userId, liveId: liveId, totalUsers: totalUser);
   }
 
   void onLiveEnd(dynamic response) {
     _homeController.liveUsersUpdated();
     _agoraLiveController.onLiveEndMessageReceived(response['liveCallId']);
+  }
+
+  void invitedInLive(dynamic response) {
+    UserModel host = UserModel();
+    host.id = response['userId'];
+    host.userName = response['username'];
+    host.picture = response['userImageUrl'];
+
+    LiveModel live = LiveModel();
+    live.channelName = response['channelName'];
+    live.mainHostUserDetail = host;
+    live.token = response['token'];
+    live.id = response['liveCallId'];
+
+    live.battleDetail =
+        BattleDetail.fromJson(response['battleInfo']['battleDetail']);
+    _agoraLiveController.invitedForLiveBattle(live);
+  }
+
+  void repliedInvitationInLive(dynamic response) {}
+
+  void invitedInLiveConfirmation(dynamic response) {}
+
+  void liveBattleStatusUpdated(dynamic response) async {
+    int status = response['status'];
+    int liveId = response['liveCallId'];
+
+    if (status == 4) {
+      BattleDetail battleDetail =
+          BattleDetail.fromJson(response['battleInfo']['battleDetail']);
+
+      List<LiveCallHostUser> battleUsers =
+          (response['battleInfo']['liveBattleHosts'] as List)
+              .map((e) => LiveCallHostUser.fromJson(e))
+              .toList();
+      battleDetail.battleUsers = battleUsers;
+      // invitation request accepted
+      _agoraLiveController.userAcceptedLiveBattle(
+          liveId: liveId, battleDetail: battleDetail);
+    } else if (status == 3) {
+      // invitation request declined
+      _agoraLiveController.userDeclinedLiveBattle(liveId: liveId);
+    }
   }
 
   void liveBattleHostUpdated(dynamic response) async {
@@ -410,24 +468,6 @@ class SocketManager {
         (response['battleInfo']['liveBattleHosts'] as List)
             .map((e) => LiveCallHostUser.fromJson(e))
             .toList();
-
-    // for (Map<String, dynamic> host in response['battleInfo']
-    //     ['liveBattleHosts']) {
-    //   await UsersApi.getOtherUser(
-    //       userId: host['userId'],
-    //       resultCallback: (user) {
-    //         hostUsers.add(LiveCallHostUser(
-    //             battleId: host['battleId'],
-    //             userDetail: user,
-    //             totalCoins: host['totalCoin'] == null
-    //                 ? 0
-    //                 : int.parse(host['totalCoin'].toString()),
-    //             totalGifts: host['totalGift'] == null
-    //                 ? 0
-    //                 : int.parse(host['totalGift'].toString()),
-    //             isMainHost: host['isSuperHost'] == 1));
-    //       });
-    // }
 
     _agoraLiveController.liveCallHostsUpdated(
         liveId: liveId,
@@ -472,14 +512,15 @@ class SocketManager {
           userId: host['userId'],
           resultCallback: (user) {
             hostUsers.add(LiveCallHostUser(
-                // battleId: host['battleId'],
                 userDetail: user,
-                totalCoins: host['totalCoin'] == null
-                    ? 0
-                    : int.parse(host['totalCoin'].toString()),
-                totalGifts: host['totalGift'] == null
-                    ? 0
-                    : int.parse(host['totalGift'].toString()),
+                totalCoins:
+                    host['totalCoin'] == null || host['totalCoin'] == 'null'
+                        ? 0
+                        : double.parse(host['totalCoin'].toString()).toInt(),
+                totalGifts:
+                    host['totalGift'] == null || host['totalGift'] == 'null'
+                        ? 0
+                        : int.parse(host['totalGift'].toString()),
                 isMainHost: host['isSuperHost'] == 1));
           });
     }
@@ -492,6 +533,38 @@ class SocketManager {
         battleDetail: hostUsers.isNotEmpty
             ? BattleDetail.fromJson(response['battleInfo']['battleDetail'])
             : null);
+  }
+
+  void userRoleChangeUpdateInLive(dynamic response) async {
+    int actionOnUserId = response['actionUserId'];
+    int liveId = response['liveCallId'];
+    LiveUserRole role = response['role'] == 1
+        ? LiveUserRole.host
+        : response['role'] == 3
+            ? LiveUserRole.moderator
+            : LiveUserRole.viewer;
+    print('userRoleChangeUpdateInLive == $response');
+
+    _agoraLiveController.userRoleChange(
+        actionOnUserId: actionOnUserId, liveId: liveId, role: role);
+  }
+
+  void userRoleChangeUpdateConfirmationInLive(dynamic response) async {
+    int actionOnUserId = response['actionUserId'];
+    int liveId = response['liveCallId'];
+    LiveUserRole role = response['role'] == 1
+        ? LiveUserRole.host
+        : response['role'] == 3
+            ? LiveUserRole.moderator
+            : LiveUserRole.viewer;
+
+    print('userRoleChangeUpdateConfirmationInLive == $response');
+    _agoraLiveController.userRoleChange(
+        actionOnUserId: actionOnUserId, liveId: liveId, role: role);
+  }
+
+  void cantJoinLiveCall(dynamic response) {
+    AppUtil.showToast(message: notAllowedToJoinLiveString.tr, isSuccess: false);
   }
 
   // live tv

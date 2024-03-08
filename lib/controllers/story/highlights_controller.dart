@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:foap/apiHandler/apis/highlights_api.dart';
-import 'package:foap/apiHandler/apis/misc_api.dart';
-import 'package:foap/apiHandler/apis/story_api.dart';
+import 'package:foap/api_handler/apis/highlights_api.dart';
+import 'package:foap/api_handler/apis/misc_api.dart';
+import 'package:foap/api_handler/apis/story_api.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/highlights_imports.dart';
 import '../../model/story_model.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../../util/constant_util.dart';
 
 class HighlightsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
@@ -21,11 +24,11 @@ class HighlightsController extends GetxController {
   String coverImage = '';
   String coverImageName = '';
 
-  File? pickedImage;
+  Rx<File?> pickedImage = Rx<File?>(null);
   String? picture;
   UserModel? model;
 
-  bool isLoading = true;
+  RxBool isLoading = true.obs;
 
   clear() {
     selectedStoriesMedia.clear();
@@ -41,7 +44,7 @@ class HighlightsController extends GetxController {
   }
 
   updateCoverImage(File? image) {
-    pickedImage = image;
+    pickedImage.value = image;
     update();
   }
 
@@ -56,30 +59,30 @@ class HighlightsController extends GetxController {
   }
 
   void getHighlights({required int userId}) {
-    isLoading = true;
+    isLoading.value = true;
     update();
 
     HighlightsApi.getHighlights(
         userId: userId,
         resultCallback: (result) {
-          isLoading = false;
+          isLoading.value = false;
           highlights.value = result;
           update();
         });
   }
 
   getAllStories() {
-    isLoading = true;
+    isLoading.value = true;
     update();
     StoryApi.getMyStories(resultCallback: (result) {
-      isLoading = false;
+      isLoading.value = false;
       stories.value = result;
       update();
     });
   }
 
   createHighlights({required String name}) async {
-    if (pickedImage != null) {
+    if (pickedImage.value != null) {
       await uploadCoverImage();
     }
 
@@ -98,13 +101,16 @@ class HighlightsController extends GetxController {
   }
 
   Future uploadCoverImage() async {
-    Uint8List compressedData = await pickedImage!.compress();
-    File file = File.fromRawPath(compressedData);
-    await MiscApi.uploadFile(file.path,          mediaType: GalleryMediaType.photo,
+    Uint8List compressedData = await pickedImage.value!.compress();
+    final tempDir = await getTemporaryDirectory();
+    File file = await File('${tempDir.path}/${randomId()}.png').create();
+    file.writeAsBytesSync(compressedData);
+    await MiscApi.uploadFile(file.path,
+        mediaType: GalleryMediaType.photo,
         type: UploadMediaType.storyOrHighlights,
         resultCallback: (fileName, filePath) {
-      coverImageName = fileName;
-    });
+          coverImageName = fileName;
+        });
   }
 
   deleteStoryFromHighlight() async {

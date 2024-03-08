@@ -1,9 +1,10 @@
-import 'package:foap/apiHandler/apis/gift_api.dart';
-import 'package:foap/apiHandler/apis/live_streaming_api.dart';
-import 'package:foap/apiHandler/apis/post_api.dart';
-import 'package:foap/apiHandler/apis/story_api.dart';
+import 'package:flutter/rendering.dart';
+import 'package:foap/api_handler/apis/gift_api.dart';
+import 'package:foap/api_handler/apis/live_streaming_api.dart';
+import 'package:foap/api_handler/apis/post_api.dart';
+import 'package:foap/api_handler/apis/story_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import '../../apiHandler/apis/misc_api.dart';
+import '../../api_handler/apis/misc_api.dart';
 import '../../model/gift_model.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../model/polls_model.dart';
@@ -34,18 +35,15 @@ class HomeController extends GetxController {
   RxInt currentVisibleVideoId = 0.obs;
   Map<int, double> mediaVisibilityInfo = {};
   PostSearchQuery postSearchQuery = PostSearchQuery();
-
   RxBool isRefreshingPosts = false.obs;
   RxBool isRefreshingStories = false.obs;
-
   RxInt categoryIndex = 0.obs;
-
   int _postsCurrentPage = 1;
   bool _canLoadMorePosts = true;
-
   RxBool openQuickLinks = false.obs;
-
   RxList<QuickLink> quickLinks = <QuickLink>[].obs;
+  RxDouble scrollOffsetValue = (0.0).obs;
+  ScrollDirection? lastScrollDirection;
 
   clear() {
     stories.clear();
@@ -69,6 +67,19 @@ class HomeController extends GetxController {
         closeQuickLinks();
       });
     }
+  }
+
+  scrollOffsetChanged(
+      {required double value, required ScrollDirection direction}) {
+    if ((value < 100 || lastScrollDirection == ScrollDirection.forward) &&
+        value > 0 &&
+        direction == ScrollDirection.reverse) {
+      scrollOffsetValue.value = -value;
+    } else if (direction == ScrollDirection.forward &&
+        scrollOffsetValue.value < 0) {
+      scrollOffsetValue.value += 2;
+    }
+    lastScrollDirection = direction;
   }
 
   closeQuickLinks() {
@@ -102,18 +113,18 @@ class HomeController extends GetxController {
 
     if (_settingsController.setting.value!.enableReel) {
       quickLinks.add(QuickLink(
-          icon: 'assets/highlights.png',
+          icon: 'assets/reel.png',
           heading: reelsString.tr,
           subHeading: reelsString.tr,
           linkType: QuickLinkType.highlights));
     }
-    if (_settingsController.setting.value!.enableLive) {
-      quickLinks.add(QuickLink(
-          icon: 'assets/live.png',
-          heading: goLiveString.tr,
-          subHeading: goLiveString.tr,
-          linkType: QuickLinkType.goLive));
-    }
+    // if (_settingsController.setting.value!.enableLive) {
+    //   quickLinks.add(QuickLink(
+    //       icon: 'assets/live.png',
+    //       heading: goLiveString.tr,
+    //       subHeading: goLiveString.tr,
+    //       linkType: QuickLinkType.goLive));
+    // }
     if (_settingsController.setting.value!.enableCompetitions) {
       quickLinks.add(QuickLink(
           icon: 'assets/competitions.png',
@@ -136,16 +147,7 @@ class HomeController extends GetxController {
           subHeading: haveFunByRandomChattingString.tr,
           linkType: QuickLinkType.randomChat));
     }
-    // if (_settingsController.setting.value!.enableCompetitions) {
-    //   quickLinks.add(QuickLink(
-    //       icon: 'assets/competitions.png',
-    //       heading: competition,
-    //       subHeading: joinCompetitionsToEarn,
-    //       linkType: QuickLinkType.competition));
-    // }
-    // if (_settingsController.setting.value!.enableReel) {
 
-    // }
     if (_settingsController.setting.value!.enableWatchTv) {
       quickLinks.add(QuickLink(
           icon: 'assets/television.png',
@@ -245,8 +247,7 @@ class HomeController extends GetxController {
           isVideo: postSearchQuery.isVideo,
           page: _postsCurrentPage,
           resultCallback: (result, metadata) {
-            posts.addAll(
-                result.where((element) => element.gallery.isNotEmpty).toList());
+            posts.addAll(result);
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             posts.unique((e) => e.id);
 

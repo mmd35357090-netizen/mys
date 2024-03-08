@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/gift_api.dart';
+import 'package:foap/api_handler/apis/gift_api.dart';
 import 'package:get/get.dart';
 import '../../model/category_model.dart';
 import '../../model/gift_model.dart';

@@ -1,5 +1,6 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/setting_model.dart';
 import 'chat_room_model.dart';
 
 class UserModel {
@@ -7,9 +8,7 @@ class UserModel {
 
   String? name;
   String userName = '';
-
-  // String category = '';
-
+  UserRole role = UserRole.user;
   String? email = '';
   String? picture;
   String? coverImage;
@@ -79,6 +78,8 @@ class UserModel {
 
   GenderType? genderType;
   bool isPrivate = false;
+  bool isShareOnlineStatus = false;
+  List<FeatureModel> features = [];
 
   UserModel();
 
@@ -86,6 +87,7 @@ class UserModel {
     UserModel model = UserModel();
     model.id = json['id'];
     model.name = json['name'];
+    model.role = json['role'] == 3 ? UserRole.user : UserRole.admin;
     model.userName = json['username'] == null
         ? ''
         : json['username'].toString().toLowerCase();
@@ -130,6 +132,7 @@ class UserModel {
     model.isReported = json['is_reported'] == 1;
     model.isOnline = json['is_chat_user_online'] == 1;
     model.isPrivate = json['profile_visibility'] == 2;
+    model.isShareOnlineStatus = json['is_show_online_chat_status'] == 1;
 
     model.chatLastTimeOnline = json['chat_last_time_online'];
     model.accountCreatedWith = json['account_created_with'] ?? 1;
@@ -182,7 +185,11 @@ class UserModel {
         ? List<UserSetting>.from(
         json['userSetting'].map((x) => UserSetting.fromJson(x)))
         : null;
-
+    model.features = json["featureList"] == null
+        ? []
+        : (json["featureList"] as List)
+        .map((e) => FeatureModel.fromJson(e))
+        .toList();
     return model;
   }
 
@@ -331,6 +338,7 @@ class UserLiveCallDetail {
   String token = '';
   String channelName = '';
   List<UserModel>? host;
+  int? totalUsers;
 
   UserLiveCallDetail();
 
@@ -344,6 +352,7 @@ class UserLiveCallDetail {
     model.totalTime = json['total_time'];
     model.token = json['token'] ?? '';
     model.channelName = json['channel_name'] ?? '';
+    model.totalUsers = json['totalJoinedUsers'] ?? 1;
 
     if (json['userdetails'] != null) {
       model.host = <UserModel>[];
@@ -418,4 +427,43 @@ class UserSetting {
     data['relation_setting'] = relationSetting;
     return data;
   }
+}
+
+class LiveViewer {
+  int id;
+  int userId;
+  int liveId;
+  LiveUserRole role;
+  bool isBanned;
+  int? banType;
+  int? totalExpelTime;
+  int? expelExpiryTime;
+  UserModel user;
+
+  LiveViewer({
+    required this.id,
+    required this.userId,
+    required this.liveId,
+    required this.isBanned,
+    required this.banType,
+    required this.role,
+    required this.totalExpelTime,
+    required this.expelExpiryTime,
+    required this.user,
+  });
+
+  factory LiveViewer.fromJson(Map<String, dynamic> json) => LiveViewer(
+      id: json['id'],
+      userId: json['user_id'],
+      liveId: json['live_call_id'],
+      isBanned: json['is_ban'] == 1,
+      banType: json['ban_type'],
+      totalExpelTime: json['total_expel_time'],
+      expelExpiryTime: json['expel_expiry_time'],
+      role: json['role'] == 1
+          ? LiveUserRole.host
+          : json['role'] == 3
+              ? LiveUserRole.moderator
+              : LiveUserRole.viewer,
+      user: UserModel.fromJson(json['user']));
 }

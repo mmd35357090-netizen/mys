@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../../components/post_card.dart';
+import '../../components/post_card/post_card.dart';
 import '../../controllers/post/post_controller.dart';
 import '../../controllers/post/saved_post_controller.dart';
 import '../../controllers/post/watch_videos_controller.dart';

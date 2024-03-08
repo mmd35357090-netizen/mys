@@ -1,17 +1,16 @@
 import 'package:foap/helper/list_extension.dart';
 import 'package:foap/model/data_wrapper.dart';
-
-import '../apiHandler/apis/misc_api.dart';
+import '../api_handler/apis/misc_api.dart';
 import '../controllers/misc/users_controller.dart';
 import '../helper/imports/common_import.dart';
 import '../model/hash_tag.dart';
 
 class SmartTextFieldController extends GetxController {
+  Rx<TextEditingController> textField = TextEditingController().obs;
+
   RxInt isEditing = 0.obs;
   RxString currentHashtag = ''.obs;
   RxString currentUserTag = ''.obs;
-  int currentUpdateAbleStartOffset = 0;
-  int currentUpdateAbleEndOffset = 0;
   RxString searchText = ''.obs;
   RxInt position = 0.obs;
   RxList<Hashtag> hashTags = <Hashtag>[].obs;
@@ -23,9 +22,6 @@ class SmartTextFieldController extends GetxController {
     currentHashtag.value = '';
     currentUserTag.value = '';
     hashTags.clear();
-
-    currentUpdateAbleStartOffset = 0;
-    currentUpdateAbleEndOffset = 0;
 
     searchText.value = '';
     position.value = 0;
@@ -48,53 +44,45 @@ class SmartTextFieldController extends GetxController {
   textChanged(String text, int position) {
     clear();
     isEditing.value = 1;
-    searchText.value = text;
-    String substring = text.substring(0, position).replaceAll("\n", " ");
-    List<String> parts = substring.split(' ');
-    String lastPart = parts.last;
 
-    if (lastPart.startsWith('#') == true && lastPart.contains('@') == false) {
-      if (currentHashtag.value.startsWith('#') == false ||
-          currentUpdateAbleStartOffset == 0) {
-        currentHashtag.value = lastPart;
-        currentUpdateAbleStartOffset = substring.indexOf('#') + 1;
-      }
+    String value = textField.value.text;
 
-      if (lastPart.length > 1) {
-        hashTags.clear();
-        searchHashTags(text: lastPart);
-        currentUpdateAbleEndOffset = position;
-      } else {
-        hashTags.clear();
-      }
-    } else if (lastPart.startsWith('@') == true &&
-        lastPart.contains('#') == false) {
-      if (currentUserTag.value.startsWith('@') == false ||
-          currentUpdateAbleStartOffset == 0) {
-        currentUserTag.value = lastPart;
-        currentUpdateAbleStartOffset = substring.indexOf('@') + 1;
-      }
-      if (lastPart.length > 1) {
-        _usersController.setSearchTextFilter(
-            lastPart.replaceAll('@', ''), () {});
-        currentUpdateAbleEndOffset = position;
-      }
-    } else {
-      if (currentHashtag.value.startsWith('#') == true) {
-        currentHashtag.value = lastPart;
-      }
-      currentHashtag.value = '';
-      hashTags.value = [];
+    int cursorPosition = textField.value.selection.baseOffset;
 
-      if (currentUserTag.value.startsWith('!') == true) {
-        currentUserTag.value = lastPart;
-      }
-      currentUserTag.value = '';
+    // Find the start and end of the current word
+    int wordStart = value.lastIndexOf(' ', cursorPosition - 1) + 1;
+    int wordEnd = value.indexOf(' ', cursorPosition);
 
-      currentUpdateAbleStartOffset = 0;
-      currentUpdateAbleEndOffset = 0;
+    // If the cursor is at the end, set the wordEnd to the end of the string
+    if (wordEnd == -1) {
+      wordEnd = value.length;
     }
-    this.position.value = position;
+
+    // Extract the current word
+    String currentWord = value.substring(wordStart, wordEnd);
+
+    // Check if the current word starts with a hashtag
+    bool isTypingHashtag = currentWord.startsWith('#');
+    bool isTypingMention = currentWord.startsWith('@');
+
+    if (isTypingHashtag) {
+      currentHashtag.value = currentWord;
+      hashTags.clear();
+      searchHashTags(text: currentWord);
+    } else {
+      currentHashtag.value = '';
+      hashTags.clear();
+    }
+
+    if (isTypingMention) {
+      _usersController.clear();
+      currentUserTag.value = currentWord;
+      _usersController.setSearchTextFilter(
+          currentWord.replaceAll('@', ''), () {});
+    } else {
+      currentUserTag.value = '';
+      _usersController.clear();
+    }
   }
 
   searchHashTags({required String text, VoidCallback? callBackHandler}) {
@@ -123,28 +111,46 @@ class SmartTextFieldController extends GetxController {
   }
 
   addUserTag(String user) {
-    String updatedText = searchText.value.replaceRange(
-        currentUpdateAbleStartOffset, currentUpdateAbleEndOffset, '$user ');
-    searchText.value = updatedText;
-    position.value = updatedText.indexOf(user, currentUpdateAbleStartOffset) +
-        user.length +
-        1;
-
-    currentUserTag.value = '';
-    _usersController.clear();
-    update();
+    replaceTextInString(user, false);
   }
 
   addHashTag(String hashtag) {
-    String updatedText = searchText.value.replaceRange(
-        currentUpdateAbleStartOffset, currentUpdateAbleEndOffset, '$hashtag ');
-    position.value =
-        updatedText.indexOf(hashtag, currentUpdateAbleStartOffset) +
-            hashtag.length +
-            1;
+    replaceTextInString(hashtag, true);
+  }
 
-    searchText.value = updatedText;
+  replaceTextInString(String text, bool isHashtag) {
+    String currentText = textField.value.text;
+
+    // Find the position of the last '#' before the cursor
+    int cursorPosition = textField.value.selection.baseOffset;
+    int index = isHashtag
+        ? currentText.lastIndexOf('#', cursorPosition - 1)
+        : currentText.lastIndexOf('@', cursorPosition - 1);
+
+    // Find the end position of the current hashtag (i.e., space or end of the string)
+    int endIndex = currentText.indexOf(' ', index);
+
+    // If endIndex is -1, it means the current hashtag is at the end of the string
+    endIndex = endIndex == -1 ? currentText.length : endIndex;
+
+    // Replace the incomplete hashtag with the selected hashtag
+    String newText = '';
+    if (isHashtag) {
+      newText =
+      '${currentText.substring(0, index)}#$text${currentText.substring(endIndex)}';
+    } else {
+      newText =
+      '${currentText.substring(0, index)}@$text${currentText.substring(endIndex)}';
+    }
+    // Update the text field
+    textField.value.text = newText;
+
+    // Set the cursor position after the replaced hashtag
+    textField.value.selection =
+        TextSelection.collapsed(offset: index + text.length + 1);
+
     currentHashtag.value = '';
+    currentUserTag.value = '';
 
     update();
   }
@@ -155,13 +161,15 @@ class SmartTextField extends StatelessWidget {
   final TextEditingController controller;
   final Function(String, int) onTextChangeActionHandler;
   final Function(bool) onFocusChangeActionHandler;
+  final int? maxChar;
 
   const SmartTextField(
       {Key? key,
-      required this.controller,
-      this.maxLine,
-      required this.onTextChangeActionHandler,
-      required this.onFocusChangeActionHandler})
+        required this.controller,
+        this.maxLine,
+        this.maxChar,
+        required this.onTextChangeActionHandler,
+        required this.onFocusChangeActionHandler})
       : super(key: key);
 
   @override
@@ -170,6 +178,7 @@ class SmartTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         textAlign: TextAlign.left,
+        maxLength: maxChar,
         style: TextStyle(
             fontSize: FontSizes.b3, color: AppColorConstants.mainTextColor),
         maxLines: maxLine ?? 1,
@@ -181,9 +190,8 @@ class SmartTextField extends StatelessWidget {
             contentPadding: const EdgeInsets.only(top: 10, left: 10, right: 10),
             counterText: "",
             hintStyle: TextStyle(
-                fontSize: FontSizes.b3,
-                color: AppColorConstants.mainTextColor),
-            hintText: typeHereString.tr),
+                fontSize: FontSizes.b3, color: AppColorConstants.mainTextColor),
+            hintText: titleString.tr),
       ).round(10),
       onFocusChange: (hasFocus) {
         onFocusChangeActionHandler(hasFocus);

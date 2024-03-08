@@ -5,7 +5,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:foap/model/data_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../apiHandler/apis/post_api.dart';
+import '../../api_handler/apis/post_api.dart';
 import '../../components/giphy/giphy_get.dart';
 import '../../helper/imports/chat_imports.dart';
 import '../../model/comment_model.dart';

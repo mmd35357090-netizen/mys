@@ -7,6 +7,7 @@ import '../model/call_model.dart';
 import '../model/club_join_request.dart';
 import '../model/club_member_model.dart';
 import '../model/gift_model.dart';
+import '../model/live_model.dart';
 import '../model/story_model.dart';
 import '../screens/profile/other_user_profile.dart';
 import '../screens/profile/update_profile.dart';
@@ -153,7 +154,7 @@ class SelectableUserCardState extends State<SelectableUserCard> {
                           size: 25,
                         ),
                       ),
-                    ).round(15))
+                    ).round(25))
                   : Container()
             ],
           ).ripple(
@@ -165,8 +166,13 @@ class SelectableUserCardState extends State<SelectableUserCard> {
         const SizedBox(height: 10),
         Row(
           children: [
-            BodyLargeText(widget.model.userName,
-                maxLines: 1, weight: TextWeight.medium),
+            Expanded(
+              child: BodySmallText(
+                widget.model.userName,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+            ),
             if (widget.model.isVerified) verifiedUserTag()
           ],
         )
@@ -281,13 +287,11 @@ class UserTile extends StatelessWidget {
                 user: profile,
                 size: 40,
                 onTapHandler: () {
-                  Live live = Live(
-                      channelName: profile.liveCallDetail!.channelName,
-                      // isHosting: false,
-                      mainHostUserDetail: profile,
-                      // battleUsers: [],
-                      token: profile.liveCallDetail!.token,
-                      id: profile.liveCallDetail!.id);
+                  LiveModel live = LiveModel();
+                  live.channelName = profile.liveCallDetail!.channelName;
+                  live.mainHostUserDetail = profile;
+                  live.token = profile.liveCallDetail!.token;
+                  live.id = profile.liveCallDetail!.id;
                   agoraLiveController.joinAsAudience(
                     live: live,
                   );
@@ -413,13 +417,11 @@ class InviteUserTile extends StatelessWidget {
                 user: profile,
                 size: 40,
                 onTapHandler: () {
-                  Live live = Live(
-                      channelName: profile.liveCallDetail!.channelName,
-                      // isHosting: false,
-                      mainHostUserDetail: profile,
-                      // battleUsers: [],
-                      token: profile.liveCallDetail!.token,
-                      id: profile.liveCallDetail!.id);
+                  LiveModel live = LiveModel();
+                  live.channelName = profile.liveCallDetail!.channelName;
+                  live.mainHostUserDetail = profile;
+                  live.token = profile.liveCallDetail!.token;
+                  live.id = profile.liveCallDetail!.id;
                   agoraLiveController.joinAsAudience(
                     live: live,
                   );
@@ -583,13 +585,11 @@ class ClubMemberTile extends StatelessWidget {
               user: member.user!,
               size: 40,
               onTapHandler: () {
-                Live live = Live(
-                    channelName: member.user!.liveCallDetail!.channelName,
-                    // isHosting: false,
-                    mainHostUserDetail: member.user!,
-                    // battleUsers: [],
-                    token: member.user!.liveCallDetail!.token,
-                    id: member.user!.liveCallDetail!.id);
+                LiveModel live = LiveModel();
+                live.channelName = member.user!.liveCallDetail!.channelName;
+                live.mainHostUserDetail = member.user!;
+                live.token = member.user!.liveCallDetail!.token;
+                live.id = member.user!.liveCallDetail!.id;
                 agoraLiveController.joinAsAudience(
                   live: live,
                 );
@@ -932,7 +932,6 @@ class FollowRequestSenderUserTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: AppColorConstants.cardColor,
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -960,8 +959,8 @@ class FollowRequestSenderUserTile extends StatelessWidget {
                     ).bP4,
                     profile.country != null
                         ? BodyMediumText(
-                      '${profile.city!}, ${profile.country!}',
-                    )
+                            '${profile.city!}, ${profile.country!}',
+                          )
                         : Container()
                   ],
                 ).hP8,
@@ -970,8 +969,8 @@ class FollowRequestSenderUserTile extends StatelessWidget {
             ],
           ).ripple(() {
             Get.to(() => OtherUserProfile(
-              userId: profile.id,
-            ));
+                  userId: profile.id,
+                ));
           }),
           const SizedBox(
             height: 20,
@@ -982,7 +981,7 @@ class FollowRequestSenderUserTile extends StatelessWidget {
                 height: 35,
                 width: 120,
                 child: AppThemeButton(
-                  // icon: ThemeIcon.message,
+                    // icon: ThemeIcon.message,
                     text: acceptString.tr,
                     onPress: () {
                       acceptCallback();
@@ -1007,5 +1006,67 @@ class FollowRequestSenderUserTile extends StatelessWidget {
         ],
       ).p(DesignConstants.horizontalPadding),
     ).round(20);
+  }
+}
+
+class LiveUserTile extends StatelessWidget {
+  final LiveViewer viewer;
+
+  const LiveUserTile({
+    Key? key,
+    required this.viewer,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              UserAvatarView(
+                user: viewer.user,
+                size: 30,
+                onTapHandler: () {},
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        BodyMediumText(
+                          viewer.user.isMe
+                              ? youString.tr
+                              : viewer.user.userName,
+                          // weight: TextWeight.regular,
+                          maxLines: 1,
+                        ),
+                        if (viewer.user.isVerified) verifiedUserTag()
+                      ],
+                    ).bP4,
+                    viewer.user.country != null
+                        ? BodySmallText(
+                            '${viewer.user.city!}, ${viewer.user.country!}',
+                          )
+                        : Container()
+                  ],
+                ).hP8,
+              ),
+              // const Spacer(),
+            ],
+          ),
+        ),
+        BodyLargeText(viewer.role == LiveUserRole.host
+            ? hostString.tr
+            : viewer.role == LiveUserRole.moderator
+                ? moderatorString.tr
+                : '')
+      ],
+    );
   }
 }

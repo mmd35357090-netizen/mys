@@ -4,16 +4,15 @@ import 'package:foap/util/time_convertor.dart';
 class StoryModel {
   int id;
 
-  // int isReported;
   String name;
   String userName;
+
   String? userImage;
   List<StoryMediaModel> media;
   bool isViewed = false;
 
   StoryModel({
     required this.id,
-    // required this.isReported,
     required this.name,
     required this.userName,
     this.userImage,
@@ -21,9 +20,9 @@ class StoryModel {
   });
 
   factory StoryModel.fromJson(dynamic json) {
+    print('StoryModel $json');
     StoryModel model = StoryModel(
       id: json['id'],
-      // isReported: json['is_reported'],
       name: json['name'],
       userName: json['username'],
       userImage: json['picture'],
@@ -34,6 +33,14 @@ class StoryModel {
 
     return model;
   }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "username": userName,
+    "picture": userImage,
+    "userStory": media.map((e) => e.toJson()).toList()
+  };
 }
 
 class StoryMediaModel {
@@ -55,18 +62,18 @@ class StoryMediaModel {
 
   StoryMediaModel(
       {required this.id,
-      required this.userId,
-      required this.description,
-      required this.bgColor,
-      required this.video,
-      required this.image,
-      required this.imageName,
-      required this.createdAtDate,
-      required this.createdAt,
-      required this.type,
-      required this.user,
-      required this.totalView,
-      this.videoDuration});
+        required this.userId,
+        required this.description,
+        required this.bgColor,
+        required this.video,
+        required this.image,
+        required this.imageName,
+        required this.createdAtDate,
+        required this.createdAt,
+        required this.type,
+        required this.user,
+        required this.totalView,
+        this.videoDuration});
 
   factory StoryMediaModel.fromJson(dynamic json) {
     StoryMediaModel model = StoryMediaModel(
@@ -90,18 +97,19 @@ class StoryMediaModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "description": description,
-        "background_color": bgColor,
-        "videoUrl": video,
-        "video_time": videoDuration,
-        "image": imageName,
-        "imageUrl": image,
-        "created_at": createdAtDate,
-        "type": type,
-        "totalView": totalView,
-      };
+    "id": id,
+    "user_id": userId,
+    "description": description,
+    "background_color": bgColor,
+    "videoUrl": video,
+    "video_time": videoDuration,
+    "image": imageName,
+    "imageUrl": image,
+    "created_at": createdAtDate,
+    "type": type,
+    "totalView": totalView,
+    // "user": user!.toJson(),
+  };
 
   isVideoPost() {
     return type == 3;

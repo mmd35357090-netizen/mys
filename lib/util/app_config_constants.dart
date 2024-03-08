@@ -21,6 +21,13 @@ class AppConfigConstants {
   // Socket api url
   static const socketApiBaseUrl = "https://product.fwdtechnology.co:4000/";
 
+  // static const restApiBaseUrl =
+  //     'https://development.fwdtechnology.co/social_media/api/web/v1/';
+  //
+  // // Socket api url
+  // static const socketApiBaseUrl = "https://development.fwdtechnology.co:3000/";
+
+
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';
 
@@ -29,7 +36,7 @@ class AppConfigConstants {
 
   // chat version
   static const int chatVersion = 1;
-
+  
   // is demo app
   static const bool isDemoApp = true;
 
@@ -37,6 +44,7 @@ class AppConfigConstants {
   static const secondsInADay = 86400;
   static const secondsInThreeDays = 259200;
   static const secondsInSevenDays = 604800;
+  static const liveBattleConfirmationWaitTime = 30;
 }
 
 class DesignConstants {

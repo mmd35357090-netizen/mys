@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:foap/api_handler/apis/post_api.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/helper/imports/reel_imports.dart';
 import 'package:foap/helper/string_extension.dart';
 import 'package:video_compress_ds/video_compress_ds.dart';
-import '../../apiHandler/apis/post_api.dart';
 import '../../helper/enum_linking.dart';
+import '../../model/location.dart';
 import '../../screens/chat/media.dart';
-import '../../screens/dashboard/dashboard_screen.dart';
 import '../home/home_controller.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -28,25 +27,17 @@ class AddPostController extends GetxController {
 
   RxBool isPreviewMode = false.obs;
 
-  int hashtagsPage = 1;
-  bool canLoadMoreHashtags = true;
-  bool hashtagsIsLoading = false;
+  Rx<LocationModel?> taggedLocation = Rx<LocationModel?>(null);
 
   PostType? currentPostType;
 
   clear() {
     currentIndex.value = 0;
-
     postingStatus.value = PostingStatus.none;
     isErrorInPosting.value = false;
-
     isPreviewMode.value = false;
-
-    hashtagsPage = 1;
-    canLoadMoreHashtags = true;
-    hashtagsIsLoading = false;
-
     enableComments.value = true;
+    taggedLocation.value = null;
 
     update();
   }
@@ -75,20 +66,24 @@ class AddPostController extends GetxController {
   }
 
   retryPublish() {
-    startUploadingPost(
+    submitPost(
         items: postingMedia,
         title: postingTitle,
         postType: currentPostType!,
-        allowComments: true);
+        allowComments: true,
+        postCompletionHandler: () {});
   }
 
-  void startUploadingPost(
+  void submitPost(
       {required PostType postType,
       required List<Media> items,
       required String title,
       required bool allowComments,
+      required VoidCallback postCompletionHandler,
       int? competitionId,
       int? clubId,
+      int? eventId,
+      int? fundRaisingCampaignId,
       bool isReel = false,
       int? audioId,
       double? audioStartTime,
@@ -97,12 +92,6 @@ class AddPostController extends GetxController {
     postingMedia = items;
     postingTitle = title;
     postingStatus.value = PostingStatus.posting;
-
-    if (competitionId == null && clubId == null) {
-      Get.offAll(() => const DashboardScreen());
-    } else {
-      EasyLoading.show(status: loadingString.tr);
-    }
 
     var responses = await Future.wait([
       for (Media media in items)
@@ -115,12 +104,16 @@ class AddPostController extends GetxController {
     publishAction(
       postType: postType,
       galleryItems: responses,
+      postCompletionHandler: postCompletionHandler,
       title: title,
       tags: title.getHashtags(),
+      location: taggedLocation.value,
       mentions: title.getMentions(),
       allowComments: allowComments,
       competitionId: competitionId,
       clubId: clubId,
+      eventId: eventId,
+      fundRaisingCampaignId: fundRaisingCampaignId,
       isReel: isReel,
       audioId: audioId,
       audioStartTime: audioStartTime,
@@ -207,6 +200,7 @@ class AddPostController extends GetxController {
         'is_default': '1',
         'height': (media.size?.height ?? 0).toString(),
         'width': (media.size?.width ?? 0).toString(),
+        'audio_time': media.duration.toString()
       };
       completer.complete(gallery);
     });
@@ -219,8 +213,12 @@ class AddPostController extends GetxController {
     required List<String> tags,
     required List<String> mentions,
     required bool allowComments,
+    required VoidCallback postCompletionHandler,
+    LocationModel? location,
     int? competitionId,
     int? clubId,
+    int? eventId,
+    int? fundRaisingCampaignId,
     bool isReel = false,
     int? audioId,
     double? audioStartTime,
@@ -228,11 +226,14 @@ class AddPostController extends GetxController {
   }) {
     PostApi.addPost(
         postType: postType,
+        postContentType:
+            galleryItems.isEmpty ? PostContentType.text : PostContentType.media,
         title: title,
         gallery: galleryItems,
         allowComments: allowComments,
         hashTag: tags.join(','),
         mentions: mentions.join(','),
+        location: location,
         competitionId: competitionId,
         clubId: clubId,
         audioId: audioId,
@@ -240,10 +241,8 @@ class AddPostController extends GetxController {
         audioEndTime: audioEndTime,
         resultCallback: (postId) {
           if (postId != null) {
-            if (competitionId != null || clubId != null) {
-              Get.offAll(() => const DashboardScreen());
-            }
-            EasyLoading.dismiss();
+            Get.back();
+            postCompletionHandler();
 
             postingMedia = [];
             postingTitle = '';
@@ -251,10 +250,6 @@ class AddPostController extends GetxController {
             PostApi.getPostDetail(postId, resultCallback: (result) {
               if (result != null) {
                 _homeController.addNewPost(result);
-                // if (result.isReel) {
-                //   ReelsController reelsController = Get.find();
-                //   reelsController.addNewReel(result);
-                // }
               }
               postingStatus.value = PostingStatus.posted;
 
@@ -288,6 +283,36 @@ class AddPostController extends GetxController {
             }
           });
           Get.back();
+        });
+  }
+
+  setTaggedLocation(LocationModel? location) {
+    taggedLocation.value = location;
+  }
+
+  void shareToFeed(
+      {required int productId, required PostContentType contentType}) {
+    PostApi.addPost(
+        postType: PostType.basic,
+        postContentType: contentType,
+        contentRefId: productId,
+        title: '',
+        gallery: [],
+        allowComments: true,
+        hashTag: '',
+        mentions: '',
+        location: null,
+        competitionId: null,
+        clubId: null,
+        audioId: null,
+        audioStartTime: null,
+        audioEndTime: null,
+        resultCallback: (postId) {
+          if (postId != null) {
+            HomeController homeController = Get.find();
+            homeController.getPosts(callback: () {}, isRecent: true);
+            AppUtil.showToast(message: postedString.tr, isSuccess: true);
+          }
         });
   }
 }

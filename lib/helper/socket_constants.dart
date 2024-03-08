@@ -32,6 +32,8 @@ class SocketConstants {
   static const String typing = "typing";
   static const String readMessage = "readMessage";
   static const String updateMessageStatus = "updateMessageCurrentStatus";
+  static const String updateMessageCurrentStatusUser =
+      "updateMessageCurrentStatusUser";
   static const String onlineStatusEvent = "userOnline";
   static const String offlineStatusEvent = "userOffline";
   static const String deleteMessage = "deleteMessage";
@@ -62,6 +64,13 @@ class SocketConstants {
 
   static const String sendGiftLiveCall = "sendGiftLiveCall";
   static const String newGiftReceivedInLiveCall = "newGiftReceivedliveCall";
+
+  static const String actionOnUserInLive = "liveChatUpdateUserAction";
+  static const String userRoleChangeUpdateInLive =
+      "liveChatUpdateUserActionUpdate";
+  static const String cantJoinLiveCall = "liveCallNotAllowed";
+  static const String userRoleChangeUpdateConfirmationInLive =
+      "liveChatUpdateUserActionConfirm";
 
   // livetv
   static const String joinLiveTv = "addUserLiveTv";

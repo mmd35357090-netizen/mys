@@ -11,23 +11,23 @@ class MessagesInLive extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       // height: Get.height / 3,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[
-            Colors.transparent,
-            Colors.black.withOpacity(0.4),
-            Colors.black.withOpacity(0.7)
-          ],
-        ),
-      ),
+      // decoration: BoxDecoration(
+      //   gradient: LinearGradient(
+      //     begin: Alignment.topCenter,
+      //     end: Alignment.bottomCenter,
+      //     colors: <Color>[
+      //       Colors.transparent,
+      //       Colors.black.withOpacity(0.4),
+      //       Colors.black.withOpacity(0.7)
+      //     ],
+      //   ),
+      // ),
       child: GetBuilder<AgoraLiveController>(
           init: _agoraLiveController,
           builder: (ctx) {
             return ListView.separated(
-                padding: EdgeInsets.only(
-                    top: 10, bottom: 50, left: DesignConstants.horizontalPadding, right: 70),
+                padding: const EdgeInsets.only(
+                    top: 10, bottom: 50, left: 10, right: 70),
                 itemCount: _agoraLiveController.messages.length,
                 itemBuilder: (ctx, index) {
                   ChatMessageModel message =
@@ -48,7 +48,7 @@ class MessagesInLive extends StatelessWidget {
 
   Widget giftMessageTile(ChatMessageModel message) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AvatarView(size: 25, url: message.userPicture, name: message.userName),
         const SizedBox(
@@ -88,7 +88,7 @@ class MessagesInLive extends StatelessWidget {
                   const SizedBox(
                     width: 5,
                   ),
-                  const ThemeIconWidget(
+                  ThemeIconWidget(
                     ThemeIcon.diamond,
                     color: Colors.yellow,
                   )
@@ -103,7 +103,7 @@ class MessagesInLive extends StatelessWidget {
 
   Widget textMessageTile(ChatMessageModel message) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AvatarView(size: 25, url: message.userPicture, name: message.userName),
         const SizedBox(

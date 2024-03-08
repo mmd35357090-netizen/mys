@@ -27,7 +27,7 @@ class OtherUserProfile extends StatefulWidget {
 class OtherUserProfileState extends State<OtherUserProfile>
     with SingleTickerProviderStateMixin {
   final ProfileController _profileController = Get.find();
-  final HighlightsController _highlightsController = HighlightsController();
+  final HighlightsController _highlightsController = Get.find();
   final SettingsController _settingsController = Get.find();
   final ChatDetailController _chatDetailController = Get.find();
   final PostController _postController = Get.find();
@@ -401,24 +401,20 @@ class OtherUserProfileState extends State<OtherUserProfile>
   }
 
   Widget addHighlightsView() {
-    return GetBuilder<HighlightsController>(
-        init: _highlightsController,
-        builder: (ctx) {
-          return _highlightsController.isLoading == true
-              ? const StoryAndHighlightsShimmer()
-              : HighlightsBar(
-                  highlights: _highlightsController.highlights,
-                  addHighlightCallback: () {
-                    Get.to(() => const ChooseStoryForHighlights());
-                  },
-                  viewHighlightCallback: (highlight) {
-                    Get.to(() => HighlightViewer(highlight: highlight))!
-                        .then((value) {
-                      loadData();
-                    });
-                  },
-                );
-        });
+    return Obx(() => _highlightsController.isLoading.value == true
+        ? const StoryAndHighlightsShimmer()
+        : HighlightsBar(
+            highlights: _highlightsController.highlights,
+            addHighlightCallback: () {
+              Get.to(() => const ChooseStoryForHighlights());
+            },
+            viewHighlightCallback: (highlight) {
+              Get.to(() => HighlightViewer(highlight: highlight))!
+                  .then((value) {
+                loadData();
+              });
+            },
+          ));
   }
 }
 

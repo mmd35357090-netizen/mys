@@ -1,5 +1,5 @@
-import 'package:foap/apiHandler/apis/misc_api.dart';
-import 'package:foap/apiHandler/apis/story_api.dart';
+import 'package:foap/api_handler/apis/misc_api.dart';
+import 'package:foap/api_handler/apis/story_api.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +28,7 @@ class AppStoryController extends GetxController {
   bool isLoading = false;
 
   RxBool showEmoticons = false.obs;
+  RxString replyText = ''.obs;
 
   clearStoryViewers() {
     storyViewers.clear();
@@ -36,6 +37,10 @@ class AppStoryController extends GetxController {
 
   showHideEmoticons(bool show) {
     showEmoticons.value = show;
+  }
+
+  replyTextChanged(String text) {
+    replyText.value = text;
   }
 
   mediaSelected(List<Media> media) {
@@ -82,8 +87,8 @@ class AppStoryController extends GetxController {
 
   void uploadAllMedia({required List<Media> items}) async {
     var responses =
-        await Future.wait([for (Media media in items) uploadMedia(media)])
-            .whenComplete(() {});
+    await Future.wait([for (Media media in items) uploadMedia(media)])
+        .whenComplete(() {});
 
     publishAction(galleryItems: responses);
   }
@@ -101,8 +106,8 @@ class AppStoryController extends GetxController {
       Uint8List mainFileData = await media.file!.compress();
       //image media
       mainFile =
-          await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
-              .create();
+      await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
+          .create();
       mainFile.writeAsBytesSync(mainFileData);
     } else {
       EasyLoading.show(status: loadingString.tr);
@@ -119,7 +124,7 @@ class AppStoryController extends GetxController {
       videoDuration = info!.duration!.toInt();
 
       File videoThumbnail = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
+          '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
           .create();
 
       videoThumbnail.writeAsBytesSync(media.thumbnail!);
@@ -128,9 +133,9 @@ class AppStoryController extends GetxController {
           mediaType: GalleryMediaType.photo,
           type: UploadMediaType.storyOrHighlights,
           resultCallback: (fileName, filePath) async {
-        videoThumbnailPath = fileName;
-        await videoThumbnail.delete();
-      });
+            videoThumbnailPath = fileName;
+            await videoThumbnail.delete();
+          });
     }
 
     EasyLoading.show(status: loadingString.tr);
@@ -138,23 +143,23 @@ class AppStoryController extends GetxController {
     await MiscApi.uploadFile(mainFile.path,
         mediaType: media.mediaType!, type: UploadMediaType.storyOrHighlights,
         resultCallback: (fileName, filePath) async {
-      String mainFileUploadedPath = fileName;
-      await mainFile.delete();
-      gallery = {
-        // 'image': media.mediaType == 1 ? mainFileUploadedPath : '',
-        'image': media.mediaType == GalleryMediaType.photo
-            ? mainFileUploadedPath
-            : videoThumbnailPath!,
-        'video': media.mediaType == GalleryMediaType.photo
-            ? ''
-            : mainFileUploadedPath,
-        'video_time': videoDuration.toString(),
-        'type': media.mediaType == GalleryMediaType.photo ? '2' : '3',
-        'description': '',
-        'background_color': '',
-      };
-      completer.complete(gallery);
-    });
+          String mainFileUploadedPath = fileName;
+          await mainFile.delete();
+          gallery = {
+            // 'image': media.mediaType == 1 ? mainFileUploadedPath : '',
+            'image': media.mediaType == GalleryMediaType.photo
+                ? mainFileUploadedPath
+                : videoThumbnailPath!,
+            'video': media.mediaType == GalleryMediaType.photo
+                ? ''
+                : mainFileUploadedPath,
+            'video_time': videoDuration.toString(),
+            'type': media.mediaType == GalleryMediaType.photo ? '2' : '3',
+            'description': '',
+            'background_color': '',
+          };
+          completer.complete(gallery);
+        });
 
     return completer.future;
   }
@@ -171,32 +176,62 @@ class AppStoryController extends GetxController {
           AppUtil.showToast(
               message: storyPostedSuccessfullyString, isSuccess: true);
         });
+    // DashboardController dashboardController = Get.find();
+    // dashboardController.indexChanged(0);
+    // Get.offAll(() => const DashboardScreen());
   }
 
-  sendTextMessage(String message) {
+  sendTextMessage(String message, StoryModel story) {
     _chatDetailController.getChatRoomWithUser(
         userId: currentStoryMediaModel.value!.userId,
         callback: (room) {
           FocusScope.of(Get.context!).requestFocus(FocusNode());
           showHideEmoticons(false);
+          StoryModel storyToSend = StoryModel(
+              id: story.id,
+              name: story.name,
+              userName: story.userName,
+              userImage: story.userImage,
+              media: [currentStoryMediaModel.value!]);
 
           _chatDetailController.sendStoryTextReplyMessage(
-              messageText: message,
-              storyMedia: currentStoryMediaModel.value!,
-              room: room);
+              messageText: message, story: storyToSend, room: room);
         });
   }
 
-  sendReactionMessage(String emoji) {
+  sendReactionMessage(String emoji, StoryModel story) {
     _chatDetailController.getChatRoomWithUser(
         userId: currentStoryMediaModel.value!.userId,
         callback: (room) {
           FocusScope.of(Get.context!).requestFocus(FocusNode());
           showHideEmoticons(false);
+
+          StoryModel storyToSend = StoryModel(
+              id: story.id,
+              name: story.name,
+              userName: story.userName,
+              userImage: story.userImage,
+              media: [currentStoryMediaModel.value!]);
+
           _chatDetailController.sendStoryReactionReplyMessage(
-              emoji: emoji,
-              storyMedia: currentStoryMediaModel.value!,
-              room: room);
+              emoji: emoji, story: storyToSend, room: room);
+        });
+  }
+
+  sendStoryAsMessage(int userId, StoryModel story) {
+    _chatDetailController.getChatRoomWithUser(
+        userId: userId,
+        callback: (room) {
+          FocusScope.of(Get.context!).requestFocus(FocusNode());
+          showHideEmoticons(false);
+          StoryModel storyToSend = StoryModel(
+              id: story.id,
+              name: story.name,
+              userName: story.userName,
+              userImage: story.userImage,
+              media: [currentStoryMediaModel.value!]);
+          _chatDetailController.sendStoryMessage(
+              story: storyToSend, room: room);
         });
   }
 }

@@ -12,7 +12,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../../apiHandler/apis/reel_api.dart';
+import '../../../../api_handler/apis/reel_api.dart';
 
 class CreateReelController extends GetxController {
   final PlayerManager _playerManager = Get.find();

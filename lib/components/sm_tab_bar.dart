@@ -4,24 +4,24 @@ class SMTabBar extends StatelessWidget {
   final TabController? controller;
   final List<String> tabs;
   final bool canScroll;
+  final bool hideDivider;
 
   const SMTabBar(
-      {Key? key, required this.tabs, required this.canScroll, this.controller})
-      : super(key: key);
+      {super.key,
+        required this.tabs,
+        required this.canScroll,
+        this.controller,
+        this.hideDivider = true});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              height: 2,
-              color: AppColorConstants.dividerColor,
-            ).round(5)),
-        getTextTabBar(tabs: tabs, controller: controller,canScroll: canScroll)
+        getTextTabBar(
+            tabs: tabs,
+            controller: controller,
+            canScroll: canScroll,
+            hideDivider: !hideDivider)
       ],
     );
   }
@@ -88,10 +88,13 @@ class SMIconAndTextTabBar extends StatelessWidget {
 TabBar getTextTabBar(
     {TabController? controller,
       required List<String> tabs,
+      bool hideDivider = false,
       required bool canScroll}) {
   return TabBar(
+    padding: EdgeInsets.zero,
     controller: controller,
     isScrollable: canScroll,
+    dividerHeight: hideDivider ? 0 : 1,
     indicator: UnderlineTabIndicator(
       borderSide: BorderSide(width: 3.0, color: AppColorConstants.themeColor),
       insets: const EdgeInsets.symmetric(horizontal: 16.0),

@@ -10,6 +10,7 @@ import '../club/clubs_listing.dart';
 import '../competitions/competitions_screen.dart';
 import '../highlights/choose_stories.dart';
 import '../live/checking_feasibility.dart';
+import '../post/content_creator_view.dart';
 import '../tvs/tv_dashboard.dart';
 
 enum QuickLinkType {
@@ -101,9 +102,18 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                     Get.to(() => const ExploreClubs());
                   } else if (link.linkType == QuickLinkType.pages) {
                   } else if (link.linkType == QuickLinkType.goLive) {
-                    Get.to(() => CheckingLiveFeasibility(
-                          successCallbackHandler: () {},
-                        ));
+                    // Get.to(() => CheckingLiveFeasibility(
+                    //       successCallbackHandler: () {},
+                    //     ));
+
+                    Future.delayed(
+                      Duration.zero,
+                          () => showGeneralDialog(
+                          context: context,
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                          const ContentCreatorView()),
+                    );
                   } else if (link.linkType == QuickLinkType.story) {
                     openStoryUploader();
                   } else if (link.linkType == QuickLinkType.highlights) {

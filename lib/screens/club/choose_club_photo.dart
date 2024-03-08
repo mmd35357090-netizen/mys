@@ -1,7 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'club_created_success.dart';
 
 class ChooseClubCoverPhoto extends StatefulWidget {
   final ClubModel club;
@@ -135,7 +136,8 @@ class ChooseClubCoverPhotoState extends State<ChooseClubCoverPhoto> {
           isSuccess: false);
       return;
     }
-    _createClubsController.createClub(widget.club, context, () {
+    _createClubsController.createClub(widget.club, (clubId) {
+      Get.to(() => ClubCreatedSuccess(clubId: clubId));
     });
   }
 

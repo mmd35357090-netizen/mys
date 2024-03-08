@@ -3,10 +3,8 @@ import 'package:foap/helper/imports/common_import.dart';
 
 class CropAudioScreen extends StatefulWidget {
   final ReelMusicModel reelMusicModel;
-  final int duration;
 
-  const CropAudioScreen(
-      {Key? key, required this.reelMusicModel, required this.duration})
+  const CropAudioScreen({Key? key, required this.reelMusicModel})
       : super(key: key);
 
   @override
@@ -24,10 +22,9 @@ class _CropAudioState extends State<CropAudioScreen> {
       _createReelController.playAudioFileUntil(
           widget.reelMusicModel,
           _createReelController.audioStartTime ?? 0,
-          _createReelController.audioEndTime ?? widget.duration.toDouble());
+          _createReelController.audioEndTime ?? 0);
     });
 
-    _createReelController.setAudioCropperTime(0, widget.duration.toDouble());
     super.initState();
   }
 
@@ -39,12 +36,12 @@ class _CropAudioState extends State<CropAudioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(children: [
         Row(
           children: [
-            const ThemeIconWidget(
+            ThemeIconWidget(
               ThemeIcon.backArrow,
               size: 25,
             ).ripple(() {
@@ -55,11 +52,7 @@ class _CropAudioState extends State<CropAudioScreen> {
               width: 10,
             ),
           ],
-        ).setPadding(
-            left: DesignConstants.horizontalPadding,
-            right: DesignConstants.horizontalPadding,
-            top: 25,
-            bottom: 20),
+        ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 25, bottom: 20),
         const SizedBox(
           height: 20,
         ),
@@ -67,7 +60,7 @@ class _CropAudioState extends State<CropAudioScreen> {
           child: Obx(
                 () => SizedBox(
               height: 80,
-              // width: Get.width * 0.8,
+              width: Get.width * 0.8,
               child: WaveSlider(
                 positionTextColor: AppColorConstants.themeColor,
                 backgroundColor: Colors.transparent,
@@ -98,8 +91,10 @@ class _CropAudioState extends State<CropAudioScreen> {
         Center(
           child: Container(
               color: AppColorConstants.themeColor,
-              child: BodyLargeText(
+              child: Text(
                 useString.tr,
+                style: TextStyle(
+                    fontSize: FontSizes.b2),
               ).p8)
               .circular
               .ripple(() {

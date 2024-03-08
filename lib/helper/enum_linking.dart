@@ -15,7 +15,30 @@ int postTypeValueFrom(PostType postType) {
   }
 }
 
-int postContentTypeValueFrom(PostContentType contentType) {
+PostContentType postContentTypeValueFrom(int contentType) {
+  switch (contentType) {
+    case 1:
+      return PostContentType.text;
+    case 2:
+      return PostContentType.media;
+    case 3:
+      return PostContentType.location;
+    case 4:
+      return PostContentType.poll;
+    case 5:
+      return PostContentType.competitionAdded;
+
+    case 9:
+      return PostContentType.competitionResultDeclared;
+    case 13:
+      return PostContentType.club;
+    case 14:
+      return PostContentType.openGroup;
+  }
+  return PostContentType.text;
+}
+
+int postContentTypeIdFrom(PostContentType contentType) {
   switch (contentType) {
     case PostContentType.text:
       return 1;
@@ -23,6 +46,18 @@ int postContentTypeValueFrom(PostContentType contentType) {
       return 2;
     case PostContentType.location:
       return 3;
+    case PostContentType.poll:
+      return 4;
+    case PostContentType.competitionAdded:
+      return 5;
+
+    case PostContentType.competitionResultDeclared:
+      return 9;
+
+    case PostContentType.club:
+      return 13;
+    case PostContentType.openGroup:
+      return 14;
   }
 }
 
@@ -167,4 +202,15 @@ int uploadMediaTypeId(UploadMediaType type) {
       return 12;
   }
   return 1;
+}
+
+int liveViewerRole(LiveUserRole role) {
+  switch (role) {
+    case LiveUserRole.viewer:
+      return 2;
+    case LiveUserRole.moderator:
+      return 3;
+    case LiveUserRole.host:
+      return 1;
+  }
 }

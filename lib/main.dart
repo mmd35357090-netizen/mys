@@ -4,14 +4,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:foap/apiHandler/apis/auth_api.dart';
+import 'package:foap/api_handler/apis/auth_api.dart';
 import 'package:foap/controllers/story/story_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:foap/controllers/live/live_users_controller.dart';
 import 'package:foap/helper/imports/reel_imports.dart';
-import 'package:foap/screens/add_on/controller/reel/reels_controller.dart';
 import 'package:foap/screens/login_sign_up/ask_to_follow.dart';
+import 'package:foap/screens/post/content_creator_view.dart';
 import 'package:foap/screens/settings_menu/help_support_contorller.dart';
 import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
 import 'package:foap/util/constant_util.dart';
@@ -42,6 +42,7 @@ import 'controllers/chat_and_call/chat_room_detail_controller.dart';
 import 'controllers/chat_and_call/select_user_group_chat_controller.dart';
 import 'controllers/home/home_controller.dart';
 import 'controllers/live/live_history_controller.dart';
+import 'controllers/story/highlights_controller.dart';
 import 'controllers/tv/live_tv_streaming_controller.dart';
 import 'controllers/auth/login_controller.dart';
 import 'controllers/misc/map_screen_controller.dart';
@@ -50,12 +51,14 @@ import 'controllers/post/post_controller.dart';
 import 'controllers/profile/profile_controller.dart';
 import 'controllers/misc/request_verification_controller.dart';
 import 'controllers/misc/subscription_packages_controller.dart';
+import 'helper/device_info.dart';
 import 'helper/languages.dart';
 import 'manager/db_manager.dart';
 import 'manager/location_manager.dart';
 import 'manager/notification_manager.dart';
 import 'manager/player_manager.dart';
 import 'manager/socket_manager.dart';
+import 'firebase_options.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -68,15 +71,20 @@ class MyHttpOverrides extends HttpOverrides {
 
 late List<CameraDescription> cameras;
 bool isLaunchedFromCallNotification = false;
+bool isAnyPageInStack = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
   HttpOverrides.global = MyHttpOverrides();
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    name: AppConfigConstants.appName,
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  DeviceInfoManager.collectDeviceInfo();
 
   String? token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
   if (token != null) {
@@ -126,6 +134,8 @@ Future<void> main() async {
   Get.put(SmartTextFieldController());
   Get.put(ReelsController());
   Get.put(CreateReelController());
+  Get.put(CameraControllerService());
+  Get.put(HighlightsController());
 
   setupServiceLocator();
 
@@ -229,7 +239,9 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   NotificationManager().parseNotificationMessage(message.data);
 }

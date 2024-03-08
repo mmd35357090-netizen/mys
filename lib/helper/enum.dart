@@ -1,3 +1,8 @@
+enum UserRole {
+  admin,
+  user,
+}
+
 enum RecordType {
   profile,
   post,
@@ -17,7 +22,16 @@ enum PostingStatus { none, posting, posted, error }
 
 enum PostType { basic, competition, club, reel, reshare }
 
-enum PostContentType { text, media, location }
+enum PostContentType {
+  text,
+  media,
+  location,
+  poll,
+  competitionAdded,
+  competitionResultDeclared,
+  club,
+  openGroup
+}
 
 enum PostMediaType { all, photo, video, audio }
 
@@ -183,3 +197,7 @@ enum FollowingStatus {
 }
 
 enum PlayStateState { paused, playing, loading, idle }
+
+enum LiveUserRole { host, moderator, viewer }
+
+enum LiveStreamingStatus { none, checking, preparing, streaming, ended, failed }

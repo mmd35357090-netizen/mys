@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../apiHandler/apis/users_api.dart';
+import '../../api_handler/apis/users_api.dart';
 import '../home_feed/enlarge_image_view.dart';
 import '../post/single_post_detail.dart';
 import '../profile/other_user_profile.dart';
@@ -27,11 +27,7 @@ class CompletedCompetitionDetailState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // if (widget.competition != null) {
-      //   competitionController.setCompetition(widget.competition!);
-      // } else {
       competitionController.loadCompetitionDetail(id: widget.competitionId);
-      // }
     });
   }
 
@@ -56,6 +52,7 @@ class CompletedCompetitionDetailState
                 //     header: disclaimerString.tr,
                 //     url: ));
               }),
+
           Expanded(
             child: Stack(children: [
               Obx(() {
@@ -107,7 +104,10 @@ class CompletedCompetitionDetailState
                                       addPhotoGrid(competition: competition),
                                     ],
                                   ).setPadding(
-                                    top: 16, bottom: 16, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
+                                    top: 16,
+                                    bottom: 16,
+                                    left: DesignConstants.horizontalPadding,
+                                    right: DesignConstants.horizontalPadding),
                           ]));
               }),
               // addBottomActionButton()

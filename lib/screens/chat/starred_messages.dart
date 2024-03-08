@@ -7,6 +7,7 @@ import 'package:map_launcher/map_launcher.dart';
 import '../competitions/video_player_screen.dart';
 import '../post/single_post_detail.dart';
 import '../profile/other_user_profile.dart';
+import '../story/story_viewer.dart';
 
 class StarredMessages extends StatefulWidget {
   final ChatRoomModel? chatRoom;
@@ -207,6 +208,17 @@ class _StarredMessagesState extends State<StarredMessages> {
       Get.to(() => OtherUserProfile(
             userId: model.profileContent.userId,
           ));
+    } else if (model.messageContentType == MessageContentType.story) {
+      Get.to(() => StoryViewer(
+        story: model.storyContent,
+        storyDeleted: () {},
+      ));
+    } else if (model.messageContentType == MessageContentType.reactedOnStory ||
+        model.messageContentType == MessageContentType.textReplyOnStory) {
+      Get.to(() => StoryViewer(
+        story: model.repliedOnStory,
+        storyDeleted: () {},
+      ));
     } else if (model.messageContentType == MessageContentType.location) {
       try {
         final coords = Coords(model.mediaContent.location!.latitude,

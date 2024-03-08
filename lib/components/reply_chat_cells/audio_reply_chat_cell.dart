@@ -39,7 +39,7 @@ class _ReplyAudioChatTileState extends State<ReplyAudioChatTile> {
     return Column(
       children: [
         Container(
-            height: 70,
+            height: 80,
             color: widget.message.isMineMessage
                 ? AppColorConstants.disabledColor
                 : AppColorConstants.themeColor.withOpacity(0.2),

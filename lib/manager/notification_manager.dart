@@ -4,16 +4,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:foap/apiHandler/apis/chat_api.dart';
-import 'package:foap/apiHandler/apis/users_api.dart';
+import 'package:foap/api_handler/apis/chat_api.dart';
+import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/chat/chat_detail.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:overlay_support/overlay_support.dart';
+import '../api_handler/apis/auth_api.dart';
 import '../controllers/chat_and_call/agora_call_controller.dart';
 import '../controllers/live/agora_live_controller.dart';
 import '../main.dart';
+import '../model/live_model.dart';
 import '../screens/calling/accept_call.dart';
 import '../screens/competitions/competition_detail_screen.dart';
 import '../screens/home_feed/comments_screen.dart';
@@ -24,6 +26,7 @@ class NotificationManager {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   final _firebaseMessaging = FirebaseMessaging.instance;
+  final UserProfileManager userProfileManager = Get.find();
 
   factory NotificationManager() {
     return _singleton;
@@ -54,6 +57,9 @@ class NotificationManager {
 
     _firebaseMessaging.onTokenRefresh.listen((fcmToken) {
       SharedPrefs().setFCMToken(fcmToken);
+      if (userProfileManager.isLogin == true) {
+        AuthApi.updateFcmToken();
+      }
     }).onError((err) {});
   }
 
@@ -322,11 +328,11 @@ class NotificationManager {
                     ).vp(12).ripple(() {
                       OverlaySupportEntry.of(context)!.dismiss();
 
-                      Live live = Live(
-                          channelName: channelName,
-                          mainHostUserDetail: result,
-                          token: agoraToken,
-                          id: liveId);
+                      LiveModel live = LiveModel();
+                      live.channelName = channelName;
+                      live.mainHostUserDetail = result;
+                      live.token = agoraToken;
+                      live.id = liveId;
 
                       agoraLiveController.joinAsAudience(live: live);
                     }),
@@ -373,12 +379,11 @@ class NotificationManager {
         UsersApi.getOtherUser(
             userId: userId,
             resultCallback: (result) {
-              Live live = Live(
-                  channelName: channelName,
-                  // isHosting: false,
-                  mainHostUserDetail: result,
-                  token: agoraToken,
-                  id: liveId);
+              LiveModel live = LiveModel();
+              live.channelName = channelName;
+              live.mainHostUserDetail = result;
+              live.token = agoraToken;
+              live.id = liveId;
 
               agoraLiveController.joinAsAudience(live: live);
             });

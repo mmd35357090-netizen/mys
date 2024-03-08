@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
-import '../../apiHandler/apis/post_api.dart';
+import '../../api_handler/apis/post_api.dart';
 import '../../model/data_wrapper.dart';
 import '../../model/post_model.dart';
 import '../../model/post_search_query.dart';
@@ -58,7 +58,8 @@ class PostController extends GetxController {
     update();
   }
 
-  setPostSearchQuery({required PostSearchQuery query, required VoidCallback callback}) {
+  setPostSearchQuery(
+      {required PostSearchQuery query, required VoidCallback callback}) {
     if (query != postSearchQuery) {
       clear();
     }
@@ -89,8 +90,7 @@ class PostController extends GetxController {
   }
 
   void getPosts(VoidCallback callback) async {
-    if (postDataWrapper.haveMoreData.value == true &&
-        totalPages > postDataWrapper.page) {
+    if (postDataWrapper.haveMoreData.value == true) {
       postDataWrapper.isLoading.value = true;
 
       PostApi.getPosts(
@@ -107,20 +107,14 @@ class PostController extends GetxController {
             posts.addAll(result);
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             posts.unique((e) => e.id);
-            postDataWrapper.isLoading.value = false;
-
-            postDataWrapper.totalRecords.value = metadata.totalCount;
-            postDataWrapper.haveMoreData.value =
-                metadata.pageCount >= metadata.currentPage;
-
-            postDataWrapper.page += 1;
+            postDataWrapper.processCompletedWithData(metadata);
+            print('posts ${posts.map((e) => e.id)}');
 
             callback();
 
             update();
           });
-    }
-    else{
+    } else {
       callback();
     }
   }
@@ -156,8 +150,7 @@ class PostController extends GetxController {
 
             update();
           });
-    }
-    else{
+    } else {
       callback();
     }
   }
@@ -223,5 +216,4 @@ class PostController extends GetxController {
           });
     }
   }
-
 }

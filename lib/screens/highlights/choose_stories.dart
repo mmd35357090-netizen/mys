@@ -11,7 +11,7 @@ class ChooseStoryForHighlights extends StatefulWidget {
 }
 
 class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
-  final HighlightsController _highlightsController = HighlightsController();
+  final HighlightsController _highlightsController = Get.find();
 
   final _numberOfColumns = 3;
 
@@ -62,37 +62,30 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                 size: 27,
               ).ripple(() {
                 // create highlights
-                Get.to(() => CreateHighlight(
-                      highlightsController: _highlightsController,
-                    ));
+                Get.to(() => const CreateHighlight());
               }),
             ],
           ).hp(20),
           const SizedBox(height: 20),
           Expanded(
-            child: GetBuilder<HighlightsController>(
-                init: _highlightsController,
-                builder: (ctx) {
-                  return _highlightsController.isLoading
-                      ? const StoriesShimmerWidget()
-                      : _highlightsController.stories.isNotEmpty
-                          ? GridView.builder(
-                              padding: EdgeInsets.zero,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                      childAspectRatio: 0.6,
-                                      crossAxisCount: _numberOfColumns),
-                              itemCount: _highlightsController.stories.length,
-                              itemBuilder: (context, index) {
-                                return _buildItem(index);
-                              }).hp(DesignConstants.horizontalPadding)
-                          : emptyData(
-                              title: noStoryFoundString.tr,
-                              subTitle: postSomeStoriesString.tr,
-                            );
-                }).hP4,
+            child: Obx(() => _highlightsController.isLoading.value
+                ? const StoriesShimmerWidget()
+                : _highlightsController.stories.isNotEmpty
+                    ? GridView.builder(
+                        padding: EdgeInsets.zero,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 5,
+                            childAspectRatio: 0.6,
+                            crossAxisCount: _numberOfColumns),
+                        itemCount: _highlightsController.stories.length,
+                        itemBuilder: (context, index) {
+                          return _buildItem(index);
+                        }).hp(DesignConstants.horizontalPadding)
+                    : emptyData(
+                        title: noStoryFoundString.tr,
+                        subTitle: postSomeStoriesString.tr,
+                      )).hP4,
           )
         ],
       ),

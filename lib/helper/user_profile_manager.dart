@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:foap/apiHandler/apis/auth_api.dart';
-import 'package:foap/apiHandler/apis/profile_api.dart';
+import 'package:foap/api_handler/apis/auth_api.dart';
+import 'package:foap/api_handler/apis/profile_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/manager/db_manager.dart';
 import 'package:foap/manager/socket_manager.dart';

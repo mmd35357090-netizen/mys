@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 
-
 import '../../controllers/misc/gift_controller.dart';
 import '../../model/gift_model.dart';
 import '../../segmentAndMenu/horizontal_menu.dart';
@@ -25,11 +24,7 @@ class _GiftsPageViewState extends State<GiftsPageView> {
   @override
   void initState() {
     pages = [
-      GiftsListing(giftSelectedCompletion: widget.giftSelectedCompletion,showCoinsView: (){
-        setState(() {
-          currentView = 1;
-        });
-      },),
+      GiftsListing(giftSelectedCompletion: widget.giftSelectedCompletion),
       coinPackages(),
     ];
 
@@ -56,7 +51,7 @@ class _GiftsPageViewState extends State<GiftsPageView> {
                       weight: TextWeight.medium,
                       color: Colors.white,
                     ),
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.diamond,
                       size: 20,
                       color: Colors.white,
@@ -64,10 +59,10 @@ class _GiftsPageViewState extends State<GiftsPageView> {
                     const SizedBox(
                       width: 5,
                     ),
-                    BodyLargeText(
-                      _userProfileManager.user.value!.coins.toString(),
-                      color: Colors.white,
-                    ),
+                    Obx(() => BodyLargeText(
+                          _userProfileManager.user.value!.coins.toString(),
+                          color: Colors.white,
+                        )),
                   ],
                 ),
                 currentView == 0
@@ -83,7 +78,7 @@ class _GiftsPageViewState extends State<GiftsPageView> {
                           currentView = 1;
                         });
                       })
-                    : const ThemeIconWidget(
+                    : ThemeIconWidget(
                         ThemeIcon.close,
                         size: 20,
                         color: Colors.white,
@@ -108,12 +103,8 @@ class _GiftsPageViewState extends State<GiftsPageView> {
 
 class GiftsListing extends StatefulWidget {
   final Function(GiftModel) giftSelectedCompletion;
-  final VoidCallback showCoinsView;
 
-  const GiftsListing(
-      {Key? key,
-      required this.giftSelectedCompletion,
-      required this.showCoinsView})
+  const GiftsListing({Key? key, required this.giftSelectedCompletion})
       : super(key: key);
 
   @override
@@ -122,7 +113,6 @@ class GiftsListing extends StatefulWidget {
 
 class _GiftsListingState extends State<GiftsListing> {
   final GiftController _giftController = GiftController();
-  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -167,12 +157,7 @@ class _GiftsListingState extends State<GiftsListing> {
                     itemBuilder: (context, index) {
                       GiftModel gift = _giftController.gifts[index];
                       return giftBox(gift).ripple(() {
-                        if (_userProfileManager.user.value!.coins >=
-                            gift.coins) {
-                          widget.giftSelectedCompletion(gift);
-                        } else {
-                          widget.showCoinsView();
-                        }
+                        widget.giftSelectedCompletion(gift);
                       });
                     }),
               )),

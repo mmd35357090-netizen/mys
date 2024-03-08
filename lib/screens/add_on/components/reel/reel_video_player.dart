@@ -173,11 +173,11 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                 const SizedBox(
                   height: 10,
                 ),
-                if (widget.reel.title.isNotEmpty)
+                if (widget.reel.postTitle.isNotEmpty)
                   Column(
                     children: [
                       BodyLargeText(
-                        widget.reel.title,
+                        widget.reel.postTitle,
                         weight: TextWeight.medium,
                         color: Colors.white,
                       ),
@@ -340,20 +340,20 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
   }
 
   openComments() {
-    Get.bottomSheet(CommentsScreen(
-      isPopup: true,
-      model: widget.reel,
-      commentPostedCallback: () {
-        setState(() {
-          widget.reel.totalComment += 1;
-        });
-      },
-      commentDeletedCallback: () {
-        setState(() {
-          widget.reel.totalComment -= 1;
-        });
-      },
-    ));
+    Get.to(() => CommentsScreen(
+          isPopup: true,
+          model: widget.reel,
+          commentPostedCallback: () {
+            setState(() {
+              widget.reel.totalComment += 1;
+            });
+          },
+          commentDeletedCallback: () {
+            setState(() {
+              widget.reel.totalComment -= 1;
+            });
+          },
+        ));
   }
 
   pause() {
@@ -380,9 +380,9 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                 ListTile(
                     title: Center(
                         child: Heading6Text(
-                          editPostString.tr,
-                          weight: TextWeight.semiBold,
-                        )),
+                      editPostString.tr,
+                      weight: TextWeight.semiBold,
+                    )),
                     onTap: () async {
                       Get.back();
                       Get.to(() => EditPostScreen(post: widget.reel));

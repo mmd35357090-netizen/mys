@@ -4,7 +4,7 @@ import 'package:foap/model/post_model.dart';
 import 'package:foap/model/post_search_query.dart';
 import 'package:foap/helper/list_extension.dart';
 
-import '../../../../apiHandler/apis/post_api.dart';
+import '../../../../api_handler/apis/post_api.dart';
 
 class ReelsController extends GetxController {
   PageController pageController = PageController();

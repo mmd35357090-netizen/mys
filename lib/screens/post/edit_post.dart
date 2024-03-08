@@ -26,8 +26,8 @@ class EditPostScreenState extends State<EditPostScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _smartTextFieldController.textChanged(
-          widget.post.title, widget.post.title.length);
-      descriptionText.text = widget.post.title;
+          widget.post.postTitle, widget.post.postTitle.length);
+      descriptionText.text = widget.post.postTitle;
       addPostController.enableComments.value = widget.post.commentsEnabled;
     });
 

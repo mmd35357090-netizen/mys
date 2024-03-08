@@ -33,6 +33,7 @@ class Media {
 
   ///File size
   int? fileSize;
+  int? duration;
 
   int get mediaTypeId {
     if (mediaType == GalleryMediaType.photo) {
@@ -63,7 +64,6 @@ class Media {
     this.id,
     this.file,
     this.filePath,
-
     this.thumbnail,
     this.mainFileBytes,
     this.size,
@@ -71,6 +71,8 @@ class Media {
     this.title,
     this.mediaType,
     this.fileSize,
+    this.duration
+
   });
 
   Media get copy {
@@ -85,8 +87,9 @@ class Media {
     media.title = title;
     media.mediaType = mediaType;
     media.fileSize = fileSize;
+    media.duration = duration;
+
     return media;
   }
-
 }
 

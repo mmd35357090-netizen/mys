@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/random_chat/choose_profile_category.dart';
-
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_state_button/progress_button.dart';
@@ -42,21 +41,6 @@ class SelectUserForChatState extends State<SelectUserForChat> {
             width: double.infinity,
             child: Column(
               children: [
-                // const SizedBox(
-                //   height: 20,
-                // ),
-                // SearchBar(
-                //         showSearchIcon: true,
-                //         iconColor: ColorConstants.themeColor,
-                //         onSearchChanged: (value) {
-                //           selectUserForChatController.searchTextChanged(value);
-                //         },
-                //         onSearchStarted: () {
-                //           //controller.startSearch();
-                //         },
-                //         onSearchCompleted: (searchTerm) {})
-                //     .hP8,
-                // divider().tP16,
                 Expanded(
                   child: GetBuilder<SelectUserForChatController>(
                       init: _selectUserForChatController,
@@ -75,7 +59,8 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                         List<UserModel> usersList =
                             _selectUserForChatController.following;
                         return _selectUserForChatController.followingIsLoading
-                            ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
+                            ? const ShimmerUsers()
+                                .hp(DesignConstants.horizontalPadding)
                             : usersList.isNotEmpty
                                 ? ListView.separated(
                                     padding: const EdgeInsets.only(
@@ -112,7 +97,8 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                           Get.back();
                                           Get.to(() =>
                                               const SelectUserForGroupChat());
-                                        }).hp(DesignConstants.horizontalPadding);
+                                        }).hp(
+                                            DesignConstants.horizontalPadding);
                                       } else if (index == 1) {
                                         return SizedBox(
                                           height: 40,
@@ -143,14 +129,14 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                               () => const ChooseProfileCategory(
                                                     isCalling: false,
                                                   ));
-                                        }).hp(DesignConstants.horizontalPadding);
+                                        }).hp(
+                                            DesignConstants.horizontalPadding);
                                       } else {
                                         return UserTile(
                                           profile: usersList[index - 2],
                                           viewCallback: () {
                                             EasyLoading.show(
-                                                status:
-                                                    loadingString.tr);
+                                                status: loadingString.tr);
 
                                             widget.userSelected(
                                                 usersList[index - 2]);
@@ -158,12 +144,11 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                           audioCallCallback: () {
                                             Get.back();
                                             initiateAudioCall(
-                                                 usersList[index - 2]);
+                                                usersList[index - 2]);
                                           },
                                           chatCallback: () {
                                             EasyLoading.show(
-                                                status:
-                                                    loadingString.tr);
+                                                status: loadingString.tr);
 
                                             widget.userSelected(
                                                 usersList[index - 2]);
@@ -188,8 +173,7 @@ class SelectUserForChatState extends State<SelectUserForChat> {
                                   )
                                 : emptyUser(
                                     title: noUserFoundString.tr,
-                                    subTitle:
-                                        followSomeUserToChatString.tr,
+                                    subTitle: followSomeUserToChatString.tr,
                                   );
                       }),
                 ),
@@ -226,8 +210,8 @@ class SelectUserForChatState extends State<SelectUserForChat> {
 
   void initiateVideoCall(UserModel opponent) {
     PermissionUtils.requestPermission(
-        [Permission.camera, Permission.microphone],
-        isOpenSettings: false, permissionGrant: () async {
+        [Permission.camera, Permission.microphone], isOpenSettings: false,
+        permissionGrant: () async {
       Call call = Call(
           uuid: '',
           callId: 0,
@@ -307,94 +291,64 @@ class SelectFollowingUserForMessageSendingState
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 340,
-          width: Get.width,
-          color: AppColorConstants.backgroundColor,
-          child: GetBuilder<SelectUserForChatController>(
-              init: selectUserForChatController,
-              builder: (ctx) {
-                ScrollController scrollController = ScrollController();
-                scrollController.addListener(() {
-                  if (scrollController.position.maxScrollExtent ==
-                      scrollController.position.pixels) {
-                    if (!selectUserForChatController.followingIsLoading) {
-                      selectUserForChatController.getFollowingUsers();
-                    }
-                  }
-                });
+    return SizedBox(
+      // height: 340,
+      width: Get.width,
+      // color: AppColorConstants.backgroundColor,
+      child: GetBuilder<SelectUserForChatController>(
+          init: selectUserForChatController,
+          builder: (ctx) {
+            ScrollController scrollController = ScrollController();
+            scrollController.addListener(() {
+              if (scrollController.position.maxScrollExtent ==
+                  scrollController.position.pixels) {
+                if (!selectUserForChatController.followingIsLoading) {
+                  selectUserForChatController.getFollowingUsers();
+                }
+              }
+            });
 
-                List<UserModel> usersList =
-                    selectUserForChatController.following;
-                return selectUserForChatController.followingIsLoading
-                    ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
-                    : usersList.isNotEmpty
-                        ? ListView.separated(
-                            padding: const EdgeInsets.only(top: 20, bottom: 50),
-                            controller: scrollController,
-                            itemCount: usersList.length,
-                            itemBuilder: (context, index) {
-                              UserModel user = usersList[index];
-                              return SendMessageUserTile(
-                                state: selectUserForChatController
-                                        .completedActionUsers
+            List<UserModel> usersList = selectUserForChatController.following;
+            return selectUserForChatController.followingIsLoading
+                ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
+                : usersList.isNotEmpty
+                    ? ListView.separated(
+                        padding: const EdgeInsets.only(top: 20, bottom: 50),
+                        controller: scrollController,
+                        itemCount: usersList.length,
+                        itemBuilder: (context, index) {
+                          UserModel user = usersList[index];
+                          return SendMessageUserTile(
+                            state: selectUserForChatController
+                                    .completedActionUsers
+                                    .contains(user)
+                                ? ButtonState.success
+                                : selectUserForChatController.failedActionUsers
                                         .contains(user)
-                                    ? ButtonState.success
+                                    ? ButtonState.fail
                                     : selectUserForChatController
-                                            .failedActionUsers
+                                            .processingActionUsers
                                             .contains(user)
-                                        ? ButtonState.fail
-                                        : selectUserForChatController
-                                                .processingActionUsers
-                                                .contains(user)
-                                            ? ButtonState.loading
-                                            : ButtonState.idle,
-                                profile: usersList[index],
-                                sendCallback: () {
-                                  Get.back();
-                                  widget.sendToUserCallback(usersList[index]);
-                                },
-                              );
+                                        ? ButtonState.loading
+                                        : ButtonState.idle,
+                            profile: usersList[index],
+                            sendCallback: () {
+                              Get.back();
+                              widget.sendToUserCallback(usersList[index]);
                             },
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(
-                                height: 20,
-                              );
-                            },
-                          ).hp(DesignConstants.horizontalPadding)
-                        : emptyUser(
-                            title: noUserFoundString.tr,
-                            subTitle:
-                                followFriendsToSendPostString.tr,
                           );
-              }),
-        ).round(20).p16,
-        const SizedBox(
-          height: 10,
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: Container(
-            height: 50,
-            width: 50,
-            color: AppColorConstants.backgroundColor,
-            child: Center(
-              child: ThemeIconWidget(
-                ThemeIcon.close,
-                color: AppColorConstants.iconColor,
-                size: 25,
-              ),
-            ),
-          ).circular.ripple(() {
-            Get.back();
+                        },
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(
+                            height: 20,
+                          );
+                        },
+                      )
+                    : emptyUser(
+                        title: noUserFoundString.tr,
+                        subTitle: followFriendsToSendPostString.tr,
+                      );
           }),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-      ],
     );
   }
 }

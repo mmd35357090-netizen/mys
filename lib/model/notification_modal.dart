@@ -25,14 +25,14 @@ class NotificationModel {
 
   NotificationModel(
       {required this.id,
-        required this.title,
-        required this.message,
-        required this.date,
-        required this.type,
-        this.actionBy,
-        this.competition,
-        this.post,
-        this.club});
+      required this.title,
+      required this.message,
+      required this.date,
+      required this.type,
+      this.actionBy,
+      this.competition,
+      this.post,
+      this.club});
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       NotificationModel(
@@ -50,6 +50,9 @@ class NotificationModel {
             : null,
         post: json["type"] == 2 || json["type"] == 3 || json["type"] == 7
             ? PostModel.fromJson(json["refrenceDetails"])
+            : null,
+        club: json["type"] == 11
+            ? ClubModel.fromJson(json["refrenceDetails"])
             : null,
         // club: json["type"] == 11 ? ClubModel.fromJson(json["reference"]) : null,
       );

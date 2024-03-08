@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_model.dart';
-import '../../apiHandler/apis/post_api.dart';
+import '../../api_handler/apis/post_api.dart';
 
 class SinglePostDetailController extends GetxController {
   Rx<PostModel?> post = Rx<PostModel?>(null);

@@ -19,7 +19,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
   final DrawingController _drawingController = DrawingController();
   final ChatDetailController _chatDetailController = Get.find();
   final DrawingBoardController _drawingBoardController =
-  DrawingBoardController();
+      DrawingBoardController();
   late String filePath;
 
   List<Color> colorsList = [
@@ -70,14 +70,14 @@ class _DrawingScreenState extends State<DrawingScreen> {
         children: [
           Expanded(
             child: Obx(() => DrawingBoard(
-              controller: _drawingController,
-              background: Container(
-                  width: Get.width,
-                  height: Get.height,
-                  // height: double.infinity,
-                  color: _drawingBoardController
-                      .selectedBackgroundColor.value),
-            )),
+                  controller: _drawingController,
+                  background: Container(
+                      width: Get.width,
+                      height: Get.height,
+                      // height: double.infinity,
+                      color: _drawingBoardController
+                          .selectedBackgroundColor.value),
+                )),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,9 +120,9 @@ class _DrawingScreenState extends State<DrawingScreen> {
   }
 
   Widget _buildStrokeButton(
-      BuildContext context, {
-        required double strokeWidth,
-      }) {
+    BuildContext context, {
+    required double strokeWidth,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: InkWell(
@@ -132,17 +132,17 @@ class _DrawingScreenState extends State<DrawingScreen> {
         },
         customBorder: const CircleBorder(),
         child: Obx(() => AnimatedContainer(
-          duration: kThemeAnimationDuration,
-          width: strokeWidth * 2,
-          height: strokeWidth * 2,
-          color: Colors.black,
-        ).borderWithRadius(
-            value: _drawingBoardController.selectedStrokeWidth.value ==
-                strokeWidth
-                ? 5
-                : 0,
-            color: AppColorConstants.themeColor,
-            radius: strokeWidth + 5)),
+              duration: kThemeAnimationDuration,
+              width: strokeWidth * 2,
+              height: strokeWidth * 2,
+              color: Colors.black,
+            ).borderWithRadius(
+                value: _drawingBoardController.selectedStrokeWidth.value ==
+                        strokeWidth
+                    ? 5
+                    : 0,
+                color: AppColorConstants.themeColor,
+                radius: strokeWidth + 5)),
       ),
     );
   }
@@ -190,7 +190,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
           width: Get.width - 80,
           height: 50,
           child: ListView.builder(
-              padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding),
+              padding: EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
@@ -214,7 +214,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
           width: Get.width - 80,
           height: 50,
           child: ListView.builder(
-              padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding),
+              padding: EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
@@ -230,70 +230,70 @@ class _DrawingScreenState extends State<DrawingScreen> {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Obx(() => FloatingActionButton.small(
-        tooltip: "Erase",
-        backgroundColor: const Color(0xFFF7FBFF),
-        elevation: _drawingBoardController.isErasing.value == true ? 10 : 2,
-        shape: const CircleBorder(),
-        onPressed: () {
-          if (_drawingBoardController.isErasing.value == true) {
-            _drawingController.setPaintContent = SimpleLine();
-          } else {
-            _drawingController.setPaintContent = Eraser(
-                color:
-                _drawingBoardController.selectedBackgroundColor.value);
-          }
+            tooltip: "Erase",
+            backgroundColor: const Color(0xFFF7FBFF),
+            elevation: _drawingBoardController.isErasing.value == true ? 10 : 2,
+            shape: const CircleBorder(),
+            onPressed: () {
+              if (_drawingBoardController.isErasing.value == true) {
+                _drawingController.setPaintContent(SimpleLine());
+              } else {
+                _drawingController.setPaintContent(Eraser(
+                    color:
+                        _drawingBoardController.selectedBackgroundColor.value));
+              }
 
-          _drawingBoardController.eraseToggle();
-        },
-        child: const Icon(Icons.cleaning_services, color: Colors.blueGrey),
-      )),
+              _drawingBoardController.eraseToggle();
+            },
+            child: const Icon(Icons.cleaning_services, color: Colors.blueGrey),
+          )),
     );
   }
 
   Widget _buildStrokeColorButton(
-      BuildContext context, {
-        required Color color,
-      }) {
+    BuildContext context, {
+    required Color color,
+  }) {
     return Obx(() => Container(
-      height: 40,
-      width: _drawingBoardController.selectedStrokeColor.value == color
-          ? 30
-          : 40,
-      color: color,
-    ).border(
-        value: _drawingBoardController.selectedStrokeColor.value == color
-            ? 5
-            : 0,
-        color: AppColorConstants.themeColor)).ripple(() {
+          height: 40,
+          width: _drawingBoardController.selectedStrokeColor.value == color
+              ? 30
+              : 40,
+          color: color,
+        ).border(
+            value: _drawingBoardController.selectedStrokeColor.value == color
+                ? 5
+                : 0,
+            color: AppColorConstants.themeColor)).ripple(() {
       _drawingController.setStyle(color: color);
       _drawingBoardController.setStrokeColor(color);
     });
   }
 
   Widget _buildBackgroundColorButton(
-      BuildContext context, {
-        required Color color,
-      }) {
+    BuildContext context, {
+    required Color color,
+  }) {
     return Obx(() => Container(
-      width: _drawingBoardController.selectedBackgroundColor.value == color
-          ? 30
-          : 40,
-      height: 40,
-      color: color,
-    ).border(
-        value:
-        _drawingBoardController.selectedBackgroundColor.value == color
-            ? 5
-            : 0,
-        color: AppColorConstants.themeColor)).ripple(() {
+          width: _drawingBoardController.selectedBackgroundColor.value == color
+              ? 30
+              : 40,
+          height: 40,
+          color: color,
+        ).border(
+            value:
+                _drawingBoardController.selectedBackgroundColor.value == color
+                    ? 5
+                    : 0,
+            color: AppColorConstants.themeColor)).ripple(() {
       // print('background color');
       _drawingBoardController.setBackgroundColor(color);
     });
   }
 
   Widget _buildUndoButton(
-      BuildContext context,
-      ) {
+    BuildContext context,
+  ) {
     return FloatingActionButton.small(
       tooltip: "Undo",
       onPressed: () {
@@ -303,7 +303,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
       },
       disabledElevation: 0,
       backgroundColor:
-      _drawingController.currentIndex > 0 ? Colors.blueGrey : Colors.grey,
+          _drawingController.currentIndex > 0 ? Colors.blueGrey : Colors.grey,
       child: const Icon(
         Icons.undo_rounded,
         color: Colors.white,
@@ -312,8 +312,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
   }
 
   Widget _buildRedoButton(
-      BuildContext context,
-      ) {
+    BuildContext context,
+  ) {
     return FloatingActionButton.small(
       tooltip: "Redo",
       onPressed: () {
@@ -324,9 +324,9 @@ class _DrawingScreenState extends State<DrawingScreen> {
       },
       disabledElevation: 0,
       backgroundColor:
-      _drawingController.currentIndex < _drawingController.getHistory.length
-          ? Colors.blueGrey
-          : Colors.grey,
+          _drawingController.currentIndex < _drawingController.getHistory.length
+              ? Colors.blueGrey
+              : Colors.grey,
       child: const Icon(
         Icons.redo_rounded,
         color: Colors.white,
@@ -360,7 +360,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
 
   sendImage() async {
     Uint8List? imageBytes =
-    (await _drawingController.getImageData())?.buffer.asUint8List();
+        (await _drawingController.getImageData())?.buffer.asUint8List();
     if (imageBytes != null) {
       File file = File(filePath);
       await file.writeAsBytes(imageBytes);
@@ -377,7 +377,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
         widget.drawingCompleted!(media);
       } else {
         _chatDetailController.sendImageMessage(
-          // context: context,
+            // context: context,
             media: media,
             mode: ChatMessageActionMode.none,
             room: _chatDetailController.chatRoom.value!);

@@ -144,4 +144,14 @@ class SharedPrefs {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.get('${forAppleId}_name') as String?;
   }
+
+  void setApiResponse({required String url, required String response}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(url, response);
+  }
+
+  Future<String?> getCachedApiResponse({required String url}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get(url) as String?;
+  }
 }

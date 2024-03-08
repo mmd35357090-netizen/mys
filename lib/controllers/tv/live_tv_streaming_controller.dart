@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/tv_api.dart';
+import 'package:foap/api_handler/apis/tv_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/model/category_model.dart';

@@ -1180,3 +1180,43 @@ String noAudioFound = 'No audio found';
 String searchAnotherAudio = 'Please search another audio';
 
 
+String shareToFeedString = 'Share to feed';
+String sendSeparatelyToFriends = 'Send separately to friends';
+String copyLinkString = 'Copy link';
+String copiedString = 'Copied';
+String addedNewCompetitionString = 'added a new competition :';
+String createdAClubString = 'created a club';
+String sharedInString = 'Shared in';
+String reSharedString = 'Re-Shared';
+String sponsoredString = 'Sponsored';
+
+String bannedUsersString = 'Banned users';
+String hostString = 'Host';
+String moderatorString = 'Moderator';
+String banString = 'Ban';
+String removeBanString = 'Remove ban';
+String makeModeratorString = 'Make moderator';
+String removeFromModeratorString = 'Remove from moderator';
+String banForOneHourString = "Ban for 60 minute";
+String permanentBanString = "Permanent ban";
+
+String notAllowedToJoinLiveString = 'You are not allowed to join this live';
+
+String isModeratorNowString = 'is a moderator now';
+String isRemovedFromModeratorString = 'is removed from moderators';
+String addLocationString = 'Add location';
+String postingInString = 'Posting in';
+
+String shareOnlineStatusStaring = 'Share online status';
+String shareOnlineStatusMsgString =
+    'If you don\'t share your last seen and online,you won\'t be able to see other people\'s last seen and online status also';
+String youReactedToStory = 'You reacted to their story';
+String youRepliedToStory = 'You replied to their story';
+String titleString = 'Title';
+
+String viewResultString = 'View result';
+String clubCreatedSuccessfullyString = 'Club is created successfully';
+String addMoreClubsString = 'Add more clubs';
+String inviteFriendString = "Invite friends";
+
+String invitedYouToClubString = "Invited to you club";

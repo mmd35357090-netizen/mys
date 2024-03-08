@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
-import 'package:foap/apiHandler/apis/auth_api.dart';
+import 'package:foap/api_handler/apis/auth_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/login_sign_up/phone_login.dart';
 import 'package:foap/screens/login_sign_up/set_user_name.dart';
@@ -158,31 +158,7 @@ class _SocialLoginState extends State<SocialLogin> {
 
         AppUtil.checkInternet().then((value) {
           if (value) {
-            // EasyLoading.show(status: loadingString.tr);
-
             socialLogin('fb', socialId, name, email!);
-
-            // ApiController()
-            //     .socialLogin(name, 'fb', socialId, email!)
-            //     .then((response) async {
-            //   EasyLoading.dismiss();
-            //   if (response.success) {
-            //     SharedPrefs().setUserLoggedIn(true);
-            //     _userProfileManager.refreshProfile();
-            //     SharedPrefs().setAuthorizationKey(response.authKey!);
-            //
-            //     // ask for location
-            //     getIt<LocationManager>().postLocation();
-            //
-            //     Get.offAll(() => const DashboardScreen());
-            //     getIt<SocketManager>().connect();
-            //   } else {
-            //     AppUtil.showToast(
-            //
-            //         message: response.message,
-            //         isSuccess: false);
-            //   }
-            // });
           } else {
             AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
           }

@@ -26,7 +26,7 @@ class MyProfile extends StatefulWidget {
 class MyProfileState extends State<MyProfile>
     with SingleTickerProviderStateMixin {
   final ProfileController _profileController = Get.find();
-  final HighlightsController _highlightsController = HighlightsController();
+  final HighlightsController _highlightsController = Get.find();
   final SettingsController _settingsController = Get.find();
   final UserProfileManager _userProfileManager = Get.find();
   final PostController _postController = Get.find();
@@ -87,23 +87,23 @@ class MyProfileState extends State<MyProfile>
                     (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
                     SliverAppBar(
-                      backgroundColor: Colors.yellow,
+                      backgroundColor: AppColorConstants.backgroundColor,
                       pinned: true,
                       automaticallyImplyLeading: false,
                       expandedHeight: 540.0,
                       toolbarHeight: 0,
                       flexibleSpace: FlexibleSpaceBar(
                         background: Column(
-                          children: [
-                            addProfileView(),
-                            addHighlightsView()
-                          ],
+                          children: [addProfileView(), addHighlightsView()],
                         ),
                       ),
                     ),
                     SliverPersistentHeader(
                       delegate: _SliverAppBarDelegate(
-                        getTextTabBar(tabs: tabs, controller: controller,canScroll: false),
+                        getTextTabBar(
+                            tabs: tabs,
+                            controller: controller,
+                            canScroll: false),
                       ),
                       pinned: true,
                       // floating: true,
@@ -113,7 +113,9 @@ class MyProfileState extends State<MyProfile>
                 body: TabBarView(
                   controller: controller,
                   children: [
-                    PostList(postSource: PostSource.posts,),
+                    PostList(
+                      postSource: PostSource.posts,
+                    ),
                     MentionsList(),
                   ],
                 )),
@@ -133,23 +135,21 @@ class MyProfileState extends State<MyProfile>
                     ? Stack(
                         children: [
                           _profileController.user.value!.coverImage != null
-                              ? CachedNetworkImage(
-                                      width: Get.width,
+                              ? Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                        width: Get.width,
+                                        height: 300,
+                                        fit: BoxFit.cover,
+                                        imageUrl: _profileController
+                                            .user.value!.coverImage!),
+                                    Container(
                                       height: 300,
-                                      fit: BoxFit.cover,
-                                      imageUrl: _profileController
-                                          .user.value!.coverImage!)
-                                  .bottomRounded(40)
-                              : Container(
-                                  width: Get.width,
-                                  height: 300,
-                                  color: AppColorConstants.themeColor
-                                      .withOpacity(0.2),
-                                ).bottomRounded(40),
-                          Container(
-                            height: 300,
-                            color: Colors.black26,
-                          ).bottomRounded(40),
+                                      color: Colors.black26,
+                                    ),
+                                  ],
+                                ).bottomRounded(40)
+                              : Container(),
                           Positioned(
                             left: 0,
                             right: 0,
@@ -305,36 +305,36 @@ class MyProfileState extends State<MyProfile>
           return _highlightsController.isLoading == true
               ? const StoryAndHighlightsShimmer()
               : HighlightsBar(
-            highlights: _highlightsController.highlights,
-            addHighlightCallback: () {
-              Get.to(() => const ChooseStoryForHighlights());
-            },
-            viewHighlightCallback: (highlight) {
-              Get.to(() => HighlightViewer(highlight: highlight))!
-                  .then((value) {
-                loadData();
-              });
-            },
-          );
+                  highlights: _highlightsController.highlights,
+                  addHighlightCallback: () {
+                    Get.to(() => const ChooseStoryForHighlights());
+                  },
+                  viewHighlightCallback: (highlight) {
+                    Get.to(() => HighlightViewer(highlight: highlight))!
+                        .then((value) {
+                      loadData();
+                    });
+                  },
+                );
         });
   }
 
   Widget appBar() {
     return Container(
-      color: Colors.black26,
+      // color: Colors.black26,
       height: 100,
       child: widget.showBack == true
           ? backNavigationBarWithIcon(
               title: '',
               icon: ThemeIcon.setting,
-              iconColor: Colors.white,
+              iconColor: AppColorConstants.themeColor,
               iconBtnClicked: () {
                 Get.to(() => const Settings());
               }).tp(40)
           : titleNavigationBarWithIcon(
               title: '',
               icon: ThemeIcon.setting,
-              iconColor: Colors.white,
+              iconColor: AppColorConstants.themeColor,
               completion: () {
                 Get.to(() => const Settings());
               }).tp(40),

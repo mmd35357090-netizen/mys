@@ -28,9 +28,13 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
+          const SizedBox(
+            height: 40,
+          ),
           SizedBox(
             height: 50,
             child: Stack(
+              alignment: Alignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -42,8 +46,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                     ).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Heading6Text(inviteString.tr,
-                            weight: TextWeight.medium)
+                    Heading6Text(inviteString.tr, weight: TextWeight.medium)
                         .ripple(() {
                       _inviteFriendsToClubController
                           .sendClubJoinInvite(widget.clubId);
@@ -56,7 +59,6 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-
                       Obx(() => _inviteFriendsToClubController
                               .selectedFriends.isNotEmpty
                           ? Heading6Text(
@@ -69,7 +71,9 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
               ],
             ),
           ).hp(DesignConstants.horizontalPadding),
-          const SizedBox(height: 8,),
+          const SizedBox(
+            height: 8,
+          ),
           GetBuilder<InviteFriendsToClubController>(
             init: _inviteFriendsToClubController,
             builder: (ctx) {
@@ -80,8 +84,11 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                       height: 110,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        padding:  EdgeInsets.only(
-                            top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 10),
+                        padding: EdgeInsets.only(
+                            top: 20,
+                            left: DesignConstants.horizontalPadding,
+                            right: DesignConstants.horizontalPadding,
+                            bottom: 10),
                         itemCount: usersList.length,
                         itemBuilder: (context, index) {
                           return Stack(
@@ -97,7 +104,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Heading6Text(
+                                    BodySmallText(
                                       usersList[index].userName,
                                       maxLines: 1,
                                     )
@@ -142,7 +149,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                   },
                   onSearchCompleted: (searchTerm) {})
               .p16,
-          divider().tP16,
+          divider(),
           Expanded(
             child: GetBuilder<InviteFriendsToClubController>(
                 init: _inviteFriendsToClubController,

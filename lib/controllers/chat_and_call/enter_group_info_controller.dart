@@ -1,7 +1,7 @@
-import 'package:foap/apiHandler/apis/chat_api.dart';
+import 'package:foap/api_handler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import '../../apiHandler/apis/misc_api.dart';
+import '../../api_handler/apis/misc_api.dart';
 import '../../manager/socket_manager.dart';
 
 class EnterGroupInfoController extends GetxController {

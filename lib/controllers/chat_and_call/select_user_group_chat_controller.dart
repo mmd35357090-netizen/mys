@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/users_api.dart';
+import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:get/get.dart';
 import '../../model/user_model.dart';
 import 'package:foap/helper/list_extension.dart';

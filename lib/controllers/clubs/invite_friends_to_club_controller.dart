@@ -1,5 +1,5 @@
-import 'package:foap/apiHandler/apis/club_api.dart';
-import 'package:foap/apiHandler/apis/users_api.dart';
+import 'package:foap/api_handler/apis/club_api.dart';
+import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:get/get.dart';
 import '../../helper/user_profile_manager.dart';
 import '../../model/user_model.dart';

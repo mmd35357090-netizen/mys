@@ -26,9 +26,10 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar(
-               title: joinRequestsString.tr),
-          const SizedBox(height: 8,),
+          backNavigationBar(title: joinRequestsString.tr),
+          const SizedBox(
+            height: 8,
+          ),
           Expanded(
             child: GetBuilder<ClubDetailController>(
                 init: _clubDetailController,
@@ -37,7 +38,8 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
                   scrollController.addListener(() {
                     if (scrollController.position.maxScrollExtent ==
                         scrollController.position.pixels) {
-                      if (!_clubDetailController.isLoading.value) {
+                      if (!_clubDetailController
+                          .requestsDataWrapper.isLoading.value) {
                         _clubDetailController.getClubJoinRequests(
                             clubId: widget.club.id!);
                       }
@@ -47,8 +49,11 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
                   List<ClubJoinRequest> requestsList =
                       _clubDetailController.joinRequests;
                   return ListView.separated(
-                      padding:  EdgeInsets.only(
-                          top: 25, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 100),
+                      padding: EdgeInsets.only(
+                          top: 25,
+                          left: DesignConstants.horizontalPadding,
+                          right: DesignConstants.horizontalPadding,
+                          bottom: 100),
                       itemCount: requestsList.length,
                       itemBuilder: (context, index) {
                         return ClubJoinRequestTile(

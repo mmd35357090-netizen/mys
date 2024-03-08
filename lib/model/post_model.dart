@@ -1,8 +1,10 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_gallery.dart';
+import '../helper/enum_linking.dart';
 import '../screens/add_on/model/reel_music_model.dart';
 import 'club_model.dart';
+import 'competition_model.dart';
 
 class PostModel {
   int id = 0;
@@ -29,11 +31,15 @@ class PostModel {
   List<MentionedUsers> mentionedUsers = [];
 
   ReelMusicModel? audio;
-  ClubModel? club;
+  ClubModel? postedInClub;
+  CompetitionModel? competition;
+  ClubModel? createdClub;
 
   String postTime = '';
   DateTime? createDate;
   PostModel? sharedPost;
+  String shareLink = '';
+  PostContentType contentType = PostContentType.text;
 
   PostModel();
 
@@ -57,7 +63,20 @@ class PostModel {
     model.isSharePost = json['is_share_post'] == 1;
     model.isSaved = json['isFavorite'] == 1;
     model.commentsEnabled = json['is_comment_enable'] == 1;
+    model.shareLink = json['share_link'] ?? '';
+    model.contentType = json['post_content_type'] == null
+        ? PostContentType.text
+        : postContentTypeValueFrom(json['post_content_type']);
 
+    if (model.contentType == PostContentType.competitionAdded ||
+        model.contentType == PostContentType.competitionResultDeclared) {
+      model.competition =
+          CompetitionModel.fromJson(json['contentReferenceDetail']);
+    }
+    if (model.contentType == PostContentType.club) {
+      json['contentReferenceDetail']['createdByUser'] = json['user'];
+      model.createdClub = ClubModel.fromJson(json['contentReferenceDetail']);
+    }
     model.tags = [];
     if (json['hashtags'] != null && json['hashtags'].length > 0) {
       model.tags = List<String>.from(json['hashtags'].map((x) => '#$x'));
@@ -83,7 +102,7 @@ class PostModel {
         : justNowString.tr;
     model.audio =
         json['audio'] == null ? null : ReelMusicModel.fromJson(json['audio']);
-    model.club = json['clubDetail'] == null
+    model.postedInClub = json['clubDetail'] == null
         ? null
         : ClubModel.fromJson(json['clubDetail']);
     model.sharedPost = json['originPost'] == null
@@ -105,6 +124,20 @@ class PostModel {
 
   bool get isReel {
     return type == 4;
+  }
+
+  String get postTitle {
+    if (contentType == PostContentType.text ||
+        contentType == PostContentType.media ||
+        contentType == PostContentType.location ||
+        contentType == PostContentType.poll) {
+      return title;
+    } else if (contentType == PostContentType.competitionAdded) {
+      return '${user.name!} ${addedNewCompetitionString.tr} ${competition!.title}';
+    } else if (contentType == PostContentType.club) {
+      return '${user.name!} ${createdAClubString.tr} ${createdClub!.name!}';
+    }
+    return '';
   }
 }
 

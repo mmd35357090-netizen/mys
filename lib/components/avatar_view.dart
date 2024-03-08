@@ -172,3 +172,79 @@ class UserAvatarView extends StatelessWidget {
     );
   }
 }
+
+class UserPlaneImageView extends StatelessWidget {
+  final UserModel user;
+  final double? size;
+
+  const UserPlaneImageView({
+    super.key,
+    required this.user,
+    this.size = 60,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: size ?? 60,
+      width: size ?? 60,
+      child: userPictureView(
+        size: size ?? 60,
+      ),
+    );
+  }
+
+  Widget userPictureView({
+    required double size,
+    double? radius,
+  }) {
+    return user.picture != null
+        ? CachedNetworkImage(
+            imageUrl: user.picture!,
+            fit: BoxFit.cover,
+            height: size,
+            width: size,
+            placeholder: (context, url) => SizedBox(
+                height: 20,
+                width: 20,
+                child: const CircularProgressIndicator().p16),
+            errorWidget: (context, url, error) => SizedBox(
+                height: size,
+                width: size,
+                child: Icon(
+                  Icons.error,
+                  size: size / 2,
+                )),
+          ).round(20)
+        : userNameInitialView(user.getInitials, size)
+            .borderWithRadius(value: 1, radius: 20);
+  }
+}
+
+Widget userNameInitialView(String initials, double size){
+  return SizedBox(
+    height: double.infinity,
+    width: double.infinity,
+    child: Center(
+      child: size < 40
+          ? BodySmallText(
+        initials,
+        weight: TextWeight.medium,
+      )
+          : size < 60
+          ? BodyMediumText(
+        initials,
+        weight: TextWeight.medium,
+      )
+          : size < 80
+          ? BodyExtraLargeText(
+        initials,
+        weight: TextWeight.medium,
+      )
+          : Heading2Text(
+        initials,
+        weight: TextWeight.medium,
+      ),
+    ),
+  );
+}

@@ -5,7 +5,6 @@ import 'package:foap/helper/number_extension.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/actionSheets/action_sheet1.dart';
 import '../../controllers/chat_and_call/chat_detail_controller.dart';
-import '../../controllers/post/select_media.dart';
 import '../../model/generic_item.dart';
 import '../chat/chat_detail.dart';
 
@@ -30,7 +29,6 @@ class ClubDetailState extends State<ClubDetail> {
   final ChatDetailController _chatDetailController = Get.find();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final PostController _postController = Get.find();
 
   final _controller = ScrollController();
 
@@ -49,19 +47,8 @@ class ClubDetailState extends State<ClubDetail> {
   }
 
   refreshPosts() {
-    PostSearchQuery query = PostSearchQuery();
-    query.clubId = widget.club.id!;
-
-    _postController.setPostSearchQuery(
-        query: query,
-        callback: () {
-          _refreshController.refreshCompleted();
-        });
-    // _clubDetailController.getPosts(
-    //     clubId: ,
-    //     callback: () {
-    //       _refreshController.refreshCompleted();
-    //     });
+    _clubDetailController.refreshPosts(
+        clubId: widget.club.id!, callback: () {});
   }
 
   @override
@@ -86,8 +73,12 @@ class ClubDetailState extends State<ClubDetail> {
                         context: context,
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             AddPostScreen(
-                                postType: PostType.club,
-                                clubId: _clubDetailController.club.value!.id!)),
+                              postType: PostType.club,
+                              club: _clubDetailController.club.value!,
+                              postCompletionHandler: () {
+                                refreshPosts();
+                              },
+                            )),
                   );
                 })
               : null,
@@ -151,10 +142,10 @@ class ClubDetailState extends State<ClubDetail> {
                 }),
                 Obx(() => SizedBox(
                       height: (_clubDetailController.posts.length * 500) +
-                          (_clubDetailController.posts.length * 40),
+                          (_clubDetailController.posts.length * 40) + 100,
                       child: ListView.separated(
                           physics: const NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.zero,
+                          padding: const EdgeInsets.only(bottom: 100),
                           itemBuilder: (BuildContext context, index) {
                             return PostCard(
                               model: _clubDetailController.posts[index],
@@ -270,7 +261,7 @@ class ClubDetailState extends State<ClubDetail> {
                       const SizedBox(
                         width: 5,
                       ),
-                      BodyLargeText(inviteString.tr)
+                      BodySmallText(inviteString.tr)
                     ],
                   ).hP8)
               .round(5)
@@ -375,7 +366,6 @@ class ClubDetailState extends State<ClubDetail> {
               itemCount: _clubDetailController.posts.length,
               itemBuilder: (context, index) {
                 PostModel model = _clubDetailController.posts[index - 3];
-
                 return PostCard(
                   model: model,
                   removePostHandler: () {
@@ -396,11 +386,23 @@ class ClubDetailState extends State<ClubDetail> {
                 }
               })
           .addPullToRefresh(
-              refreshController: _refreshController,
-              enablePullUp: false,
-              enablePullDown: true,
-              onRefresh: refreshPosts,
-              onLoading: () {});
+          refreshController: _refreshController,
+          onRefresh: () {
+            _clubDetailController.refreshPosts(
+                clubId: widget.club.id!,
+                callback: () {
+                  _refreshController.refreshCompleted();
+                });
+          },
+          onLoading: () {
+            _clubDetailController.loadMorePosts(
+                clubId: widget.club.id!,
+                callback: () {
+                  _refreshController.loadComplete();
+                });
+          },
+          enablePullUp: true,
+          enablePullDown: true);
     });
   }
 

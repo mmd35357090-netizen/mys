@@ -40,7 +40,7 @@ class CompetitionModel {
   int awardType = 0;
 
   int joiningFee = 0;
-  int isJoined = 0;
+  bool isJoined = false;
   int competitionMediaType = 0;
 
   bool isWinner = false;
@@ -68,13 +68,13 @@ class CompetitionModel {
     // model.awardPrice = json['award_type'] == 1 ? json['price'] : 0;
     // model.awardCoin = json['award_type'] == 1 ? 0 : json['coin'];
     model.joiningFee = json['joining_fee'] ?? 0;
-    model.isJoined = json['is_joined'];
+    model.isJoined = json['is_joined'] == 1;
     model.competitionMediaType = json['competition_media_type'];
 
     var startDate =
-        DateTime.fromMillisecondsSinceEpoch(json['start_date'] * 1000).toUtc();
+    DateTime.fromMillisecondsSinceEpoch(json['start_date'] * 1000).toUtc();
     var endDate =
-        DateTime.fromMillisecondsSinceEpoch(json['end_date'] * 1000).toUtc();
+    DateTime.fromMillisecondsSinceEpoch(json['end_date'] * 1000).toUtc();
 
     // model.isUpcoming = startDate.isAfter(DateTime.now());
 
@@ -86,13 +86,13 @@ class CompetitionModel {
     model.exampleImages = [];
     if (json['expampleImages'] != null && json['expampleImages'].length > 0) {
       model.exampleImages =
-          List<String>.from(json['expampleImages'].map((x) => x));
+      List<String>.from(json['expampleImages'].map((x) => x));
     }
 
     model.posts = [];
     if (json['post'] != null && json['post'].length > 0) {
       model.posts =
-          List<PostModel>.from(json['post'].map((x) => PostModel.fromJson(x)));
+      List<PostModel>.from(json['post'].map((x) => PostModel.fromJson(x)));
     }
 
     model.competitionPositions = [];
@@ -112,11 +112,11 @@ class CompetitionModel {
       model.timeLeft = '${getCompetitionTimeString(DateTime.now(), endDate)} ${leftString.tr}';
     } else if (model.isPast) {
       model.timeLeft =
-          '${endedString.tr} ${getCompetitionTimeString(endDate, DateTime.now())} ${agoString.tr}';
+      '${endedString.tr} ${getCompetitionTimeString(endDate, DateTime.now())} ${agoString.tr}';
     }
 
     model.winnerId =
-        json['winner_id'] == null ? '' : json['winner_id'].toString();
+    json['winner_id'] == null ? '' : json['winner_id'].toString();
     model.winnerPost = [];
     if (json['winnerPost'] != null && json['winnerPost'].length > 0) {
       model.winnerPost = List<PostModel>.from(

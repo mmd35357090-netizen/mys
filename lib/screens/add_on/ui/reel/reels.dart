@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/reel_imports.dart';
-
 import '../../../../controllers/post/add_post_controller.dart';
 
 class Reels extends StatefulWidget {

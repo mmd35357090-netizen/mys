@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/rating_api.dart';
+import 'package:foap/api_handler/apis/rating_api.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:get/get.dart';
 import '../../model/rating_model.dart';

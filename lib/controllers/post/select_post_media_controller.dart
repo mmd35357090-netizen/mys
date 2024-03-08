@@ -1,5 +1,7 @@
 import 'package:foap/screens/chat/media.dart';
 import 'package:get/get.dart';
+
+import '../../helper/enum.dart';
 class SelectPostMediaController extends GetxController {
   RxList<Media> selectedMediaList = <Media>[].obs;
   RxBool allowMultipleSelection = false.obs;
@@ -37,4 +39,11 @@ class SelectPostMediaController extends GetxController {
     update();
   }
 
+  bool get canEditMedia {
+    return selectedMediaList
+        .where((element) =>
+    element.mediaType == GalleryMediaType.photo ||
+        element.mediaType == GalleryMediaType.video)
+        .isNotEmpty;
+  }
 }

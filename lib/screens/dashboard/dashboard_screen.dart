@@ -2,6 +2,7 @@ import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../components/force_update_view.dart';
+import '../../main.dart';
 import '../add_on/ui/reel/reels.dart';
 import '../home_feed/home_feed_screen.dart';
 import '../profile/my_profile.dart';
@@ -39,6 +40,7 @@ class DashboardState extends State<DashboardScreen> {
 
   @override
   void initState() {
+    isAnyPageInStack = true;
     items = [
       const HomeFeedScreen(),
       const Explore(),

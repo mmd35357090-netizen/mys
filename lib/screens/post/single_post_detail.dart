@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import '../../components/post_card.dart';
+import '../../components/post_card/post_card.dart';
 import '../../controllers/post/single_post_detail_controller.dart';
 
 class SinglePostDetail extends StatefulWidget {

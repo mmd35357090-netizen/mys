@@ -19,7 +19,7 @@ class ReplyTextChatTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            height: 70,
+            height: 80,
             color: message.isMineMessage
                 ? AppColorConstants.disabledColor
                 : AppColorConstants.themeColor,

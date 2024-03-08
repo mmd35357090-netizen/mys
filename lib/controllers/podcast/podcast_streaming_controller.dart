@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:foap/apiHandler/apis/podcast_api.dart';
+import 'package:foap/api_handler/apis/podcast_api.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:foap/screens/add_on/model/podcast_banner_model.dart';
 import 'package:foap/screens/add_on/model/podcast_model.dart';

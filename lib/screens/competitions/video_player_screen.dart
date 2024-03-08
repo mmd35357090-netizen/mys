@@ -5,7 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../components/video_widget.dart';
+import '../../components/post_card/video_widget.dart';
 import '../../manager/file_manager.dart';
 import '../../model/chat_message_model.dart';
 import '../../model/post_gallery.dart';

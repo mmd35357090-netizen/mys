@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/club_api.dart';
+import 'package:foap/api_handler/apis/club_api.dart';
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../../model/category_model.dart';
@@ -307,5 +307,15 @@ class ClubsController extends GetxController {
     Get.back();
     callback();
 
+  }
+
+
+  getClubDetail(int clubId, Function(ClubModel) callback) {
+    ClubApi.getClubDetail(
+      clubId: clubId,
+      resultCallback: (result) {
+        callback(result);
+      },
+    );
   }
 }

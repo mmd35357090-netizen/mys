@@ -323,11 +323,7 @@ class StoryAndHighlightsShimmer extends StatelessWidget {
                   height: 60,
                   width: 60,
                   color: AppColorConstants.backgroundColor,
-                ).round(10),
-                const SizedBox(
-                  height: 5,
-                ),
-                const BodyLargeText('Adam')
+                ).circular,
               ],
             ).addShimmer();
           },

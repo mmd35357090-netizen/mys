@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:foap/helper/imports/common_import.dart';
-import '../../apiHandler/apis/post_api.dart';
+import '../../api_handler/apis/post_api.dart';
 import '../../model/post_model.dart';
 import '../profile/other_user_profile.dart';
 import 'comments_screen.dart';

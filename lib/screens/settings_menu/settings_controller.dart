@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
-import 'package:foap/apiHandler/apis/auth_api.dart';
-import 'package:foap/apiHandler/apis/misc_api.dart';
+import 'package:foap/api_handler/apis/auth_api.dart';
+import 'package:foap/api_handler/apis/misc_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
-import '../../apiHandler/apis/profile_api.dart';
+import '../../api_handler/apis/profile_api.dart';
 import '../../manager/location_manager.dart';
 import '../../util/shared_prefs.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
@@ -27,13 +27,7 @@ class SettingsController extends GetxController {
   var localAuth = LocalAuthentication();
   RxInt bioMetricType = 0.obs;
   RxBool isPrivateAccount = false.obs;
-
-  // RateMyApp rateMyApp = RateMyApp(
-  //   preferencesPrefix: 'rateMyApp_',
-  //   minDays: 0, // Show rate popup on first day of install.
-  //   minLaunches:
-  //       0, // Show rate popup after 5 launches of app after minDays is passed.
-  // );
+  RxBool isShareOnlineStatus = true.obs;
 
   List<Map<String, String>> languagesList = [
     {'language_code': 'hi', 'language_name': 'Hindi'},
@@ -68,7 +62,8 @@ class SettingsController extends GetxController {
     bioMetricAuthStatus.value = await SharedPrefs().getBioMetricAuthStatus();
     shareLocation.value = _userProfileManager.user.value!.latitude != null;
     isPrivateAccount.value = _userProfileManager.user.value!.isPrivate;
-
+    isShareOnlineStatus.value =
+        _userProfileManager.user.value!.isShareOnlineStatus;
     setDarkMode(isDarkTheme);
     checkBiometric();
   }
@@ -96,8 +91,7 @@ class SettingsController extends GetxController {
   }
 
   getSettings() async {
-    // if (authKey != null) {
-    await MiscApi.getSettings(resultCallback: (result) {
+    await MiscApi.getSettings(resultCallback: (result) async {
       setting.value = result;
 
       if (setting.value?.latestVersion! != AppConfigConstants.currentVersion) {
@@ -105,17 +99,17 @@ class SettingsController extends GetxController {
         forceUpdate.value = false;
       }
 
+
       update();
     });
-    // }
   }
 
   Future checkBiometric() async {
     bool bioMetricAuthStatus =
-        true; //await SharedPrefs().getBioMetricAuthStatus();
+    true; //await SharedPrefs().getBioMetricAuthStatus();
     if (bioMetricAuthStatus == true) {
       List<BiometricType> availableBiometrics =
-          await localAuth.getAvailableBiometrics();
+      await localAuth.getAvailableBiometrics();
 
       if (availableBiometrics.contains(BiometricType.face)) {
         // Face ID.
@@ -146,6 +140,13 @@ class SettingsController extends GetxController {
     }
   }
 
+  deleteAccount() {
+    AuthApi.deleteAccount(successCallback: () {
+      _userProfileManager.logout();
+      AppUtil.showToast(message: accountIsDeletedString.tr, isSuccess: true);
+    });
+  }
+
   void toggleAccountPrivacy(bool isPrivate) async {
     isPrivateAccount.value = isPrivate;
     updateAccountPrivacy(isPrivate);
@@ -156,18 +157,13 @@ class SettingsController extends GetxController {
         isPrivate: isPrivate, resultCallback: () {});
   }
 
-  deleteAccount() {
-    AuthApi.deleteAccount(successCallback: () {
-      _userProfileManager.logout();
-      AppUtil.showToast(message: accountIsDeletedString.tr, isSuccess: true);
-    });
+  void toggleShowOnlineStatusSetting(bool showOnlineStatus) async {
+    isShareOnlineStatus.value = showOnlineStatus;
+    updateShowOnlineStatusSetting(showOnlineStatus);
   }
 
-  askForRating(BuildContext context) {
-    // rateMyApp.init().then((value) {
-    //   if (rateMyApp.shouldOpenDialog) {
-    //     rateMyApp.showRateDialog(context);
-    //   }
-    // });
+  updateShowOnlineStatusSetting(bool showOnlineStatus) {
+    ProfileApi.updateOnlineStatusSetting(
+        status: showOnlineStatus ? 1 : 0, resultCallback: () {});
   }
 }

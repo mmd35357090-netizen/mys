@@ -37,7 +37,7 @@ class ChatHistoryTile extends StatelessWidget {
                                       width: 35,
                                       fit: BoxFit.cover,
                                     ),
-                        ).round(15)
+                        ).circular
                       : UserAvatarView(
                           size: 45,
                           user: model.opponent.userDetail,

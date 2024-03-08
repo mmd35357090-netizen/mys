@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:foap/apiHandler/apis/chat_api.dart';
+import 'package:foap/api_handler/apis/chat_api.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:get/get.dart';
 import '../../helper/user_profile_manager.dart';

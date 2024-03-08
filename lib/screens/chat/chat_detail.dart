@@ -13,6 +13,7 @@ import '../competitions/video_player_screen.dart';
 import '../post/single_post_detail.dart';
 import '../profile/other_user_profile.dart';
 import '../settings_menu/settings_controller.dart';
+import '../story/story_viewer.dart';
 
 class ChatDetail extends StatefulWidget {
   final ChatRoomModel chatRoom;
@@ -25,10 +26,10 @@ class ChatDetail extends StatefulWidget {
 
 class _ChatDetailState extends State<ChatDetail> {
   final ChatDetailController _chatDetailController = Get.find();
-  final ScrollController _controller = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   final SettingsController _settingsController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
 
   @override
   void initState() {
@@ -39,7 +40,6 @@ class _ChatDetailState extends State<ChatDetail> {
   loadChat() {
     _chatDetailController.loadChat(widget.chatRoom, () {});
     _chatDetailController.loadWallpaper(widget.chatRoom.id);
-    scrollToBottom();
   }
 
   refreshData() {
@@ -52,20 +52,6 @@ class _ChatDetailState extends State<ChatDetail> {
   void dispose() {
     super.dispose();
     _chatDetailController.clear();
-  }
-
-  scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Timer(const Duration(milliseconds: 100), () {
-        if (_chatDetailController.messages.isNotEmpty) {
-          _controller.animateTo(
-            _controller.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.fastOutSlowIn,
-          );
-        }
-      });
-    });
   }
 
   @override
@@ -81,7 +67,9 @@ class _ChatDetailState extends State<ChatDetail> {
               height: 50,
             ),
             appBar(),
-            const SizedBox(height: 8,),
+            const SizedBox(
+              height: 8,
+            ),
             Expanded(child: messagesListView()),
             Obx(() {
               return Column(
@@ -92,8 +80,11 @@ class _ChatDetailState extends State<ChatDetail> {
                             ? 50
                             : 0,
                     child: ListView.separated(
-                        padding:  EdgeInsets.only(
-                            left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 5, bottom: 10),
+                        padding: EdgeInsets.only(
+                            left: DesignConstants.horizontalPadding,
+                            right: DesignConstants.horizontalPadding,
+                            top: 5,
+                            bottom: 10),
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (ctx, index) {
                           return SizedBox(
@@ -219,19 +210,30 @@ class _ChatDetailState extends State<ChatDetail> {
                                   _chatDetailController
                                               .chatRoom.value!.isGroupChat ==
                                           false
-                                      ? Container(
-                                          height: 8,
-                                          width: 8,
-                                          color: _chatDetailController
+                                      ? _chatDetailController
                                                       .chatRoom
                                                       .value!
                                                       .opponent
                                                       .userDetail
-                                                      .isOnline ==
-                                                  true
-                                              ? AppColorConstants.themeColor
-                                              : AppColorConstants.disabledColor,
-                                        ).circular
+                                                      .isShareOnlineStatus ==
+                                                  true &&
+                                              _userProfileManager.user.value!
+                                                  .isShareOnlineStatus
+                                          ? Container(
+                                              height: 8,
+                                              width: 8,
+                                              color: _chatDetailController
+                                                          .chatRoom
+                                                          .value!
+                                                          .opponent
+                                                          .userDetail
+                                                          .isOnline ==
+                                                      true
+                                                  ? AppColorConstants.themeColor
+                                                  : AppColorConstants
+                                                      .disabledColor,
+                                            ).circular
+                                          : Container()
                                       : Container(),
                                 ],
                               ),
@@ -249,22 +251,33 @@ class _ChatDetailState extends State<ChatDetail> {
                                       ? BodyMediumText(
                                           typingString.tr,
                                         )
-                                      : BodyMediumText(
-                                          _chatDetailController
+                                      : _chatDetailController
                                                       .chatRoom
                                                       .value!
                                                       .opponent
                                                       .userDetail
-                                                      .isOnline ==
-                                                  true
-                                              ? onlineString.tr
-                                              : _chatDetailController.opponent
-                                                      .value?.lastSeenAtTime ??
-                                                  '',
-                                          weight: TextWeight.medium)
+                                                      .isShareOnlineStatus ==
+                                                  true &&
+                                              _userProfileManager.user.value!
+                                                  .isShareOnlineStatus
+                                          ? BodyMediumText(
+                                              _chatDetailController
+                                                          .chatRoom
+                                                          .value!
+                                                          .opponent
+                                                          .userDetail
+                                                          .isOnline ==
+                                                      true
+                                                  ? onlineString.tr
+                                                  : _chatDetailController
+                                                          .opponent
+                                                          .value
+                                                          ?.lastSeenAtTime ??
+                                                      '',
+                                              weight: TextWeight.medium)
+                                          : Container()
                                   : SizedBox(
-                                      width: Get.width -
-                                          120,
+                                      width: Get.width - 120,
                                       child: BodyMediumText(
                                         _chatDetailController
                                                 .whoIsTyping.isNotEmpty
@@ -299,7 +312,7 @@ class _ChatDetailState extends State<ChatDetail> {
           ),
         ),
       ],
-    );
+    ).vP8;
   }
 
   Widget selectedMessageView() {
@@ -378,7 +391,11 @@ class _ChatDetailState extends State<ChatDetail> {
             _chatDetailController.setReplyMessage(message: null);
           })
         ],
-      ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
+      ).setPadding(
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
+          top: 8,
+          bottom: 8),
     );
   }
 
@@ -415,7 +432,11 @@ class _ChatDetailState extends State<ChatDetail> {
                 mode: ChatMessageActionMode.none);
           })
         ],
-      ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
+      ).setPadding(
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
+          top: 8,
+          bottom: 8),
     );
   }
 
@@ -543,11 +564,12 @@ class _ChatDetailState extends State<ChatDetail> {
                 ? Container()
                 : Container(
                     child: ListView.separated(
-                            controller: _controller,
-                            // itemScrollController: _itemScrollController,
-                            // itemPositionsListener: _itemPositionsListener,
-                            padding:  EdgeInsets.only(
-                                top: 10, bottom: 50, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
+                            controller: _chatDetailController.controller,
+                            padding: EdgeInsets.only(
+                                top: 10,
+                                bottom: 50,
+                                left: DesignConstants.horizontalPadding,
+                                right: DesignConstants.horizontalPadding),
                             itemCount: _chatDetailController.messages.length,
                             itemBuilder: (ctx, index) {
                               ChatMessageModel message =
@@ -720,6 +742,7 @@ class _ChatDetailState extends State<ChatDetail> {
   }
 
   void messageTapped(ChatMessageModel model) async {
+    print('model.messageContentType ${model.messageContentType}');
     if (model.messageContentType == MessageContentType.forward) {
       messageTapped(model.originalMessage);
     }
@@ -796,6 +819,17 @@ class _ChatDetailState extends State<ChatDetail> {
       if (path != null) {
         OpenFilex.open(path);
       }
+    } else if (model.messageContentType == MessageContentType.story) {
+      Get.to(() => StoryViewer(
+            story: model.storyContent,
+            storyDeleted: () {},
+          ));
+    } else if (model.messageContentType == MessageContentType.reactedOnStory ||
+        model.messageContentType == MessageContentType.textReplyOnStory) {
+      Get.to(() => StoryViewer(
+            story: model.repliedOnStory,
+            storyDeleted: () {},
+          ));
     }
   }
 
@@ -831,7 +865,6 @@ class _ChatDetailState extends State<ChatDetail> {
         messageText: _chatDetailController.messageTf.value.text,
         mode: _chatDetailController.actionMode.value,
         room: _chatDetailController.chatRoom.value!);
-    scrollToBottom();
   }
 
   void replyMessageTapped(ChatMessageModel model) {
@@ -839,18 +872,6 @@ class _ChatDetailState extends State<ChatDetail> {
         element.localMessageId == model.originalMessage.localMessageId);
     if (index != -1) {
       Scrollable.ensureVisible(model.globalKey!.currentContext!);
-      // _controller.jumpTo(
-      //   _controller.position.maxScrollExtent,
-      //   duration: const Duration(milliseconds: 250),
-      //   curve: Curves.fastOutSlowIn,
-      // );
-
-      // Timer(const Duration(milliseconds: 1), () {
-      //
-      //   _itemScrollController.jumpTo(
-      //     index: index,
-      //   );
-      // });
     }
   }
 
@@ -885,7 +906,7 @@ class _ChatDetailState extends State<ChatDetail> {
         context: context,
         isScrollControlled: true,
         builder: (context) => const FractionallySizedBox(
-            heightFactor: 0.42, child: ChatMediaSharingOptionPopup()));
+            heightFactor: 0.55, child: ChatMediaSharingOptionPopup()));
   }
 
   void deleteMessageActionPopup() {

@@ -1,6 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../apiHandler/apis/auth_api.dart';
+import '../../api_handler/apis/auth_api.dart';
 import '../../screens/login_sign_up/set_user_name.dart';
 import '../../screens/login_sign_up/verify_phone_login_otp.dart';
 import '../../util/shared_prefs.dart';

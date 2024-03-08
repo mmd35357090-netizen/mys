@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:foap/apiHandler/apis/misc_api.dart';
+import 'package:foap/api_handler/apis/misc_api.dart';
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:foap/model/notification_modal.dart';

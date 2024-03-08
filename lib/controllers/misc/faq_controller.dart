@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/misc_api.dart';
+import 'package:foap/api_handler/apis/misc_api.dart';
 import 'package:foap/model/faq_model.dart';
 import 'package:get/get.dart';
 

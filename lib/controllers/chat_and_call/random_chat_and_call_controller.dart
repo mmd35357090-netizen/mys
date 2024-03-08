@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:foap/apiHandler/apis/chat_api.dart';
+import 'package:foap/api_handler/apis/chat_api.dart';
 import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/chat_detail.dart';

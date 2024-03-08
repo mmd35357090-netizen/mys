@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import '../../apiHandler/apis/post_api.dart';
+import '../../api_handler/apis/post_api.dart';
 import '../../model/post_model.dart';
 import '../home_feed/comments_screen.dart';
 import '../home_feed/enlarge_image_view.dart';
@@ -47,7 +47,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
             addUserInfo(),
             Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
-                child: BodyLargeText(model.title,
+                child: BodyLargeText(model.postTitle,
                     color: AppColorConstants.backgroundColor)),
             Padding(
                 padding: const EdgeInsets.only(

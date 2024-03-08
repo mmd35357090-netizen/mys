@@ -1,5 +1,5 @@
 import '../../components/highlights_bar.dart';
-import '../../components/post_card.dart';
+import '../../components/post_card/post_card.dart';
 import '../../controllers/story/highlights_controller.dart';
 import '../../controllers/profile/profile_controller.dart';
 import '../../helper/imports/common_import.dart';

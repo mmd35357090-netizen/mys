@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/live_streaming_api.dart';
+import 'package:foap/api_handler/apis/live_streaming_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/live_model.dart';
 import 'package:get/get.dart';

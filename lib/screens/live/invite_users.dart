@@ -47,7 +47,6 @@ class _InviteUsersState extends State<InviteUsers> {
               iconColor: AppColorConstants.themeColor,
               onSearchChanged: (value) {
                 _usersController.setSearchTextFilter(value, () {});
-                // exploreController.searchTextChanged(value);
               },
               onSearchStarted: () {
                 //controller.startSearch();

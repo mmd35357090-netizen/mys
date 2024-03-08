@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../../apiHandler/apis/misc_api.dart';
+import '../../api_handler/apis/misc_api.dart';
 import '../../model/hash_tag.dart';
 import 'package:foap/helper/list_extension.dart';
 

@@ -1,4 +1,4 @@
-import 'package:foap/apiHandler/apis/users_api.dart';
+import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../model/post_model.dart';

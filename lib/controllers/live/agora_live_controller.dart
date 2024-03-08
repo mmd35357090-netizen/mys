@@ -4,19 +4,21 @@ import 'dart:io';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/live_imports.dart';
+import 'package:foap/helper/list_extension.dart';
 import 'package:foap/helper/string_extension.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../../apiHandler/apis/gift_api.dart';
+import '../../api_handler/apis/gift_api.dart';
+import '../../api_handler/apis/live_streaming_api.dart';
 import '../../helper/enum_linking.dart';
-import '../../helper/permission_utils.dart';
 import '../../manager/socket_manager.dart';
 import '../../model/call_model.dart';
 import '../../model/chat_message_model.dart';
+import '../../model/data_wrapper.dart';
 import '../../model/gift_model.dart';
 import '../../model/package_model.dart';
+import '../../screens/live/components.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import '../../util/ad_helper.dart';
 import '../../util/constant_util.dart';
@@ -38,19 +40,22 @@ class AgoraLiveController extends GetxController {
 
   RtcEngine? engine;
 
-  Rx<Live?> live = Rx<Live?>(null);
+  Rx<LiveModel?> live = Rx<LiveModel?>(null);
 
   // late int liveId;
   late String localLiveId;
-  bool isCompetitionLive = false;
 
-  RxList<UserModel> currentJoinedUsers = <UserModel>[].obs;
-  RxList<UserModel> allJoinedUsers = <UserModel>[].obs;
+  RxList<LiveViewer> bannedUsers = <LiveViewer>[].obs;
+  RxList<LiveViewer> moderatorUsers = <LiveViewer>[].obs;
+  RxList<LiveViewer> liveViewers = <LiveViewer>[].obs;
 
-  // UserModel? host;
+  DataWrapper liveViewersDataWrapper = DataWrapper();
+  DataWrapper moderatorsDataWrapper = DataWrapper();
+  DataWrapper bannedUsersDataWrapper = DataWrapper();
+  RxInt totalViewers = 0.obs;
 
-  RxInt canLive = 0.obs;
-  RxInt startLiveStreaming = 0.obs;
+  // RxInt canLive = 0.obs;
+  Rx<LiveStreamingStatus> startLiveStreaming = LiveStreamingStatus.none.obs;
 
   String? errorMessage;
 
@@ -83,8 +88,6 @@ class AgoraLiveController extends GetxController {
   clear() {
     unregisterEventHandler();
     remoteJoinedUsers.clear();
-    currentJoinedUsers.clear();
-    allJoinedUsers.clear();
 
     engine = null;
     isFront.value = false;
@@ -94,8 +97,8 @@ class AgoraLiveController extends GetxController {
     mutedVideo.value = false;
     videoPaused.value = false;
     liveEnd.value = false;
-    canLive.value = 0;
-
+    // canLive.value = 0;
+    totalViewers.value = 0;
     messages.clear();
     giftsReceived.clear();
 
@@ -106,7 +109,16 @@ class AgoraLiveController extends GetxController {
     canLoadMoreGifts = true;
     isLoadingGifts.value = false;
     live.value = null;
-    isCompetitionLive = false;
+
+    liveViewersDataWrapper = DataWrapper();
+    moderatorsDataWrapper = DataWrapper();
+    bannedUsersDataWrapper = DataWrapper();
+
+    bannedUsers.clear();
+    moderatorUsers.clear();
+    liveViewers.clear();
+
+    startLiveStreaming.value = LiveStreamingStatus.none;
   }
 
   clearGiftData() {
@@ -164,42 +176,31 @@ class AgoraLiveController extends GetxController {
 
   checkFeasibilityToLive(
       {required bool isOpenSettings,
-        required Live? battle,
-        required VoidCallback successCallbackHandler}) async {
+      required LiveModel? battle,
+      required VoidCallback successCallbackHandler}) async {
+    startLiveStreaming.value = LiveStreamingStatus.checking;
+    startLiveStreaming.refresh();
+
     AppUtil.checkInternet().then((value) {
       if (value) {
-        PermissionUtils.requestPermission(
-            [Permission.camera, Permission.microphone],
-            isOpenSettings: isOpenSettings, permissionGrant: () async {
-          canLive.value = 1;
+        Future.delayed(const Duration(seconds: 2), () {
+          startLiveStreaming.value = LiveStreamingStatus.preparing;
+
           errorMessage = null;
           prepareLive(
-              isCompetitionLive: isCompetitionLive,
-              battle: battle,
-              successCallbackHandler: successCallbackHandler);
-        }, permissionDenied: () {
-          canLive.value = -1;
-          errorMessage = pleaseAllowAccessToCameraForLiveString.tr;
-        }, permissionNotAskAgain: () {
-          canLive.value = -1;
-          errorMessage = pleaseAllowAccessToCameraForLiveString.tr;
+              battle: battle, successCallbackHandler: successCallbackHandler);
         });
       } else {
-        canLive.value = value == true ? 1 : -1;
-        if (canLive.value == 1) {
-          prepareLive(
-              isCompetitionLive: isCompetitionLive,
-              battle: battle,
-              successCallbackHandler: successCallbackHandler);
-        }
+        Future.delayed(const Duration(seconds: 2), () {
+          startLiveStreaming.value = LiveStreamingStatus.failed;
+        });
       }
     });
   }
 
   prepareLive(
-      {required bool isCompetitionLive,
-        required Live? battle,
-        required VoidCallback successCallbackHandler}) {
+      {required LiveModel? battle,
+      required VoidCallback successCallbackHandler}) {
     if (battle != null) {
       // join a battle
       Future.delayed(const Duration(seconds: 3), () {
@@ -208,14 +209,13 @@ class AgoraLiveController extends GetxController {
       });
     } else {
       // start new live
-      initializeLive(isCompetitionLive: isCompetitionLive);
+      initializeLive();
     }
   }
 
   //Initialize All The Setup For Agora Video Call
-  Future<void> initializeLive({required bool isCompetitionLive}) async {
+  Future<void> initializeLive() async {
     // clear();
-    this.isCompetitionLive = isCompetitionLive;
     localLiveId = randomId();
     getIt<SocketManager>().emit(SocketConstants.goLive, {
       'userId': _userProfileManager.user.value!.id,
@@ -223,11 +223,11 @@ class AgoraLiveController extends GetxController {
     });
   }
 
-  Future<void> initializeLiveBattle(Live live) async {
+  Future<void> initializeLiveBattle(LiveModel live) async {
     _joinLive(live: live);
   }
 
-  joinAsAudience({required Live live}) async {
+  joinAsAudience({required LiveModel live}) async {
     this.live.value = live;
 
     getIt<SocketManager>().emit(SocketConstants.joinLive, {
@@ -239,15 +239,17 @@ class AgoraLiveController extends GetxController {
     Get.to(() => const LiveBroadcastScreen());
   }
 
-  _joinLive({required Live live}) {
+  _joinLive({required LiveModel live}) {
+    print(
+        'joining live ==== ${_settingsController.setting.value!.agoraApiKey!.isEmpty}');
     if (_settingsController.setting.value!.agoraApiKey!.isEmpty) {
       update();
       return;
     }
+    print('its joined ');
     this.live.value = live;
     this.live.refresh();
     sendTextMessage('Joined');
-    currentJoinedUsers.add(_userProfileManager.user.value!);
 
     Future.delayed(Duration.zero, () async {
       await _initAgoraRtcEngine(live: live);
@@ -262,9 +264,9 @@ class AgoraLiveController extends GetxController {
 
       live.amIHostInLive
           ? await engine?.setClientRole(
-          role: ClientRoleType.clientRoleBroadcaster)
+              role: ClientRoleType.clientRoleBroadcaster)
           : await engine?.setClientRole(
-          role: ClientRoleType.clientRoleAudience);
+              role: ClientRoleType.clientRoleAudience);
 
       await engine?.joinChannel(
         token: live.token,
@@ -280,16 +282,22 @@ class AgoraLiveController extends GetxController {
           onToggleCamera();
         });
         // onToggleCamera();
-      } else {
-      }
+      } else {}
 
       liveStartTime = DateTime.now();
       channelName = live.channelName;
     });
+
+    LiveStreamingApi.getLiveDetail(
+        channelName: live.channelName,
+        resultCallback: (result) {
+          print('here is share link = ${result.shareLink}');
+          this.live.value!.shareLink = result.shareLink;
+        });
   }
 
   //Initialize Agora RTC Engine
-  Future<void> _initAgoraRtcEngine({required Live live}) async {
+  Future<void> _initAgoraRtcEngine({required LiveModel live}) async {
     engine = createAgoraRtcEngine();
 
     await engine?.initialize(RtcEngineContext(
@@ -320,81 +328,84 @@ class AgoraLiveController extends GetxController {
     engine?.registerEventHandler(
       RtcEngineEventHandler(
           onJoinChannelSuccess: (RtcConnection connection, int elapsed) async {
-           update();
-          }, onLeaveChannel: (RtcConnection connection, RtcStats status) {
-      }, onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-        remoteJoinedUsers.add(remoteUid);
-        update();
-      }, onUserOffline: (RtcConnection connection, int remoteUid,
-          UserOfflineReasonType reason) {
-        debugPrint("remote user $remoteUid left channel");
-        remoteJoinedUsers.remove(remoteUid);
+            debugPrint(
+                "local user ${connection.localUid} joined , on channel ${connection.channelId}");
+            update();
+            // startLiveStreaming.value = LiveStreamingStatus.streaming;
+          },
+          onLeaveChannel: (RtcConnection connection, RtcStats status) {},
+          onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+            debugPrint("remote user $remoteUid joined");
+            remoteJoinedUsers.add(remoteUid);
+            update();
+          },
+          onUserOffline: (RtcConnection connection, int remoteUid,
+              UserOfflineReasonType reason) {
+            debugPrint("remote user $remoteUid left channel");
+            remoteJoinedUsers.remove(remoteUid);
 
-        update();
-      }, onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
-        debugPrint(
-            '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
-      }, onConnectionStateChanged: (RtcConnection connection,
-          ConnectionStateType state,
-          ConnectionChangedReasonType reason) async {
-        if (state == ConnectionStateType.connectionStateConnected) {
-        } else if (state == ConnectionStateType.connectionStateReconnecting ||
-            state == ConnectionStateType.connectionStateConnecting) {
-          // reConnectingRemoteView.value = true;
-        }
-      }, onFirstRemoteVideoFrame: (RtcConnection connection, int remoteUid,
-          int width, int height, int elapsed) {
-      }, onRemoteVideoStateChanged: (RtcConnection connection,
-          int remoteUid,
-          RemoteVideoState state,
-          RemoteVideoStateReason reason,
-          int elapsed) async {
-        if ((state == RemoteVideoState.remoteVideoStateFailed ||
-            state == RemoteVideoState.remoteVideoStateStopped ||
-            state == RemoteVideoState.remoteVideoStateFrozen) &&
-            reason ==
-                RemoteVideoStateReason.remoteVideoStateReasonRemoteMuted) {
-          videoPaused.value = true;
-          videoPausedUsers.add(remoteUid);
-        } else {
-          videoPaused.value = false;
-          videoPausedUsers.remove(remoteUid);
-        }
-      }, onLocalVideoStateChanged: (VideoSourceType source,
-          LocalVideoStreamState state, LocalVideoStreamError error) {
-        // print('onLocalVideoStateChanged $state');
-      }, onCameraReady: () {
-        // print('camera is ready now');
-      }, onVideoDeviceStateChanged: (String deviceId,
-          MediaDeviceType deviceType, MediaDeviceStateType deviceState) {
-        // print('onVideoDeviceStateChanged $deviceState');
-      }, onLocalVideoStats: (RtcConnection connection, LocalVideoStats stats) {
-        // print('onLocalVideoStats $stats');
-      }, onFirstLocalVideoFrame:
-          (VideoSourceType source, int width, int height, int elapsed) {
-        // print('onFirstLocalVideoFrame');
-
-        cameraInitiated = true;
-      }, onFirstLocalVideoFramePublished:
-          (RtcConnection connection, int elapsed) {
-        // print('onFirstLocalVideoFramePublished');
-      }),
+            update();
+          },
+          onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
+            debugPrint(
+                '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
+          },
+          onConnectionStateChanged: (RtcConnection connection,
+              ConnectionStateType state,
+              ConnectionChangedReasonType reason) async {
+            if (state == ConnectionStateType.connectionStateConnected) {
+            } else if (state ==
+                    ConnectionStateType.connectionStateReconnecting ||
+                state == ConnectionStateType.connectionStateConnecting) {
+              // reConnectingRemoteView.value = true;
+            }
+          },
+          onFirstRemoteVideoFrame: (RtcConnection connection, int remoteUid,
+              int width, int height, int elapsed) {},
+          onRemoteVideoStateChanged: (RtcConnection connection,
+              int remoteUid,
+              RemoteVideoState state,
+              RemoteVideoStateReason reason,
+              int elapsed) async {
+            if ((state == RemoteVideoState.remoteVideoStateFailed ||
+                    state == RemoteVideoState.remoteVideoStateStopped ||
+                    state == RemoteVideoState.remoteVideoStateFrozen) &&
+                reason ==
+                    RemoteVideoStateReason.remoteVideoStateReasonRemoteMuted) {
+              videoPaused.value = true;
+              videoPausedUsers.add(remoteUid);
+            } else {
+              videoPaused.value = false;
+              videoPausedUsers.remove(remoteUid);
+            }
+          },
+          onLocalVideoStateChanged: (VideoSourceType source,
+              LocalVideoStreamState state, LocalVideoStreamError error) {},
+          onCameraReady: () {},
+          onVideoDeviceStateChanged: (String deviceId,
+              MediaDeviceType deviceType, MediaDeviceStateType deviceState) {},
+          onLocalVideoStats:
+              (VideoSourceType sourceType, LocalVideoStats stats) {
+            // print('onLocalVideoStats $stats');
+          },
+          onFirstLocalVideoFrame:
+              (VideoSourceType source, int width, int height, int elapsed) {
+            cameraInitiated = true;
+          },
+          onFirstLocalVideoFramePublished:
+              (VideoSourceType sourceType, int elapsed) {}),
     );
   }
 
   //Use This Method To End Call
   void onCallEnd({required bool isHost}) async {
     engine?.leaveChannel();
-    // engine.destroy();
     WakelockPlus.disable(); // Turn off wakelock feature after call end
-    // Emit End live Event Into Socket
 
     if (isHost) {
       leaveFromLiveAsHost();
       clearGiftData();
       loadGiftsReceived(liveId: live.value!.id);
-
-      // Get.back();
     } else {
       leaveFromLiveAsAudience();
     }
@@ -528,7 +539,7 @@ class AgoraLiveController extends GetxController {
 
       getIt<SocketManager>().emit(SocketConstants.sendGiftLiveCall, {
         'userId': host == null
-            ? live.value!.mainHostUserDetail.id
+            ? live.value!.mainHostUserDetail!.id
             : host.userDetail.id,
         'liveCallId': live.value!.id,
         'battleId': live.value!.battleDetail == null
@@ -539,6 +550,7 @@ class AgoraLiveController extends GetxController {
       Timer(const Duration(seconds: 2), () {
         populateGift.value = null;
       });
+      _userProfileManager.refreshProfile();
     } else {
       List<PackageModel> availablePackages = packageController.packages
           .where((package) => package.coin >= gift.coins)
@@ -553,7 +565,7 @@ class AgoraLiveController extends GetxController {
       AppUtil.showDemoAppConfirmationAlert(
           title: 'Demo app',
           subTitle:
-          'This is demo app so you can not make payment to test it, but still you will get some coins',
+              'This is demo app so you can not make payment to test it, but still you will get some coins',
           okHandler: () {
             packageController.subscribeToDummyPackage(randomId());
           });
@@ -566,7 +578,7 @@ class AgoraLiveController extends GetxController {
           : package.inAppPurchaseIdAndroid;
       List<ProductDetails> matchedProductArr = packageController.products
           .where((element) =>
-      element.id == packageController.selectedPurchaseId.value)
+              element.id == packageController.selectedPurchaseId.value)
           .toList();
       if (matchedProductArr.isNotEmpty) {
         ProductDetails matchedProduct = matchedProductArr.first;
@@ -650,6 +662,115 @@ class AgoraLiveController extends GetxController {
 
   //*************** updates from socket *******************//
 
+  inviteUserToLive(
+      {required UserModel user,
+      required int battleTime,
+      required VoidCallback alreadyInvitedHandler}) {
+    if (live.value?.canInvite == true) {
+      getIt<SocketManager>().emit(SocketConstants.inviteInLive, {
+        'userId': user.id,
+        'liveCallId': live.value!.id,
+        'totalAllowedTime': battleTime
+      });
+
+      live.value!.invitedUserDetail = user;
+      live.refresh();
+
+      Timer(
+          const Duration(
+              seconds: AppConfigConstants.liveBattleConfirmationWaitTime + 5),
+          () {
+        if (live.value != null &&
+            live.value?.battleDetail == null &&
+            live.value?.invitedUserDetail != null) {
+          noResponseLiveBattle(
+            liveId: live.value!.id,
+          );
+        }
+      });
+    } else {
+      alreadyInvitedHandler();
+    }
+  }
+
+  invitedForLiveBattle(LiveModel live) {
+    // const STATUS_LIVE_CALL_HOST_PENDING = 1;
+    // const STATUS_LIVE_CALL_HOST_ACCEPTED = 2;
+    // const STATUS_LIVE_CALL_HOST_REJECTED = 3;
+    // const STATUS_LIVE_CALL_HOST_ONGOING = 4;
+    // const STATUS_LIVE_CALL_HOST_COMPLETED = 10;
+
+    showModalBottomSheet<void>(
+        context: Get.context!,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return FractionallySizedBox(
+            heightFactor: 0.7,
+            child: BattleInvitation(
+              live: live,
+              okHandler: () {
+                acceptBattleInvite(
+                    live: live, battleDetail: live.battleDetail!);
+              },
+              cancelHandler: () {
+                declineInvite(live.battleDetail!);
+              },
+            ),
+          );
+        }).then((value) {});
+  }
+
+  acceptBattleInvite(
+      {required LiveModel live, required BattleDetail battleDetail}) {
+    battleDetail.battleStatus = BattleStatus.accepted;
+
+    Timer(const Duration(seconds: 1), () {
+      if (this.live.value?.id == live.id) {
+        engine?.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+        this.live.value!.battleDetail = battleDetail;
+        this.live.value!.battleDetail!.battleUsers.add(LiveCallHostUser(
+            userDetail: live.mainHostUserDetail!,
+            // battleId: battleDetail.id,
+            totalCoins: 0,
+            totalGifts: 0,
+            isMainHost: true));
+
+        this.live.value!.battleDetail!.battleUsers.add(LiveCallHostUser(
+            userDetail: _userProfileManager.user.value!,
+            // battleId: battleDetail.id,
+            totalCoins: 0,
+            totalGifts: 0,
+            isMainHost: false));
+
+        this.live.refresh();
+
+        startLive(battleDetail: battleDetail);
+      } else {
+        live.battleDetail = battleDetail;
+        live.battleDetail!.battleUsers.add(LiveCallHostUser(
+            userDetail: live.mainHostUserDetail!,
+            // battleId: battleDetail.id,
+            totalCoins: 0,
+            totalGifts: 0,
+            isMainHost: true));
+        live.battleDetail!.battleUsers.add(LiveCallHostUser(
+            userDetail: _userProfileManager.user.value!,
+            // battleId: battleDetail.id,
+            totalCoins: 0,
+            totalGifts: 0,
+            isMainHost: false));
+        // _joinLive(live: live);
+
+        Get.to(() => CheckingLiveFeasibility(
+              battle: live,
+              successCallbackHandler: () {
+                startLive(battleDetail: battleDetail);
+              },
+            ));
+      }
+    });
+  }
+
   startLive({required BattleDetail battleDetail}) {
     Timer(const Duration(seconds: 2), () {
       live.value!.battleDetail!.battleStatus = BattleStatus.started;
@@ -677,7 +798,8 @@ class AgoraLiveController extends GetxController {
     live.value!.invitedUserDetail = null;
 
     if (live.value?.id == liveId) {
-      onNewUserJoined(battleDetail.opponentHost.userDetail);
+      onNewUserJoined(
+          battleDetail.opponentHost.userDetail, liveId, totalViewers.value);
       live.value!.battleDetail = battleDetail;
       live.value!.battleDetail!.battleStatus = BattleStatus.accepted;
 
@@ -690,10 +812,55 @@ class AgoraLiveController extends GetxController {
     }
   }
 
+  userDeclinedLiveBattle({
+    required int liveId,
+    // required UserModel user
+  }) {
+    if (live.value?.id == liveId) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        live.value!.invitedUserDetail = null;
+        live.refresh();
+      });
+
+      showModalBottomSheet<void>(
+          context: Get.context!,
+          backgroundColor: Colors.transparent,
+          builder: (BuildContext context) {
+            return FractionallySizedBox(
+              heightFactor: 0.55,
+              child: InvitationDeclinedView(
+                user: live.value!.invitedUserDetail!,
+              ),
+            );
+          }).then((value) {});
+    }
+  }
+
+  noResponseLiveBattle({
+    required int liveId,
+  }) {
+    if (live.value?.id == liveId) {
+      showModalBottomSheet<void>(
+          context: Get.context!,
+          backgroundColor: Colors.transparent,
+          builder: (BuildContext context) {
+            return FractionallySizedBox(
+              heightFactor: 0.55,
+              child: NoResponseOnInvitationView(
+                user: live.value!.invitedUserDetail!,
+              ),
+            );
+          }).then((value) {
+        live.value!.invitedUserDetail = null;
+        live.refresh();
+      });
+    }
+  }
+
   liveCallHostsUpdated(
       {required int liveId,
-        required BattleDetail? battleDetail,
-        required List<LiveCallHostUser> hosts}) {
+      required BattleDetail? battleDetail,
+      required List<LiveCallHostUser> hosts}) {
     if (live.value?.id == liveId) {
       if (live.value?.battleDetail != null && hosts.isEmpty) {
         liveBattleEnded(
@@ -722,9 +889,9 @@ class AgoraLiveController extends GetxController {
 
   onGiftReceived(
       {required int liveId,
-        required GiftModel gift,
-        required UserModel sentBy,
-        required int sentToUserId}) {
+      required GiftModel gift,
+      required UserModel sentBy,
+      required int sentToUserId}) {
     if (live.value?.id == liveId) {
       if (sentToUserId == _userProfileManager.user.value!.id) {
         populateGift.value =
@@ -736,17 +903,33 @@ class AgoraLiveController extends GetxController {
     }
   }
 
-  onNewUserJoined(UserModel user) {
-    currentJoinedUsers.add(user);
-    if (!allJoinedUsers.contains(user)) {
-      allJoinedUsers.add(user);
+  onNewUserJoined(UserModel user, int liveId, int totalUsers) {
+    if (liveId == live.value?.id && user.isMe) {
+      _joinLive(live: live.value!);
+      print('going from here');
+      Get.to(() => const LiveBroadcastScreen());
+    } else {
+      // currentJoinedUsers.add(user);
+      // if (!allJoinedUsers.contains(user)) {
+      //   allJoinedUsers.add(user);
+      // }
+      update();
     }
-    update();
+    totalViewers.value = totalUsers;
   }
 
-  onUserLeave({required int userId, required int liveId}) {
-    if (live.value?.id == liveId) {
-      currentJoinedUsers.removeWhere((element) => element.id == userId);
+  onUserLeave(
+      {required int userId, required int liveId, required int totalUsers}) {
+    totalViewers.value = totalUsers;
+    if (userId == _userProfileManager.user.value!.id) {
+      // remove me, i might be banned by host
+      clear();
+      Get.back();
+    } else if (live.value?.id == liveId) {
+      liveViewers.removeWhere((element) => element.user.id == userId);
+      moderatorUsers.removeWhere((element) => element.user.id == userId);
+      bannedUsers.removeWhere((element) => element.user.id == userId);
+
       update();
     }
   }
@@ -756,7 +939,6 @@ class AgoraLiveController extends GetxController {
 
     WakelockPlus.disable();
 
-    currentJoinedUsers.clear();
     messages.clear();
     if (live.value?.id == liveId) {
       liveEndTime = DateTime.now();
@@ -780,7 +962,7 @@ class AgoraLiveController extends GetxController {
       sender.userName = message.userName;
       sender.picture = message.userPicture;
       ReceivedGiftModel receivedGiftDetail =
-      ReceivedGiftModel(giftDetail: gift, sender: sender);
+          ReceivedGiftModel(giftDetail: gift, sender: sender);
 
       populateGift.value = ReceivedGiftModel(giftDetail: gift, sender: sender);
       giftsReceived.add(receivedGiftDetail);
@@ -800,23 +982,20 @@ class AgoraLiveController extends GetxController {
       String agoraToken = data['token'];
       String channelName = data['channelName'];
 
-      Live live = Live(
-          channelName: channelName,
-          // isHosting: true,
-          mainHostUserDetail: _userProfileManager.user.value!,
-          // battleUsers: [],
-          token: agoraToken,
-          id: liveId);
+      LiveModel live = LiveModel();
 
+      live.channelName = channelName;
+      live.mainHostUserDetail = _userProfileManager.user.value!;
+      live.token = agoraToken;
+      live.id = liveId;
       _joinLive(live: live);
 
-      startLiveStreaming.value = 1;
       update();
     }
   }
 
   showLiveStreaming() {
-    startLiveStreaming.value = 2;
+    startLiveStreaming.value = LiveStreamingStatus.streaming;
     startLiveStreaming.refresh();
   }
 
@@ -840,5 +1019,153 @@ class AgoraLiveController extends GetxController {
             update();
           });
     }
+  }
+
+  banUser(UserModel user, int? time) {
+    getIt<SocketManager>().emit(
+        SocketConstants.actionOnUserInLive,
+        ({
+          'actionUserId': user.id,
+          'liveCallId': live.value?.id,
+          'actionType': '1',
+          'totalExpelTime': time ?? 0,
+          'role': '',
+        }));
+  }
+
+  unbanUser(UserModel user) {
+    getIt<SocketManager>().emit(
+        SocketConstants.actionOnUserInLive,
+        ({
+          'actionUserId': user.id,
+          'liveCallId': live.value?.id,
+          'actionType': '2',
+          'totalExpelTime': '',
+          'role': '',
+        }));
+  }
+
+  makeModerator(UserModel user) {
+    getIt<SocketManager>().emit(
+        SocketConstants.actionOnUserInLive,
+        ({
+          'actionUserId': user.id,
+          'liveCallId': live.value?.id,
+          'actionType': '3',
+          'totalExpelTime': '',
+          'role': '3',
+        }));
+
+    sendTextMessage('${user.userName} ${isModeratorNowString.tr}');
+  }
+
+  removeAsModerator(UserModel user) {
+    getIt<SocketManager>().emit(
+        SocketConstants.actionOnUserInLive,
+        ({
+          'actionUserId': user.id,
+          'liveCallId': live.value?.id,
+          'actionType': '3',
+          'totalExpelTime': '',
+          'role': '2',
+        }));
+    sendTextMessage('${user.userName} ${isRemovedFromModeratorString.tr}');
+  }
+
+  loadMoreLiveViewers(VoidCallback callback) {
+    if (liveViewersDataWrapper.haveMoreData.value) {
+      getLiveViewers(callback);
+    } else {
+      callback();
+    }
+  }
+
+  refreshLiveViewers() {
+    liveViewers.clear();
+    liveViewersDataWrapper = DataWrapper();
+    getLiveViewers(() {});
+  }
+
+  getLiveViewers(VoidCallback callback) {
+    liveViewers.clear();
+    LiveStreamingApi.getLiveViewers(
+        liveId: live.value!.id,
+        resultCallback: (result, metaData) {
+          liveViewers.addAll(result);
+          liveViewers.unique((e) => e.id);
+          liveViewersDataWrapper.processCompletedWithData(metaData);
+          totalViewers.value = metaData.totalCount;
+          callback();
+        });
+  }
+
+  loadMoreModerators(VoidCallback callback) {
+    if (moderatorsDataWrapper.haveMoreData.value) {
+      getModerator(callback);
+    } else {
+      callback();
+    }
+  }
+
+  refreshModerators() {
+    moderatorUsers.clear();
+    moderatorsDataWrapper = DataWrapper();
+    getModerator(() {});
+  }
+
+  getModerator(VoidCallback callback) {
+    LiveStreamingApi.getLiveViewers(
+        liveId: live.value!.id,
+        role: liveViewerRole(LiveUserRole.moderator),
+        resultCallback: (result, metaData) {
+          moderatorUsers.addAll(result);
+          moderatorUsers.unique((e) => e.id);
+
+          moderatorsDataWrapper.processCompletedWithData(metaData);
+          callback();
+        });
+  }
+
+  loadMoreBannedUsers(VoidCallback callback) {
+    if (bannedUsersDataWrapper.haveMoreData.value) {
+      getBannedUser(callback);
+    } else {
+      callback();
+    }
+  }
+
+  refreshBannedViewers() {
+    bannedUsers.clear();
+    bannedUsersDataWrapper = DataWrapper();
+    getBannedUser(() {});
+  }
+
+  getBannedUser(VoidCallback callback) {
+    LiveStreamingApi.getLiveViewers(
+        liveId: live.value!.id,
+        isBanned: true,
+        resultCallback: (result, metaData) {
+          bannedUsers.addAll(result);
+          bannedUsers.unique((e) => e.id);
+
+          bannedUsersDataWrapper.processCompletedWithData(metaData);
+
+          callback();
+        });
+  }
+
+  userRoleChange(
+      {required int actionOnUserId,
+      required int liveId,
+      required LiveUserRole role}) {
+    refreshBannedViewers();
+    refreshLiveViewers();
+    refreshModerators();
+  }
+
+  bool get amIModeratorInLive {
+    List<LiveViewer> myRecordsAsModerator =
+        moderatorUsers.where((e) => e.user.isMe).toList();
+    return myRecordsAsModerator.isNotEmpty;
   }
 }

@@ -39,9 +39,10 @@ class LiveHistoryState extends State<LiveHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
         backNavigationBar(title: liveString.tr),
         Expanded(
           child: Obx(() => ListView.separated(
