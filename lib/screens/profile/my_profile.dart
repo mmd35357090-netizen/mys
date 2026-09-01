@@ -31,7 +31,7 @@ class MyProfileState extends State<MyProfile>
   final UserProfileManager _userProfileManager = Get.find();
   final PostController _postController = Get.find();
 
-  List<String> tabs = [postsString, mentionsString];
+  List<String> tabs = [postsString.tr, mentionsString.tr];
 
   TabController? controller;
 
@@ -171,7 +171,6 @@ class MyProfileState extends State<MyProfile>
                                       Heading6Text(
                                         _profileController.user.value!.userName,
                                         weight: TextWeight.medium,
-                                        color: Colors.white,
                                       ),
                                       if (_profileController
                                           .user.value!.isVerified)
@@ -185,12 +184,10 @@ class MyProfileState extends State<MyProfile>
                                       _profileController
                                           .user.value!.profileCategoryTypeName,
                                       weight: TextWeight.medium,
-                                      color: Colors.white70,
                                     ).bP4,
                                   _profileController.user.value!.country != null
                                       ? BodyMediumText(
                                           '${_profileController.user.value!.country}, ${_profileController.user.value!.city}',
-                                          color: Colors.white70,
                                         )
                                       : Container(),
                                   const SizedBox(

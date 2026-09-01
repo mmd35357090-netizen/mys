@@ -3,8 +3,10 @@ import 'package:foap/screens/profile/blocked_users.dart';
 import '../live/live_history.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 
+import 'creator_tools/account_verification/request_verification.dart';
+
 class AppAccount extends StatefulWidget {
-  const AppAccount({Key? key}) : super(key: key);
+  const AppAccount({super.key});
 
   @override
   State<AppAccount> createState() => _AppAccountState();
@@ -25,27 +27,24 @@ class _AppAccountState extends State<AppAccount> {
       body: Column(
         children: [
           backNavigationBar(title: accountString.tr),
-
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
                 Column(
                   children: [
-                    addTileEvent('assets/live_bw.png', liveHistoryString.tr,
+                    addTileEvent(
+                        'assets/live_bw.png',
+                        liveHistoryString.tr,
                         liveHistorySubHeadlineString.tr, () {
                       Get.to(() => const LiveHistory());
                     }),
-                    addTileEvent('assets/blocked_user.png',
-                        blockedUserString.tr, manageBlockedUserString.tr, () {
+                    addTileEvent(
+                        'assets/blocked_user.png',
+                        blockedUserString.tr,
+                        manageBlockedUserString.tr, () {
                       Get.to(() => const BlockedUsersList());
                     }),
-                    if (_settingsController
-                        .setting.value!.enableProfileVerification)
-                      addTileEvent('assets/verification.png',
-                          requestVerificationString.tr, '', () {
-                        Get.to(() => const RequestVerification());
-                      }),
                   ],
                 ),
                 const SizedBox(
@@ -69,7 +68,8 @@ class _AppAccountState extends State<AppAccount> {
               height: 75,
               child: Row(children: [
                 Container(
-                        color: AppColorConstants.themeColor.withOpacity(0.2),
+                        color:
+                            AppColorConstants.themeColor.withOpacity(0.2),
                         child: Image.asset(
                           icon,
                           height: 20,

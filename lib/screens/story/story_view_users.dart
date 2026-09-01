@@ -1,12 +1,13 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
+
 import '../../components/user_card.dart';
 
 class StoryViewUsers extends StatelessWidget {
   final AppStoryController storyController = Get.find();
   final ScrollController scrollController = ScrollController();
 
-  StoryViewUsers({Key? key}) : super(key: key);
+  StoryViewUsers({super.key});
 
   @override
   Widget build(BuildContext context) {

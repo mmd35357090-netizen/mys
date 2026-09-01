@@ -109,6 +109,7 @@ class ReelsController extends GetxController {
             publicReels.addAll(result);
             publicReels.unique((e) => e.id);
 
+            publicReels.value = publicReels.where((e) => e.gallery.isNotEmpty).toList();
             publicReels.sort((a, b) => b.createDate!.compareTo(a.createDate!));
 
             isLoadingReels = false;

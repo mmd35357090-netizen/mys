@@ -4,6 +4,7 @@ import 'package:foap/api_handler/apis/live_streaming_api.dart';
 import 'package:foap/api_handler/apis/post_api.dart';
 import 'package:foap/api_handler/apis/story_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/data_wrapper.dart';
 import '../../api_handler/apis/misc_api.dart';
 import '../../model/gift_model.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -38,12 +39,11 @@ class HomeController extends GetxController {
   RxBool isRefreshingPosts = false.obs;
   RxBool isRefreshingStories = false.obs;
   RxInt categoryIndex = 0.obs;
-  int _postsCurrentPage = 1;
-  bool _canLoadMorePosts = true;
   RxBool openQuickLinks = false.obs;
   RxList<QuickLink> quickLinks = <QuickLink>[].obs;
-  RxDouble scrollOffsetValue = (0.0).obs;
   ScrollDirection? lastScrollDirection;
+
+  DataWrapper dataWrapper = DataWrapper();
 
   clear() {
     stories.clear();
@@ -51,8 +51,7 @@ class HomeController extends GetxController {
   }
 
   clearPosts() {
-    _postsCurrentPage = 1;
-    _canLoadMorePosts = true;
+    dataWrapper = DataWrapper();
     posts.clear();
   }
 
@@ -67,19 +66,6 @@ class HomeController extends GetxController {
         closeQuickLinks();
       });
     }
-  }
-
-  scrollOffsetChanged(
-      {required double value, required ScrollDirection direction}) {
-    if ((value < 100 || lastScrollDirection == ScrollDirection.forward) &&
-        value > 0 &&
-        direction == ScrollDirection.reverse) {
-      scrollOffsetValue.value = -value;
-    } else if (direction == ScrollDirection.forward &&
-        scrollOffsetValue.value < 0) {
-      scrollOffsetValue.value += 2;
-    }
-    lastScrollDirection = direction;
   }
 
   closeQuickLinks() {
@@ -111,13 +97,13 @@ class HomeController extends GetxController {
         linkType: QuickLinkType.liveUsers));
     // }
 
-    if (_settingsController.setting.value!.enableReel) {
-      quickLinks.add(QuickLink(
-          icon: 'assets/reel.png',
-          heading: reelsString.tr,
-          subHeading: reelsString.tr,
-          linkType: QuickLinkType.highlights));
-    }
+    // if (_settingsController.setting.value!.enableReel) {
+    //   quickLinks.add(QuickLink(
+    //       icon: 'assets/reel.png',
+    //       heading: reelsString.tr,
+    //       subHeading: reelsString.tr,
+    //       linkType: QuickLinkType.reel));
+    // }
     // if (_settingsController.setting.value!.enableLive) {
     //   quickLinks.add(QuickLink(
     //       icon: 'assets/live.png',
@@ -172,7 +158,8 @@ class HomeController extends GetxController {
     }
   }
 
-  categoryIndexChanged({required int index, required VoidCallback callback}) {
+  categoryIndexChanged(
+      {required int index, required VoidCallback callback}) {
     if (index != categoryIndex.value) {
       categoryIndex.value = index;
       clearPosts();
@@ -225,12 +212,12 @@ class HomeController extends GetxController {
 
   void getPosts(
       {required bool? isRecent, required VoidCallback callback}) async {
-    if (_canLoadMorePosts == true) {
+    if (dataWrapper.haveMoreData.value == true) {
       if (isRecent == true) {
         postSearchQuery.isRecent = 1;
       }
 
-      if (_postsCurrentPage == 1) {
+      if (dataWrapper.page == 1) {
         isRefreshingPosts.value = true;
       }
 
@@ -245,20 +232,15 @@ class HomeController extends GetxController {
           hashtag: postSearchQuery.hashTag,
           clubId: postSearchQuery.clubId,
           isVideo: postSearchQuery.isVideo,
-          page: _postsCurrentPage,
+          page: dataWrapper.page,
           resultCallback: (result, metadata) {
+            print('resultCallback ${posts.length}');
             posts.addAll(result);
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             posts.unique((e) => e.id);
 
             isRefreshingPosts.value = false;
-
-            if (_postsCurrentPage >= metadata.pageCount) {
-              _canLoadMorePosts = false;
-            } else {
-              _canLoadMorePosts = true;
-            }
-            _postsCurrentPage += 1;
+            dataWrapper.processCompletedWithData(metadata);
 
             callback();
             update();
@@ -302,7 +284,8 @@ class HomeController extends GetxController {
   }
 
   postEdited(PostModel post) {
-    int oldPostIndex = posts.indexWhere((element) => element.id == post.id);
+    int oldPostIndex =
+        posts.indexWhere((element) => element.id == post.id);
     posts.removeAt(oldPostIndex);
     posts.insert(oldPostIndex, post);
     posts.refresh();
@@ -326,7 +309,8 @@ class HomeController extends GetxController {
             .where((element) => element.userName == userTag)
             .first
             .id;
-        Get.to(() => OtherUserProfile(userId: mentionedUserId))!.then((value) {
+        Get.to(() => OtherUserProfile(userId: mentionedUserId))!
+            .then((value) {
           getPosts(isRecent: false, callback: () {});
           getStories();
         });
@@ -378,13 +362,14 @@ class HomeController extends GetxController {
     List<StoryModel> viewedAllStories = [];
     List<StoryModel> notViewedStories = [];
 
-    List<int> viewedStoryIds = await getIt<DBManager>().getAllViewedStories();
+    List<int> viewedStoryIds =
+        await getIt<DBManager>().getAllViewedStories();
 
     await StoryApi.getStories(resultCallback: (result) {
       for (var story in result) {
         var allMedias = story.media;
-        var notViewedStoryMedias = allMedias
-            .where((element) => viewedStoryIds.contains(element.id) == false);
+        var notViewedStoryMedias = allMedias.where(
+            (element) => viewedStoryIds.contains(element.id) == false);
 
         if (notViewedStoryMedias.isEmpty) {
           story.isViewed = true;

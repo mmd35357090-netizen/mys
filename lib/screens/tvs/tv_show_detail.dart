@@ -31,7 +31,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
   TextEditingController reviewTE = TextEditingController();
   double rating = 5;
 
-  final List<String> tabs = [aboutString, ratingsString];
+  final List<String> tabs = [aboutString.tr, ratingsString.tr];
 
   @override
   void initState() {

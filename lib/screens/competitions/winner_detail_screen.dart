@@ -166,7 +166,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
 
   void openComments() {
     Get.to(() => CommentsScreen(
-        model: model,
+        post: model,
         commentPostedCallback: () {
           model.totalComment += 1;
         },

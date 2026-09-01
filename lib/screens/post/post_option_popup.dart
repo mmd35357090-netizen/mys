@@ -79,7 +79,7 @@ class PostOptionsPopup extends StatelessWidget {
     return ModalComponents(
       check: true,
       icon: ThemeIcon.gallery,
-      name: galleryString,
+      name: galleryString.tr,
       onPress: () async {
         selectPhoto(
           source: ImageSource.gallery,

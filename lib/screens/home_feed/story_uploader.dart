@@ -1,9 +1,9 @@
 import 'package:foap/helper/file_extension.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../components/vs_story_designer/vs_story_designer.dart';
 import '../../controllers/story/story_controller.dart';
 import '../../helper/imports/common_import.dart';
 import '../chat/media.dart';
-import 'package:vs_story_designer/vs_story_designer.dart';
 
 final ImagePicker _picker = ImagePicker();
 

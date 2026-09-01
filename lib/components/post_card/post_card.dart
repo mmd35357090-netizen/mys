@@ -4,6 +4,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:foap/components/post_card/post_user_info.dart';
 import 'package:foap/components/post_card/reshare_post.dart';
 import 'package:foap/components/post_card_controller.dart';
 import 'package:foap/components/reply_chat_cells/post_gift_controller.dart';
@@ -85,9 +86,10 @@ class PostMediaTile extends StatelessWidget {
                         dotsCount: model.gallery.length,
                         position: (postCardController
                                 .postScrollIndexMapping[model.id] ??
-                            0),
+                            0).toDouble(),
                         decorator: DotsDecorator(
-                            activeColor: Theme.of(Get.context!).primaryColor),
+                            activeColor:
+                                Theme.of(Get.context!).primaryColor),
                       );
                     },
                   ),
@@ -99,10 +101,13 @@ class PostMediaTile extends StatelessWidget {
       return model.contentType == PostContentType.media
           ? model.gallery.first.isVideoPost == true
               ? videoPostTile(
-                  media: model.gallery.first, isReshared: isSharedPostMedia)
-              : SizedBox(height: 350, child: photoPostTile(model.gallery.first))
+                  media: model.gallery.first,
+                  isReshared: isSharedPostMedia)
+              : SizedBox(
+                  height: 350, child: photoPostTile(model.gallery.first))
           : model.contentType == PostContentType.competitionAdded ||
-                  model.contentType == PostContentType.competitionResultDeclared
+                  model.contentType ==
+                      PostContentType.competitionResultDeclared
               ? CompetitionPostTile(
                   post: model,
                   isResharedPost: isSharedPostMedia,
@@ -126,7 +131,8 @@ class PostMediaTile extends StatelessWidget {
     }).toList();
   }
 
-  Widget videoPostTile({required PostGallery media, required bool isReshared}) {
+  Widget videoPostTile(
+      {required PostGallery media, required bool isReshared}) {
     return VisibilityDetector(
       key: Key(media.id.toString()),
       onVisibilityChanged: (visibilityInfo) {
@@ -142,7 +148,8 @@ class PostMediaTile extends StatelessWidget {
             isLocalFile: false,
             play: homeController.currentVisibleVideoId.value == media.id,
             width: isReshared
-                ? Get.width - ((DesignConstants.horizontalPadding * 3) + 10)
+                ? Get.width -
+                    ((DesignConstants.horizontalPadding * 3) + 10)
                 : Get.width,
             onTapActionHandler: () {},
           )),
@@ -154,7 +161,8 @@ class PostMediaTile extends StatelessWidget {
       imageUrl: media.filePath,
       fit: BoxFit.cover,
       width: Get.width,
-      placeholder: (context, url) => AppUtil.addProgressIndicator(size: 100),
+      placeholder: (context, url) =>
+          AppUtil.addProgressIndicator(size: 100),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     );
   }
@@ -199,9 +207,14 @@ class PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      addPostUserInfo().setPadding(
-          left: DesignConstants.horizontalPadding,
-          right: DesignConstants.horizontalPadding,
+      PostUserInfo(
+        post: widget.model,
+        removePostHandler: widget.removePostHandler,
+        blockUserHandler: widget.blockUserHandler,
+        isResharedPost: false,
+      ).setPadding(
+          left: DesignConstants.horizontalPadding / 2,
+          right: DesignConstants.horizontalPadding / 2,
           bottom: 16),
 
       GestureDetector(
@@ -299,7 +312,8 @@ class PostCardState extends State<PostCard> {
   Widget commentsCountWidget() {
     return InkWell(
         onTap: () => openComments(),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        child:
+            Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           widget.model.totalComment > 0 && widget.model.commentsEnabled
               ? BodySmallText(
                   '$viewString ${widget.model.totalComment} $commentsString',
@@ -373,8 +387,8 @@ class PostCardState extends State<PostCard> {
             backgroundColor: Colors.transparent,
             context: context,
             isScrollControlled: true,
-            builder: (context) =>
-                FractionallySizedBox(heightFactor: 0.95, child: sharePost()));
+            builder: (context) => FractionallySizedBox(
+                heightFactor: 0.95, child: sharePost()));
       }),
       if (!widget.model.isMyPost)
         const ThemeIconWidget(
@@ -414,7 +428,8 @@ class PostCardState extends State<PostCard> {
               competitionId: widget.model.competition!.id,
               refreshPreviousScreen: () {}));
         }),
-      if (widget.model.contentType == PostContentType.competitionResultDeclared)
+      if (widget.model.contentType ==
+          PostContentType.competitionResultDeclared)
         Row(
           children: [
             const ThemeIconWidget(
@@ -447,7 +462,8 @@ class PostCardState extends State<PostCard> {
           ],
         ).ripple(() {
           ClubsController clubController = Get.find();
-          clubController.getClubDetail(widget.model.createdClub!.id!, (club) {
+          clubController.getClubDetail(widget.model.createdClub!.id!,
+              (club) {
             Get.to(() => ClubDetail(
                   club: club,
                   needRefreshCallback: () {},
@@ -470,7 +486,8 @@ class PostCardState extends State<PostCard> {
                       ? ThemeIcon.bookMarked
                       : ThemeIcon.bookMark,
                   color: widget.model.isSaved ||
-                          postCardController.savedPosts.contains(widget.model)
+                          postCardController.savedPosts
+                              .contains(widget.model)
                       ? AppColorConstants.themeColor
                       : AppColorConstants.iconColor,
                   // size: 25,
@@ -577,7 +594,8 @@ class PostCardState extends State<PostCard> {
                     BodySmallText(copyLinkString.tr)
                   ],
                 ).ripple(() async {
-                  AppUtil.showToast(message: copiedString.tr, isSuccess: true);
+                  AppUtil.showToast(
+                      message: copiedString.tr, isSuccess: true);
 
                   await Clipboard.setData(
                       ClipboardData(text: widget.model.shareLink));
@@ -601,7 +619,8 @@ class PostCardState extends State<PostCard> {
       final filter = ProfanityFilter();
       bool hasProfanity = filter.hasProfanity(commentInputField.text);
       if (hasProfanity) {
-        AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
+        AppUtil.showToast(
+            message: notAllowedMessageString.tr, isSuccess: true);
         return;
       }
 
@@ -617,85 +636,11 @@ class PostCardState extends State<PostCard> {
     }
   }
 
-  Widget addPostUserInfo() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-            height: 30,
-            width: 30,
-            child: UserAvatarView(
-              size: 30,
-              user: widget.model.user,
-              onTapHandler: () {
-                openProfile();
-              },
-            )),
-        const SizedBox(width: 10),
-        Expanded(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                BodySmallText(
-                  widget.model.user.userName,
-                  weight: TextWeight.medium,
-                ).ripple(() {
-                  openProfile();
-                }),
-                if (widget.model.user.isVerified) verifiedUserTag().rP8,
-                if (widget.model.postedInClub != null)
-                  Expanded(
-                    child: BodyLargeText(
-                      ' (${widget.model.postedInClub!.name})',
-                      weight: TextWeight.semiBold,
-                      color: AppColorConstants.themeColor,
-                      maxLines: 1,
-                    ).ripple(() {
-                      openClubDetail();
-                    }),
-                  ),
-              ],
-            ),
-            widget.model.user.city != null
-                ? BodySmallText(
-                    '${widget.model.user.city!}, ${widget.model.user.country!}',
-                  )
-                : Container()
-          ],
-        )),
-        // postTimeView().rp(DesignConstants.horizontalPadding),
-        SizedBox(
-          height: 20,
-          width: 20,
-          child: ThemeIconWidget(
-            ThemeIcon.more,
-            color: AppColorConstants.iconColor,
-            size: 25,
-          ),
-        ).ripple(() {
-          openActionPopup();
-        })
-      ],
-    );
-  }
-
   RichText _convertHashtag(String text) {
     List<String> split = text.split(' ');
 
     return RichText(
         text: TextSpan(children: [
-      // TextSpan(
-      //   text: '${widget.model.user.userName}  ',
-      //   style: TextStyle(
-      //       color: AppColorConstants.mainTextColor, fontWeight: FontWeight.w900),
-      //   recognizer: TapGestureRecognizer()
-      //     ..onTap = () {
-      //       openProfile();
-      //     },
-      // ),
       for (String text in split)
         text.startsWith('#')
             ? TextSpan(
@@ -749,7 +694,8 @@ class PostCardState extends State<PostCard> {
             .where((element) => element.userName == userTag)
             .first
             .id;
-        Get.to(() => OtherUserProfile(userId: mentionedUserId))!.then((value) {
+        Get.to(() => OtherUserProfile(userId: mentionedUserId))!
+            .then((value) {
           _postController.getPosts(() {});
         });
       } else {
@@ -787,19 +733,6 @@ class PostCardState extends State<PostCard> {
                           callback: () {
                             widget.removePostHandler();
                           });
-                    }),
-                divider(),
-                ListTile(
-                    title: Center(
-                        child: Heading6Text(
-                      shareString.tr,
-                      weight: TextWeight.bold,
-                    )),
-                    onTap: () async {
-                      Get.back();
-                      postCardController.sharePost(
-                        post: widget.model,
-                      );
                     }),
                 divider(),
                 ListTile(
@@ -853,19 +786,6 @@ class PostCardState extends State<PostCard> {
                 divider(),
                 ListTile(
                     title: Center(
-                        child: Heading6Text(
-                      shareString.tr,
-                      weight: TextWeight.bold,
-                    )),
-                    onTap: () async {
-                      Get.back();
-                      postCardController.sharePost(
-                        post: widget.model,
-                      );
-                    }),
-                divider(),
-                ListTile(
-                    title: Center(
                       child: Heading6Text(
                         cancelString.tr,
                         weight: TextWeight.regular,
@@ -884,7 +804,7 @@ class PostCardState extends State<PostCard> {
   void openComments() {
     Get.to(() => CommentsScreen(
           isPopup: true,
-          model: widget.model,
+          post: widget.model,
           commentPostedCallback: () {
             setState(() {
               widget.model.totalComment += 1;

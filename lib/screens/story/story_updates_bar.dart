@@ -24,9 +24,7 @@ class StoryUpdatesBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.only(
-          left: DesignConstants.horizontalPadding,
-          right: DesignConstants.horizontalPadding),
+      padding: EdgeInsets.only(right: DesignConstants.horizontalPadding),
       scrollDirection: Axis.horizontal,
       itemCount: stories.length + liveUsers.length + 1,
       itemBuilder: (BuildContext ctx, int index) {
@@ -39,7 +37,7 @@ class StoryUpdatesBar extends StatelessWidget {
                   height: storyCircleSize,
                   width: storyCircleSize,
                   child: ThemeIconWidget(
-                    ThemeIcon.plus,
+                    ThemeIcon.plusSymbol,
                     size: 28,
                     color: AppColorConstants.themeColor.darken(),
                   ),
@@ -47,7 +45,7 @@ class StoryUpdatesBar extends StatelessWidget {
                   addStoryCallback();
                 }),
                 const SizedBox(
-                  height: 5,
+                  height: 2,
                 ),
                 BodySmallText(yourStoryString.tr, weight: TextWeight.medium)
               ],

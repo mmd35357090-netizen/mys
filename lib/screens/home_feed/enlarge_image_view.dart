@@ -166,7 +166,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
 
   void openComments() {
     Get.to(() => CommentsScreen(
-        model: model!,
+        post: model!,
         isPopup: true,
         commentPostedCallback: () {
           model!.totalComment += 1;

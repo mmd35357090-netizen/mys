@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:foap/util/app_config_constants.dart';
 
 enum ThemeIcon {
@@ -12,8 +11,6 @@ enum ThemeIcon {
   gallery,
   mention,
   wallpaper,
-  // cameraFront,
-  // cameraRear,
   cameraSwitch,
   videoCameraOff,
   videoCamera,
@@ -130,10 +127,12 @@ enum ThemeIcon {
   dating,
   acceptCall,
   declineCall,
+  callback,
   copyToClipboard,
   bannedAccount,
-  competition
-
+  competition,
+  pin,
+  noData,
 }
 
 class ThemeIconWidget extends StatelessWidget {
@@ -182,10 +181,10 @@ class ThemeIconWidget extends StatelessWidget {
           color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.arrowUp:
-        return SvgPicture.asset(
-          'assets/svg/outline/Arrow - Up 2.svg',
-          height: size ?? 20,
-          // color: color ?? AppColorConstants.iconColor,
+        return Icon(
+          Icons.arrow_upward,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.star:
         return Icon(
@@ -901,16 +900,22 @@ class ThemeIconWidget extends StatelessWidget {
           color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.acceptCall:
-        return SvgPicture.asset(
-          'assets/svg/bold/Call.svg',
-          height: size ?? 20,
-          // color: color ?? AppColorConstants.iconColor,
+        return Icon(
+          Icons.call,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.declineCall:
-        return SvgPicture.asset(
-          'assets/svg/bold/Close Square.svg',
-          height: size ?? 20,
-          // color: color ?? AppColorConstants.iconColor,
+        return Icon(
+          Icons.call_end,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.callback:
+        return Icon(
+          Icons.phone_callback,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
         );
       case ThemeIcon.copyToClipboard:
         return Icon(
@@ -927,6 +932,18 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.competition:
         return Icon(
           Icons.emoji_events,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.pin:
+        return Icon(
+          Icons.push_pin,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.noData:
+        return Icon(
+          Icons.search_off,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );

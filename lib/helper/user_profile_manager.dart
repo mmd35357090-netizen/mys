@@ -44,10 +44,12 @@ class UserProfileManager extends GetxController {
       await ProfileApi.getMyProfile(resultCallback: (result) {
         user.value = result;
 
+        print('user.value ${user.value!.isShareOnlineStatus}');
         if (user.value != null) {
           setupSocketServiceLocator1();
         }
         return;
+
       });
     } else {
       return;

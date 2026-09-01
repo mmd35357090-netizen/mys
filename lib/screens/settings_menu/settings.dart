@@ -3,10 +3,11 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:share_plus/share_plus.dart';
 import '../post/saved_posts.dart';
+import 'creator_tools/creator_tools.dart';
 import 'help_screen.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({Key? key}) : super(key: key);
+  const Settings({super.key});
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -53,6 +54,11 @@ class _SettingsState extends State<Settings> {
                             ThemeIcon.wallet, paymentAndCoinsString.tr, '', () {
                           Get.to(() => const PaymentAndCoins());
                         }, true),
+                        addTileEvent(
+                            ThemeIcon.wallet, creatorToolsString.tr, '', () {
+                          Get.to(() => const CreatorTools());
+                        }, true),
+
                         addTileEvent(ThemeIcon.account, accountString.tr, '',
                             () {
                           Get.to(() => const AppAccount());

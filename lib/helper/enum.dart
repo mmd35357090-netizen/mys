@@ -66,12 +66,12 @@ enum MessageContentType {
 }
 
 enum UploadMediaType {
-  shop,
   storyOrHighlights,
   chat,
   club,
   verification,
-  uploadResume,
+  post
+
 }
 
 ///Media picker selection type
@@ -136,7 +136,7 @@ enum RelationsRevealSetting { none, followers, all }
 
 enum GenderType { male, female, other }
 
-enum NotificationType {
+enum SMNotificationType {
   like,
   comment,
   follow,
@@ -147,7 +147,8 @@ enum NotificationType {
   relationInvite,
   none,
   verification,
-  supportRequest
+  supportRequest,
+  subscribed
 }
 
 enum CommentType { text, image, video, gif }
@@ -201,3 +202,19 @@ enum PlayStateState { paused, playing, loading, idle }
 enum LiveUserRole { host, moderator, viewer }
 
 enum LiveStreamingStatus { none, checking, preparing, streaming, ended, failed }
+
+enum SMSGateway{
+  twilio,
+  sms91,
+  firebase
+}
+
+enum SubscribedStatus{
+  notSubscribed,
+  subscribed,
+  expired
+}
+
+enum PinContentType {post, comment}
+
+enum CollaborationStatusType {deleted, pending, rejected, cancelled, accepted}

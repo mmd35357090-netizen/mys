@@ -26,7 +26,8 @@ enum QuickLinkType {
   highlights,
   goLive,
   liveUsers,
-  chatGPT
+  chatGPT,
+  reel
 }
 
 class QuickLink {

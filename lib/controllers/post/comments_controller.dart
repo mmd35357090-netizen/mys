@@ -5,6 +5,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:foap/model/data_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../api_handler/apis/misc_api.dart';
 import '../../api_handler/apis/post_api.dart';
 import '../../components/giphy/giphy_get.dart';
 import '../../helper/imports/chat_imports.dart';
@@ -67,8 +68,8 @@ class CommentsController extends GetxController {
           CommentModel mainComment =
               comments.where((e) => e.id == parentId).first;
           mainComment.currentPageForReplies = metadata.currentPage + 1;
-          mainComment.pendingReplies =
-              metadata.totalCount - (metadata.currentPage * metadata.perPage);
+          mainComment.pendingReplies = metadata.totalCount -
+              (metadata.currentPage * metadata.perPage);
           mainComment.replies.addAll(result);
           update();
         });
@@ -76,8 +77,8 @@ class CommentsController extends GetxController {
 
   void postCommentsApiCall(
       {required String comment,
-        required int postId,
-        required VoidCallback commentPosted}) {
+      required int postId,
+      required VoidCallback commentPosted}) {
     PostApi.postComment(
         type: CommentType.text,
         postId: postId,
@@ -91,8 +92,9 @@ class CommentsController extends GetxController {
             comments.add(newComment);
           } else {
             newComment.level = 2;
-            CommentModel mainComment =
-                comments.where((e) => e.id == replyingComment.value!.id).first;
+            CommentModel mainComment = comments
+                .where((e) => e.id == replyingComment.value!.id)
+                .first;
             mainComment.replies.add(newComment);
           }
 
@@ -107,13 +109,15 @@ class CommentsController extends GetxController {
     } else {
       CommentModel mainComment =
           comments.where((e) => e.id == comment.parentId).first;
-      mainComment.replies.removeWhere((element) => element.id == comment.id);
+      mainComment.replies
+          .removeWhere((element) => element.id == comment.id);
     }
 
     update();
     PostApi.deleteComment(
         resultCallback: () {
-          AppUtil.showToast(message: commentIsDeletedString, isSuccess: true);
+          AppUtil.showToast(
+              message: commentIsDeletedString, isSuccess: true);
         },
         commentId: comment.id);
   }
@@ -121,7 +125,8 @@ class CommentsController extends GetxController {
   void reportComment({required int commentId}) {
     PostApi.reportComment(
         resultCallback: () {
-          AppUtil.showToast(message: commentIsReportedString, isSuccess: true);
+          AppUtil.showToast(
+              message: commentIsReportedString, isSuccess: true);
         },
         commentId: commentId);
   }
@@ -136,8 +141,8 @@ class CommentsController extends GetxController {
 
   void postMediaCommentsApiCall(
       {required int postId,
-        required VoidCallback commentPosted,
-        required CommentType type}) async {
+      required VoidCallback commentPosted,
+      required CommentType type}) async {
     List<String> uploadedImageData = type == CommentType.image
         ? await uploadMedia(selectedMedia.value!)
         : [selectedMedia.value!.filePath!];
@@ -163,17 +168,18 @@ class CommentsController extends GetxController {
         Uint8List mainFileData = await media.file!.compress();
 
         //media
-        File file =
-        await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
+        File file = await File(
+                '${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
             .create();
         file.writeAsBytesSync(mainFileData);
 
-        await PostApi.uploadFile(file.path, mediaType: media.mediaType!,
+        await MiscApi.uploadFile(file.path,
+            type: UploadMediaType.post, mediaType: media.mediaType!,
             resultCallback: (fileName, filePath) async {
-              uploadedImageData.add(fileName);
-              uploadedImageData.add(filePath);
-              await file.delete();
-            });
+          uploadedImageData.add(fileName);
+          uploadedImageData.add(filePath);
+          await file.delete();
+        });
       } else {
         AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
       }
@@ -183,7 +189,7 @@ class CommentsController extends GetxController {
 
   selectPhoto(
       {ImageSource source = ImageSource.gallery,
-        required VoidCallback handler}) async {
+      required VoidCallback handler}) async {
     XFile? image = source == ImageSource.camera
         ? await _picker.pickImage(source: ImageSource.camera)
         : await _picker.pickImage(source: source);

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:foap/api_handler/apis/chat_api.dart';
+import 'package:foap/controllers/profile/profile_controller.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:get/get.dart';
 import '../../helper/user_profile_manager.dart';
@@ -10,6 +11,7 @@ import '../../screens/dashboard/dashboard_screen.dart';
 class ChatHistoryController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();
   final DashboardController _dashboardController = Get.find();
+  final ProfileController _profileController = Get.find();
 
   List<ChatRoomModel> allRooms = [];
   RxList<ChatRoomModel> publicGroups = <ChatRoomModel>[].obs;
@@ -24,7 +26,7 @@ class ChatHistoryController extends GetxController {
     allRooms = await getIt<DBManager>().getAllRooms();
 
     searchedRooms.value = allRooms;
-     update();
+    update();
 
     // if (allRooms.isEmpty) {
     ChatApi.getChatRooms(resultCallback: (result) async {
@@ -37,7 +39,8 @@ class ChatHistoryController extends GetxController {
       // allRooms = await getIt<DBManager>().mapUnReadCount(groupChatRooms);
       searchedRooms.value = allRooms;
       searchedRooms.value = searchedRooms
-          .where((e) => e.isGroupChat == true || (e.roomMembers.length > 1))
+          .where(
+              (e) => e.isGroupChat == true || (e.roomMembers.length > 1))
           .toList();
       update();
     });
@@ -86,7 +89,9 @@ class ChatHistoryController extends GetxController {
       if (room.isGroupChat) {
         return room.name!.toLowerCase().contains(text);
       } else {
-        return room.opponent.userDetail.userName.toLowerCase().contains(text);
+        return room.opponent.userDetail.userName
+            .toLowerCase()
+            .contains(text);
       }
     }).toList();
     searchedRooms.refresh();
@@ -97,7 +102,8 @@ class ChatHistoryController extends GetxController {
     getIt<DBManager>().clearUnReadCount(roomId: chatRoom.id);
     int roomsWithUnreadMessageCount =
         await getIt<DBManager>().roomsWithUnreadMessages();
-    _dashboardController.updateUnreadMessageCount(roomsWithUnreadMessageCount);
+    _dashboardController
+        .updateUnreadMessageCount(roomsWithUnreadMessageCount);
 
     getChatRooms();
     update();
@@ -134,7 +140,9 @@ class ChatHistoryController extends GetxController {
   }
 
   userTypingStatusChanged(
-      {required String userName, required int roomId, required bool status}) {
+      {required String userName,
+      required int roomId,
+      required bool status}) {
     var matchedRooms = allRooms.where((element) => element.id == roomId);
 
     if (matchedRooms.isNotEmpty) {
@@ -153,7 +161,9 @@ class ChatHistoryController extends GetxController {
       if (status == true) {
         Timer(const Duration(seconds: 5), () {
           if (typingStatus[userName] != null) {
-            if (DateTime.now().difference(typingStatus[userName]!).inSeconds >
+            if (DateTime.now()
+                    .difference(typingStatus[userName]!)
+                    .inSeconds >
                 4) {
               room.whoIsTyping.remove(userName);
               typingStatus[userName] = null;
@@ -167,17 +177,21 @@ class ChatHistoryController extends GetxController {
     }
   }
 
-  userAvailabilityStatusChange({required int userId, required bool isOnline}) {
-    var matchedRooms =
-        allRooms.where((element) => element.opponent.id == userId);
-
-    if (matchedRooms.isNotEmpty) {
-      var room = matchedRooms.first;
-      room.isOnline = isOnline;
-      room.opponent.userDetail.isOnline = isOnline;
-      searchedRooms.refresh();
-      // update();
-    }
+  userAvailabilityStatusChange(
+      {required int userId, required bool isOnline}) {
+    _profileController.user.value?.isOnline = isOnline;
+    _profileController.update();
+    // var matchedRooms = allRooms
+    //     .where((e) => e.roomMembers.isNotEmpty)
+    //     .where((element) => element.opponent.id == userId);
+    //
+    // if (matchedRooms.isNotEmpty) {
+    //   var room = matchedRooms.first;
+    //   room.isOnline = isOnline;
+    //   room.opponent.userDetail.isOnline = isOnline;
+    //   searchedRooms.refresh();
+    //   // update();
+    // }
   }
 
   joinPublicGroup(ChatRoomModel room) {

@@ -45,7 +45,7 @@ class ClubCreatedSuccess extends StatelessWidget {
             height: 10,
           ),
           BodyLargeText(
-            inviteFriendString,
+            inviteFriendString.tr,
             weight: TextWeight.semiBold,
           ).ripple(() {
             Get.to(() => InviteUsersToClub(clubId: clubId));

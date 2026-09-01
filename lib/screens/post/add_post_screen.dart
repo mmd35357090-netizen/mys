@@ -7,8 +7,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/post/post_option_popup.dart';
-import 'package:photo_editor_sdk/photo_editor_sdk.dart';
-import 'package:video_editor_sdk/video_editor_sdk.dart';
+// import 'package:photo_editor_sdk/photo_editor_sdk.dart';
+// import 'package:video_editor_sdk/video_editor_sdk.dart';
 import '../../components/place_picker/entities/location_result.dart';
 import '../../components/place_picker/widgets/place_picker.dart';
 import '../../controllers/post/add_post_controller.dart';
@@ -97,8 +97,8 @@ class AddPostState extends State<AddPostScreen> {
                                   dashboardController.indexChanged(0);
                                 }
                               },
-                              child:
-                                  const ThemeIconWidget(ThemeIcon.backArrow)),
+                              child: const ThemeIconWidget(
+                                  ThemeIcon.backArrow)),
                           const Spacer(),
                           Container(
                                   color: AppColorConstants.themeColor,
@@ -109,7 +109,10 @@ class AddPostState extends State<AddPostScreen> {
                                     weight: TextWeight.medium,
                                     color: Colors.white,
                                   ).setPadding(
-                                      left: 8, right: 8, top: 5, bottom: 5))
+                                      left: 8,
+                                      right: 8,
+                                      top: 5,
+                                      bottom: 5))
                               .round(10)
                               .ripple(() {
                             if ((widget.items ??
@@ -117,8 +120,8 @@ class AddPostState extends State<AddPostScreen> {
                                         .selectedMediaList)
                                 .isNotEmpty) {
                               addPostController.submitPost(
-                                  allowComments:
-                                      addPostController.enableComments.value,
+                                  allowComments: addPostController
+                                      .enableComments.value,
                                   postType: widget.postType,
                                   isReel: widget.isReel ?? false,
                                   audioId: widget.audioId,
@@ -155,8 +158,8 @@ class AddPostState extends State<AddPostScreen> {
                                   return FractionallySizedBox(
                                       heightFactor: 1,
                                       child: Container(
-                                        color:
-                                            AppColorConstants.backgroundColor,
+                                        color: AppColorConstants
+                                            .backgroundColor,
                                         child: AddedMediaList(
                                           selectPostMediaController:
                                               _selectPostMediaController,
@@ -170,7 +173,8 @@ class AddPostState extends State<AddPostScreen> {
                       if (widget.isReel != true)
                         PostOptionsPopup(
                           selectedMediaList: (medias) {
-                            _selectPostMediaController.mediaSelected(medias);
+                            _selectPostMediaController
+                                .mediaSelected(medias);
                           },
                           selectGif: (gifMedia) {
                             _selectPostMediaController
@@ -191,10 +195,10 @@ class AddPostState extends State<AddPostScreen> {
                             ),
                             BodyMediumText(allowCommentsString),
                             const Spacer(),
-                            Obx(() => ThemeIconWidget(
-                                        addPostController.enableComments.value
-                                            ? ThemeIcon.selectedCheckbox
-                                            : ThemeIcon.emptyCheckbox)
+                            Obx(() => ThemeIconWidget(addPostController
+                                            .enableComments.value
+                                        ? ThemeIcon.selectedCheckbox
+                                        : ThemeIcon.emptyCheckbox)
                                     .ripple(() {
                                   addPostController.toggleEnableComments();
                                 })),
@@ -211,17 +215,21 @@ class AddPostState extends State<AddPostScreen> {
                               width: 15,
                             ),
                             Obx(() =>
-                                addPostController.taggedLocation.value == null
+                                addPostController.taggedLocation.value ==
+                                        null
                                     ? BodyMediumText(addLocationString)
                                     : BodyLargeText(addPostController
                                         .taggedLocation.value!.name)),
                             const Spacer(),
-                            Obx(() => addPostController.taggedLocation.value ==
+                            Obx(() => addPostController
+                                        .taggedLocation.value ==
                                     null
-                                ? const ThemeIconWidget(ThemeIcon.nextArrow)
+                                ? const ThemeIconWidget(
+                                    ThemeIcon.nextArrow)
                                 : const ThemeIconWidget(ThemeIcon.close)
                                     .ripple(() {
-                                    addPostController.setTaggedLocation(null);
+                                    addPostController
+                                        .setTaggedLocation(null);
                                   })),
                           ],
                         ),
@@ -233,7 +241,8 @@ class AddPostState extends State<AddPostScreen> {
                         height: 10,
                       ),
                       Obx(() {
-                        return _smartTextFieldController.isEditing.value == 1
+                        return _smartTextFieldController.isEditing.value ==
+                                1
                             ? Expanded(
                                 child: Container(
                                   // height: 500,
@@ -247,16 +256,18 @@ class AddPostState extends State<AddPostScreen> {
                                               .currentUserTag.isNotEmpty
                                           ? TagUsersView()
                                           : Container().ripple(() {
-                                              FocusManager.instance.primaryFocus
+                                              FocusManager
+                                                  .instance.primaryFocus
                                                   ?.unfocus();
                                             }),
                                 ),
                               )
                             : Container();
                       }),
-                      Obx(() => _smartTextFieldController.isEditing.value == 0
-                          ? const Spacer()
-                          : Container()),
+                      Obx(() =>
+                          _smartTextFieldController.isEditing.value == 0
+                              ? const Spacer()
+                              : Container()),
                     ]),
               ],
             );
@@ -318,6 +329,8 @@ class AddPostState extends State<AddPostScreen> {
   }
 
   Widget media() {
+    print(
+        '_selectPostMediaController.selectedMediaList ${_selectPostMediaController.selectedMediaList.length}');
     return Obx(() {
       if (_selectPostMediaController.selectedMediaList.isNotEmpty) {
         Media media = _selectPostMediaController.selectedMediaList.first;
@@ -457,26 +470,29 @@ class AddedMediaList extends StatelessWidget {
                                   fit: BoxFit.contain,
                                   width: double.infinity,
                                 ).ripple(() {
-                                  if (settingController
-                                      .setting.value!.canEditPhotoVideo) {
-                                    openImageEditor(media);
-                                  }
+                                  // if (settingController
+                                  //     .setting.value!.canEditPhotoVideo) {
+                                  //   openImageEditor(media);
+                                  // }
                                 })
                               : media.mediaType == GalleryMediaType.gif
                                   ? CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       imageUrl: media.filePath!)
-                                  : media.mediaType == GalleryMediaType.video
+                                  : media.mediaType ==
+                                          GalleryMediaType.video
                                       ? VideoPostTile(
                                           width: Get.width,
                                           url: media.file!.path,
                                           isLocalFile: true,
                                           play: true,
                                           onTapActionHandler: () {
-                                            if (settingController.setting.value!
-                                                .canEditPhotoVideo) {
-                                              openVideoEditor(media);
-                                            }
+                                            // if (settingController
+                                            //     .setting
+                                            //     .value!
+                                            //     .canEditPhotoVideo) {
+                                            //   openVideoEditor(media);
+                                            // }
                                           },
                                         )
                                       : audioPostTile(media)
@@ -488,13 +504,15 @@ class AddedMediaList extends StatelessWidget {
                         height: double.infinity,
                         viewportFraction: 1,
                         onPageChanged: (index, reason) {
-                          selectPostMediaController.updateGallerySlider(index);
+                          selectPostMediaController
+                              .updateGallerySlider(index);
                         },
                       ),
                     );
                   }),
                   Obx(() {
-                    return selectPostMediaController.selectedMediaList.length >
+                    return selectPostMediaController
+                                .selectedMediaList.length >
                             1
                         ? Positioned(
                             bottom: 10,
@@ -506,13 +524,17 @@ class AddedMediaList extends StatelessWidget {
                                         height: 25,
                                         color: AppColorConstants.cardColor,
                                         child: DotsIndicator(
-                                          dotsCount: selectPostMediaController
-                                              .selectedMediaList.length,
-                                          position: selectPostMediaController
-                                              .currentIndex.value,
+                                          dotsCount:
+                                              selectPostMediaController
+                                                  .selectedMediaList
+                                                  .length,
+                                          position:
+                                              selectPostMediaController
+                                                  .currentIndex.value.toDouble(),
                                           decorator: DotsDecorator(
                                               activeColor:
-                                                  AppColorConstants.themeColor),
+                                                  AppColorConstants
+                                                      .themeColor),
                                         ).hP8)
                                     .round(20)),
                           )
@@ -543,38 +565,38 @@ class AddedMediaList extends StatelessWidget {
     );
   }
 
-  openImageEditor(Media media) async {
-    // PESDK.unlockWithLicense("assets/pesdk_license");
-
-    final result = await PESDK.openEditor(image: media.file!.path);
-
-    if (result != null) {
-      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-      Media editedMedia = media.copy;
-      editedMedia.file = File(result.image.replaceAll('file://', ''));
-      selectPostMediaController.replaceMediaWithEditedMedia(
-          originalMedia: media, editedMedia: editedMedia);
-    } else {
-      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-      return;
-    }
-  }
-
-  openVideoEditor(Media media) async {
-    // PESDK.unlockWithLicense("assets/pesdk_license");
-
-    final video = Video(media.file!.path);
-    final result = await VESDK.openEditor(video);
-
-    if (result != null) {
-      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-      Media editedMedia = media.copy;
-      editedMedia.file = File(result.video.replaceAll('file://', ''));
-      selectPostMediaController.replaceMediaWithEditedMedia(
-          originalMedia: media, editedMedia: editedMedia);
-    } else {
-      // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-      return;
-    }
-  }
+  // openImageEditor(Media media) async {
+  //   // PESDK.unlockWithLicense("assets/pesdk_license");
+  //
+  //   final result = await PESDK.openEditor(image: media.file!.path);
+  //
+  //   if (result != null) {
+  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+  //     Media editedMedia = media.copy;
+  //     editedMedia.file = File(result.image.replaceAll('file://', ''));
+  //     selectPostMediaController.replaceMediaWithEditedMedia(
+  //         originalMedia: media, editedMedia: editedMedia);
+  //   } else {
+  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+  //     return;
+  //   }
+  // }
+  //
+  // openVideoEditor(Media media) async {
+  //   // PESDK.unlockWithLicense("assets/pesdk_license");
+  //
+  //   final video = Video(media.file!.path);
+  //   final result = await VESDK.openEditor(video);
+  //
+  //   if (result != null) {
+  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+  //     Media editedMedia = media.copy;
+  //     editedMedia.file = File(result.video.replaceAll('file://', ''));
+  //     selectPostMediaController.replaceMediaWithEditedMedia(
+  //         originalMedia: media, editedMedia: editedMedia);
+  //   } else {
+  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+  //     return;
+  //   }
+  // }
 }

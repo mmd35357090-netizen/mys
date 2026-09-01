@@ -1,15 +1,18 @@
 import 'package:detectable_text_field/detector/sample_regular_expressions.dart';
 import 'package:detectable_text_field/widgets/detectable_text.dart';
+import 'package:foap/api_handler/apis/users_api.dart';
+import 'package:foap/controllers/misc/misc_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import '../api_handler/apis/users_api.dart';
-import '../model/comment_model.dart';
-import '../model/post_gallery.dart';
-import '../model/search_model.dart';
-import '../screens/dashboard/posts.dart';
-import '../screens/home_feed/post_media_full_screen.dart';
-import '../screens/profile/other_user_profile.dart';
+import 'package:foap/helper/imports/models.dart';
+import '../../model/comment_model.dart';
+import '../../model/post_gallery.dart';
+import '../../model/search_model.dart';
+import '../../screens/dashboard/posts.dart';
+import '../../screens/home_feed/post_media_full_screen.dart';
+import '../../screens/profile/other_user_profile.dart';
 
 class CommentTile extends StatefulWidget {
+  final PostModel post;
   final CommentModel model;
   final Function(CommentModel) replyActionHandler;
   final Function(CommentModel) deleteActionHandler;
@@ -18,14 +21,15 @@ class CommentTile extends StatefulWidget {
   final Function(CommentModel) loadMoreChildCommentsActionHandler;
 
   const CommentTile({
-    Key? key,
+    super.key,
+    required this.post,
     required this.model,
     required this.replyActionHandler,
     required this.deleteActionHandler,
     required this.favActionHandler,
     required this.reportActionHandler,
     required this.loadMoreChildCommentsActionHandler,
-  }) : super(key: key);
+  });
 
   @override
   State<CommentTile> createState() => _CommentTileState();
@@ -78,8 +82,8 @@ class _CommentTileState extends State<CommentTile> {
                           BodySmallText(
                             widget.model.commentTime,
                             weight: TextWeight.semiBold,
-                            color:
-                                AppColorConstants.mainTextColor.withOpacity(0.5),
+                            color: AppColorConstants.subHeadingTextColor
+                                .withOpacity(0.5),
                           ),
                         ],
                       ).ripple(() {
@@ -88,6 +92,31 @@ class _CommentTileState extends State<CommentTile> {
                             ));
                       }),
                       const Spacer(),
+                      if (widget.model.isPinned)
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: ThemeIconWidget(
+                                ThemeIcon.pin,
+                                color: AppColorConstants.themeColor,
+                                size: 25,
+                              ),
+                            ).ripple(() {
+                              setState(() {
+                                widget.model.isPinned = false;
+                                MiscController controller = Get.find();
+                                controller.removeFromPin(
+                                    PinContentType.comment,
+                                    widget.model.id);
+                              });
+                            }),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                          ],
+                        ),
                       ThemeIconWidget(
                         isFavourite ? ThemeIcon.favFilled : ThemeIcon.fav,
                         color: isFavourite
@@ -96,10 +125,25 @@ class _CommentTileState extends State<CommentTile> {
                       ).ripple(() {
                         setState(() {
                           isFavourite = !isFavourite;
-                          widget.model.isFavourite = !widget.model.isFavourite;
+                          widget.model.isFavourite =
+                              !widget.model.isFavourite;
                         });
                         widget.favActionHandler(widget.model);
                       }),
+                      if (widget.post.user.isMe == true &&
+                          widget.model.canReply)
+                        Row(
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            ThemeIconWidget(
+                              ThemeIcon.moreVertical,
+                            ).ripple(() {
+                              openActionPopup();
+                            }),
+                          ],
+                        )
                     ],
                   ),
                   widget.model.type == CommentType.text
@@ -144,6 +188,7 @@ class _CommentTileState extends State<CommentTile> {
               for (CommentModel comment in widget.model.replies)
                 CommentTile(
                     model: comment,
+                    post: widget.post,
                     replyActionHandler: (comment) {
                       widget.reportActionHandler(comment);
                     },
@@ -165,7 +210,7 @@ class _CommentTileState extends State<CommentTile> {
             BodySmallText(
               '${viewString.tr} ${widget.model.pendingReplies} ${moreRepliesString.tr}',
               weight: TextWeight.bold,
-              color: AppColorConstants.mainTextColor,
+              color: AppColorConstants.subHeadingTextColor,
             ).setPadding(top: 25, left: 50).ripple(() {
               widget.loadMoreChildCommentsActionHandler(widget.model);
             }),
@@ -236,9 +281,76 @@ class _CommentTileState extends State<CommentTile> {
           page: 1,
           resultCallback: (result, metadata) {
             if (result.isNotEmpty) {
-              Get.to(() => OtherUserProfile(userId: result.first.id));
+              Get.to(() => OtherUserProfile(
+                    userId: result.first.id,
+                  ));
             }
           });
     }
+  }
+
+  void openActionPopup() {
+    Get.bottomSheet(Container(
+      color: AppColorConstants.cardColor.darken(),
+      child: Wrap(
+        children: [
+          ListTile(
+              title: Center(
+                  child: Heading6Text(
+                replyString.tr,
+                weight: TextWeight.semiBold,
+              )),
+              onTap: () async {
+                Get.back();
+                widget.replyActionHandler(widget.model);
+              }),
+          divider(),
+          ListTile(
+              title: Center(
+                  child: Heading6Text(
+                deleteString.tr,
+                weight: TextWeight.semiBold,
+              )),
+              onTap: () async {
+                Get.back();
+                widget.deleteActionHandler(widget.model);
+              }),
+          divider(),
+          ListTile(
+              title: Center(
+                  child: Heading6Text(
+                widget.model.isPinned ? unPinString.tr : pinString.tr,
+                weight: TextWeight.semiBold,
+              )),
+              onTap: () async {
+                Get.back();
+                MiscController miscController = Get.find();
+
+                setState(() {
+                  if (widget.model.isPinned) {
+                    miscController.removeFromPin(
+                        PinContentType.comment, widget.model.id);
+                    widget.model.isPinned = false;
+                  } else {
+                    miscController.addToPin(
+                        PinContentType.comment, widget.model.id, (id) {
+                      widget.model.pinId = id;
+                    });
+                    widget.model.isPinned = true;
+                  }
+                });
+              }),
+          divider(),
+          ListTile(
+              title: Center(
+                  child: BodyLargeText(
+                cancelString.tr,
+                weight: TextWeight.semiBold,
+                color: AppColorConstants.red,
+              )),
+              onTap: () => Get.back()),
+        ],
+      ),
+    ).topRounded(40));
   }
 }

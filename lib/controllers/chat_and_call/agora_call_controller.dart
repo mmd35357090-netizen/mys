@@ -3,6 +3,7 @@ import 'package:foap/controllers/chat_and_call/voip_controller.dart';
 import 'package:foap/helper/imports/call_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/dashboard_imports.dart';
+import 'package:foap/screens/calling/not_answerd_call.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
@@ -14,7 +15,7 @@ import '../../screens/settings_menu/settings_controller.dart';
 import '../../util/ad_helper.dart';
 import '../../util/constant_util.dart';
 import '../../util/shared_prefs.dart';
-
+import 'call_history_controller.dart';
 
 class AgoraCallController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
@@ -31,6 +32,7 @@ class AgoraCallController extends GetxController {
   RxBool mutedVideo = false.obs;
   RxBool switchMainView = false.obs;
   RxBool remoteJoined = false.obs;
+
   final SettingsController _settingsController = Get.find();
 
   // int callId = 0;
@@ -75,7 +77,6 @@ class AgoraCallController extends GetxController {
     required Call call,
   }) async {
     // logFile.writeAsStringSync('initializeCalling \n', mode: FileMode.append);
-
     if (_settingsController.setting.value!.agoraApiKey!.isEmpty) {
       // logFile.writeAsStringSync('initializeCalling agora key empty\n', mode: FileMode.append);
       update();
@@ -83,11 +84,11 @@ class AgoraCallController extends GetxController {
     }
 
     // logFile.writeAsStringSync('initializeCalling  agora key found1\n', mode: FileMode.append);
-
     Future.delayed(Duration.zero, () async {
       await _initAgoraRtcEngine(
-          callType:
-          call.callType == 1 ? AgoraCallType.audio : AgoraCallType.video);
+          callType: call.callType == 1
+              ? AgoraCallType.audio
+              : AgoraCallType.video);
       _addAgoraEventHandlers();
       var configuration = const VideoEncoderConfiguration(
           dimensions: VideoDimensions(width: 1920, height: 1080),
@@ -104,19 +105,19 @@ class AgoraCallController extends GetxController {
       );
 
       if (call.callType == 1) {
-        // logFile.writeAsStringSync('AudioCallingScreen\n',
-        //     mode: FileMode.append);
-
-        Get.to(() => AudioCallingScreen(call: call));
+        Get.to(() => AudioCallingScreen(call: call),
+            transition: Transition.noTransition);
       } else {
-        Get.to(() => VideoCallingScreen(call: call));
+        Get.to(() => VideoCallingScreen(call: call),
+            transition: Transition.noTransition);
       }
       update();
     });
   }
 
   //Initialize Agora RTC Engine
-  Future<void> _initAgoraRtcEngine({required AgoraCallType callType}) async {
+  Future<void> _initAgoraRtcEngine(
+      {required AgoraCallType callType}) async {
     // _engine = await RtcEngine.create(_settingsController.setting.value!.agoraApiKey!);
 
     engine = createAgoraRtcEngine();
@@ -162,75 +163,95 @@ class AgoraCallController extends GetxController {
       RtcEngineEventHandler(
           onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
             debugPrint("local user ${connection.localUid} joined");
-          }, onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-        debugPrint("remote user $remoteUid joined");
-        remoteJoined.value = true;
-        remoteUserId.value = remoteUid;
-        update();
-      }, onUserOffline: (RtcConnection connection, int remoteUid,
-          UserOfflineReasonType reason) {
-        debugPrint("remote user $remoteUid left channel");
-        // if (elapsed == UserOfflineReason.Dropped) {
-        //   Wakelock.disable();
-        // } else {
-        // final info = 'userOffline: $uid';
-        remoteUserId.value = 0;
-        update();
-        // _timerKey.currentState?.cancelTimer();
-        // }
-      }, onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
-        debugPrint(
-            '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
-      }, onConnectionStateChanged: (RtcConnection connection,
-          ConnectionStateType state,
-          ConnectionChangedReasonType reason) async {
-        if (state == ConnectionStateType.connectionStateConnected) {
-          reConnectingRemoteView.value = false;
-        } else if (state == ConnectionStateType.connectionStateReconnecting) {
-          reConnectingRemoteView.value = true;
-        }
-      }, onRemoteVideoStateChanged: (RtcConnection connection,
-          int remoteUid,
-          RemoteVideoState state,
-          RemoteVideoStateReason reason,
-          int elapsed) async {
-        // if (state == RemoteVideoState.remoteVideoStateFailed ||
-        //     state == RemoteVideoState.remoteVideoStateStopped ||
-        //     state == RemoteVideoState.remoteVideoStateFrozen) {
-        //   videoPaused.value = true;
-        // } else {
-        //   videoPaused.value = false;
-        // }
-      }),
+          },
+          onUserJoined:
+              (RtcConnection connection, int remoteUid, int elapsed) {
+            debugPrint("remote user $remoteUid joined");
+            remoteJoined.value = true;
+            remoteUserId.value = remoteUid;
+            print('remoteJoined ${remoteJoined.value}');
+            update();
+          },
+          onUserOffline: (RtcConnection connection, int remoteUid,
+              UserOfflineReasonType reason) {
+            debugPrint("remote user $remoteUid left channel");
+
+            remoteUserId.value = 0;
+            update();
+          },
+          onTokenPrivilegeWillExpire:
+              (RtcConnection connection, String token) {
+            debugPrint(
+                '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
+          },
+          onConnectionStateChanged: (RtcConnection connection,
+              ConnectionStateType state,
+              ConnectionChangedReasonType reason) async {
+            if (state == ConnectionStateType.connectionStateConnected) {
+              reConnectingRemoteView.value = false;
+            } else if (state ==
+                ConnectionStateType.connectionStateReconnecting) {
+              reConnectingRemoteView.value = true;
+            }
+          },
+          onRemoteVideoStateChanged: (RtcConnection connection,
+              int remoteUid,
+              RemoteVideoState state,
+              RemoteVideoStateReason reason,
+              int elapsed) async {}),
     );
   }
 
   // call
-
   callStatusUpdateReceived(Map<String, dynamic> updatedData) {
+    final VoipController voipController = Get.find();
+    int callId = updatedData['id'];
     int status = updatedData['status'];
+    int callerId = updatedData['callerId'];
+    int myUserId = _userProfileManager.user.value!.id;
 
-    // callId = 0;
-    Call call = Call(
-        uuid: updatedData['uuid'],
-        channelName: '',
-        isOutGoing: false,
-        opponent: UserModel(),
-        token: '',
-        callType: 0,
-        callId: updatedData['id']);
+    final CallHistoryController callHistoryController =
+        CallHistoryController();
+    callHistoryController.callDetail(
+        callId: callId,
+        resultCallback: (result) {
+          Call call = Call(
+              uuid: updatedData['uuid'],
+              channelName: '',
+              isOutGoing: myUserId == callerId,
+              opponent: myUserId == callerId
+                  ? result.receiverDetail
+                  : result.callerDetail,
+              token: '',
+              callType: result.callType,
+              callId: updatedData['id']);
 
-    if (status == 5 || status == 2) {
-      if (Platform.isIOS) {
-        getIt<VoipController>().endCall(call);
-      }
-      receivedEndCallNotification(call);
-    } else if (status == 4) {
-      player.stop();
-    }
+          if (status == 5 || status == 2) {
+            // always called when action is performed by the opponent
+            if (status == 2) {
+              if (Platform.isIOS) {
+                voipController.declinedByOpponent(call);
+              }
+              if (myUserId == callerId) {
+                //show callback screen only if i am the caller
+                receivedDeclinedCallNotification(call);
+              }
+            } else {
+              if (Platform.isIOS) {
+                voipController.endCallByOpponent(call);
+              }
+              receivedEndCallNotification(call);
+            }
+          } else if (status == 4) {
+            player.stop();
+          }
+        });
   }
 
-  outgoingCallConfirmationReceived(Map<String, dynamic> updatedData) async {
+  outgoingCallConfirmationReceived(
+      Map<String, dynamic> updatedData) async {
+    final VoipController voipController = Get.find();
+
     String uuid = updatedData['uuid'];
     int id = updatedData['id'];
     String localCallId = updatedData['localCallId'];
@@ -248,65 +269,22 @@ class AgoraCallController extends GetxController {
         callId: id);
 
     if (this.localCallId == localCallId) {
-      // callId = id;
       initializeCalling(call: call);
       if (Platform.isIOS) {
-        getIt<VoipController>().outGoingCall(call);
+        voipController.outGoingCall(call);
       }
       await player.setAsset('assets/ringtone.mp3');
       player.play();
     }
   }
 
-  incomingCallReceived(Map<String, dynamic> updatedData) {
-    // int id = updatedData['id'];
-    int callType = updatedData['callType'];
-    String userImage = updatedData['userImage'];
-    String username = updatedData['username'];
-    int callerId = updatedData['callerId'];
-    // String channelName = updatedData['channelName'];
-    // String agoraToken = updatedData['token'];
-
-    // callId = id;
-
-    UserModel opponent = UserModel();
-    opponent.id = callerId;
-    opponent.userName = username;
-    opponent.picture = userImage;
-
-    if (callType == 1) {
-      // audio call
-      // Get.to(() =>
-      //     AudioCallingScreen(
-      //         opponent: opponent,
-      //         channelName: channelName,
-      //         token: agoraToken,
-      //         isOutGoing: false //widget.isForOutGoing,
-      //     ));
-    } else {
-      // video call
-      // Call call = Call(
-      //     callId: id,
-      //     channelName: channelName,
-      //     isOutGoing: false,
-      //     opponent: opponent,
-      //     callType: callType,
-      //     token: agoraToken);
-      // Get.to(() => VideoCallingScreen(
-      //       call: call,
-      //     ));
-    }
-  }
-
   void acceptCall({required Call call}) {
-    // logFile.writeAsStringSync('permissionGranted acceptCall 1\n', mode: FileMode.append);
     getIt<SocketManager>().emit(SocketConstants.onAcceptCall, {
       'uuid': call.uuid,
       'userId': _userProfileManager.user.value!.id,
       'status': 4,
     });
 
-    //Todo: this need to be checked
     remoteUserId.value = call.opponent.id;
     remoteJoined.value = true;
     initializeCalling(
@@ -329,29 +307,43 @@ class AgoraCallController extends GetxController {
       // logFile.writeAsStringSync('permissionGranted 1\n', mode: FileMode.append);
       acceptCall(call: call);
     }, permissionDenied: () {
-      declineCall(call: call);
+      declineIncomingCall(call: call);
       AppUtil.showToast(
           message: pleaseAllowAccessToMicrophoneForAudioCallString,
           isSuccess: false);
     }, permissionNotAskAgain: () {
-      declineCall(call: call);
+      declineIncomingCall(call: call);
       AppUtil.showToast(
           message: pleaseAllowAccessToMicrophoneForAudioCallString,
           isSuccess: false);
     });
   }
 
-  //Use This Method To End Call
-  void receivedEndCallNotification(Call call) async {
+  clearCall() {
     player.stop();
     if (remoteJoined.value == true) {
       engine?.leaveChannel();
-      // engine?.destroy();
 
       clear();
     }
     // callId = 0;
     remoteJoined.value = false;
+  }
+
+  void receivedDeclinedCallNotification(Call call) async {
+    player.stop();
+    Get.back();
+    Get.to(
+        () => NotAnsweredCall(
+              call: call,
+            ),
+        transition: Transition.noTransition);
+    update();
+  }
+
+  //Use This Method To End Call
+  void receivedEndCallNotification(Call call) async {
+    clearCall();
     Get.back();
 
     InterstitialAds().show();
@@ -363,13 +355,9 @@ class AgoraCallController extends GetxController {
   }
 
   void onCallEnd(Call call) async {
-    player.stop();
+    final VoipController voipController = Get.find();
 
     if (remoteJoined.value == true) {
-      if (Platform.isAndroid) {
-        receivedEndCallNotification(call);
-        Get.back();
-      }
       getIt<SocketManager>().emit(SocketConstants.onCompleteCall, {
         'uuid': call.uuid,
         'userId': _userProfileManager.user.value!.id,
@@ -377,10 +365,6 @@ class AgoraCallController extends GetxController {
         // 'channelName': call.channelName
       });
     } else {
-      if (Platform.isAndroid) {
-        receivedEndCallNotification(call);
-        Get.back();
-      }
       getIt<SocketManager>().emit(SocketConstants.onRejectCall, {
         'uuid': call.uuid,
         'userId': _userProfileManager.user.value!.id,
@@ -388,8 +372,10 @@ class AgoraCallController extends GetxController {
       });
     }
     if (Platform.isIOS) {
-      getIt<VoipController>().endCall(call);
+      voipController.endCall(call);
     }
+    clearCall();
+    Get.back();
 
     if (isLaunchedFromCallNotification) {
       Get.offAll(() => const DashboardScreen());
@@ -397,18 +383,14 @@ class AgoraCallController extends GetxController {
     SharedPrefs().setCallNotificationData(null);
   }
 
-  void declineCall({required Call call}) async {
+  void declineIncomingCall({required Call call}) async {
     getIt<SocketManager>().emit(SocketConstants.onRejectCall, {
       'uuid': call.uuid,
       'userId': _userProfileManager.user.value!.id,
       'status': 2
     });
-    if (Platform.isIOS) {
-      getIt<VoipController>().endCall(call);
-    }
-    // callId = 0;
+
     remoteJoined.value = false;
-    Get.back();
 
     if (isLaunchedFromCallNotification) {
       Get.offAll(() => const DashboardScreen());
@@ -416,17 +398,17 @@ class AgoraCallController extends GetxController {
     SharedPrefs().setCallNotificationData(null);
   }
 
-  void timeOutCall(Call call) async {
-    getIt<SocketManager>().emit(SocketConstants.onNotAnswered, {
-      'uuid': call.uuid,
-      'userId': _userProfileManager.user.value!.id,
-      'status': 3
-    });
-    if (Platform.isIOS) {
-      getIt<VoipController>().endCall(call);
-    }
-    // callId = 0;
-    remoteJoined.value = false;
-    Get.back();
-  }
+// void timeOutCall(Call call) async {
+//   getIt<SocketManager>().emit(SocketConstants.onNotAnswered, {
+//     'uuid': call.uuid,
+//     'userId': _userProfileManager.user.value!.id,
+//     'status': 3
+//   });
+//   if (Platform.isIOS) {
+//     getIt<VoipController>().endCall(call);
+//   }
+//   // callId = 0;
+//   remoteJoined.value = false;
+//   Get.back();
+// }
 }

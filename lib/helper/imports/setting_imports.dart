@@ -16,10 +16,6 @@ export 'package:foap/screens/settings_menu/payment_and_coins.dart';
 export 'package:foap/screens/settings_menu/security_privacy_options.dart';
 export 'package:foap/screens/settings_menu/change_language.dart';
 
-export 'package:foap/screens/settings_menu/account_verification/request_verification.dart';
-export 'package:foap/screens/settings_menu/account_verification/verification_request_list.dart';
-export 'package:foap/screens/settings_menu/account_verification/verification_reject_reason.dart';
-
 
 export 'package:foap/controllers/notification/notification_setting_controller.dart';
 export 'package:foap/model/setting_model.dart';

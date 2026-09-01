@@ -8,7 +8,7 @@ import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/string_extension.dart';
-import 'package:google_mlkit_smart_reply/google_mlkit_smart_reply.dart';
+// import 'package:google_mlkit_smart_reply/google_mlkit_smart_reply.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import '../../components/notification_banner.dart';
@@ -53,7 +53,7 @@ class ChatDetailController extends GetxController {
   DateTime? typingStatusUpdatedAt;
 
   RxSet<String> whoIsTyping = RxSet<String>();
-  final smartReply = SmartReply();
+  // final smartReply = SmartReply();
 
   int chatHistoryPage = 1;
   bool canLoadMoreMessages = true;
@@ -1362,25 +1362,25 @@ class ChatDetailController extends GetxController {
     messages.add(message);
 
     // prepare smart reply suggestion messages
-    if (message.messageContentType == MessageContentType.text &&
-        message.isDateSeparator == false &&
-        message.isMineMessage == false) {
-      smartReply.addMessageToConversationFromRemoteUser(
-          message.isEncrypted == 1
-              ? message.messageContent.decrypted()
-              : message.messageContent,
-          DateTime.now().millisecondsSinceEpoch,
-          message.senderId.toString());
-
-      // var result = await smartReply.suggestReplies([lastMsg]);
-      final response = await smartReply.suggestReplies();
-
-      smartReplySuggestions.value = List.from(response.suggestions);
-      update();
-    } else {
-      smartReplySuggestions.clear();
-      update();
-    }
+    // if (message.messageContentType == MessageContentType.text &&
+    //     message.isDateSeparator == false &&
+    //     message.isMineMessage == false) {
+    //   smartReply.addMessageToConversationFromRemoteUser(
+    //       message.isEncrypted == 1
+    //           ? message.messageContent.decrypted()
+    //           : message.messageContent,
+    //       DateTime.now().millisecondsSinceEpoch,
+    //       message.senderId.toString());
+    //
+    //   // var result = await smartReply.suggestReplies([lastMsg]);
+    //   final response = await smartReply.suggestReplies();
+    //
+    //   smartReplySuggestions.value = List.from(response.suggestions);
+    //   update();
+    // } else {
+    //   smartReplySuggestions.clear();
+    //   update();
+    // }
     scrollToBottom();
   }
 

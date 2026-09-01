@@ -1,20 +1,14 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data';
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import '../helper/enum.dart';
 import '../helper/enum_linking.dart';
-import '../helper/localization_strings.dart';
 import '../main.dart';
 import '../screens/login_sign_up/login_screen.dart';
 import '../util/shared_prefs.dart';
 import 'network_constant.dart';
-export 'api_param_model.dart';
-export 'api_response_model.dart';
 export 'network_constant.dart';
 
 class ApiResponse {
@@ -65,20 +59,21 @@ class ApiWrapper {
 
     final connectivityResult = await (Connectivity().checkConnectivity());
 
-    if (connectivityResult != ConnectivityResult.none) {
+    if (!connectivityResult.contains(ConnectivityResult.none)) {
       return http
           .get(Uri.parse(urlString))
           .then((http.Response response) async {
         dynamic data = _decoder.convert(response.body);
         EasyLoading.dismiss();
+        SharedPrefs()
+            .setApiResponse(url: urlString, response: response.body);
 
-        SharedPrefs().setApiResponse(url: urlString, response: response.body);
         return ApiResponse.fromJson(data);
       });
     } else {
       EasyLoading.dismiss();
       String? cachedResponse =
-          await SharedPrefs().getCachedApiResponse(url: urlString);
+      await SharedPrefs().getCachedApiResponse(url: urlString);
 
       if (cachedResponse != null) {
         dynamic data = _decoder.convert(cachedResponse);
@@ -94,24 +89,24 @@ class ApiWrapper {
 
     final connectivityResult = await (Connectivity().checkConnectivity());
 
-    if (connectivityResult != ConnectivityResult.none) {
-      print(urlString);
-      print(authKey);
+    print(authKey);
+    print(urlString);
 
+    if (!connectivityResult.contains(ConnectivityResult.none)) {
       return http.get(Uri.parse(urlString), headers: {
         "Authorization": "Bearer ${authKey!}"
       }).then((http.Response response) async {
-        // print(response.body);
         dynamic data = _decoder.convert(response.body);
         EasyLoading.dismiss();
-        SharedPrefs().setApiResponse(url: urlString, response: response.body);
+        SharedPrefs()
+            .setApiResponse(url: urlString, response: response.body);
 
         return ApiResponse.fromJson(data);
       });
     } else {
       EasyLoading.dismiss();
       String? cachedResponse =
-          await SharedPrefs().getCachedApiResponse(url: urlString);
+      await SharedPrefs().getCachedApiResponse(url: urlString);
 
       if (cachedResponse != null) {
         dynamic data = _decoder.convert(cachedResponse);
@@ -127,18 +122,21 @@ class ApiWrapper {
 
     String urlString = '${NetworkConstantsUtil.baseUrl}$url';
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult.contains(ConnectivityResult.none)) {
       return null;
     }
+    print('authKey $authKey');
+    print('urlString $urlString');
+    print('param $param');
 
-    return http.post(Uri.parse(urlString), body: jsonEncode(param), headers: {
-      "Authorization": "Bearer ${authKey!}",
-      'Content-Type': 'application/json'
-    }).then((http.Response response) async {
-      print(response.body);
-
+    return http.post(Uri.parse(urlString),
+        body: jsonEncode(param),
+        headers: {
+          "Authorization": "Bearer ${authKey!}",
+          'Content-Type': 'application/json'
+        }).then((http.Response response) async {
       dynamic data = _decoder.convert(response.body);
-
+      print(data);
       return ApiResponse.fromJson(data);
     });
   }
@@ -184,10 +182,15 @@ class ApiWrapper {
       {required String url, required dynamic param}) async {
     // EasyLoading.show(status: loadingString.tr);
 
+    print('urlString ${'${NetworkConstantsUtil.baseUrl}$url'}');
+    print('param $param');
+
     return http
-        .post(Uri.parse('${NetworkConstantsUtil.baseUrl}$url'), body: param)
+        .post(Uri.parse('${NetworkConstantsUtil.baseUrl}$url'),
+        body: param)
         .then((http.Response response) async {
       dynamic data = _decoder.convert(response.body);
+      print(data);
       return ApiResponse.fromJson(data);
     });
   }
@@ -196,12 +199,14 @@ class ApiWrapper {
       {required String url, required Uint8List imageFileData}) async {
     EasyLoading.show(status: loadingString.tr);
 
+    print('url ${'${NetworkConstantsUtil.baseUrl}$url'}');
     String? authKey = await SharedPrefs().getAuthorizationKey();
     var postUri = Uri.parse('${NetworkConstantsUtil.baseUrl}$url');
     var request = http.MultipartRequest("POST", postUri);
     request.headers.addAll({"Authorization": "Bearer ${authKey!}"});
 
-    request.files.add(http.MultipartFile.fromBytes('imageFile', imageFileData,
+    request.files.add(http.MultipartFile.fromBytes(
+        'imageFile', imageFileData,
         filename: '${DateTime.now().toIso8601String()}.jpg',
         contentType: MediaType('image', 'jpg')));
 
@@ -211,66 +216,46 @@ class ApiWrapper {
 
       dynamic data = _decoder.convert(respStr);
 
+      print('data = $data');
       return ApiResponse.fromJson(data);
     });
   }
 
   Future<ApiResponse?> uploadFile(
       {required String file,
-      required UploadMediaType type,
-      required GalleryMediaType mediaType,
-      required String url}) async {
+        required UploadMediaType type,
+        required GalleryMediaType mediaType,
+        required String url}) async {
     EasyLoading.show(status: loadingString.tr);
+    String? authKey = await SharedPrefs().getAuthorizationKey();
+
+    print('${NetworkConstantsUtil.baseUrl}$url');
+    print("Bearer ${authKey!}");
+    print(uploadMediaTypeId(type).toString());
 
     var request = http.MultipartRequest(
         'POST', Uri.parse('${NetworkConstantsUtil.baseUrl}$url'));
-    String? authKey = await SharedPrefs().getAuthorizationKey();
     request.headers.addAll({"Authorization": "Bearer ${authKey!}"});
     request.fields.addAll({'type': uploadMediaTypeId(type).toString()});
     if (mediaType == GalleryMediaType.video) {
-      request.files.add(await http.MultipartFile.fromPath('mediaFile', file,
+      request.files.add(await http.MultipartFile.fromPath(
+          'mediaFile', file,
           contentType: MediaType('video', 'mp4')));
     } else if (mediaType == GalleryMediaType.audio) {
-      request.files.add(await http.MultipartFile.fromPath('mediaFile', file,
+      request.files.add(await http.MultipartFile.fromPath(
+          'mediaFile', file,
           contentType: MediaType('audio', 'mp3')));
     } else {
-      request.files.add(await http.MultipartFile.fromPath('mediaFile', file));
+      request.files
+          .add(await http.MultipartFile.fromPath('mediaFile', file));
     }
     var res = await request.send();
     var responseData = await res.stream.toBytes();
     var responseString = String.fromCharCodes(responseData);
     dynamic data = _decoder.convert(responseString);
+    print('data $data');
     EasyLoading.dismiss();
-    return ApiResponse.fromJson(data);
-  }
 
-  Future<ApiResponse?> uploadPostFile(
-      {required String file,
-      required GalleryMediaType mediaType,
-      required String url}) async {
-    EasyLoading.show(status: loadingString.tr);
-
-    var request = http.MultipartRequest(
-        'POST', Uri.parse('${NetworkConstantsUtil.baseUrl}$url'));
-    String? authKey = await SharedPrefs().getAuthorizationKey();
-    request.headers.addAll({"Authorization": "Bearer ${authKey!}"});
-
-    if (mediaType == GalleryMediaType.video) {
-      request.files.add(await http.MultipartFile.fromPath('filenameFile', file,
-          contentType: MediaType('video', 'mp4')));
-    } else if (mediaType == GalleryMediaType.audio) {
-      request.files.add(await http.MultipartFile.fromPath('filenameFile', file,
-          contentType: MediaType('audio', 'mp3')));
-    } else {
-      request.files.add(await http.MultipartFile.fromPath('filenameFile', file,
-          contentType: MediaType('image', 'png')));
-    }
-
-    var res = await request.send();
-    var responseData = await res.stream.toBytes();
-    var responseString = String.fromCharCodes(responseData);
-    dynamic data = _decoder.convert(responseString);
-    EasyLoading.dismiss();
     return ApiResponse.fromJson(data);
   }
 }

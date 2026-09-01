@@ -13,7 +13,7 @@ class CallData {
   int id;
   String callerName;
   int callerId;
-  String callerImage;
+  String? callerImage;
   String channelName;
   String token;
   int type;
@@ -23,7 +23,7 @@ class CallData {
     required this.id,
     required this.callerName,
     required this.callerId,
-    required this.callerImage,
+    this.callerImage,
     required this.channelName,
     required this.token,
     required this.type,
@@ -41,11 +41,27 @@ class CallData {
       );
 }
 
-class VoipController {
+class VoipController extends GetxController {
   final AgoraCallController agoraCallController = Get.find();
   final UserProfileManager _userProfileManager = Get.find();
+  bool? callEndedByMe;
+
+  clear() {
+    callEndedByMe = null;
+  }
 
   endCall(Call call) {
+    callEndedByMe = true;
+    callkit.FlutterCallkitIncoming.endCall(call.uuid);
+  }
+
+  declinedByOpponent(Call call) {
+    // callEndedByMe = false;
+    callkit.FlutterCallkitIncoming.endCall(call.uuid);
+  }
+
+  endCallByOpponent(Call call) {
+    callEndedByMe = false;
     callkit.FlutterCallkitIncoming.endCall(call.uuid);
   }
 
@@ -74,10 +90,13 @@ class VoipController {
                 callType: callData.type == 0 ? 1 : 2,
                 opponent: opponent);
             agoraCallController.initiateAcceptCall(call: call);
+            clear();
           });
 
           break;
         case call_event.Event.actionCallDecline:
+          CallData callData = CallData.fromJson(event.body);
+
           Call call = Call(
               uuid: event.body['id'],
               channelName: '',
@@ -86,8 +105,11 @@ class VoipController {
               token: '',
               callType: 0,
               callId: 0);
-          //endCall(call);
-          agoraCallController.declineCall(call: call);
+          if (callData.callerId != _userProfileManager.user.value!.id) {
+            //call made by me
+            agoraCallController.declineIncomingCall(call: call);
+          }
+          clear();
           break;
         case call_event.Event.actionCallEnded:
           Call call = Call(
@@ -98,9 +120,16 @@ class VoipController {
               token: '',
               callType: 0,
               callId: 0);
-          // var params = <String, dynamic>{'id': event.body['id']};
-          callkit.FlutterCallkitIncoming.endCall(event.body['id']);
-          agoraCallController.receivedEndCallNotification(call);
+
+          if (callEndedByMe == true) {
+          } else if (callEndedByMe == false) {
+            agoraCallController.receivedEndCallNotification(call);
+          } else {
+            // agoraCallController.onCallEnd(call);
+          }
+
+          clear();
+
           break;
         case call_event.Event.actionCallTimeout:
           Call call = Call(
@@ -123,10 +152,10 @@ class VoipController {
           //     callType: callData.type == 0 ? 1 : 2,
           //     callId: callData.id);
           // var params = <String, dynamic>{'id': event.body['id']};
-          callkit.FlutterCallkitIncoming.endCall(event.body['id']);
-          agoraCallController.declineCall(call: call);
+          // callkit.FlutterCallkitIncoming.endCall(event.body['id']);
+          agoraCallController.declineIncomingCall(call: call);
+          clear();
           // }
-
           break;
         case call_event.Event.actionCallCallback:
           break;
@@ -170,27 +199,28 @@ class VoipController {
         ios: const IOSParams(handleType: 'generic'));
 
     await callkit.FlutterCallkitIncoming.startCall(params);
+    clear();
   }
 
-  missCall(Call call) async {
-    CallKitParams params = CallKitParams(
-        id: call.uuid,
-        nameCaller: call.opponent.userName,
-        handle: call.channelName,
-        type: call.callType == 1 ? 0 : 1,
-        extra: <String, dynamic>{
-          'id': call.callId,
-          'callerId': _userProfileManager.user.value!.id,
-          'callerImage': _userProfileManager.user.value!.picture,
-          'channelName': call.channelName,
-          'token': call.token
-        },
-        ios: const IOSParams(handleType: 'generic'));
-
-    await callkit.FlutterCallkitIncoming.showMissCallNotification(params);
-  }
-
-  endAllCalls() async {
-    await callkit.FlutterCallkitIncoming.endAllCalls();
-  }
+// missCall(Call call) async {
+//   CallKitParams params = CallKitParams(
+//       id: call.uuid,
+//       nameCaller: call.opponent.userName,
+//       handle: call.channelName,
+//       type: call.callType == 1 ? 0 : 1,
+//       extra: <String, dynamic>{
+//         'id': call.callId,
+//         'callerId': _userProfileManager.user.value!.id,
+//         'callerImage': _userProfileManager.user.value!.picture,
+//         'channelName': call.channelName,
+//         'token': call.token
+//       },
+//       ios: const IOSParams(handleType: 'generic'));
+//
+//   await callkit.FlutterCallkitIncoming.showMissCallNotification(params);
+// }
+//
+// endAllCalls() async {
+//   await callkit.FlutterCallkitIncoming.endAllCalls();
+// }
 }

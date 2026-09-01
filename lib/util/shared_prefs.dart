@@ -15,7 +15,7 @@ class SharedPrefs {
 
   Future<bool> isDarkMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.get('darkMode') as bool? ?? true;
+    return prefs.get('darkMode') as bool? ?? false;
   }
 
   setDarkMode(bool value) async {

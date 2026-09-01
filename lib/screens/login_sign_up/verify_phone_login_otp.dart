@@ -5,7 +5,7 @@ import '../../controllers/auth/login_controller.dart';
 class VerifyRegistrationOTP extends StatefulWidget {
   final String token;
 
-  const VerifyRegistrationOTP({Key? key, required this.token}) : super(key: key);
+  const VerifyRegistrationOTP({super.key, required this.token});
 
   @override
   VerifyRegistrationOTPState createState() => VerifyRegistrationOTPState();
@@ -49,6 +49,7 @@ class VerifyRegistrationOTPState extends State<VerifyRegistrationOTP> {
           Obx(() => PinCodeTextField(
                 autofocus: true,
                 controller: controller,
+
                 highlightColor: Colors.blue,
                 defaultBorderColor: Colors.transparent,
                 hasTextBorderColor: Colors.transparent,
@@ -63,14 +64,14 @@ class VerifyRegistrationOTPState extends State<VerifyRegistrationOTP> {
                 onDone: (text) {
                   loginController.otpCompleted();
                 },
-                pinBoxWidth: 60,
-                pinBoxHeight: 60,
+                pinBoxWidth: 50,
+                pinBoxHeight: 50,
                 // hasUnderline: true,
                 wrapAlignment: WrapAlignment.spaceAround,
                 pinBoxDecoration:
                     ProvidedPinBoxDecoration.defaultPinBoxDecoration,
                 pinTextStyle: TextStyle(
-                    fontSize: FontSizes.h3, fontWeight: TextWeight.medium),
+                    fontSize: FontSizes.h4, fontWeight: TextWeight.medium),
                 pinTextAnimatedSwitcherTransition:
                     ProvidedPinBoxTextAnimation.scalingTransition,
                 pinTextAnimatedSwitcherDuration:

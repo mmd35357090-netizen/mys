@@ -24,7 +24,7 @@ class DashboardController extends GetxController {
 }
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   DashboardState createState() => DashboardState();
@@ -101,30 +101,15 @@ class DashboardState extends State<DashboardScreen> {
                                   ).bP8),
                               label: homeString.tr),
                           BottomNavigationBarItem(
-                            icon: Obx(() => Stack(
-                                  children: [
-                                    Obx(() => ThemeIconWidget(
-                                          ThemeIcon.search,
-                                          size: 28,
-                                          color: _dashboardController
-                                                      .currentIndex.value ==
-                                                  1
-                                              ? AppColorConstants.themeColor
-                                              : AppColorConstants.iconColor,
-                                        ).bP8),
-                                    if (_dashboardController
-                                            .unreadMsgCount.value >
-                                        0)
-                                      Positioned(
-                                          right: 0,
-                                          top: 0,
-                                          child: Container(
-                                            height: 12,
-                                            width: 12,
-                                            color: AppColorConstants.themeColor,
-                                          ).circular)
-                                  ],
-                                )),
+                            icon: ThemeIconWidget(
+                              ThemeIcon.search,
+                              size: 28,
+                              color: _dashboardController
+                                  .currentIndex.value ==
+                                  1
+                                  ? AppColorConstants.themeColor
+                                  : AppColorConstants.iconColor,
+                            ),
                             label: exploreString.tr,
                           ),
                           BottomNavigationBarItem(
@@ -143,16 +128,32 @@ class DashboardState extends State<DashboardScreen> {
                                 ).circular),
                             label: reelsString.tr,
                           ),
+
                           BottomNavigationBarItem(
-                            icon: Obx(() => ThemeIconWidget(
+                            icon: Obx(() => Stack(
+                              children: [
+                                Obx(() => ThemeIconWidget(
                                   ThemeIcon.chat,
                                   size: 28,
-                                  color:
-                                      _dashboardController.currentIndex.value ==
-                                              3
-                                          ? AppColorConstants.themeColor
-                                          : AppColorConstants.iconColor,
+                                  color: _dashboardController
+                                      .currentIndex.value ==
+                                      3
+                                      ? AppColorConstants.themeColor
+                                      : AppColorConstants.iconColor,
                                 ).bP8),
+                                if (_dashboardController
+                                    .unreadMsgCount.value >
+                                    0)
+                                  Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        height: 12,
+                                        width: 12,
+                                        color: AppColorConstants.themeColor,
+                                      ).circular)
+                              ],
+                            )),
                             label: chatsString.tr,
                           ),
                           BottomNavigationBarItem(

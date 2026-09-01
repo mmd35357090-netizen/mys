@@ -1,31 +1,63 @@
 buildscript {
-    ext.kotlin_version = '1.9.20'
     repositories {
         google()
         mavenCentral()
-        maven { url "https://artifactory.img.ly/artifactory/imgly" }
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.4.1'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
-        classpath 'ly.img.android.sdk:plugin:10.4.1'
+        classpath 'com.android.tools.build:gradle:8.6.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23"
+        classpath 'com.google.gms:google-services:4.4.3'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.5'
     }
 }
 
 allprojects {
+    configurations.configureEach {
+        exclude group:"io.agora.rtc", module:"full-screen-sharing"
+    }
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://artifactory.img.ly/artifactory/imgly' }
-    }
-
-    configurations.all {
-        exclude group:"io.agora.rtc", module:"full-screen-sharing"
     }
 }
+
+// NEW: Add Java toolchain configuration
+subprojects {
+    plugins.withType(JavaBasePlugin).configureEach {
+        java {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(17))
+                vendor.set(JvmVendorSpec.ADOPTIUM)
+            }
+        }
+    }
+
+    afterEvaluate { project ->
+        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                jvmTarget = '17'
+            }
+        }
+
+        if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
+            project.android {
+                compileSdk 36
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+    }
+}
+
+// REMOVE duplicate Kotlin configuration
+// (Delete this block since it's now handled in subprojects)
+// tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+//     kotlinOptions {
+//         jvmTarget = '17'
+//     }
+// }
 
 rootProject.buildDir = '../build'
 subprojects {

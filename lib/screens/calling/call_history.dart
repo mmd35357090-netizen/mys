@@ -6,14 +6,15 @@ import 'package:foap/screens/chat/chat_detail.dart';
 import 'package:foap/screens/chat/select_users.dart';
 
 class CallHistory extends StatefulWidget {
-  const CallHistory({Key? key}) : super(key: key);
+  const CallHistory({super.key});
 
   @override
   State<CallHistory> createState() => _CallHistoryState();
 }
 
 class _CallHistoryState extends State<CallHistory> {
-  final CallHistoryController _callHistoryController = CallHistoryController();
+  final CallHistoryController _callHistoryController =
+      CallHistoryController();
   final ChatDetailController _chatDetailController = Get.find();
 
   @override
@@ -34,12 +35,9 @@ class _CallHistoryState extends State<CallHistory> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            backNavigationBarWithIcon(
-                icon: ThemeIcon.mobile,
-                title: callLogString.tr,
-                iconBtnClicked: () {
-                  selectUsers();
-                }),
+            backNavigationBar(
+              title: callLogString.tr,
+            ),
             Expanded(
               child: GetBuilder<CallHistoryController>(
                   init: _callHistoryController,
@@ -56,17 +54,18 @@ class _CallHistoryState extends State<CallHistory> {
 
                     return _callHistoryController.calls.isNotEmpty
                         ? ListView.separated(
-                            padding:
-                                const EdgeInsets.only(top: 20, bottom: 100),
+                            padding: const EdgeInsets.only(
+                                top: 20, bottom: 100),
                             controller: scrollController,
                             itemBuilder: (ctx, index) {
                               return CallHistoryTile(
-                                      model:
-                                          _callHistoryController.calls[index])
+                                      model: _callHistoryController
+                                          .calls[index])
                                   .ripple(() {
                                 _callHistoryController.reInitiateCall(
-                                    call: _callHistoryController.calls[index],
-                                    );
+                                  call:
+                                      _callHistoryController.calls[index],
+                                );
                               });
                             },
                             separatorBuilder: (ctx, index) {
@@ -80,30 +79,10 @@ class _CallHistoryState extends State<CallHistory> {
                             : emptyData(
                                 title: noCallFoundString.tr,
                                 subTitle: makeSomeCallsString.tr,
-                               );
+                              );
                   }).hp(DesignConstants.horizontalPadding),
             ),
           ],
         ));
-  }
-
-  void selectUsers() {
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-
-        builder: (context) => SelectUserForChat(userSelected: (user) {
-              _chatDetailController.getChatRoomWithUser(
-                  userId: user.id,
-                  callback: (room) {
-                    EasyLoading.dismiss();
-
-                    Get.back();
-                    Get.to(() => ChatDetail(
-                          // opponent: usersList[index - 1].toChatRoomMember,
-                          chatRoom: room,
-                        ));
-                  });
-            }));
   }
 }

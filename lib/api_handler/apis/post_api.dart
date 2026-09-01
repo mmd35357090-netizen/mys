@@ -145,6 +145,7 @@ class PostApi {
     url = '$url&page=$page';
     EasyLoading.show(status: loadingString.tr);
 
+
     await ApiWrapper().getApi(url: url).then((response) {
       EasyLoading.dismiss();
 
@@ -152,11 +153,8 @@ class PostApi {
         List<PostModel> posts = [];
         var items = response!.data['post']['items'];
         posts = List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
-            // .where((element) =>
-            //     element.gallery.isNotEmpty ||
-            //     element.contentType == PostContentType.competitionAdded ||
-            //     element.contentType ==
-            //         PostContentType.competitionResultDeclared)
+            .where((element) =>
+                element.gallery.isNotEmpty )
             .toList();
 
         APIMetaData metaData =
@@ -204,6 +202,23 @@ class PostApi {
       } else {
         resultCallback(null);
       }
+    });
+  }
+
+  static Future<void> getPostDetailByUniqueId(String id,
+      {required Function(PostModel?) resultCallback}) async {
+    var url = NetworkConstantsUtil.postDetailByUniqueId;
+    url =
+    '$url$id&expand=user,user.userLiveDetail,clubDetail,audio,giftSummary,clubDetail.createdByUser';
+    await ApiWrapper().getApi(url: url).then((response) {
+      if (response?.success == true) {
+        var post = response!.data['post'];
+        if (post != null) {
+          resultCallback(PostModel.fromJson(post));
+        } else {
+          resultCallback(null);
+        }
+      } else {}
     });
   }
 
@@ -376,22 +391,24 @@ class PostApi {
     }).then((value) {});
   }
 
-  static Future uploadFile(String filePath,
-      {required GalleryMediaType mediaType,
-      required Function(String, String) resultCallback}) async {
-    EasyLoading.show(status: loadingString.tr);
+  static linkCollaborator(
+      {required int postId, required int collaboratorId}) async {
+    var url = NetworkConstantsUtil.addCollaborate;
 
-    await ApiWrapper()
-        .uploadPostFile(
-      url: NetworkConstantsUtil.uploadPostImage,
-      file: filePath,
-      mediaType: mediaType,
-    )
-        .then((result) {
-      EasyLoading.dismiss();
-      if (result?.success == true) {
-        resultCallback(result!.data['filename'], result.data['fileUrl']);
-      }
+    await ApiWrapper().postApi(url: url, param: {
+      'reference_id': postId.toString(),
+      'type': '1',
+      'collaborator_id': collaboratorId.toString()
+    });
+  }
+
+  static updateCollaborationStatus(
+      {required int id, required CollaborationStatusType status}) async {
+    var url = NetworkConstantsUtil.addCollaborationStatus;
+
+    await ApiWrapper().postApi(url: url, param: {
+      'id': id.toString(),
+      'status': collaborationStatusTypeId(status).toString(),
     });
   }
 }

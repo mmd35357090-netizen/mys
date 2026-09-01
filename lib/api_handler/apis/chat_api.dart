@@ -38,9 +38,10 @@ class ChatApi {
     });
   }
 
-  static Future updateGroupChatRoom(int groupId, String title, String? image,
-      String? description, String? groupAccess) async {
-    var url = NetworkConstantsUtil.updateGroupChatRoom + groupId.toString();
+  static Future updateGroupChatRoom(int groupId, String title,
+      String? image, String? description, String? groupAccess) async {
+    var url =
+        NetworkConstantsUtil.updateGroupChatRoom + groupId.toString();
 
     Map<String, String> param = {};
 
@@ -66,7 +67,8 @@ class ChatApi {
   }
 
   static deleteChatRoomMessages(int roomId) async {
-    var url = NetworkConstantsUtil.deleteChatRoomMessages + roomId.toString();
+    var url =
+        NetworkConstantsUtil.deleteChatRoomMessages + roomId.toString();
 
     await ApiWrapper().postApi(
         url: url, param: {'room_id': roomId.toString()}).then((result) {});
@@ -78,10 +80,9 @@ class ChatApi {
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var room = result!.data['room'] as List<dynamic>;
-          room = room.toList();
-          resultCallback(List<ChatRoomModel>.from(
-              room.map((x) => ChatRoomModel.fromJson(x))));
-
+        room = room.toList();
+        resultCallback(List<ChatRoomModel>.from(
+            room.map((x) => ChatRoomModel.fromJson(x))));
       }
     });
   }
@@ -95,12 +96,11 @@ class ChatApi {
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var room = result!.data['room']['items'] as List<dynamic>;
-          room = room.toList();
-          resultCallback(
-              List<ChatRoomModel>.from(
-                  room.map((x) => ChatRoomModel.fromJson(x))),
-              APIMetaData.fromJson(result.data['room']['_meta']));
-
+        room = room.toList();
+        resultCallback(
+            List<ChatRoomModel>.from(
+                room.map((x) => ChatRoomModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['room']['_meta']));
       }
     });
   }
@@ -147,12 +147,29 @@ class ChatApi {
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var callHistory = result!.data['callHistory'];
-        var items = callHistory['items'];
+        var items = (callHistory['items'] as List)
+            .where((e) => e['receiverDetail'] != null);
 
+        print('test');
         resultCallback(
             List<CallHistoryModel>.from(
                 items.map((x) => CallHistoryModel.fromJson(x))),
             APIMetaData.fromJson(result.data['callHistory']['_meta']));
+        print('test1');
+      }
+    });
+  }
+
+  static getCallDetail(
+      {required int callId,
+      required Function(CallHistoryModel) resultCallback}) async {
+    var url = NetworkConstantsUtil.callDetail
+        .replaceAll('{{call_id}}', callId.toString());
+
+    await ApiWrapper().getApi(url: url).then((result) {
+      if (result?.success == true) {
+        var callHistory = result!.data['call'];
+        resultCallback(CallHistoryModel.fromJson(callHistory));
       }
     });
   }
@@ -172,8 +189,8 @@ class ChatApi {
           getRandomOnlineUsers(profileCategoryType,
               resultCallback: resultCallback);
         } else {
-          resultCallback(
-              List<UserModel>.from(items.map((x) => UserModel.fromJson(x))));
+          resultCallback(List<UserModel>.from(
+              items.map((x) => UserModel.fromJson(x))));
         }
       }
     });

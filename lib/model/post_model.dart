@@ -4,6 +4,7 @@ import 'package:foap/model/post_gallery.dart';
 import '../helper/enum_linking.dart';
 import '../screens/add_on/model/reel_music_model.dart';
 import 'club_model.dart';
+import 'collaboration_model.dart';
 import 'competition_model.dart';
 
 class PostModel {
@@ -40,6 +41,11 @@ class PostModel {
   PostModel? sharedPost;
   String shareLink = '';
   PostContentType contentType = PostContentType.text;
+  List<CollaborationModel> collaborations = [];
+
+  int? pinId;
+
+  bool isPinned = false;
 
   PostModel();
 
@@ -91,7 +97,10 @@ class PostModel {
       model.mentionedUsers = List<MentionedUsers>.from(
           json['mentionUsers'].map((x) => MentionedUsers.fromJson(x)));
     }
-
+    if (json['collaborate'] != null && json['collaborate'].length > 0) {
+      model.collaborations = List<CollaborationModel>.from(
+          json['collaborate'].map((x) => CollaborationModel.fromJson(x)));
+    }
     model.createDate = json['created_at'] == null
         ? null
         : DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
@@ -108,7 +117,8 @@ class PostModel {
     model.sharedPost = json['originPost'] == null
         ? null
         : PostModel.fromJson(json['originPost']);
-
+    model.pinId = json['isPin'] == null ? null : json['isPin']['id'];
+    model.isPinned = json['isPin'] != null;
     return model;
   }
 
@@ -125,6 +135,50 @@ class PostModel {
   bool get isReel {
     return type == 4;
   }
+
+
+  bool get amICollaborator {
+    return collaborations
+        .where((e) =>
+    e.user!.isMe && e.status == CollaborationStatusType.accepted)
+        .isNotEmpty;
+  }
+
+  bool get isPendingCollaborationRequest {
+    return collaborations
+        .where((e) =>
+    e.user!.isMe && e.status == CollaborationStatusType.pending)
+        .isNotEmpty;
+  }
+
+  List<CollaborationModel> get activeCollaborations {
+    return collaborations
+        .where((e) => e.status == CollaborationStatusType.accepted)
+        .toList();
+  }
+
+  CollaborationModel get myCollaboration {
+    return collaborations.where((e) => e.user!.isMe).first;
+  }
+
+  removeMyCollaboration() {
+    CollaborationModel collaboration =
+        collaborations.where((e) => e.user!.isMe).first;
+    collaboration.status = CollaborationStatusType.cancelled;
+  }
+
+  acceptMyCollaboration() {
+    CollaborationModel collaboration =
+        collaborations.where((e) => e.user!.isMe).first;
+    collaboration.status = CollaborationStatusType.accepted;
+  }
+
+  removeCollaboration(CollaborationModel collaboration) {
+    CollaborationModel matchedCollaboration =
+        collaborations.where((e) => e.id == collaboration.id).first;
+    matchedCollaboration.status = CollaborationStatusType.cancelled;
+  }
+
 
   String get postTitle {
     if (contentType == PostContentType.text ||

@@ -19,6 +19,7 @@ import 'package:foap/util/constant_util.dart';
 import 'components/giphy/src/l10n/l10n.dart';
 import 'components/reply_chat_cells/post_gift_controller.dart';
 import 'components/smart_text_field.dart';
+import 'controllers/chat_and_call/voip_controller.dart';
 import 'controllers/clubs/clubs_controller.dart';
 import 'controllers/misc/faq_controller.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
@@ -33,6 +34,7 @@ import 'components/post_card_controller.dart';
 import 'controllers/misc/gift_controller.dart';
 import 'controllers/misc/misc_controller.dart';
 import 'controllers/misc/users_controller.dart';
+import 'controllers/notification/notifications_controller.dart';
 import 'controllers/post/add_post_controller.dart';
 import 'controllers/chat_and_call/agora_call_controller.dart';
 import 'controllers/live/agora_live_controller.dart';
@@ -59,6 +61,7 @@ import 'manager/notification_manager.dart';
 import 'manager/player_manager.dart';
 import 'manager/socket_manager.dart';
 import 'firebase_options.dart';
+import 'dart:convert';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -78,12 +81,16 @@ Future<void> main() async {
   cameras = await availableCameras();
   HttpOverrides.global = MyHttpOverrides();
 
+
   await Firebase.initializeApp(
     name: AppConfigConstants.appName,
     options: DefaultFirebaseOptions.currentPlatform,
-  );
+  ).whenComplete(() {
+    print('initializeApp completed');
+  });
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(
+      _firebaseMessagingBackgroundHandler);
   DeviceInfoManager.collectDeviceInfo();
 
   String? token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
@@ -108,6 +115,8 @@ Future<void> main() async {
   Get.put(SettingsController());
   Get.put(SubscriptionPackageController());
   Get.put(AgoraCallController());
+  Get.put(VoipController());
+
   Get.put(AgoraLiveController());
   Get.put(LoginController());
   Get.put(HomeController());
@@ -136,6 +145,7 @@ Future<void> main() async {
   Get.put(CreateReelController());
   Get.put(CameraControllerService());
   Get.put(HighlightsController());
+  Get.put(NotificationController());
 
   setupServiceLocator();
 
@@ -150,7 +160,8 @@ Future<void> main() async {
   await settingsController.getSettings();
 
   NotificationManager().initialize();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(
+      _firebaseMessagingBackgroundHandler);
 
   await getIt<DBManager>().createDatabase();
 
@@ -175,7 +186,8 @@ Future<void> main() async {
 class SocialifiedApp extends StatefulWidget {
   final Widget startScreen;
 
-  const SocialifiedApp({Key? key, required this.startScreen}) : super(key: key);
+  const SocialifiedApp({Key? key, required this.startScreen})
+      : super(key: key);
 
   @override
   State<SocialifiedApp> createState() => _SocialifiedAppState();
@@ -236,12 +248,20 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
 }
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+Future<void> _firebaseMessagingBackgroundHandler(
+    RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
+
+  print('message.data ${message.data}');
+  Get.put(DashboardController());
+  Get.put(UserProfileManager());
+  Get.put(SettingsController());
+  Get.put(AgoraCallController());
+  Get.put(VoipController());
 
   NotificationManager().parseNotificationMessage(message.data);
 }

@@ -25,7 +25,7 @@ class LoginController extends GetxController {
   RxDouble passwordStrength = 0.toDouble().obs;
   RxString phoneCountryCode = '+1'.obs;
 
-  int pinLength = 4;
+  int pinLength = 6;
   RxBool hasError = false.obs;
   RxBool otpFilled = false.obs;
 
@@ -57,6 +57,11 @@ class LoginController extends GetxController {
               Get.offAll(() => const DashboardScreen());
               getIt<SocketManager>().connect();
             }
+          },
+          verifyOtpCallback: (token) {
+            Get.to(() => VerifyRegistrationOTP(
+                  token: token,
+                ));
           });
       // AppUtil.checkInternet().then((value) {
       //   if (value) {
@@ -348,7 +353,8 @@ class LoginController extends GetxController {
 
   void forgotPassword({required String email}) {
     if (FormValidator().isTextEmpty(email)) {
-      AppUtil.showToast(message: pleaseEnterEmailString.tr, isSuccess: false);
+      AppUtil.showToast(
+          message: pleaseEnterEmailString.tr, isSuccess: false);
     } else if (FormValidator().isNotValidEmail(email)) {
       AppUtil.showToast(
           message: pleaseEnterValidEmailString.tr, isSuccess: false);

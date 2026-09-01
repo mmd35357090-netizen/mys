@@ -42,7 +42,7 @@ class _SubscribedTvListState extends State<SubscribedTvList> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            backNavigationBar(title: subscribedString),
+            backNavigationBar(title: subscribedString.tr),
             Expanded(child: tvList()),
           ],
         ));

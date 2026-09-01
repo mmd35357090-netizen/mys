@@ -190,7 +190,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
           width: Get.width - 80,
           height: 50,
           child: ListView.builder(
-              padding: EdgeInsets.only(left: DesignConstants.horizontalPadding),
+              padding:
+                  EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
@@ -214,7 +215,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
           width: Get.width - 80,
           height: 50,
           child: ListView.builder(
-              padding: EdgeInsets.only(left: DesignConstants.horizontalPadding),
+              padding:
+                  EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
@@ -232,20 +234,20 @@ class _DrawingScreenState extends State<DrawingScreen> {
       child: Obx(() => FloatingActionButton.small(
             tooltip: "Erase",
             backgroundColor: const Color(0xFFF7FBFF),
-            elevation: _drawingBoardController.isErasing.value == true ? 10 : 2,
+            elevation:
+                _drawingBoardController.isErasing.value == true ? 10 : 2,
             shape: const CircleBorder(),
             onPressed: () {
               if (_drawingBoardController.isErasing.value == true) {
                 _drawingController.setPaintContent(SimpleLine());
               } else {
-                _drawingController.setPaintContent(Eraser(
-                    color:
-                        _drawingBoardController.selectedBackgroundColor.value));
+                _drawingController.setPaintContent(Eraser());
               }
 
               _drawingBoardController.eraseToggle();
             },
-            child: const Icon(Icons.cleaning_services, color: Colors.blueGrey),
+            child: const Icon(Icons.cleaning_services,
+                color: Colors.blueGrey),
           )),
     );
   }
@@ -261,9 +263,10 @@ class _DrawingScreenState extends State<DrawingScreen> {
               : 40,
           color: color,
         ).border(
-            value: _drawingBoardController.selectedStrokeColor.value == color
-                ? 5
-                : 0,
+            value:
+                _drawingBoardController.selectedStrokeColor.value == color
+                    ? 5
+                    : 0,
             color: AppColorConstants.themeColor)).ripple(() {
       _drawingController.setStyle(color: color);
       _drawingBoardController.setStrokeColor(color);
@@ -275,16 +278,17 @@ class _DrawingScreenState extends State<DrawingScreen> {
     required Color color,
   }) {
     return Obx(() => Container(
-          width: _drawingBoardController.selectedBackgroundColor.value == color
+          width: _drawingBoardController.selectedBackgroundColor.value ==
+                  color
               ? 30
               : 40,
           height: 40,
           color: color,
         ).border(
-            value:
-                _drawingBoardController.selectedBackgroundColor.value == color
-                    ? 5
-                    : 0,
+            value: _drawingBoardController.selectedBackgroundColor.value ==
+                    color
+                ? 5
+                : 0,
             color: AppColorConstants.themeColor)).ripple(() {
       // print('background color');
       _drawingBoardController.setBackgroundColor(color);
@@ -302,8 +306,9 @@ class _DrawingScreenState extends State<DrawingScreen> {
         }
       },
       disabledElevation: 0,
-      backgroundColor:
-          _drawingController.currentIndex > 0 ? Colors.blueGrey : Colors.grey,
+      backgroundColor: _drawingController.currentIndex > 0
+          ? Colors.blueGrey
+          : Colors.grey,
       child: const Icon(
         Icons.undo_rounded,
         color: Colors.white,
@@ -323,10 +328,10 @@ class _DrawingScreenState extends State<DrawingScreen> {
         }
       },
       disabledElevation: 0,
-      backgroundColor:
-          _drawingController.currentIndex < _drawingController.getHistory.length
-              ? Colors.blueGrey
-              : Colors.grey,
+      backgroundColor: _drawingController.currentIndex <
+              _drawingController.getHistory.length
+          ? Colors.blueGrey
+          : Colors.grey,
       child: const Icon(
         Icons.redo_rounded,
         color: Colors.white,

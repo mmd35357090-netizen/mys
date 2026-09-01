@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../api_handler/apis/misc_api.dart';
+import '../../helper/enum.dart';
 import '../../model/hash_tag.dart';
 import 'package:foap/helper/list_extension.dart';
 
@@ -26,7 +27,6 @@ class MiscController extends GetxController {
     hashTags.clear();
   }
 
-
   searchHashTags(String text) {
     clear();
     _searchText = text;
@@ -51,5 +51,12 @@ class MiscController extends GetxController {
     }
   }
 
+  addToPin(PinContentType type, int refId, Function(int) successHandler) {
+    MiscApi.pinContent(
+        type: type, refId: refId, successHandler: successHandler);
+  }
 
+  removeFromPin(PinContentType type, int refId) {
+    MiscApi.removePinContent(type: type, refId: refId);
+  }
 }

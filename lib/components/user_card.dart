@@ -6,6 +6,7 @@ import '../controllers/profile/profile_controller.dart';
 import '../model/call_model.dart';
 import '../model/club_join_request.dart';
 import '../model/club_member_model.dart';
+import '../model/collaboration_model.dart';
 import '../model/gift_model.dart';
 import '../model/live_model.dart';
 import '../model/story_model.dart';
@@ -1066,6 +1067,94 @@ class LiveUserTile extends StatelessWidget {
             : viewer.role == LiveUserRole.moderator
                 ? moderatorString.tr
                 : '')
+      ],
+    );
+  }
+}
+
+
+class CollaboratorTile extends StatelessWidget {
+  final CollaborationModel collaborator;
+
+  final VoidCallback removeCallback;
+  final VoidCallback? viewCallback;
+
+  const CollaboratorTile({
+    super.key,
+    required this.collaborator,
+    required this.removeCallback,
+    this.viewCallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              UserAvatarView(
+                user: collaborator.user!,
+                size: 30,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        BodyLargeText(
+                          collaborator.user!.userName,
+                          maxLines: 1,
+                        ),
+                        if (collaborator.user!.isVerified)
+                          verifiedUserTag(),
+                        if (collaborator.status ==
+                            CollaborationStatusType.pending)
+                          BodyLargeText(
+                            '(${pendingString.tr})',
+                            color: Colors.orange,
+                          ),
+                        if (collaborator.status ==
+                            CollaborationStatusType.rejected)
+                          BodyLargeText('(${rejectedString.tr})',
+                              color: AppColorConstants.red),
+                        if (collaborator.status ==
+                            CollaborationStatusType.cancelled)
+                          BodyLargeText('(${cancelledString.tr})',
+                              color: AppColorConstants.red),
+                      ],
+                    ).bP4,
+                    collaborator.user!.country != null
+                        ? BodyMediumText(
+                      '${collaborator.user!.city!}, ${collaborator.user!.country!}',
+                    )
+                        : Container()
+                  ],
+                ).hP8,
+              ),
+              // const Spacer(),
+            ],
+          ).ripple(() {
+            if (viewCallback == null) {
+              Get.to(() => OtherUserProfile(
+                userId: collaborator.user!.id,
+                // user: collaborator.user!,
+              ));
+            } else {
+              viewCallback!();
+            }
+          }),
+        ),
+        if (collaborator.status == CollaborationStatusType.pending ||
+            collaborator.status == CollaborationStatusType.accepted)
+          AppThemeButton(
+              backgroundColor: AppColorConstants.red,
+              text: removeString.tr,
+              onPress: () {
+                removeCallback();
+              })
       ],
     );
   }

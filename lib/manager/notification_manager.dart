@@ -25,7 +25,6 @@ class NotificationManager {
   static final NotificationManager _singleton = NotificationManager._internal();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  final _firebaseMessaging = FirebaseMessaging.instance;
   final UserProfileManager userProfileManager = Get.find();
 
   factory NotificationManager() {
@@ -43,19 +42,19 @@ class NotificationManager {
       },
     );
     // With this token you can test it easily on your phone
-    _firebaseMessaging.getToken().then((fcmToken) {
+    FirebaseMessaging.instance.getToken().then((fcmToken) {
       if (fcmToken != null) {
         SharedPrefs().setFCMToken(fcmToken);
       }
     });
 
-    _firebaseMessaging.setForegroundNotificationPresentationOptions(
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true, // Required to display a heads up notification
       badge: true,
       sound: true,
     );
 
-    _firebaseMessaging.onTokenRefresh.listen((fcmToken) {
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       SharedPrefs().setFCMToken(fcmToken);
       if (userProfileManager.isLogin == true) {
         AuthApi.updateFcmToken();
@@ -89,7 +88,7 @@ class NotificationManager {
       if (Platform.isAndroid) {
         // handleAndroidNotifications(message);
       } else {
-        FGBGEvents.stream.listen((event) {
+        FGBGEvents.instance.stream.listen((event) {
           handleSimpleNotificationBannerTap(
               message, event == FGBGType.foreground ? true : false);
         });
@@ -210,7 +209,7 @@ class NotificationManager {
             jsonDecode(response.payload!), false, true);
       }
     } else {
-      FGBGEvents.stream.listen((event) {
+      FGBGEvents.instance.stream.listen((event) {
         handleSimpleNotificationBannerTap(jsonDecode(response.payload!),
             event == FGBGType.foreground ? true : false);
       });
@@ -431,7 +430,7 @@ performActionOnCallNotificationBanner(
           if (accept) {
             agoraCallController.initiateAcceptCall(call: call);
           } else {
-            agoraCallController.declineCall(call: call);
+            agoraCallController.declineIncomingCall(call: call);
           }
         }
       });

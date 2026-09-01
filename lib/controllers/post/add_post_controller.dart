@@ -5,7 +5,8 @@ import 'package:foap/api_handler/apis/post_api.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/string_extension.dart';
-import 'package:video_compress_ds/video_compress_ds.dart';
+import 'package:video_compress/video_compress.dart';
+import '../../api_handler/apis/misc_api.dart';
 import '../../helper/enum_linking.dart';
 import '../../model/location.dart';
 import '../../screens/chat/media.dart';
@@ -28,6 +29,7 @@ class AddPostController extends GetxController {
   RxBool isPreviewMode = false.obs;
 
   Rx<LocationModel?> taggedLocation = Rx<LocationModel?>(null);
+  RxList<UserModel> collaborators = <UserModel>[].obs;
 
   PostType? currentPostType;
 
@@ -38,6 +40,7 @@ class AddPostController extends GetxController {
     isPreviewMode.value = false;
     enableComments.value = true;
     taggedLocation.value = null;
+    collaborators.clear();
 
     update();
   }
@@ -133,16 +136,19 @@ class AddPostController extends GetxController {
     if (media.mediaType == GalleryMediaType.photo) {
       Uint8List mainFileData = await media.file!.compress();
 
-      file = await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
+      file = await File(
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
           .create();
       file.writeAsBytesSync(mainFileData);
-      uploadMainFile(file, media, videoThumbnailPath, competitionId, completer);
+      uploadMainFile(
+          file, media, videoThumbnailPath, competitionId, completer);
     } else if (media.mediaType == GalleryMediaType.gif) {
       gallery = {
         'filename': media.filePath!,
         'video_thumb': videoThumbnailPath ?? '',
         'type': competitionId == null ? '1' : '2',
-        'media_type': mediaTypeIdFromMediaType(media.mediaType!).toString(),
+        'media_type':
+            mediaTypeIdFromMediaType(media.mediaType!).toString(),
         'is_default': '1',
       };
       completer.complete(gallery);
@@ -163,20 +169,22 @@ class AddPostController extends GetxController {
 
       videoThumbnail.writeAsBytesSync(media.thumbnail!);
 
-      await PostApi.uploadFile(
+      await MiscApi.uploadFile(
         videoThumbnail.path,
         mediaType: media.mediaType!,
+        type: UploadMediaType.post,
         resultCallback: (fileName, filePath) async {
           videoThumbnailPath = fileName;
           await videoThumbnail.delete();
         },
       );
 
-      uploadMainFile(file, media, videoThumbnailPath, competitionId, completer);
+      uploadMainFile(
+          file, media, videoThumbnailPath, competitionId, completer);
     } else {
       // for audio files
-      uploadMainFile(
-          media.file!, media, videoThumbnailPath, competitionId, completer);
+      uploadMainFile(media.file!, media, videoThumbnailPath, competitionId,
+          completer);
     }
 
     return completer.future;
@@ -186,7 +194,8 @@ class AddPostController extends GetxController {
       int? competitionId, Completer completer) async {
     Map<String, String> gallery = {};
 
-    await PostApi.uploadFile(file.path, mediaType: media.mediaType!,
+    await MiscApi.uploadFile(file.path,
+        type: UploadMediaType.post, mediaType: media.mediaType!,
         resultCallback: (fileName, filePath) async {
       String imagePath = fileName;
 
@@ -196,7 +205,8 @@ class AddPostController extends GetxController {
         'filename': imagePath,
         'video_thumb': videoThumbnailPath ?? '',
         'type': competitionId == null ? '1' : '2',
-        'media_type': mediaTypeIdFromMediaType(media.mediaType!).toString(),
+        'media_type':
+            mediaTypeIdFromMediaType(media.mediaType!).toString(),
         'is_default': '1',
         'height': (media.size?.height ?? 0).toString(),
         'width': (media.size?.width ?? 0).toString(),
@@ -226,8 +236,9 @@ class AddPostController extends GetxController {
   }) {
     PostApi.addPost(
         postType: postType,
-        postContentType:
-            galleryItems.isEmpty ? PostContentType.text : PostContentType.media,
+        postContentType: galleryItems.isEmpty
+            ? PostContentType.text
+            : PostContentType.media,
         title: title,
         gallery: galleryItems,
         allowComments: allowComments,
@@ -239,13 +250,14 @@ class AddPostController extends GetxController {
         audioId: audioId,
         audioStartTime: audioStartTime,
         audioEndTime: audioEndTime,
-        resultCallback: (postId) {
+        resultCallback: (postId) async {
           if (postId != null) {
             Get.back();
             postCompletionHandler();
 
             postingMedia = [];
             postingTitle = '';
+            await linkCollaboratorsToPost(postId);
 
             PostApi.getPostDetail(postId, resultCallback: (result) {
               if (result != null) {
@@ -314,5 +326,34 @@ class AddPostController extends GetxController {
             AppUtil.showToast(message: postedString.tr, isSuccess: true);
           }
         });
+  }
+
+  //*************** add collaborate ***************//
+
+  addCollaborator(UserModel user) {
+    if (collaborators.where((e) => e.id == user.id).isNotEmpty) {
+      collaborators.removeWhere((e) => e.id == user.id);
+    } else {
+      if (collaborators.length == 5) {
+        AppUtil.showToast(
+            message: max5CollaboratorsInPostString.tr, isSuccess: false);
+      } else {
+        collaborators.add(user);
+      }
+    }
+  }
+
+  linkCollaboratorsToPost(int postId) async {
+    for (UserModel user in collaborators) {
+      await PostApi.linkCollaborator(
+          postId: postId, collaboratorId: user.id);
+    }
+
+    collaborators.clear();
+  }
+
+  updateCollaborationStatus(
+      {required int id, required CollaborationStatusType status}) {
+    PostApi.updateCollaborationStatus(id: id, status: status);
   }
 }

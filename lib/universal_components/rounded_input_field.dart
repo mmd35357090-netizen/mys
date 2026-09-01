@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:foap/helper/extension.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:intl/intl.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
@@ -1190,7 +1191,7 @@ class _RoundedDropdownFieldState extends State<RoundedDropdownField> {
                     hint: Text(
                       widget.value ??
                           widget.hintText ??
-                          selectString,
+                          selectString.tr,
                       style: TextStyle(
                           fontSize: FontSizes.b3,
                           color: widget.value == null

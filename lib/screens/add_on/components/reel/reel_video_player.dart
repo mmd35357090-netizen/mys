@@ -29,6 +29,8 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
   @override
   void initState() {
     super.initState();
+
+    print('widget.reel ${widget.reel.id}');
     prepareVideo(url: widget.reel.gallery.first.filePath);
   }
 
@@ -342,7 +344,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
   openComments() {
     Get.to(() => CommentsScreen(
           isPopup: true,
-          model: widget.reel,
+          post: widget.reel,
           commentPostedCallback: () {
             setState(() {
               widget.reel.totalComment += 1;

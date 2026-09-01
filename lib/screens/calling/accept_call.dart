@@ -11,9 +11,9 @@ class AcceptCallScreen extends StatefulWidget {
   final Call call;
 
   const AcceptCallScreen({
-    Key? key,
+    super.key,
     required this.call,
-  }) : super(key: key);
+  });
 
   @override
   State<AcceptCallScreen> createState() => _AcceptCallScreenState();
@@ -161,7 +161,7 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
                 color: Colors.white,
               ).p16,
             ).circular.ripple(() {
-              agoraCallController.declineCall(call: widget.call);
+              agoraCallController.declineIncomingCall(call: widget.call);
             }),
             const SizedBox(
               width: 25,

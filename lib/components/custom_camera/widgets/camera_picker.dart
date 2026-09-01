@@ -72,10 +72,10 @@ class CameraPicker extends StatefulWidget {
       primaryColorDark: Colors.grey[900],
       canvasColor: Colors.grey[850],
       scaffoldBackgroundColor: Colors.grey[900],
-      bottomAppBarColor: Colors.grey[900],
+      // bottomAppBarColor: Colors.grey[900],
       cardColor: Colors.grey[900],
       highlightColor: Colors.transparent,
-      toggleableActiveColor: themeColor,
+      // toggleableActiveColor: themeColor,
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: themeColor,
         selectionColor: themeColor.withAlpha(100),

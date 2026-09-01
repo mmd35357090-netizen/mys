@@ -198,6 +198,8 @@ int uploadMediaTypeId(UploadMediaType type) {
       return 5;
     case UploadMediaType.club:
       return 5;
+    case UploadMediaType.post:
+      return 7;
     case UploadMediaType.verification:
       return 12;
   }
@@ -214,3 +216,72 @@ int liveViewerRole(LiveUserRole role) {
       return 1;
   }
 }
+
+
+SMSGateway smsGatewayType(int id) {
+  switch (id) {
+    case 1:
+      return SMSGateway.twilio;
+    case 2:
+      return SMSGateway.sms91;
+    case 3:
+      return SMSGateway.firebase;
+    default:
+      return SMSGateway.twilio;
+  }
+}
+
+SubscribedStatus subscribedStatusType(int id) {
+  switch (id) {
+    case 0:
+      return SubscribedStatus.notSubscribed;
+    case 1:
+      return SubscribedStatus.subscribed;
+    case 2:
+      return SubscribedStatus.expired;
+    default:
+      return SubscribedStatus.notSubscribed;
+  }
+}
+
+
+
+int pinContentTypeId(PinContentType type) {
+  switch (type) {
+    case PinContentType.post:
+      return 1;
+    default:
+      return 2;
+  }
+}
+
+CollaborationStatusType collaborationStatusType(int id) {
+  switch (id) {
+    case 0:
+      return CollaborationStatusType.deleted;
+    case 1:
+      return CollaborationStatusType.pending;
+    case 2:
+      return CollaborationStatusType.rejected;
+    case 4:
+      return CollaborationStatusType.cancelled;
+    default:
+      return CollaborationStatusType.accepted;
+  }
+}
+
+int collaborationStatusTypeId(CollaborationStatusType type) {
+  switch (type) {
+    case CollaborationStatusType.deleted:
+      return 0;
+    case CollaborationStatusType.pending:
+      return 1;
+    case CollaborationStatusType.rejected:
+      return 2;
+    case CollaborationStatusType.cancelled:
+      return 4;
+    default:
+      return 3;
+  }
+}
+

@@ -2,7 +2,6 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/live_imports.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../post/content_creator_view.dart';
 
 class CheckingLiveFeasibility extends StatefulWidget {
@@ -269,6 +268,8 @@ class _CheckingLiveFeasibilityState extends State<CheckingLiveFeasibility> {
   }
 
   goToLive() {
+    final cameraService = Get.find<CameraControllerService>();
+    cameraService.clear();
     // print('goToLive');
     _agoraLiveController.showLiveStreaming();
     // if (widget.battle != null) {

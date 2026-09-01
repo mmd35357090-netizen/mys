@@ -5,13 +5,13 @@ import PushKit
 import flutter_callkit_incoming
 import GoogleMaps
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate,PKPushRegistryDelegate {
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        GMSServices.provideAPIKey("AIzaSyCySU4h66tkg3OujTVtkOH3T3DGrslTjxc")
+        GMSServices.provideAPIKey("your_google_map_api_key")
 
         GADMobileAds.sharedInstance().start(completionHandler: nil)
         GeneratedPluginRegistrant.register(with: self)
@@ -75,11 +75,12 @@ import GoogleMaps
 
         let notificationType =  payload.dictionaryPayload["notification_type"] as! String
 
+        print("payload start")
+
         print(payload)
+        print("payload end")
 
         let data = flutter_callkit_incoming.Data(id: uuid as! String, nameCaller: nameCaller as! String, handle: handle as! String, type: payload.dictionaryPayload["callType"] as! String == "1" ? 0 : 1)
-        
-        
 
         if(notificationType == "103"){
             SwiftFlutterCallkitIncomingPlugin.sharedInstance?.showCallkitIncoming(data, fromPushKit: true)

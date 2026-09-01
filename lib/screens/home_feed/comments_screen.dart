@@ -12,7 +12,7 @@ import '../post/tag_hashtag_view.dart';
 import '../post/tag_users_view.dart';
 
 class CommentsScreen extends StatefulWidget {
-  final PostModel? model;
+  final PostModel? post;
   final int? postId;
   final bool? isPopup;
   final VoidCallback? handler;
@@ -20,14 +20,13 @@ class CommentsScreen extends StatefulWidget {
   final VoidCallback commentDeletedCallback;
 
   const CommentsScreen(
-      {Key? key,
-      this.model,
+      {super.key,
+      this.post,
       this.postId,
       this.handler,
       this.isPopup,
       required this.commentPostedCallback,
-      required this.commentDeletedCallback})
-      : super(key: key);
+      required this.commentDeletedCallback});
 
   @override
   CommentsScreenState createState() => CommentsScreenState();
@@ -57,7 +56,7 @@ class CommentsScreenState extends State<CommentsScreen> {
   }
 
   loadData() {
-    _commentsController.getComments(widget.postId ?? widget.model!.id, () {
+    _commentsController.getComments(widget.postId ?? widget.post!.id, () {
       _commentsRefreshController.loadComplete();
     });
   }
@@ -112,6 +111,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                                   _commentsController.comments[index];
                               return CommentTile(
                                 model: comment,
+                                post: widget.post!,
                                 replyActionHandler: (comment) {
                                   _commentsController.setReplyComment(comment);
                                 },
@@ -134,7 +134,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                                 loadMoreChildCommentsActionHandler: (comment) {
                                   _commentsController.getChildComments(
                                     page: comment.currentPageForReplies,
-                                    postId: widget.postId ?? widget.model!.id,
+                                    postId: widget.postId ?? widget.post!.id,
                                     parentId: comment.id,
                                   );
                                 },
@@ -223,7 +223,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                 ).rP8.ripple(() => _commentsController.selectPhoto(handler: () {
                       _commentsController.postMediaCommentsApiCall(
                           type: CommentType.image,
-                          postId: widget.postId ?? widget.model!.id,
+                          postId: widget.postId ?? widget.post!.id,
                           commentPosted: () {
                             widget.commentPostedCallback();
                           });
@@ -240,7 +240,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                   _commentsController.openGify(() {
                     _commentsController.postMediaCommentsApiCall(
                         type: CommentType.gif,
-                        postId: widget.postId ?? widget.model!.id,
+                        postId: widget.postId ?? widget.post!.id,
                         commentPosted: () {
                           widget.commentPostedCallback();
                         });
@@ -282,7 +282,7 @@ class CommentsScreenState extends State<CommentsScreen> {
 
       _commentsController.postCommentsApiCall(
           comment: commentInputField.text.trim(),
-          postId: widget.postId ?? widget.model!.id,
+          postId: widget.postId ?? widget.post!.id,
           commentPosted: () {
             widget.commentPostedCallback();
           });

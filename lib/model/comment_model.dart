@@ -27,6 +27,8 @@ class CommentModel {
   int pendingReplies = 0;
 
   int totalReplies = 0;
+  bool isPinned = false;
+  int? pinId;
 
   CommentModel();
 
@@ -39,12 +41,6 @@ class CommentModel {
     model.userId = json['user_id'];
     model.level = json['level'] ?? 1;
     model.isFavourite = json['isLike'] == 1;
-
-    // model.replies = json['childCommentDetail'] == null
-    //     ? []
-    //     : (json['childCommentDetail'] as List)
-    //         .map((e) => CommentModel.fromJson(e))
-    //         .toList();
 
     model.totalReplies = json['totalChildComment'] ?? 0;
     model.pendingReplies = json['totalChildComment'] ?? 0;
@@ -68,6 +64,9 @@ class CommentModel {
     DateTime createDate =
     DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000).toUtc();
     model.commentTime = createDate.getTimeAgo;
+
+    model.isPinned = json['isPin'] != null;
+    model.pinId = json['isPin'] == null ? null : json['isPin']['id'];
     return model;
   }
 

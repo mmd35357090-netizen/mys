@@ -1,28 +1,24 @@
-import 'dart:ui';
-
-import 'package:foap/api_handler/apis/misc_api.dart';
 import 'package:foap/helper/date_extension.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
-import 'package:foap/model/notification_modal.dart';
-import 'package:get/get.dart';
-
-import '../../helper/enum.dart';
-import '../../helper/localization_strings.dart';
+import 'package:foap/model/follow_request.dart';
+import '../../api_handler/apis/misc_api.dart';
 import '../../model/data_wrapper.dart';
-import '../../model/follow_request.dart';
+import '../../model/notification_modal.dart';
 
 class NotificationController extends GetxController {
   List<NotificationModel> filteredNotifications = [];
   List<NotificationModel> allNotification = [];
   RxList<FollowRequestModel> followRequests = <FollowRequestModel>[].obs;
 
-  RxList<NotificationType> selectedNotificationsTypes =
-      <NotificationType>[].obs;
+  RxList<SMNotificationType> selectedNotificationsTypes =
+      <SMNotificationType>[].obs;
 
   RxMap<String, List<NotificationModel>> groupedNotifications =
       <String, List<NotificationModel>>{}.obs;
 
   DataWrapper followRequestDataWrapper = DataWrapper();
+  RxInt unreadNotificationCount = 0.obs;
 
   clearFollowRequests() {
     followRequests.clear();
@@ -32,7 +28,8 @@ class NotificationController extends GetxController {
   filterNotifications() {
     if (selectedNotificationsTypes.isNotEmpty) {
       filteredNotifications = allNotification
-          .where((element) => selectedNotificationsTypes.contains(element.type))
+          .where((element) =>
+          selectedNotificationsTypes.contains(element.type))
           .toList();
     } else {
       filteredNotifications = allNotification;
@@ -62,7 +59,29 @@ class NotificationController extends GetxController {
     });
   }
 
-  selectNotificationType(NotificationType type) {
+  getNotificationInfo() {
+    MiscApi.getNotificationInfo(resultCallback: (result) {
+      unreadNotificationCount.value = result;
+    });
+  }
+
+  markNotificationAsRead(int id) {
+    MiscApi.markNotificationAsRead(
+        id: id,
+        resultCallback: () {
+          getNotificationInfo();
+
+          for (var element in allNotification) {
+            if (element.id == id) {
+              element.readStatus = true;
+            }
+          }
+
+          filterNotifications();
+        });
+  }
+
+  selectNotificationType(SMNotificationType type) {
     if (selectedNotificationsTypes.contains(type)) {
       selectedNotificationsTypes.remove(type);
     } else {

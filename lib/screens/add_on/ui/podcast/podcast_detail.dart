@@ -67,7 +67,6 @@ class _PodcastDetailState extends State<PodcastDetail> {
                     ),
                     Heading6Text(
                       episodesString.tr,
-                      // color: AppColorConstants.themeColor,
                       weight: TextWeight.bold,
                     ).hp(DesignConstants.horizontalPadding),
                     const SizedBox(

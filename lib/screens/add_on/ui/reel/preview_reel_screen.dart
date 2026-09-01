@@ -2,7 +2,7 @@ import 'package:chewie/chewie.dart';
 import 'package:foap/screens/chat/media.dart';
 import 'package:foap/screens/post/add_post_screen.dart';
 import 'package:foap/util/constant_util.dart';
-import 'package:video_compress_ds/video_compress_ds.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'dart:io';
@@ -67,54 +67,48 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
       bottom: false,
       child: AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
-        body: Column(
-            // alignment: Alignment.topCenter,
-            // fit: StackFit.loose,
+        body: Column(children: [
+          chewieController == null
+              ? Container()
+              : Expanded(
+                  // height: (Get.width) /
+                  //     videoPlayerController!.value.aspectRatio,
+                  child: Chewie(
+                    controller: chewieController!,
+                  ),
+                ),
+          const SizedBox(
+            height: 25,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const SizedBox(
-                height: 50,
-              ),
-              chewieController == null
-                  ? Container()
-                  : SizedBox(
-                      height: (Get.width - 32) /
-                          videoPlayerController!.value.aspectRatio,
-                      child: Chewie(
-                        controller: chewieController!,
-                      ),
-                    ).round(20),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const ThemeIconWidget(
-                    ThemeIcon.backArrow,
-                    size: 25,
-                  ).circular.ripple(() {
-                    Get.back();
-                  }),
-                  Container(
-                          color: AppColorConstants.themeColor,
-                          child: Text(
-                            nextString.tr,
-                            style: TextStyle(fontSize: FontSizes.b2),
-                          ).setPadding(
-                              left: DesignConstants.horizontalPadding,
-                              right: DesignConstants.horizontalPadding,
-                              bottom: 8,
-                              top: 8))
-                      .circular
-                      .ripple(() {
-                    submitReel();
-                  }),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              )
-            ]).hp(DesignConstants.horizontalPadding),
+              const ThemeIconWidget(
+                ThemeIcon.backArrow,
+                size: 25,
+              ).circular.ripple(() {
+                Get.back();
+              }),
+              Container(
+                      color: AppColorConstants.themeColor,
+                      child: Text(
+                        nextString.tr,
+                        style: TextStyle(fontSize: FontSizes.b2),
+                      ).setPadding(
+                          left: DesignConstants.horizontalPadding,
+                          right: DesignConstants.horizontalPadding,
+                          bottom: 8,
+                          top: 8))
+                  .circular
+                  .ripple(() {
+                submitReel();
+              }),
+            ],
+          ).hp(DesignConstants.horizontalPadding),
+          const SizedBox(
+            height: 20,
+          )
+        ]),
       ),
     );
   }
@@ -147,14 +141,14 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
 
     chewieController?.pause();
 
-    Get.to(() =>
-        AddPostScreen(
+    Get.to(() => AddPostScreen(
           items: [media],
           isReel: true,
           audioId: widget.audioId,
           audioStartTime: widget.audioStartTime,
           audioEndTime: widget.audioEndTime,
-          postType: PostType.reel, postCompletionHandler: () {  },
+          postType: PostType.reel,
+          postCompletionHandler: () {},
         ));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:foap/controllers/notification/notifications_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/home_feed/story_uploader.dart';
@@ -15,7 +16,7 @@ import '../story/story_updates_bar.dart';
 import '../story/story_viewer.dart';
 
 class HomeFeedScreen extends StatefulWidget {
-  const HomeFeedScreen({Key? key}) : super(key: key);
+  const HomeFeedScreen({super.key});
 
   @override
   HomeFeedState createState() => HomeFeedState();
@@ -28,6 +29,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   final SettingsController _settingsController = Get.find();
+  final NotificationController _notificationController = Get.find();
 
   final _controller = ScrollController();
 
@@ -43,6 +45,8 @@ class HomeFeedState extends State<HomeFeedScreen> {
       _homeController.loadQuickLinksAccordingToSettings();
     });
 
+    _notificationController.getNotificationInfo();
+
     _controller.addListener(() {
       if (_controller.position.atEdge) {
         bool isTop = _controller.position.pixels == 0;
@@ -51,10 +55,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
           loadData(isRecent: false);
         }
       }
-
-      _homeController.scrollOffsetChanged(
-          value: _controller.position.pixels,
-          direction: _controller.position.userScrollDirection);
     });
   }
 
@@ -102,76 +102,104 @@ class HomeFeedState extends State<HomeFeedScreen> {
           onTap: () {
             FocusScope.of(context).unfocus();
           },
-          child: Stack(
+          child: Column(
             children: [
-              Expanded(
-                child: postsView(),
-              ),
-              Obx(() => Positioned(
-                  top: _homeController.scrollOffsetValue.value,
-                  // Adjust this value according to your header height
-                  left: 0,
-                  right: 0,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    color: AppColorConstants.backgroundColor,
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Heading4Text(
-                                  AppConfigConstants.appName,
-                                  weight: TextWeight.semiBold,
-                                )
-                              ],
-                            ),
-                            const Spacer(),
-                            const ThemeIconWidget(
-                              ThemeIcon.plus,
-                              size: 25,
-                            ).ripple(() {
-                              Future.delayed(
-                                Duration.zero,
-                                () => showGeneralDialog(
-                                    context: context,
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        const ContentCreatorView()),
-                              );
-                            }),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            const ThemeIconWidget(
-                              ThemeIcon.notification,
-                              size: 25,
-                            ).ripple(() {
-                              Get.to(() => const NotificationsScreen());
-                            }),
-                          ],
-                        ).hp(20),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
+              Container(
+                color: AppColorConstants.backgroundColor,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 50,
                     ),
-                  ))),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Heading4Text(
+                              AppConfigConstants.appName,
+                              weight: TextWeight.semiBold,
+                            )
+                          ],
+                        ),
+                        const Spacer(),
+                        const ThemeIconWidget(
+                          ThemeIcon.plus,
+                          size: 25,
+                        ).ripple(() {
+                          Future.delayed(
+                            Duration.zero,
+                            () => showGeneralDialog(
+                                context: Get.context!,
+                                pageBuilder: (context, animation,
+                                        secondaryAnimation) =>
+                                    const ContentCreatorView()),
+                          );
+                        }),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Obx(() => Stack(
+                              children: [
+                                ThemeIconWidget(
+                                  ThemeIcon.notification,
+                                  size: 25,
+                                  color: AppColorConstants.themeColor,
+                                )
+                                    .rp(_notificationController
+                                                .unreadNotificationCount
+                                                .value >
+                                            0
+                                        ? 15
+                                        : 0)
+                                    .ripple(() {
+                                  Get.to(
+                                      () => const NotificationsScreen());
+                                }),
+                                if (_notificationController
+                                        .unreadNotificationCount.value >
+                                    0)
+                                  Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        color:
+                                            AppColorConstants.themeColor,
+                                        child: Center(
+                                          child: Text(
+                                            _notificationController
+                                                .unreadNotificationCount
+                                                .value
+                                                .toString(),
+                                            style: const TextStyle(
+                                                fontSize: 8,
+                                                color: Colors.white),
+                                            textAlign: TextAlign.center,
+                                          ).setPadding(
+                                              top: 2,
+                                              bottom: 2,
+                                              left: 4,
+                                              right: 4),
+                                        ),
+                                      ).circular)
+                              ],
+                            )),
+                      ],
+                    ).hp(20),
+                  ],
+                ),
+              ),
+              Expanded(child: postsView()),
             ],
           ),
         ));
   }
 
-  postsView() {
+  Widget postsView() {
     return Obx(() {
       return ListView.separated(
               controller: _controller,
-              padding: const EdgeInsets.only(top: 100, bottom: 100),
+              padding: const EdgeInsets.only(top: 25, bottom: 100),
               itemCount: _homeController.posts.length + 3,
               itemBuilder: (context, index) {
                 if (index == 0) {
@@ -180,19 +208,22 @@ class HomeFeedState extends State<HomeFeedScreen> {
                           ? const StoryAndHighlightsShimmer()
                           : storiesView());
                 } else if (index == 1) {
-                  return postingView().hp(DesignConstants.horizontalPadding);
+                  return postingView()
+                      .hp(DesignConstants.horizontalPadding);
                 } else if (index == 2) {
                   return Obx(() => Column(
                         children: [
                           HorizontalMenuBar(
                               padding: EdgeInsets.only(
                                   left: DesignConstants.horizontalPadding,
-                                  right: DesignConstants.horizontalPadding),
+                                  right:
+                                      DesignConstants.horizontalPadding),
                               onSegmentChange: (segment) {
                                 _homeController.categoryIndexChanged(
                                     index: segment,
                                     callback: () {
-                                      _refreshController.refreshCompleted();
+                                      _refreshController
+                                          .refreshCompleted();
                                     });
                               },
                               selectedIndex:
@@ -233,7 +264,8 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 }
               },
               separatorBuilder: (context, index) {
-                if (_settingsController.setting.value?.enablePolls == true) {
+                if (_settingsController.setting.value?.enablePolls ==
+                    true) {
                   return polls(index);
                 } else {
                   return const SizedBox(
@@ -261,17 +293,21 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 _addPostController.postingMedia.isNotEmpty &&
                         _addPostController.postingMedia.first.mediaType !=
                             GalleryMediaType.gif
-                    ? _addPostController.postingMedia.first.thumbnail != null
+                    ? _addPostController.postingMedia.first.thumbnail !=
+                            null
                         ? Image.memory(
-                            _addPostController.postingMedia.first.thumbnail!,
+                            _addPostController
+                                .postingMedia.first.thumbnail!,
                             fit: BoxFit.cover,
                             width: 40,
                             height: 40,
                           ).round(5)
-                        : _addPostController.postingMedia.first.mediaType ==
+                        : _addPostController
+                                    .postingMedia.first.mediaType ==
                                 GalleryMediaType.photo
                             ? Image.file(
-                                _addPostController.postingMedia.first.file!,
+                                _addPostController
+                                    .postingMedia.first.file!,
                                 fit: BoxFit.cover,
                                 width: 40,
                                 height: 40,
@@ -348,7 +384,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
               },
             ).vP16;
           }),
-    );
+    ).hp(DesignConstants.horizontalPadding);
   }
 
   polls(int index) {
@@ -367,7 +403,8 @@ class HomeFeedState extends State<HomeFeedScreen> {
             onVoted: (PollOption pollOption, int newTotalVotes) async {
               await Future.delayed(const Duration(seconds: 1));
               _homeController.postPollAnswer(
-                  _homeController.polls[pollIndex].id!, int.parse(pollOption.id!));
+                  _homeController.polls[pollIndex].id!,
+                  int.parse(pollOption.id!));
 
               /// If HTTP status is success, return true else false
               return true;

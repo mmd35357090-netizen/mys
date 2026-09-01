@@ -16,7 +16,7 @@ class TvListHome extends StatefulWidget {
 
 class _TvListHomeState extends State<TvListHome> {
   final TvStreamingController _tvStreamingController = Get.find();
-  final CarouselController _controller = CarouselController();
+  final CarouselSliderController _controller = CarouselSliderController();
   int _current = 0;
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);

@@ -23,10 +23,10 @@ class _ExploreState extends State<Explore> {
   final PostController postController = Get.find();
 
   List<String> segments = [
-    postsString,
-    accountString,
-    hashTagsString,
-    clubsString,
+    postsString.tr,
+    accountString.tr,
+    hashTagsString.tr,
+    clubsString.tr,
   ];
 
   @override

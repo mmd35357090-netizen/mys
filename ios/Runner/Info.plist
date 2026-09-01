@@ -29,7 +29,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-			    <string>socialifiedstripe</string>
+				<string>socialifiedstripe</string>
 				<string>com.googleusercontent.apps.258656413911-5bqj5jcr6oqledsen49qf9oba5l8tcm8</string>
 			</array>
 		</dict>
@@ -46,7 +46,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>giveriver</string>
+				<string>dev.codepearl.in</string>
 			</array>
 		</dict>
 	</array>
@@ -103,10 +103,10 @@
 	<string>Need access to contacts for sharing and saving contacts</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Want to access biometric authentication for login</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>$(PRODUCT_NAME) Need access to current location for sharing location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Need access to current location for sharing location</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>$(PRODUCT_NAME) Need access to current location for sharing location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Need access to current location for sharing location</string>
 	<key>NSMicrophoneUsageDescription</key>

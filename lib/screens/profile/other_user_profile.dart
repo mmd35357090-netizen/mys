@@ -232,14 +232,13 @@ class OtherUserProfileState extends State<OtherUserProfile>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // const Spacer(),
         Expanded(
           child: AppThemeButton(
               height: 35,
               backgroundColor: _profileController.user.value!.followingStatus ==
                       FollowingStatus.following
                   ? AppColorConstants.themeColor
-                  : AppColorConstants.cardColor,
+                  : AppColorConstants.cardColor.darken(),
               text: _profileController.user.value!.followingStatus ==
                       FollowingStatus.following
                   ? unFollowString.tr

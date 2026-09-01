@@ -1,6 +1,7 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/setting_model.dart';
+import 'package:foap/model/subscription_plan.dart';
 import 'chat_room_model.dart';
 
 class UserModel {
@@ -80,6 +81,11 @@ class UserModel {
   bool isPrivate = false;
   bool isShareOnlineStatus = false;
   List<FeatureModel> features = [];
+
+  bool isEligibleForSubscription = false;
+  List<SubscriptionPlan> subscriptionPlans = [];
+  SubscribedStatus subscribedStatus = SubscribedStatus.notSubscribed;
+
 
   UserModel();
 
@@ -191,6 +197,7 @@ class UserModel {
         .map((e) => FeatureModel.fromJson(e))
         .toList();
     return model;
+
   }
 
   Map<String, dynamic> toJson() => {
@@ -268,6 +275,10 @@ class UserModel {
     final UserProfileManager userProfileManager = Get.find();
 
     return id == userProfileManager.user.value!.id;
+  }
+
+  bool get isVIPUser {
+    return subscriptionPlans.isNotEmpty;
   }
 
   bool get canUseDating {

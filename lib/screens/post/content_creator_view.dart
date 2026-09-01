@@ -31,6 +31,10 @@ class CameraControllerService extends GetxController {
     update(); // Notify listeners
   }
 
+  clear(){
+    controller.dispose();
+  }
+
   @override
   void dispose() {
     controller.dispose();
@@ -45,7 +49,25 @@ class CameraView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<CameraControllerService>(
       builder: (controllerService) {
-        return CameraPreview(controllerService.controller).round(20);
+        if (!controllerService.controller.value.isInitialized) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Check if the camera is front-facing
+        bool isFrontCamera =
+            controllerService.controller.description.lensDirection ==
+                CameraLensDirection.front;
+
+        return Transform(
+          alignment: Alignment.center,
+          transform: isFrontCamera
+              ? (Matrix4.identity()..scale(-1.0, 1.0)) // Flip horizontally
+              : Matrix4.identity(),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20), // Rounds corners
+            child: CameraPreview(controllerService.controller),
+          ),
+        );
       },
     );
   }

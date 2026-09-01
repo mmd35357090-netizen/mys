@@ -29,18 +29,26 @@ class CallHistoryController extends GetxController {
       ChatApi.getCallHistory(
           page: callHistoryPage,
           resultCallback: (result, metadata) {
-
             calls.addAll(result);
-            calls.unique((e)=> e.id);
+            calls.unique((e) => e.id);
             isLoading = false;
 
             callHistoryPage += 1;
             canLoadMoreCalls = result.length >= metadata.perPage;
 
-
             update();
           });
     }
+  }
+
+  callDetail(
+      {required int callId,
+      required Function(CallHistoryModel) resultCallback}) {
+    ChatApi.getCallDetail(
+        callId: callId,
+        resultCallback: (detail) {
+          resultCallback(detail);
+        });
   }
 
   void reInitiateCall({required CallHistoryModel call}) {
@@ -53,8 +61,8 @@ class CallHistoryController extends GetxController {
 
   void initiateVideoCall({required UserModel opponent}) {
     PermissionUtils.requestPermission(
-        [Permission.camera, Permission.microphone],
-        isOpenSettings: false, permissionGrant: () async {
+        [Permission.camera, Permission.microphone], isOpenSettings: false,
+        permissionGrant: () async {
       Call call = Call(
           uuid: '',
           callId: 0,

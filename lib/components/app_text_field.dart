@@ -61,7 +61,7 @@ class AppPasswordTextField extends StatelessWidget {
       controller: controller,
       hintText: hintText,
       icon: icon,
-      backgroundColor: AppColorConstants.cardColor,
+      backgroundColor: AppColorConstants.cardColor.darken(0.02),
       cornerRadius: 10,
       iconColor: AppColorConstants.iconColor,
       onChanged: onChanged,

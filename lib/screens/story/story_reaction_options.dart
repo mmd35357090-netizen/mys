@@ -4,8 +4,7 @@ import '../../helper/imports/common_import.dart';
 class StoryReactionOptions extends StatelessWidget {
   final Function(String) reactionCallbackHandler;
 
-  StoryReactionOptions({Key? key, required this.reactionCallbackHandler})
-      : super(key: key);
+  StoryReactionOptions({super.key, required this.reactionCallbackHandler});
 
   List<String> emoticons = [
     'emoji1.png',

@@ -98,18 +98,19 @@ class ChatRoomModel {
       image: jsonData['imageUrl'],
       description: jsonData['description'],
       groupAccess: jsonData['chat_access_group'] ?? 1,
-      chatGroupOwner: UserModel.fromJson(jsonData['createdByUser'] is String
-          ? json.decode(jsonData['createdByUser'])
-          : jsonData['createdByUser']),
+      chatGroupOwner: UserModel.fromJson(
+          jsonData['createdByUser'] is String
+              ? json.decode(jsonData['createdByUser'])
+              : jsonData['createdByUser']),
       roomMembers: jsonData['chatRoomUser'] != null
           ? jsonData['chatRoomUser'] is String
               ? (json.decode(jsonData['chatRoomUser']) as List<dynamic>)
-                  .map((e) =>
-                      ChatRoomMember.fromJson(e is String ? json.decode(e) : e))
+                  .map((e) => ChatRoomMember.fromJson(
+                      e is String ? json.decode(e) : e))
                   .toList()
               : (jsonData['chatRoomUser'] as List<dynamic>)
-                  .map((e) =>
-                      ChatRoomMember.fromJson(e is String ? json.decode(e) : e))
+                  .map((e) => ChatRoomMember.fromJson(
+                      e is String ? json.decode(e) : e))
                   .toList()
           : [],
       lastMessage: jsonData['lastMessage'] == null
@@ -129,8 +130,8 @@ class ChatRoomModel {
       'imageUrl': image,
       'description': description,
       'chat_access_group': groupAccess,
-      'chatRoomUser':
-          json.encode(roomMembers.map((e) => json.encode(e.toJson())).toList()),
+      'chatRoomUser': json.encode(
+          roomMembers.map((e) => json.encode(e.toJson())).toList()),
       'createdByUser': json.encode(chatGroupOwner.toJson()),
       // 'unreadMessages': unreadMessages,
     };
@@ -147,7 +148,8 @@ class ChatRoomModel {
 
   bool get amIGroupAdmin {
     return roomMembers
-        .where((element) => element.isAdmin == 1 && element.userDetail.isMe)
+        .where(
+            (element) => element.isAdmin == 1 && element.userDetail.isMe)
         .toList()
         .isNotEmpty;
   }

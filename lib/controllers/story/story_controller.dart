@@ -8,7 +8,7 @@ import 'dart:async';
 import 'package:foap/model/story_model.dart';
 import 'package:foap/screens/chat/media.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_compress_ds/video_compress_ds.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
 import '../../manager/db_manager.dart';
 import '../../model/data_wrapper.dart';
@@ -87,8 +87,9 @@ class AppStoryController extends GetxController {
 
   void uploadAllMedia({required List<Media> items}) async {
     var responses =
-    await Future.wait([for (Media media in items) uploadMedia(media)])
-        .whenComplete(() {});
+        await Future.wait([for (Media media in items) uploadMedia(media)])
+            .whenComplete(() {});
+    print('publishAction 1');
 
     publishAction(galleryItems: responses);
   }
@@ -105,8 +106,8 @@ class AppStoryController extends GetxController {
     if (media.mediaType == GalleryMediaType.photo) {
       Uint8List mainFileData = await media.file!.compress();
       //image media
-      mainFile =
-      await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
+      mainFile = await File(
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
           .create();
       mainFile.writeAsBytesSync(mainFileData);
     } else {
@@ -124,7 +125,7 @@ class AppStoryController extends GetxController {
       videoDuration = info!.duration!.toInt();
 
       File videoThumbnail = await File(
-          '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
           .create();
 
       videoThumbnail.writeAsBytesSync(media.thumbnail!);
@@ -133,40 +134,45 @@ class AppStoryController extends GetxController {
           mediaType: GalleryMediaType.photo,
           type: UploadMediaType.storyOrHighlights,
           resultCallback: (fileName, filePath) async {
-            videoThumbnailPath = fileName;
-            await videoThumbnail.delete();
-          });
+        videoThumbnailPath = fileName;
+        await videoThumbnail.delete();
+      });
     }
 
     EasyLoading.show(status: loadingString.tr);
 
     await MiscApi.uploadFile(mainFile.path,
-        mediaType: media.mediaType!, type: UploadMediaType.storyOrHighlights,
+        mediaType: media.mediaType!,
+        type: UploadMediaType.storyOrHighlights,
         resultCallback: (fileName, filePath) async {
-          String mainFileUploadedPath = fileName;
-          await mainFile.delete();
-          gallery = {
-            // 'image': media.mediaType == 1 ? mainFileUploadedPath : '',
-            'image': media.mediaType == GalleryMediaType.photo
-                ? mainFileUploadedPath
-                : videoThumbnailPath!,
-            'video': media.mediaType == GalleryMediaType.photo
-                ? ''
-                : mainFileUploadedPath,
-            'video_time': videoDuration.toString(),
-            'type': media.mediaType == GalleryMediaType.photo ? '2' : '3',
-            'description': '',
-            'background_color': '',
-          };
-          completer.complete(gallery);
-        });
+      print('sdhjsevfehj');
+      String mainFileUploadedPath = fileName;
+      await mainFile.delete();
+      gallery = {
+        // 'image': media.mediaType == 1 ? mainFileUploadedPath : '',
+        'image': media.mediaType == GalleryMediaType.photo
+            ? mainFileUploadedPath
+            : videoThumbnailPath!,
+        'video': media.mediaType == GalleryMediaType.photo
+            ? ''
+            : mainFileUploadedPath,
+        'video_time': videoDuration.toString(),
+        'type': media.mediaType == GalleryMediaType.photo ? '2' : '3',
+        'description': '',
+        'background_color': '',
+      };
+      completer.complete(gallery);
+    });
 
+    print('return block');
     return completer.future;
   }
 
   void publishAction({
     required List<Map<String, String>> galleryItems,
   }) {
+    print('publishAction 2');
+
     HomeController homeController = Get.find();
     StoryApi.postStory(
         gallery: galleryItems,
@@ -176,9 +182,6 @@ class AppStoryController extends GetxController {
           AppUtil.showToast(
               message: storyPostedSuccessfullyString, isSuccess: true);
         });
-    // DashboardController dashboardController = Get.find();
-    // dashboardController.indexChanged(0);
-    // Get.offAll(() => const DashboardScreen());
   }
 
   sendTextMessage(String message, StoryModel story) {

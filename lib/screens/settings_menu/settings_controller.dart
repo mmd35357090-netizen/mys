@@ -59,7 +59,8 @@ class SettingsController extends GetxController {
 
   loadSettings() async {
     bool isDarkTheme = await SharedPrefs().isDarkMode();
-    bioMetricAuthStatus.value = await SharedPrefs().getBioMetricAuthStatus();
+    bioMetricAuthStatus.value =
+        await SharedPrefs().getBioMetricAuthStatus();
     shareLocation.value = _userProfileManager.user.value!.latitude != null;
     isPrivateAccount.value = _userProfileManager.user.value!.isPrivate;
     isShareOnlineStatus.value =
@@ -94,11 +95,11 @@ class SettingsController extends GetxController {
     await MiscApi.getSettings(resultCallback: (result) async {
       setting.value = result;
 
-      if (setting.value?.latestVersion! != AppConfigConstants.currentVersion) {
+      if (setting.value?.latestVersion! !=
+          AppConfigConstants.currentVersion) {
         forceUpdate.value = true;
         forceUpdate.value = false;
       }
-
 
       update();
     });
@@ -106,10 +107,10 @@ class SettingsController extends GetxController {
 
   Future checkBiometric() async {
     bool bioMetricAuthStatus =
-    true; //await SharedPrefs().getBioMetricAuthStatus();
+        true; //await SharedPrefs().getBioMetricAuthStatus();
     if (bioMetricAuthStatus == true) {
       List<BiometricType> availableBiometrics =
-      await localAuth.getAvailableBiometrics();
+          await localAuth.getAvailableBiometrics();
 
       if (availableBiometrics.contains(BiometricType.face)) {
         // Face ID.
@@ -143,7 +144,8 @@ class SettingsController extends GetxController {
   deleteAccount() {
     AuthApi.deleteAccount(successCallback: () {
       _userProfileManager.logout();
-      AppUtil.showToast(message: accountIsDeletedString.tr, isSuccess: true);
+      AppUtil.showToast(
+          message: accountIsDeletedString.tr, isSuccess: true);
     });
   }
 
@@ -159,11 +161,12 @@ class SettingsController extends GetxController {
 
   void toggleShowOnlineStatusSetting(bool showOnlineStatus) async {
     isShareOnlineStatus.value = showOnlineStatus;
-    updateShowOnlineStatusSetting(showOnlineStatus);
+    await updateShowOnlineStatusSetting(showOnlineStatus);
+    _userProfileManager.refreshProfile();
   }
 
-  updateShowOnlineStatusSetting(bool showOnlineStatus) {
-    ProfileApi.updateOnlineStatusSetting(
+  Future updateShowOnlineStatusSetting(bool showOnlineStatus) async {
+    await ProfileApi.updateOnlineStatusSetting(
         status: showOnlineStatus ? 1 : 0, resultCallback: () {});
   }
 }

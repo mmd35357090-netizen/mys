@@ -119,7 +119,7 @@ class TutorialScreenState extends State<TutorialScreen> {
       onPress: () {
         Get.to(() => const AuthTab());
       },
-      text: signUpString.tr,
+      text: signInString.tr,
 
     ).hP25;
   }

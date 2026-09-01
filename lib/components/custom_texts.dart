@@ -180,8 +180,7 @@ class Heading6Text extends StatelessWidget {
   final Color? color;
 
   const Heading6Text(this.text,
-      {Key? key, this.textAlign, this.maxLines, this.weight, this.color})
-      : super(key: key);
+      {super.key, this.textAlign, this.maxLines, this.weight, this.color});
 
   @override
   Widget build(BuildContext context) {

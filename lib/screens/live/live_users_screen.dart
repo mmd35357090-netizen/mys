@@ -53,7 +53,7 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
           Expanded(
             child: Obx(
               () => _liveUserController.liveStreamUser.isEmpty
-                  ? emptyData(title: noLiveUserString, subTitle: '')
+                  ? emptyData(title: noLiveUserString.tr, subTitle: '')
                   : GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(

@@ -20,6 +20,15 @@ class SinglePostDetailController extends GetxController {
     });
   }
 
+  getPostDetailByUniqueId(String postId) async {
+    isLoading = true;
+    await PostApi.getPostDetailByUniqueId(postId, resultCallback: (result) {
+      post.value = result;
+      isLoading = false;
+      update();
+    });
+  }
+
   void likeUnlikePost(BuildContext context) {
     post.value!.isLike = !post.value!.isLike;
     post.value!.totalLike = post.value!.isLike

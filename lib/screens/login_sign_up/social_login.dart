@@ -98,8 +98,8 @@ class _SocialLoginState extends State<SocialLogin> {
             ))).round(10).ripple(() {
           signInWithGoogle();
         }),
-        Platform.isIOS
-            ? Container(
+        if(Platform.isIOS)
+             Container(
                 height: 40,
                 width: 40,
                 color: AppColorConstants.themeColor.withOpacity(0.2),
@@ -114,7 +114,7 @@ class _SocialLoginState extends State<SocialLogin> {
                 _handleAppleSignIn();
                 // Get.to(() => const InstagramView());
               })
-            : Container(),
+            ,
         Container(
             height: 40,
             width: 40,
