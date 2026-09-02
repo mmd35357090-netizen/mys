@@ -9,7 +9,7 @@ class AppConfigConstants {
   // Name of app
   static String appName = 'facehub';
 
-  static String currentVersion = '2.3';
+  static String currentVersion = '2.5';
   static const liveAppLink = 'https://facehub.sbehf.com/';
 
   static String appTagline = 'Share your day activity with friends';
