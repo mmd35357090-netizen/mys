@@ -7,7 +7,7 @@ final SettingsController settingsController = Get.find();
 
 class AppConfigConstants {
   // Name of app
-  static String appName = 'Socialified';
+  static String appName = 'facehub';
 
   static String currentVersion = '2.3';
   static const liveAppLink = 'https://facehub.sbehf.com/';
@@ -17,7 +17,7 @@ class AppConfigConstants {
 
 
   static const restApiBaseUrl =
-      'https://facehub.sbehf.com/app/api/web/v1/';
+      'https://facehub.sbehf.com/api/web/v1/';
 
   static const socketApiBaseUrl = "https://facehub.sbehf.com:4000/";
 
