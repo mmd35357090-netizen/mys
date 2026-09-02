@@ -10,16 +10,16 @@ class AppConfigConstants {
   static String appName = 'Socialified';
 
   static String currentVersion = '2.3';
-  static const liveAppLink = 'https://www.google.com/';
+  static const liveAppLink = 'https://facehub.sbehf.com/';
 
   static String appTagline = 'Share your day activity with friends';
   static const googleMapApiKey = 'AIzaSyA4vcqErGvq5NRbvhvq8JKSp0VFpNBBPjE';
 
 
   static const restApiBaseUrl =
-      'https://yourdomain/app/api/web/v1/';
+      'https://facehub.sbehf.com/app/api/web/v1/';
 
-  static const socketApiBaseUrl = "https://yourdomain:4000/";
+  static const socketApiBaseUrl = "https://facehub.sbehf.com:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';
