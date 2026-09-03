@@ -36,7 +36,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.socialified"
+        applicationId "com.facehub"
         minSdkVersion 24
         targetSdkVersion 34
         compileSdk 35

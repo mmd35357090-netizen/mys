@@ -1,60 +1,27 @@
 {
   "project_info": {
-    "project_number": "258656413911",
-    "firebase_url": "https://socialified-23223-default-rtdb.firebaseio.com",
-    "project_id": "socialified-23223",
-    "storage_bucket": "socialified-23223.appspot.com"
+    "project_number": "559111651319",
+    "firebase_url": "https://facehub-4f7f2-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "facehub-4f7f2",
+    "storage_bucket": "facehub-4f7f2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:258656413911:android:bfa88e695cffd921626892",
+        "mobilesdk_app_id": "1:559111651319:android:d3972929ede619bdb7b8f2",
         "android_client_info": {
-          "package_name": "com.socialified"
+          "package_name": "com.facehub"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "258656413911-2remp44bce4418rojsebhda5o26v5k44.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.socialified",
-            "certificate_hash": "6a1848254d094db08b930ca627bd2343441a9bc5"
-          }
-        },
-        {
-          "client_id": "258656413911-9acpq8ki23mmo4au6d31rkq7u7cjfgq4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.socialified",
-            "certificate_hash": "b8346f60d713f25ba0bb53658c2eb309ccd6af5b"
-          }
-        },
-        {
-          "client_id": "258656413911-iv8cgfsd2khapjnbpse2ef2oan4d1hjt.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDWN8fMFHp-PFXbY9Duu0uDsXJ-_DGSI9w"
+          "current_key": "AIzaSyCvHq6PwuGMmOyV2yS14ZkOcjtuxDij4o0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "258656413911-iv8cgfsd2khapjnbpse2ef2oan4d1hjt.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "258656413911-5bqj5jcr6oqledsen49qf9oba5l8tcm8.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.socialified"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

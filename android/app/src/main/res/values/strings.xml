@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="facebook_app_id">your_facebook_app_id</string>
-    <string name="facebook_client_token">your_facebook_app_token</string>
-    <string name="admob_id">admob_key</string>
-    <string name="google_map_id">google_map_id</string>
+    <string name="facebook_app_id">1585523246499793</string>
+    <string name="facebook_client_token">0bb1211957d3d21b86ecfcf38ed41c15</string>
+    <string name="admob_id">ca-app-pub-6722825912410223~7208354799</string>
+    <string name="google_map_id">AIzaSyA4vcqErGvq5NRbvhvq8JKSp0VFpNBBPjE</string>
 
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
 </resources>

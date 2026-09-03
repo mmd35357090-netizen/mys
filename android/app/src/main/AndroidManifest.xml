@@ -4,7 +4,7 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="Your_app_name"
+        android:label="Facehub"
         android:requestLegacyExternalStorage="true"
         tools:replace="android:label">
         <activity
@@ -36,7 +36,7 @@
                 <data android:scheme="https" />
 
                 <!-- Include one or more domains that should be verified. -->
-                <data android:host="socialified.codepearl.in" android:pathPrefix="/" />
+                <data android:host="facehub.sbehf.com" android:pathPrefix="/" />
             </intent-filter>
 
             <intent-filter>

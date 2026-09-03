@@ -50,12 +50,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDWN8fMFHp-PFXbY9Duu0uDsXJ-_DGSI9w',
-    appId: '1:258656413911:android:bfa88e695cffd921626892',
-    messagingSenderId: '258656413911',
-    projectId: 'socialified-23223',
-    databaseURL: 'https://socialified-23223-default-rtdb.firebaseio.com',
-    storageBucket: 'socialified-23223.appspot.com',
+    apiKey: 'AIzaSyCvHq6PwuGMmOyV2yS14ZkOcjtuxDij4o0',
+    appId: '1:559111651319:android:d3972929ede619bdb7b8f2',
+    messagingSenderId: '559111651319',
+    projectId: 'facehub-4f7f2',
+    databaseURL: 'https://facehub-4f7f2-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'facehub-4f7f2.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
