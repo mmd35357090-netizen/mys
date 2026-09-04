@@ -2,15 +2,9 @@ name: Build Flutter APK
 
 on:
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: "Select APK build type"
-        required: true
-        default: "debug"
-        type: choice
-        options:
-          - debug
-          - release
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -24,12 +18,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.29.0"
+          flutter-version: '3.29.3'
           channel: stable
           cache: true
 
@@ -45,24 +39,16 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build Debug APK
-        if: ${{ inputs.build_type == 'debug' }}
-        run: flutter build apk --debug --target-platform android-arm64
+      - name: Build ARM64 Release APK
+        run: |
+          flutter build apk \
+            --release \
+            --target-platform android-arm64 \
+            --no-tree-shake-icons \
+            -v
 
-      - name: Build Release APK
-        if: ${{ inputs.build_type == 'release' }}
-        run: flutter build apk --release --target-platform android-arm64
-
-      - name: Upload Debug APK
-        if: ${{ inputs.build_type == 'debug' }}
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: mys-debug-arm64
-          path: build/app/outputs/flutter-apk/app-debug.apk
-
-      - name: Upload Release APK
-        if: ${{ inputs.build_type == 'release' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: mys-release-arm64
+          name: social-arm64-release
           path: build/app/outputs/flutter-apk/app-release.apk
