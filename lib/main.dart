@@ -178,7 +178,7 @@ Future<void> main() async {
   } else {
     runApp(Phoenix(
         child: const SocialifiedApp(
-      startScreen: AskToFollow(),
+      startScreen: SplashScreen(),
     )));
   }
 }

@@ -41,3 +41,5 @@ Thumbs.db
 # Android generated build outputs
 android/app/debug/
 android/app/release/
+android/key/upload-keystore.jks
+android/key.properties
