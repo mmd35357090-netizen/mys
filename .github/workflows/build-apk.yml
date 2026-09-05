@@ -45,14 +45,55 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      # ==============================
+      # Release Keystore Setup
+      # ==============================
+      - name: Setup release keystore
+        if: ${{ inputs.build_type == 'release' }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          mkdir -p android/key
+
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/key/upload-keystore.jks
+
+          cat > android/key.properties <<EOF
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=upload
+          storeFile=key/upload-keystore.jks
+          EOF
+
+          chmod 600 android/key/upload-keystore.jks
+          chmod 600 android/key.properties
+
+      # ==============================
+      # Build Debug
+      # ==============================
       - name: Build Debug APK
         if: ${{ inputs.build_type == 'debug' }}
-        run: flutter build apk --debug --target-platform android-arm64 --no-tree-shake-icons
+        run: |
+          flutter build apk \
+            --debug \
+            --target-platform android-arm64 \
+            --no-tree-shake-icons
 
+      # ==============================
+      # Build Release
+      # ==============================
       - name: Build Release APK
         if: ${{ inputs.build_type == 'release' }}
-        run: flutter build apk --release --target-platform android-arm64 --no-tree-shake-icons
+        run: |
+          flutter build apk \
+            --release \
+            --target-platform android-arm64 \
+            --no-tree-shake-icons
 
+      # ==============================
+      # Upload Debug APK
+      # ==============================
       - name: Upload Debug APK
         if: ${{ inputs.build_type == 'debug' }}
         uses: actions/upload-artifact@v4
@@ -60,9 +101,21 @@ jobs:
           name: mys-debug-arm64
           path: build/app/outputs/flutter-apk/app-debug.apk
 
+      # ==============================
+      # Upload Release APK
+      # ==============================
       - name: Upload Release APK
         if: ${{ inputs.build_type == 'release' }}
         uses: actions/upload-artifact@v4
         with:
           name: mys-release-arm64
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      # ==============================
+      # Cleanup sensitive files
+      # ==============================
+      - name: Cleanup release keystore
+        if: ${{ always() && inputs.build_type == 'release' }}
+        run: |
+          rm -f android/key/upload-keystore.jks
+          rm -f android/key.properties
