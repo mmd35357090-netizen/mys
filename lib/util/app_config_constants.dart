@@ -31,7 +31,7 @@ class AppConfigConstants {
   static const int chatVersion = 1;
 
   // is demo app
-  static const bool isDemoApp = true;
+  static const bool isDemoApp = false;
 
   // parameters for delete chat
   static const secondsInADay = 86400;
