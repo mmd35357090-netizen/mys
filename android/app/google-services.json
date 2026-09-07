@@ -13,7 +13,20 @@
           "package_name": "com.facehub"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "559111651319-pvqnjc1aldemi0kpai613vkj6936ms02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.facehub",
+            "certificate_hash": "457fe54d6bca8da728449f2d92109ae6fea5a0ce"
+          }
+        },
+        {
+          "client_id": "559111651319-gjc71odm8dvecf3mhljkl47kat6e461o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCvHq6PwuGMmOyV2yS14ZkOcjtuxDij4o0"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "559111651319-gjc71odm8dvecf3mhljkl47kat6e461o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
