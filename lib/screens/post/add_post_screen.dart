@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:video_compress/video_compress.dart'; // 👈 এই লাইনটি অবশ্যই থাকতে হবে
 import 'package:foap/components/smart_text_field.dart';
 import 'package:foap/components/post_card/video_widget.dart';
 import 'package:foap/helper/imports/common_import.dart';
