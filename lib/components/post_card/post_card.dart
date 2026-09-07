@@ -39,6 +39,7 @@ import '../../screens/profile/other_user_profile.dart';
 import 'club_post_tile.dart';
 import 'competition_post_tile.dart';
 
+Set<int> manuallyPausedVideos = {};
 class PostMediaTile extends StatelessWidget {
   final PostCardController postCardController = Get.find();
   final HomeController homeController = Get.find();
@@ -137,22 +138,41 @@ class PostMediaTile extends StatelessWidget {
       key: Key(media.id.toString()),
       onVisibilityChanged: (visibilityInfo) {
         var visiblePercentage = visibilityInfo.visibleFraction * 100;
-        // if (visiblePercentage > 80) {
-        homeController.setCurrentVisibleVideo(
-            media: media, visibility: visiblePercentage);
-        // }
+        
+        if (visiblePercentage > 80) {
+          homeController.setCurrentVisibleVideo(
+              media: media, visibility: visiblePercentage);
+        } else {
+          // 🌟 ভিডিও যখন স্ক্রিন থেকে চলে যাবে তখন তার ম্যানুয়াল পজ স্টেট রিমুভ হবে
+          manuallyPausedVideos.remove(media.id);
+        }
       },
-      child: Obx(() => VideoPostTile(
-            media: media,
-            url: media.filePath,
-            isLocalFile: false,
-            play: homeController.currentVisibleVideoId.value == media.id,
-            width: isReshared
-                ? Get.width -
-                    ((DesignConstants.horizontalPadding * 3) + 10)
-                : Get.width,
-            onTapActionHandler: () {},
-          )),
+      child: Obx(() {
+        // 🌟 কন্ডিশন: স্ক্রিনে দৃশ্যমান হলেও ইউজার যদি নিজে পজ করে থাকে তবে প্লে হবে না
+        bool shouldPlay = homeController.currentVisibleVideoId.value == media.id &&
+            !manuallyPausedVideos.contains(media.id);
+
+        return VideoPostTile(
+          media: media,
+          url: media.filePath,
+          isLocalFile: false,
+          play: shouldPlay,
+          width: isReshared
+              ? Get.width - ((DesignConstants.horizontalPadding * 3) + 10)
+              : Get.width,
+          onTapActionHandler: () {
+            // 🌟 ইউজার ক্লিক করলে যদি ভিডিও অলরেডি রানিং থাকে তবে সেটিকে ম্যানুয়াল পজ লিস্টে পুশ করবে
+            if (homeController.currentVisibleVideoId.value == media.id) {
+              if (manuallyPausedVideos.contains(media.id)) {
+                manuallyPausedVideos.remove(media.id);
+              } else {
+                manuallyPausedVideos.add(media.id);
+              }
+              homeController.currentVisibleVideoId.refresh(); // UI আপডেট ট্রিগার
+            }
+          },
+        );
+      }),
     );
   }
 

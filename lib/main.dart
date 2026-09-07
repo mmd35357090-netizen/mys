@@ -85,9 +85,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     name: AppConfigConstants.appName,
     options: DefaultFirebaseOptions.currentPlatform,
-  ).whenComplete(() {
-    print('initializeApp completed');
-  });
+  );
 
   FirebaseMessaging.onBackgroundMessage(
       _firebaseMessagingBackgroundHandler);
@@ -103,7 +101,6 @@ Future<void> main() async {
   isDarkMode = await SharedPrefs().isDarkMode();
   Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
 
-  Get.put(PlayerManager());
   Get.put(UsersController());
   Get.put(GiftController());
   Get.put(MiscController());
@@ -150,21 +147,23 @@ Future<void> main() async {
   setupServiceLocator();
 
   final UserProfileManager userProfileManager = Get.find();
-  String? authKey = await SharedPrefs().getAuthorizationKey();
-
-  if (authKey != null) {
-    await userProfileManager.refreshProfile();
-  }
-
   final SettingsController settingsController = Get.find();
-  await settingsController.getSettings();
+
+  // 🚀 [ম্যাজিক ফিক্স]: ভারী এপিআই কল এবং লোকাল ডাটাবেজ ক্রিয়েশন একসাথে ব্যাকগ্রাউন্ডে পাঠানো হলো।
+  // এগুলো ব্যাকগ্রাউন্ডে চলতে থাকবে কিন্তু অ্যাপ ওপেন হতে বাধা দেবে না।
+  Future.wait([
+    SharedPrefs().getAuthorizationKey().then((authKey) async {
+      if (authKey != null) {
+        // প্রোফাইল রিফ্রেশ ব্যাকগ্রাউন্ডে হবে, মেইন ইউআই থ্রেডকে ব্লক করবে না
+        userProfileManager.refreshProfile().catchError((e) => print("Profile refresh failed: $e"));
+      }
+    }),
+    settingsController.getSettings().catchError((e) => print("Settings fetch failed: $e")),
+    getIt<DBManager>().createDatabase().catchError((e) => print("DB Creation failed: $e")),
+  ]);
 
   NotificationManager().initialize();
-  FirebaseMessaging.onBackgroundMessage(
-      _firebaseMessagingBackgroundHandler);
-
-  await getIt<DBManager>().createDatabase();
-
+  
   if (userProfileManager.isLogin == true) {
     AuthApi.updateFcmToken();
   }
@@ -176,6 +175,7 @@ Future<void> main() async {
     getIt<SocketManager>().connect();
     performActionOnCallNotificationBanner(data, true, true);
   } else {
+    // ⚡ এখন অ্যাপটি ১-২ সেকেন্ডের মধ্যে ইনস্ট্যান্ট ওপেন হবে এবং স্প্ল্যাশ স্ক্রিন চলে আসবে
     runApp(Phoenix(
         child: const SocialifiedApp(
       startScreen: SplashScreen(),

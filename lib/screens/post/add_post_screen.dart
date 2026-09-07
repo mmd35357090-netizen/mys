@@ -67,44 +67,61 @@ class AddPostState extends State<AddPostScreen> {
     super.dispose();
   }
 
-    // 🌟 ভিডিও ফাইলের সাইজ অপ্টিমাইজ করার জন্য কাস্টম মেথড
-  Future<List<Media>> _compressVideoIfNeeded(List<Media> originalItems) async {
-    List<Media> processedItems = [];
+    // 🚀 স্মার্ট ব্যাকগ্রাউন্ড কম্প্রেশন মেথড (টাইমআউট ও সেফটি গার্ড সহ)
+  Future<List<Media>> _processMediaBeforeUpload(List<Media> originalItems) async {
+    List<Media> optimizedItems = [];
     
-    // আপনার প্রোজেক্টে থাকা EasyLoading ব্যবহার করে লোডার দেখানো
+    // আপনার প্রোজেক্টের গ্লোবাল ইজি-লোডিং বা ইন্ডিকেটর চালু করা
     AppUtil.addProgressIndicator(size: 100); 
-    
+
     for (var item in originalItems) {
-      // যদি ফাইলটি ভিডিও হয় এবং এর লোকাল পাথ থাকে
+      // ফাইলটি যদি ভিডিও হয় এবং তার লোকাল পাথ বিদ্যমান থাকে
       if (item.mediaType == GalleryMediaType.video && item.file != null) {
         try {
+          print("ভিডিও অপ্টিমাইজেশন শুরু হচ্ছে: ${item.file!.path}");
+          
+          // সর্বোচ্চ ২০ সেকেন্ড ট্রাই করবে, অন্যথায় অরিজিনাল ফাইল পাঠাবে (লোডিং স্টাক হবে না)
           MediaInfo? mediaInfo = await VideoCompress.compressVideo(
             item.file!.path,
-            quality: VideoQuality.MediumQuality, // কোয়ালিটি ধরে রেখে ফাস্ট আপলোডের জন্য বেস্ট
+            quality: VideoQuality.MediumQuality, 
             deleteOrigin: false,
+            includeAudio: true,
+          ).timeout(
+            const Duration(seconds: 20),
+            onTimeout: () {
+              print("কম্প্রেশন টাইমআউট! অরিজিনাল ফাইল আপলোড হচ্ছে।");
+              return null; 
+            },
           );
-          
+
           if (mediaInfo != null && mediaInfo.path != null) {
-            // কম্প্রেসড ফাইল দিয়ে নতুন মিডিয়া অবজেক্ট তৈরি
+            print("ভিডিও সাকসেসফুলি কম্প্রেসড হয়েছে। নতুন সাইজ: ${mediaInfo.filesize}");
+            
+            // নতুন কম্প্রেসড ফাইল পাথ দিয়ে মিডিয়া আপডেট
             Media compressedMedia = item;
             compressedMedia.file = File(mediaInfo.path!);
-            processedItems.add(compressedMedia);
+            optimizedItems.add(compressedMedia);
           } else {
-            processedItems.add(item); // কোনো কারণে ফেইল করলে অরিজিনালটাই থাকবে
+            optimizedItems.add(item); 
           }
         } catch (e) {
-          print("ভিডিও কম্প্রেস করতে সমস্যা হয়েছে: $e");
-          processedItems.add(item);
+          print("কম্প্রেশন এরর (অরিজিনাল ফাইল ব্যবহার করা হচ্ছে): $e");
+          optimizedItems.add(item);
         }
       } else {
-        processedItems.add(item); // ইমেজ বা অন্য মিডিয়া হলে সরাসরি যোগ হবে
+        // ইমেজ বা অন্য মিডিয়া ফাইল হলে কোনো পরিবর্তন ছাড়াই যুক্ত হবে
+        optimizedItems.add(item);
       }
     }
+
+    // ব্যাকগ্রাউন্ড ক্যাশ ক্লিয়ার করা যাতে ডিভাইস মেমোরি জ্যাম না হয়
+    try {
+      await VideoCompress.deleteAllCache();
+    } catch (_) {}
     
-    // কাজ শেষে ক্যাশ ক্লিয়ার করা
-    await VideoCompress.deleteAllCache();
-    return processedItems;
+    return optimizedItems;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -154,14 +171,11 @@ class AddPostState extends State<AddPostScreen> {
                                       top: 5,
                                       bottom: 5))
                               .round(10)
-                              .ripple(() async { // 🌟 অসিঙ্কোনাস (async) করা হয়েছে
-                            
-                            List<Media> rawItems = widget.items ?? _selectPostMediaController.selectedMediaList;
-                            
-                            if (rawItems.isNotEmpty) {
-                              // 🚀 আপলোডের ঠিক আগে ব্যাকগ্রাউন্ডে ভিডিও কম্প্রেস করা হচ্ছে
-                              List<Media> optimizedItems = await _compressVideoIfNeeded(rawItems);
-
+                              .ripple(() {
+                            if ((widget.items ??
+                                    _selectPostMediaController
+                                        .selectedMediaList)
+                                .isNotEmpty) {
                               addPostController.submitPost(
                                   allowComments: addPostController
                                       .enableComments.value,

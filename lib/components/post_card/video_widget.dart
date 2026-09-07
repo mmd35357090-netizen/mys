@@ -32,19 +32,21 @@ class VideoPostTile extends StatefulWidget {
 class _VideoPostTileState extends State<VideoPostTile> {
   late Future<void> initializeVideoPlayerFuture;
   VideoPlayerController? videoPlayerController;
+  ChewieController? chewieController; // 🌟 চেউই কন্ট্রোলার রেফারেন্স ট্র্যাকিং
   late bool playVideo;
 
   @override
   void initState() {
     super.initState();
     playVideo = widget.play;
-
     prepareVideo(url: widget.url, isLocalFile: widget.isLocalFile);
   }
 
   @override
   void didUpdateWidget(covariant VideoPostTile oldWidget) {
-    prepareVideo(url: widget.url, isLocalFile: widget.isLocalFile);
+    if (oldWidget.url != widget.url) {
+      prepareVideo(url: widget.url, isLocalFile: widget.isLocalFile);
+    }
     playVideo = widget.play;
 
     if (playVideo == true) {
@@ -63,180 +65,193 @@ class _VideoPostTileState extends State<VideoPostTile> {
 
   clear() {
     videoPlayerController?.pause();
+    chewieController?.dispose(); // 🌟 মেমোরি লিক ফিক্স
     videoPlayerController?.dispose();
     videoPlayerController?.removeListener(checkVideoProgress);
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (isMute == true) {
-          unMuteAudio();
-        } else {
-          muteAudio();
-        }
-        widget.onTapActionHandler();
-      },
-      child: SizedBox(
-        height: widget.media == null
-            ? null
-            : widget.media!.width != 0
-                ? widget.width / (widget.media!.width / widget.media!.height)
-                : null,
-        child: Stack(
-          children: [
-            FutureBuilder(
-              future: initializeVideoPlayerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return SizedBox(
-                    height:
-                        widget.width / videoPlayerController!.value.aspectRatio,
-                    key: PageStorageKey(widget.url),
-                    child: Chewie(
-                      key: PageStorageKey(widget.url),
-                      controller: ChewieController(
-                        videoPlayerController: videoPlayerController!,
-                        aspectRatio: videoPlayerController!.value.aspectRatio,
-                        showControls: false,
-                        autoInitialize: true,
-                        looping: false,
-                        autoPlay: false,
-                        allowMuting: true,
-                        placeholder: widget.media != null
-                            ? CachedNetworkImage(
-                                imageUrl: widget.media!.thumbnail,
-                                fit: BoxFit.cover,
-                                width: Get.width,
-                                height: double.infinity,
-                              )
-                            : Container(),
-                        errorBuilder: (context, errorMessage) {
-                          return Center(
-                            child: Text(
-                              errorMessage,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                } else {
-                  return widget.media == null
-                      ? Container()
-                      : CachedNetworkImage(
+    return SizedBox(
+      height: widget.media == null
+          ? null
+          : widget.media!.width != 0
+              ? widget.width / (widget.media!.width / widget.media!.height)
+              : null,
+      child: Stack(
+        children: [
+          FutureBuilder(
+            future: initializeVideoPlayerFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done && videoPlayerController != null) {
+                // 🌟 প্রতিবার বিল্ডে নতুন কন্ট্রোলার তৈরি হওয়া আটকাতে ইনিশিয়ালাইজেশন
+                chewieController ??= ChewieController(
+                  videoPlayerController: videoPlayerController!,
+                  aspectRatio: videoPlayerController!.value.aspectRatio,
+                  showControls: true, // 🎛 টাইমলাইন বার এবং কন্ট্রোলস অন করা হলো
+                  autoInitialize: true,
+                  looping: false,
+                  autoPlay: widget.play,
+                  allowMuting: true,
+                  showOptions: false, // বাড়তি বোরিং সেটিংস বাটন হাইড করা হলো
+                  
+                  // ফেসবুকের মতো প্রিমিয়াম প্রোগ্রেস বার থিম কালার
+                  materialProgressColors: ChewieProgressColors(
+                    playedColor: AppColorConstants.themeColor,
+                    handleColor: AppColorConstants.themeColor,
+                    backgroundColor: Colors.white24,
+                    bufferedColor: Colors.white54,
+                  ),
+                  
+                  placeholder: widget.media != null
+                      ? CachedNetworkImage(
                           imageUrl: widget.media!.thumbnail,
                           fit: BoxFit.cover,
                           width: Get.width,
-                        );
-                }
-              },
-            ),
-            Positioned(
-                right: 10,
-                bottom: 10,
+                          height: double.infinity,
+                        )
+                      : Container(),
+                  errorBuilder: (context, errorMessage) {
+                    return Center(
+                      child: Text(
+                        errorMessage,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  },
+                );
+
+                return SizedBox(
+                  height: widget.width / videoPlayerController!.value.aspectRatio,
+                  key: PageStorageKey(widget.url),
+                  child: Chewie(
+                    key: PageStorageKey(widget.url),
+                    controller: chewieController!,
+                  ),
+                );
+              } else {
+                return widget.media == null
+                    ? Container()
+                    : CachedNetworkImage(
+                        imageUrl: widget.media!.thumbnail,
+                        fit: BoxFit.cover,
+                        width: Get.width,
+                      );
+              }
+            },
+          ),
+          
+          // 🔊 মিউট/আনমিউট করার জন্য ডান কোণার স্মার্ট বাটনটি আলাদা রাখা হলো
+          Positioned(
+              right: 15,
+              bottom: 50, // টাইমলাইন কন্ট্রোলের কিছুটা ওপরে সেট করা হয়েছে যেন ওভারল্যাপ না হয়
+              child: GestureDetector(
+                onTap: () {
+                  if (isMute == true) {
+                    unMuteAudio();
+                  } else {
+                    muteAudio();
+                  }
+                },
                 child: Container(
-                  height: 25,
-                  width: 25,
-                  color: Colors.black38,
+                  height: 32,
+                  width: 32,
+                  color: Colors.black54,
                   child: ThemeIconWidget(
                     isMute ? ThemeIcon.micOff : ThemeIcon.mic,
-                    size: 15,
+                    size: 18,
                     color: Colors.white,
                   ),
-                ).circular),
-          ],
-        ),
+                ).circular,
+              )),
+        ],
       ),
     );
   }
 
   prepareVideo({required String url, required bool isLocalFile}) {
     clear();
-    if (videoPlayerController != null) {
-      videoPlayerController!.pause();
-    }
+    chewieController = null; // নতুন ভিডিওর জন্য রিলিজ করা
 
     if (isLocalFile) {
       videoPlayerController = VideoPlayerController.file(File(url));
     } else {
       videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
     }
+    
     initializeVideoPlayerFuture = videoPlayerController!.initialize().then((_) {
-      setState(() {});
+      if (isMute) {
+        videoPlayerController!.setVolume(0);
+      } else {
+        videoPlayerController!.setVolume(1);
+      }
+      if (mounted) setState(() {});
     });
 
     videoPlayerController!.addListener(checkVideoProgress);
   }
 
-  openFullScreen() {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          return FullScreenVideoPostTile(
-              videoPlayerController: videoPlayerController!);
-        },
-        fullscreenDialog: true));
-  }
-
   unMuteAudio() {
-    videoPlayerController!.setVolume(1);
+    videoPlayerController?.setVolume(1);
     setState(() {
       isMute = false;
     });
   }
 
   muteAudio() {
-    videoPlayerController!.setVolume(0);
+    videoPlayerController?.setVolume(0);
     setState(() {
       isMute = true;
     });
   }
 
   play() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        // isPlayed = false;
-        playVideo = true;
+    if (videoPlayerController != null && !videoPlayerController!.value.isPlaying) {
+      videoPlayerController!.play().then((_) {
+        videoPlayerController!.addListener(checkVideoProgress);
       });
-    });
-    videoPlayerController!.play().then(
-        (value) => {videoPlayerController!.addListener(checkVideoProgress)});
-
-    if (isMute) {
-      videoPlayerController!.setVolume(0);
+      if (isMute) {
+        videoPlayerController!.setVolume(0);
+      }
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          playVideo = true;
+        });
+      }
+    });
   }
 
   pause() {
-    videoPlayerController!.pause();
+    if (videoPlayerController != null && videoPlayerController!.value.isPlaying) {
+      videoPlayerController!.pause();
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        // isPlayed = true;
-      });
+      if (mounted) {
+        setState(() {
+          playVideo = false;
+        });
+      }
     });
   }
 
   void checkVideoProgress() {
-    if (videoPlayerController!.value.position ==
-        const Duration(seconds: 0, minutes: 0, hours: 0)) {}
-
-    if (videoPlayerController!.value.position ==
-            videoPlayerController!.value.duration &&
-        videoPlayerController!.value.duration >
-            const Duration(milliseconds: 1)) {
+    if (videoPlayerController == null) return;
+    
+    if (videoPlayerController!.value.position == videoPlayerController!.value.duration &&
+        videoPlayerController!.value.duration > const Duration(milliseconds: 1)) {
       if (!mounted) return;
-
       setState(() {
         videoPlayerController!.removeListener(checkVideoProgress);
-
-        // isPlayed = true;
       });
     }
   }
 }
 
+// =========================================================================
+// 🌟 ফুলস্ক্রিন ভিডিও ভিউ মডিউল (কোডের কাটা অংশটুকু জোড়া দিয়ে ঠিক করা হয়েছে)
+// =========================================================================
 class FullScreenVideoPostTile extends StatefulWidget {
   final VideoPlayerController videoPlayerController;
 
@@ -246,73 +261,58 @@ class FullScreenVideoPostTile extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<FullScreenVideoPostTile> createState() =>
-      _FullScreenVideoPostTileState();
+  State<FullScreenVideoPostTile> createState() => _FullScreenVideoPostTileState();
 }
 
 class _FullScreenVideoPostTileState extends State<FullScreenVideoPostTile> {
-  // final VideoPostTileController videoPostTileController = Get.find();
-  late Future<void> initializeVideoPlayerFuture;
-
-  // bool isPlayed = false;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
     super.initState();
-  } // This closing tag was missing
+    _chewieController = ChewieController(
+      videoPlayerController: widget.videoPlayerController,
+      aspectRatio: widget.videoPlayerController.value.aspectRatio,
+      autoPlay: true,
+      showControls: true,
+    );
+  }
 
   @override
   void dispose() {
+    _chewieController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 80,
-          width: double.infinity,
-          child: Align(
-            alignment: Alignment.bottomLeft,
-            child: const ThemeIconWidget(
-              ThemeIcon.backArrow,
-              size: 20,
-            ).ripple(() {
-              Navigator.of(context).pop();
-            }),
-          ),
-        ).hp(DesignConstants.horizontalPadding),
-        Expanded(
-          key: UniqueKey(),
-          child: Chewie(
-            key: UniqueKey(),
-            controller: ChewieController(
-              videoPlayerController: widget.videoPlayerController,
-              aspectRatio: widget.videoPlayerController.value.aspectRatio,
-              showControls: false,
-              // Prepare the video to be played and display the first frame
-              autoInitialize: true,
-              looping: false,
-              autoPlay: false,
-
-              // Errors can occur for example when trying to play a video
-              // from a non-existent URL
-              errorBuilder: (context, errorMessage) {
-                return Center(
-                  child: Text(
-                    errorMessage,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
-              },
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Column(
+        children: [
+          SizedBox(
+            height: 80,
+            width: double.infinity,
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: const ThemeIconWidget(
+                ThemeIcon.backArrow,
+                size: 20,
+                color: Colors.white,
+              ).ripple(() {
+                Navigator.of(context).pop();
+              }),
+            ),
+          ).hp(DesignConstants.horizontalPadding),
+          Expanded(
+            child: Center(
+              child: _chewieController != null
+                  ? Chewie(controller: _chewieController!)
+                  : const CircularProgressIndicator(),
             ),
           ),
-        ),
-        const SizedBox(
-          height: 50,
-        )
-      ],
+        ],
+      ),
     );
   }
 }
