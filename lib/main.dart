@@ -149,18 +149,21 @@ Future<void> main() async {
   final UserProfileManager userProfileManager = Get.find();
   final SettingsController settingsController = Get.find();
 
-  // 🚀 [ম্যাজিক ফিক্স]: ভারী এপিআই কল এবং লোকাল ডাটাবেজ ক্রিয়েশন একসাথে ব্যাকগ্রাউন্ডে পাঠানো হলো।
-  // এগুলো ব্যাকগ্রাউন্ডে চলতে থাকবে কিন্তু অ্যাপ ওপেন হতে বাধা দেবে না।
-  Future.wait([
-    SharedPrefs().getAuthorizationKey().then((authKey) async {
+  // 🚀 [ম্যাজিক ফিক্স]: কোনো Future.wait এর ঝামেলা ছাড়া ব্যাকগ্রাউন্ড আইসোলেটেড এপিআই রান করা হলো
+  // এটি মেইন ইউআই থ্রেডকে একটুও ব্লক না করে ব্যাকগ্রাউন্ডে স্বাধীনভাবে কাজ শেষ করবে।
+  () async {
+    try {
+      String? authKey = await SharedPrefs().getAuthorizationKey();
       if (authKey != null) {
-        // প্রোফাইল রিফ্রেশ ব্যাকগ্রাউন্ডে হবে, মেইন ইউআই থ্রেডকে ব্লক করবে না
         userProfileManager.refreshProfile().catchError((e) => print("Profile refresh failed: $e"));
       }
-    }),
-    settingsController.getSettings().catchError((e) => print("Settings fetch failed: $e")),
-    getIt<DBManager>().createDatabase().catchError((e) => print("DB Creation failed: $e")),
-  ]);
+    } catch (e) {
+      print("Auth key read failed: $e");
+    }
+    
+    settingsController.getSettings().catchError((e) => print("Settings fetch failed: $e"));
+    getIt<DBManager>().createDatabase().catchError((e) => print("DB Creation failed: $e"));
+  }(); // 👈 এই ব্র্যাকেটের মাধ্যমে ফাংশনটি সাথে সাথে ব্যাকগ্রাউন্ডে চালু হয়ে যাবে
 
   NotificationManager().initialize();
   
