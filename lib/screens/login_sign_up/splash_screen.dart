@@ -89,8 +89,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 children: [
                   Image.asset(
                     'assets/spash_logo.png',
-                    height: 150,
-                    width: 150,
+                    height: 120,
+                    width: 120,
                   ),
                   const SizedBox(
                     height: 10,

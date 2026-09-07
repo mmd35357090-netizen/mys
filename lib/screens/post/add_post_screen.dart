@@ -66,6 +66,45 @@ class AddPostState extends State<AddPostScreen> {
     super.dispose();
   }
 
+    // 🌟 ভিডিও ফাইলের সাইজ অপ্টিমাইজ করার জন্য কাস্টম মেথড
+  Future<List<Media>> _compressVideoIfNeeded(List<Media> originalItems) async {
+    List<Media> processedItems = [];
+    
+    // আপনার প্রোজেক্টে থাকা EasyLoading ব্যবহার করে লোডার দেখানো
+    AppUtil.addProgressIndicator(size: 100); 
+    
+    for (var item in originalItems) {
+      // যদি ফাইলটি ভিডিও হয় এবং এর লোকাল পাথ থাকে
+      if (item.mediaType == GalleryMediaType.video && item.file != null) {
+        try {
+          MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+            item.file!.path,
+            quality: VideoQuality.MediumQuality, // কোয়ালিটি ধরে রেখে ফাস্ট আপলোডের জন্য বেস্ট
+            deleteOrigin: false,
+          );
+          
+          if (mediaInfo != null && mediaInfo.path != null) {
+            // কম্প্রেসড ফাইল দিয়ে নতুন মিডিয়া অবজেক্ট তৈরি
+            Media compressedMedia = item;
+            compressedMedia.file = File(mediaInfo.path!);
+            processedItems.add(compressedMedia);
+          } else {
+            processedItems.add(item); // কোনো কারণে ফেইল করলে অরিজিনালটাই থাকবে
+          }
+        } catch (e) {
+          print("ভিডিও কম্প্রেস করতে সমস্যা হয়েছে: $e");
+          processedItems.add(item);
+        }
+      } else {
+        processedItems.add(item); // ইমেজ বা অন্য মিডিয়া হলে সরাসরি যোগ হবে
+      }
+    }
+    
+    // কাজ শেষে ক্যাশ ক্লিয়ার করা
+    await VideoCompress.deleteAllCache();
+    return processedItems;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -114,11 +153,14 @@ class AddPostState extends State<AddPostScreen> {
                                       top: 5,
                                       bottom: 5))
                               .round(10)
-                              .ripple(() {
-                            if ((widget.items ??
-                                    _selectPostMediaController
-                                        .selectedMediaList)
-                                .isNotEmpty) {
+                              .ripple(() async { // 🌟 অসিঙ্কোনাস (async) করা হয়েছে
+                            
+                            List<Media> rawItems = widget.items ?? _selectPostMediaController.selectedMediaList;
+                            
+                            if (rawItems.isNotEmpty) {
+                              // 🚀 আপলোডের ঠিক আগে ব্যাকগ্রাউন্ডে ভিডিও কম্প্রেস করা হচ্ছে
+                              List<Media> optimizedItems = await _compressVideoIfNeeded(rawItems);
+
                               addPostController.submitPost(
                                   allowComments: addPostController
                                       .enableComments.value,
@@ -600,3 +642,4 @@ class AddedMediaList extends StatelessWidget {
   //   }
   // }
 }
+
