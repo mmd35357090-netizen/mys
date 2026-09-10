@@ -7,7 +7,7 @@ final SettingsController settingsController = Get.find();
 
 class AppConfigConstants {
   // Name of app
-  static String appName = 'facehub';
+  static String appName = 'face Hub';
 
   static String currentVersion = '2.5';
   static const liveAppLink = 'https://facehub.sbehf.com/';
