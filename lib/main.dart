@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:async'; // 👈 টাইমআউট সেফটির জন্য যুক্ত করা হলো
+import 'dart:async'; 
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
@@ -73,30 +73,27 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-late List<CameraDescription> cameras = []; // 👈 ইনিশিয়ালি খালি লিস্ট দিয়ে ক্র্যাশ আটকাতে হবে
+late List<CameraDescription> cameras = []; 
 bool isLaunchedFromCallNotification = false;
 bool isAnyPageInStack = false;
 
-// ⚡ নেটওয়ার্ক জ্যামের জন্য ৩ সেকেন্ডের ফাস্ট ইন্টারনেট চেকার
+// ⚡ [ফিক্স ১]: rawAddress এরর দূর করতে ফাংশনটি মডিফাই করা হলো
 Future<bool> checkInternetQuickly() async {
   try {
     final result = await InternetAddress.lookup('google.com')
         .timeout(const Duration(seconds: 3));
-    return result.isNotEmpty && result.rawAddress.isNotEmpty;
+    return result.isNotEmpty;
   } catch (_) {
     return false;
   }
 }
 
 Future<void> main() async {
-  // নিশ্চিত করুন ফ্লাটার ইঞ্জিন রেডি
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
 
-  // 1️⃣ ক্যামেরা হার্ডওয়্যারকে ব্যাকগ্রাউন্ডে ঠেলে দেওয়া হলো, মেইন থ্রেড ব্লক হবে না
   availableCameras().then((val) => cameras = val).catchError((e) => print("Camera Error: $e"));
 
-  // 2️⃣ ফায়ারবেসকে মেইন থ্রেড ব্লক করা থেকে আটকাতে ৫ সেকেন্ডের সেফটি টাইমআউট দেওয়া হলো
   try {
     await Firebase.initializeApp(
       name: AppConfigConstants.appName,
@@ -105,12 +102,11 @@ Future<void> main() async {
     
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
-    print("Firebase init bypassed due to network/timeout: $e");
+    print("Firebase init bypassed/timeout: $e");
   }
 
   DeviceInfoManager.collectDeviceInfo();
 
-  // ৩. নোটিফিকেশন টোকেন প্রসেস
   FlutterCallkitIncoming.getDevicePushTokenVoIP().then((token) {
     if (token != null) SharedPrefs().setVoipToken(token);
   }).catchError((e) => print("VoIP Token Error: $e"));
@@ -120,7 +116,7 @@ Future<void> main() async {
   isDarkMode = await SharedPrefs().isDarkMode();
   Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
 
-  // 🔹 GetX Controllers ডিপেন্ডেন্সি ইনজেকশন (সিনক্রোনাস, ইনস্ট্যান্ট রান হয়)
+  // Controllers Registration
   Get.put(UsersController());
   Get.put(GiftController());
   Get.put(MiscController());
@@ -167,11 +163,8 @@ Future<void> main() async {
   final UserProfileManager userProfileManager = Get.find();
   final SettingsController settingsController = Get.find();
 
-  // 4️⃣ এপিআই কলগুলোকে গার্ড (Guard) ক্লজ দিয়ে প্রোটেক্ট করা হলো যাতে অফলাইনে অ্যাপ না ঝোলে
   () async {
     bool hasInternet = await checkInternetQuickly();
-    
-    // লোকাল ডাটাবেজ ক্রিয়েশন (ইন্টারনেট লাগে না)
     getIt<DBManager>().createDatabase().catchError((e) => print("DB Creation failed: $e"));
 
     if (hasInternet) {
@@ -189,14 +182,11 @@ Future<void> main() async {
       if (userProfileManager.isLogin == true) {
         AuthApi.updateFcmToken();
       }
-    } else {
-      print("Offline mode detected. Skipping background network requests.");
     }
   }();
 
   NotificationManager().initialize();
 
-  // ৫. নোটিফিকেশন থেকে অ্যাপ ওপেন হয়েছে কি না চেক
   dynamic data = await SharedPrefs().getCallNotificationData();
   bool hasNetworkForSocket = await checkInternetQuickly();
 
@@ -205,12 +195,17 @@ Future<void> main() async {
     getIt<SocketManager>().connect();
     performActionOnCallNotificationBanner(data, true, true);
   } else {
-    // ⚡ [ম্যাজিক লাইন]: সব কাজ ব্যাকগ্রাউন্ড আইসোলেশনে দিয়ে সাথে সাথে UI চালু করে দেওয়া হলো!
     runApp(Phoenix(
         child: const SocialifiedApp(
       startScreen: SplashScreen(),
     )));
   }
+}
+
+// [ফিক্স ২]: ব্যাকগ্রাউন্ড নোটিফিকেশন হ্যান্ডলার ফাংশনটি নিচে যুক্ত করা হলো
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
 }
 
 class SocialifiedApp extends StatefulWidget {
@@ -243,7 +238,7 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
                   home: widget.startScreen,
                 );
               }
-              return const SizedBox.shrink(); 
+              return const SizedBox.shrink();
             }));
   }
 }
