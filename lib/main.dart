@@ -24,6 +24,7 @@ import 'controllers/chat_and_call/voip_controller.dart';
 import 'controllers/clubs/clubs_controller.dart';
 import 'controllers/misc/faq_controller.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:foap/screens/dashboard/loading.dart';
 import 'package:foap/screens/login_sign_up/splash_screen.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
 import 'package:foap/util/shared_prefs.dart';
@@ -197,7 +198,7 @@ Future<void> main() async {
   } else {
     runApp(Phoenix(
         child: const SocialifiedApp(
-      startScreen: SplashScreen(),
+      startScreen: LoadingScreen(),
     )));
   }
 }

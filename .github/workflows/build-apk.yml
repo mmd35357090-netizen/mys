@@ -4,13 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       build_type:
-        description: "Select APK build type"
+        description: "Select build type"
         required: true
         default: "debug"
         type: choice
         options:
           - debug
           - release
+          - bundle
 
 jobs:
   build:
@@ -25,6 +26,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+          cache: gradle
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -39,83 +41,44 @@ jobs:
       - name: Java version
         run: java -version
 
-      - name: Flutter clean
-        run: flutter clean
-
       - name: Get dependencies
         run: flutter pub get
 
-      # ==============================
-      # Release Keystore Setup
-      # ==============================
-      - name: Setup release keystore
-        if: ${{ inputs.build_type == 'release' }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          mkdir -p android/key
-
-          echo "$KEYSTORE_BASE64" | base64 --decode > android/key/upload-keystore.jks
-
-          cat > android/key.properties <<EOF
-          storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=upload
-          storeFile=key/upload-keystore.jks
-          EOF
-
-          chmod 600 android/key/upload-keystore.jks
-          chmod 600 android/key.properties
-
-      # ==============================
-      # Build Debug
-      # ==============================
+      # Debug APK - Split per ABI
       - name: Build Debug APK
         if: ${{ inputs.build_type == 'debug' }}
-        run: |
-          flutter build apk \
-            --debug \
-            --target-platform android-arm64 \
-            --no-tree-shake-icons
+        run: flutter build apk --debug --split-per-abi
 
-      # ==============================
-      # Build Release
-      # ==============================
+      # Release APK - Split per ABI
       - name: Build Release APK
         if: ${{ inputs.build_type == 'release' }}
-        run: |
-          flutter build apk \
-            --release \
-            --target-platform android-arm64 \
-            --no-tree-shake-icons
+        run: flutter build apk --release --split-per-abi
 
-      # ==============================
-      # Upload Debug APK
-      # ==============================
-      - name: Upload Debug APK
+      # Release App Bundle
+      - name: Build Release App Bundle
+        if: ${{ inputs.build_type == 'bundle' }}
+        run: flutter build appbundle --release
+
+      # Upload Debug APKs
+      - name: Upload Debug APKs
         if: ${{ inputs.build_type == 'debug' }}
         uses: actions/upload-artifact@v4
         with:
-          name: mys-debug-arm64
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: mys-debug-apks
+          path: build/app/outputs/flutter-apk/*-debug.apk
 
-      # ==============================
-      # Upload Release APK
-      # ==============================
-      - name: Upload Release APK
+      # Upload Release APKs
+      - name: Upload Release APKs
         if: ${{ inputs.build_type == 'release' }}
         uses: actions/upload-artifact@v4
         with:
-          name: mys-release-arm64
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: mys-release-apks
+          path: build/app/outputs/flutter-apk/*-release.apk
 
-      # ==============================
-      # Cleanup sensitive files
-      # ==============================
-      - name: Cleanup release keystore
-        if: ${{ always() && inputs.build_type == 'release' }}
-        run: |
-          rm -f android/key/upload-keystore.jks
-          rm -f android/key.properties
+      # Upload AAB
+      - name: Upload Release AAB
+        if: ${{ inputs.build_type == 'bundle' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mys-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
