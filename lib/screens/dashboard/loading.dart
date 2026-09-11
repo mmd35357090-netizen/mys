@@ -1,5 +1,6 @@
-import 'dart:async'; // টাইমআউটের জন্য প্রয়োজন
-import 'dart:io';    // ইন্টারনেট পিং করার জন্য প্রয়োজন
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -24,64 +25,160 @@ class _LoadingScreenState extends State<LoadingScreen> {
   final UserProfileManager _userProfileManager = Get.find();
   final SubscriptionPackageController packageController = Get.find();
 
-  var localAuth = LocalAuthentication();
-  // RxInt বাদ দিয়ে সাধারণ ইন্টিজার ও setState ব্যবহার করা ভালো যদি Obx না থাকে
-  int bioMetricType = 0; 
-  bool isLoading = true; // লোডিং ইন্ডিকেটর দেখানোর জন্য
+  final LocalAuthentication localAuth = LocalAuthentication();
+
+  int bioMetricType = 0;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // স্ক্রিন ওপেন হওয়ামাত্রই ইন্টারনেট ও বায়োমেট্রিক চেক শুরু হবে
     initializeApp();
   }
 
-  // ১. আসল ইন্টারনেট কানেকশন চেক করার ফাংশন (৫ সেকেন্ড টাইমআউট সহ)
+  // ------------------------------------------------------------
+  // Internet Check
+  // ------------------------------------------------------------
+
   Future<bool> hasInternetConnection() async {
     try {
       final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 5)); // ৫ সেকেন্ড পর কেটে যাবে
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      }
-    } on TimeoutException catch (_) {
-      debugPrint("Internet check timeout");
-    } catch (_) {
-      debugPrint("No internet connection");
+          .timeout(const Duration(seconds: 5));
+
+      return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
+    } on TimeoutException {
+      debugPrint('Internet check timeout');
+      return false;
+    } catch (e) {
+      debugPrint('Internet check failed: $e');
+      return false;
     }
-    return false;
   }
+
+  // ------------------------------------------------------------
+  // App Initialization
+  // ------------------------------------------------------------
 
   Future<void> initializeApp() async {
-    // প্রথমে ইন্টারনেট আছে কিনা নিশ্চিত হোন
-    bool internetAvailable = await hasInternetConnection();
-    
-    if (!internetAvailable) {
-      setState(() { isLoading = false; });
-      // ইন্টারনেট না থাকলে ইউজারকে জানানোর ব্যবস্থা করুন অথবা অফলাইন মোডে নিয়ে যান
-      Get.snackbar(
-        "Network Error", 
-        "No internet connection. Please check your network.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white
-      );
-      // আপনি চাইলে এখানে ১-৬০ সেকেন্ড আটকে না রেখে সরাসরি টিউটোরিয়াল বা অফলাইন স্ক্রিনে পাঠাতে পারেন
-      Get.offAll(() => const TutorialScreen());
-      return;
-    }
+    try {
+      // 1. Check internet
+      final internetAvailable = await hasInternetConnection();
 
-    // ইন্টারনেট থাকলে বায়োমেট্রিক চেক করবে
-    await checkBiometric();
+      if (!internetAvailable) {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+
+        Get.snackbar(
+          'Network Error',
+          'No internet connection. Please check your network.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+
+        Get.offAll(() => const TutorialScreen());
+        return;
+      }
+
+      // --------------------------------------------------------
+      // 2. Restore previous login session
+      // --------------------------------------------------------
+
+      try {
+        final authKey = await SharedPrefs().getAuthorizationKey();
+
+        if (authKey != null && authKey.isNotEmpty) {
+          debugPrint('Saved authorization key found.');
+
+          // IMPORTANT:
+          // Wait until profile refresh is completed before
+          // checking isLogin.
+          await _userProfileManager.refreshProfile();
+
+          debugPrint(
+            'Profile restored. isLogin: ${_userProfileManager.isLogin}',
+          );
+        } else {
+          debugPrint('No saved authorization key found.');
+        }
+      } catch (e) {
+        debugPrint('Login session restore failed: $e');
+      }
+
+      // --------------------------------------------------------
+      // 3. Check biometric lock
+      // --------------------------------------------------------
+
+      await checkBiometric();
+    } catch (e) {
+      debugPrint('App initialization error: $e');
+
+      // Never leave the user stuck on the loading screen.
+      openNextScreen();
+    }
   }
 
-  openNextScreen() {
+  // ------------------------------------------------------------
+  // Biometric Check
+  // ------------------------------------------------------------
+
+  Future<void> checkBiometric() async {
+    try {
+      final biometricEnabled =
+          await SharedPrefs().getBioMetricAuthStatus();
+
+      if (!biometricEnabled) {
+        openNextScreen();
+        return;
+      }
+
+      final availableBiometrics =
+          await localAuth.getAvailableBiometrics();
+
+      if (!mounted) {
+        return;
+      }
+
+      if (availableBiometrics.contains(BiometricType.face)) {
+        setState(() {
+          isLoading = false;
+          bioMetricType = 1;
+        });
+      } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+        setState(() {
+          isLoading = false;
+          bioMetricType = 2;
+        });
+      } else {
+        openNextScreen();
+      }
+    } catch (e) {
+      debugPrint('Biometric check failed: $e');
+      openNextScreen();
+    }
+  }
+
+  // ------------------------------------------------------------
+  // Navigate to Correct Screen
+  // ------------------------------------------------------------
+
+  void openNextScreen() {
     if (_userProfileManager.isLogin == true) {
-      // এই ইনিশিয়েটগুলোর ভেতরেও এপিআই কল থাকলে টাইমআউট থাকা জরুরি
-      packageController.initiate(); 
-      if (_userProfileManager.user.value!.userName.isNotEmpty) {
+      packageController.initiate();
+
+      final user = _userProfileManager.user.value;
+
+      if (user != null && user.userName.isNotEmpty) {
         Get.offAll(() => const DashboardScreen());
-        getIt<SocketManager>().connect();
+
+        try {
+          getIt<SocketManager>().connect();
+        } catch (e) {
+          debugPrint('Socket connection failed: $e');
+        }
       } else {
         Get.offAll(() => const SetUserName());
       }
@@ -90,83 +187,100 @@ class _LoadingScreenState extends State<LoadingScreen> {
     }
   }
 
-  Future<void> checkBiometric() async {
-    bool bioMetricAuthStatus = await SharedPrefs().getBioMetricAuthStatus();
-    if (bioMetricAuthStatus == true) {
-      List<BiometricType> availableBiometrics = await localAuth.getAvailableBiometrics();
+  // ------------------------------------------------------------
+  // Biometric Login
+  // ------------------------------------------------------------
 
-      setState(() {
-        isLoading = false;
-        if (availableBiometrics.contains(BiometricType.face)) {
-          bioMetricType = 1; // Face ID
-        } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
-          bioMetricType = 2; // Touch ID
-        } else {
-          // কোনো বায়োমেট্রিক না মিললে সরাসরি পরের স্ক্রিনে যাবে
-          openNextScreen();
-        }
-      });
-    } else {
-      openNextScreen();
-    }
-  }
-
-  void biometricLogin() async {
+  Future<void> biometricLogin() async {
     try {
-      bool didAuthenticate = await localAuth.authenticate(
-          localizedReason: 'Please authenticate to login into app');
+      final didAuthenticate = await localAuth.authenticate(
+        localizedReason: 'Please authenticate to login into app',
+      );
 
-      if (didAuthenticate == true) {
+      if (didAuthenticate) {
         openNextScreen();
       }
     } on PlatformException catch (e) {
-      if (e.code == auth_error.notAvailable) {
-        openNextScreen(); // বায়োমেট্রিক কাজ না করলে অ্যাপ আটকে না রেখে রিডাইরেক্ট করুন
+      debugPrint('Biometric authentication error: ${e.code}');
+
+      if (e.code == auth_error.notAvailable ||
+          e.code == auth_error.notEnrolled ||
+          e.code == auth_error.passcodeNotSet) {
+        openNextScreen();
       }
+    } catch (e) {
+      debugPrint('Biometric authentication failed: $e');
     }
   }
+
+  // ------------------------------------------------------------
+  // UI
+  // ------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColorConstants.backgroundColor,
-      // FutureBuilder-এর বদলে সাধারণ লোডিং স্টেট ব্যবহার করা হয়েছে
-      body: isLoading 
-          ? const Center(child: CircularProgressIndicator()) // চেক করার সময় গোল লোডিং ঘুরবে
-          : bioMetricType == 0
-              ? const Center(child: CircularProgressIndicator())
-              : Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        bioMetricType == 1
-                            ? 'assets/face-id.png'
-                            : 'assets/fingerprint.png',
-                        height: 80,
-                        width: 80,
-                        color: AppColorConstants.themeColor,
-                      ),
-                      const SizedBox(height: 50),
-                      Heading4Text(appLockedString.tr, weight: TextWeight.medium),
-                      const SizedBox(height: 10),
-                      Heading4Text(
-                        bioMetricType == 1
-                            ? unlockAppWithFaceIdString.tr
-                            : unlockAppWithTouchIdString.tr,
-                      ),
-                      const SizedBox(height: 50),
-                      Heading3Text(
-                        bioMetricType == 1
-                            ? useFaceIdString.tr
-                            : useTouchIdString.tr,
-                        color: AppColorConstants.themeColor,
-                      ).ripple(() {
-                        biometricLogin();
-                      }),
-                    ],
-                  ),
-                ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    // Normal app startup loading
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    // Biometric disabled/unavailable
+    if (bioMetricType == 0) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    // Biometric lock screen
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            bioMetricType == 1
+                ? 'assets/face-id.png'
+                : 'assets/fingerprint.png',
+            height: 80,
+            width: 80,
+            color: AppColorConstants.themeColor,
+          ),
+
+          const SizedBox(height: 50),
+
+          Heading4Text(
+            appLockedString.tr,
+            weight: TextWeight.medium,
+          ),
+
+          const SizedBox(height: 10),
+
+          Heading4Text(
+            bioMetricType == 1
+                ? unlockAppWithFaceIdString.tr
+                : unlockAppWithTouchIdString.tr,
+          ),
+
+          const SizedBox(height: 50),
+
+          Heading3Text(
+            bioMetricType == 1
+                ? useFaceIdString.tr
+                : useTouchIdString.tr,
+            color: AppColorConstants.themeColor,
+          ).ripple(() {
+            biometricLogin();
+          }),
+        ],
+      ),
     );
   }
 }

@@ -74,50 +74,101 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-late List<CameraDescription> cameras = []; 
+late List<CameraDescription> cameras = [];
+
 bool isLaunchedFromCallNotification = false;
 bool isAnyPageInStack = false;
 
-// ⚡ [ফিক্স ১]: rawAddress এরর দূর করতে ফাংশনটি মডিফাই করা হলো
+// ------------------------------------------------------------
+// Quick Internet Check
+// ------------------------------------------------------------
+
 Future<bool> checkInternetQuickly() async {
   try {
     final result = await InternetAddress.lookup('google.com')
         .timeout(const Duration(seconds: 3));
-    return result.isNotEmpty;
+
+    return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
   } catch (_) {
     return false;
   }
 }
 
+// ------------------------------------------------------------
+// Main
+// ------------------------------------------------------------
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Allow HTTPS certificates
   HttpOverrides.global = MyHttpOverrides();
 
-  availableCameras().then((val) => cameras = val).catchError((e) => print("Camera Error: $e"));
+  // ----------------------------------------------------------
+  // Camera
+  // ----------------------------------------------------------
+
+  availableCameras().then((value) {
+    cameras = value;
+  }).catchError((e) {
+    debugPrint('Camera Error: $e');
+  });
+
+  // ----------------------------------------------------------
+  // Firebase
+  // ----------------------------------------------------------
 
   try {
     await Firebase.initializeApp(
       name: AppConfigConstants.appName,
       options: DefaultFirebaseOptions.currentPlatform,
     ).timeout(const Duration(seconds: 5));
-    
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    FirebaseMessaging.onBackgroundMessage(
+      _firebaseMessagingBackgroundHandler,
+    );
   } catch (e) {
-    print("Firebase init bypassed/timeout: $e");
+    debugPrint('Firebase init bypassed/timeout: $e');
   }
+
+  // ----------------------------------------------------------
+  // Device Info
+  // ----------------------------------------------------------
 
   DeviceInfoManager.collectDeviceInfo();
 
+  // ----------------------------------------------------------
+  // VoIP Token
+  // ----------------------------------------------------------
+
   FlutterCallkitIncoming.getDevicePushTokenVoIP().then((token) {
-    if (token != null) SharedPrefs().setVoipToken(token);
-  }).catchError((e) => print("VoIP Token Error: $e"));
+    if (token != null) {
+      SharedPrefs().setVoipToken(token);
+    }
+  }).catchError((e) {
+    debugPrint('VoIP Token Error: $e');
+  });
+
+  // ----------------------------------------------------------
+  // Orientation
+  // ----------------------------------------------------------
 
   AutoOrientation.portraitAutoMode();
 
-  isDarkMode = await SharedPrefs().isDarkMode();
-  Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
+  // ----------------------------------------------------------
+  // Theme
+  // ----------------------------------------------------------
 
+  isDarkMode = await SharedPrefs().isDarkMode();
+
+  Get.changeThemeMode(
+    isDarkMode ? ThemeMode.dark : ThemeMode.light,
+  );
+
+  // ----------------------------------------------------------
   // Controllers Registration
+  // ----------------------------------------------------------
+
   Get.put(UsersController());
   Get.put(GiftController());
   Get.put(MiscController());
@@ -159,59 +210,112 @@ Future<void> main() async {
   Get.put(HighlightsController());
   Get.put(NotificationController());
 
+  // ----------------------------------------------------------
+  // Service Locator
+  // ----------------------------------------------------------
+
   setupServiceLocator();
 
   final UserProfileManager userProfileManager = Get.find();
   final SettingsController settingsController = Get.find();
 
-  () async {
-    bool hasInternet = await checkInternetQuickly();
-    getIt<DBManager>().createDatabase().catchError((e) => print("DB Creation failed: $e"));
+  // ----------------------------------------------------------
+  // Background Startup Tasks
+  //
+  // IMPORTANT:
+  // Login/profile restore is now handled by LoadingScreen.
+  // This prevents race condition with isLogin.
+  // ----------------------------------------------------------
 
-    if (hasInternet) {
-      try {
-        String? authKey = await SharedPrefs().getAuthorizationKey();
-        if (authKey != null) {
-          userProfileManager.refreshProfile().catchError((e) => print("Profile refresh failed: $e"));
-        }
-      } catch (e) {
-        print("Auth key read failed: $e");
-      }
-      
-      settingsController.getSettings().catchError((e) => print("Settings fetch failed: $e"));
-      
-      if (userProfileManager.isLogin == true) {
-        AuthApi.updateFcmToken();
-      }
+  () async {
+    final hasInternet = await checkInternetQuickly();
+
+    // Database
+    try {
+      await getIt<DBManager>().createDatabase();
+    } catch (e) {
+      debugPrint('DB Creation failed: $e');
+    }
+
+    if (!hasInternet) {
+      return;
+    }
+
+    // App Settings
+    try {
+      await settingsController.getSettings();
+    } catch (e) {
+      debugPrint('Settings fetch failed: $e');
     }
   }();
 
+  // ----------------------------------------------------------
+  // Notification Manager
+  // ----------------------------------------------------------
+
   NotificationManager().initialize();
 
-  dynamic data = await SharedPrefs().getCallNotificationData();
-  bool hasNetworkForSocket = await checkInternetQuickly();
+  // ----------------------------------------------------------
+  // Call Notification
+  // ----------------------------------------------------------
 
-  if (data != null && userProfileManager.user.value != null && hasNetworkForSocket) {
+  final dynamic data =
+      await SharedPrefs().getCallNotificationData();
+
+  final bool hasNetworkForSocket =
+      await checkInternetQuickly();
+
+  if (data != null &&
+      userProfileManager.user.value != null &&
+      hasNetworkForSocket) {
     isLaunchedFromCallNotification = true;
+
     getIt<SocketManager>().connect();
-    performActionOnCallNotificationBanner(data, true, true);
+
+    performActionOnCallNotificationBanner(
+      data,
+      true,
+      true,
+    );
   } else {
-    runApp(Phoenix(
+    // --------------------------------------------------------
+    // Start App
+    // --------------------------------------------------------
+
+    runApp(
+      Phoenix(
         child: const SocialifiedApp(
-      startScreen: LoadingScreen(),
-    )));
+          startScreen: LoadingScreen(),
+        ),
+      ),
+    );
   }
 }
 
-// [ফিক্স ২]: ব্যাকগ্রাউন্ড নোটিফিকেশন হ্যান্ডলার ফাংশনটি নিচে যুক্ত করা হলো
+// ------------------------------------------------------------
+// Firebase Background Notification Handler
+// ------------------------------------------------------------
+
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
+Future<void> _firebaseMessagingBackgroundHandler(
+  RemoteMessage message,
+) async {
+  debugPrint(
+    'Handling a background message: ${message.messageId}',
+  );
 }
+
+// ------------------------------------------------------------
+// Socialified App
+// ------------------------------------------------------------
 
 class SocialifiedApp extends StatefulWidget {
   final Widget startScreen;
-  const SocialifiedApp({Key? key, required this.startScreen}) : super(key: key);
+
+  const SocialifiedApp({
+    Key? key,
+    required this.startScreen,
+  }) : super(key: key);
 
   @override
   State<SocialifiedApp> createState() => _SocialifiedAppState();
@@ -221,6 +325,7 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
   @override
   void initState() {
     super.initState();
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -229,17 +334,20 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
   @override
   Widget build(BuildContext context) {
     return OverlaySupport.global(
-        child: FutureBuilder<Locale>(
-            future: SharedPrefs().getLocale(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return GetMaterialApp(
-                  translations: Languages(),
-                  locale: snapshot.data!,
-                  home: widget.startScreen,
-                );
-              }
-              return const SizedBox.shrink();
-            }));
+      child: FutureBuilder<Locale>(
+        future: SharedPrefs().getLocale(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return GetMaterialApp(
+              translations: Languages(),
+              locale: snapshot.data!,
+              home: widget.startScreen,
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
+    );
   }
 }
