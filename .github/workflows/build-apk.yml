@@ -77,7 +77,7 @@ jobs:
       # Release APK - Split per ABI
       - name: Build Release APK
         if: ${{ inputs.build_type == 'release' }}
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release
 
       # Release App Bundle
       - name: Build Release App Bundle
