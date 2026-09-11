@@ -6,7 +6,7 @@ on:
       build_type:
         description: "Select build type"
         required: true
-        default: "debug"
+        default: "release"
         type: choice
         options:
           - debug
@@ -43,6 +43,31 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      # ==============================
+      # Release Keystore Setup
+      # ==============================
+      - name: Setup release keystore
+        if: ${{ inputs.build_type == 'release' }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          mkdir -p android/key
+
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/key/upload-keystore.jks
+
+          cat > android/key.properties <<EOF
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=upload
+          storeFile=key/upload-keystore.jks
+          EOF
+
+          chmod 600 android/key/upload-keystore.jks
+          chmod 600 android/key.properties
+
 
       # Debug APK - Split per ABI
       - name: Build Debug APK
@@ -82,3 +107,11 @@ jobs:
         with:
           name: mys-release-aab
           path: build/app/outputs/bundle/release/app-release.aab
+      # ==============================
+      # Cleanup sensitive files
+      # ==============================
+      - name: Cleanup release keystore
+        if: ${{ always() && inputs.build_type == 'release' }}
+        run: |
+          rm -f android/key/upload-keystore.jks
+          rm -f android/key.properties
