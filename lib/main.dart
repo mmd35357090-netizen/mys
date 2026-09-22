@@ -74,112 +74,58 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-late List<CameraDescription> cameras = [];
-
+late List<CameraDescription> cameras;
 bool isLaunchedFromCallNotification = false;
 bool isAnyPageInStack = false;
 
-// ------------------------------------------------------------
-// Quick Internet Check
-// ------------------------------------------------------------
-
-Future<bool> checkInternetQuickly() async {
-  try {
-    final result = await InternetAddress.lookup('google.com')
-        .timeout(const Duration(seconds: 3));
-
-    return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
-  } catch (_) {
-    return false;
-  }
-}
-
-// ------------------------------------------------------------
-// Main
-// ------------------------------------------------------------
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Allow HTTPS certificates
+  cameras = await availableCameras();
   HttpOverrides.global = MyHttpOverrides();
 
-  // ----------------------------------------------------------
-  // Camera
-  // ----------------------------------------------------------
 
-  availableCameras().then((value) {
-    cameras = value;
-  }).catchError((e) {
-    debugPrint('Camera Error: $e');
+  await Firebase.initializeApp(
+    name: AppConfigConstants.appName,
+    options: DefaultFirebaseOptions.currentPlatform,
+  ).whenComplete(() {
+    print('initializeApp completed');
   });
 
-  // ----------------------------------------------------------
-  // Firebase
-  // ----------------------------------------------------------
-
-  try {
-    await Firebase.initializeApp(
-      name: AppConfigConstants.appName,
-      options: DefaultFirebaseOptions.currentPlatform,
-    ).timeout(const Duration(seconds: 5));
-
-    FirebaseMessaging.onBackgroundMessage(
-      _firebaseMessagingBackgroundHandler,
-    );
-  } catch (e) {
-    debugPrint('Firebase init bypassed/timeout: $e');
-  }
-
-  // ----------------------------------------------------------
-  // Device Info
-  // ----------------------------------------------------------
-
+  FirebaseMessaging.onBackgroundMessage(
+      _firebaseMessagingBackgroundHandler);
   DeviceInfoManager.collectDeviceInfo();
 
-  // ----------------------------------------------------------
-  // VoIP Token
-  // ----------------------------------------------------------
-
-  FlutterCallkitIncoming.getDevicePushTokenVoIP().then((token) {
-    if (token != null) {
-      SharedPrefs().setVoipToken(token);
-    }
-  }).catchError((e) {
-    debugPrint('VoIP Token Error: $e');
-  });
-
-  // ----------------------------------------------------------
-  // Orientation
-  // ----------------------------------------------------------
+  String? token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+  if (token != null) {
+    SharedPrefs().setVoipToken(token);
+  }
 
   AutoOrientation.portraitAutoMode();
 
-  // ----------------------------------------------------------
-  // Theme
-  // ----------------------------------------------------------
-
   isDarkMode = await SharedPrefs().isDarkMode();
+  Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
 
-  Get.changeThemeMode(
-    isDarkMode ? ThemeMode.dark : ThemeMode.light,
-  );
 
+  /
   // ----------------------------------------------------------
   // Controllers Registration
   // ----------------------------------------------------------
 
+  Get.put(PlayerManager());
   Get.put(UsersController());
   Get.put(GiftController());
   Get.put(MiscController());
   Get.put(DashboardController());
   Get.put(UserProfileManager());
   Get.put(ClubsController());
+
   Get.put(PlayerManager());
   Get.put(SettingsController());
   Get.put(SubscriptionPackageController());
   Get.put(AgoraCallController());
   Get.put(VoipController());
+
   Get.put(AgoraLiveController());
   Get.put(LoginController());
   Get.put(HomeController());
@@ -210,112 +156,48 @@ Future<void> main() async {
   Get.put(HighlightsController());
   Get.put(NotificationController());
 
-  // ----------------------------------------------------------
-  // Service Locator
-  // ----------------------------------------------------------
 
   setupServiceLocator();
 
   final UserProfileManager userProfileManager = Get.find();
+  String? authKey = await SharedPrefs().getAuthorizationKey();
+
+  if (authKey != null) {
+    await userProfileManager.refreshProfile();
+  }
+
   final SettingsController settingsController = Get.find();
-
-  // ----------------------------------------------------------
-  // Background Startup Tasks
-  //
-  // IMPORTANT:
-  // Login/profile restore is now handled by LoadingScreen.
-  // This prevents race condition with isLogin.
-  // ----------------------------------------------------------
-
-  () async {
-    final hasInternet = await checkInternetQuickly();
-
-    // Database
-    try {
-      await getIt<DBManager>().createDatabase();
-    } catch (e) {
-      debugPrint('DB Creation failed: $e');
-    }
-
-    if (!hasInternet) {
-      return;
-    }
-
-    // App Settings
-    try {
-      await settingsController.getSettings();
-    } catch (e) {
-      debugPrint('Settings fetch failed: $e');
-    }
-  }();
-
-  // ----------------------------------------------------------
-  // Notification Manager
-  // ----------------------------------------------------------
+  await settingsController.getSettings();
 
   NotificationManager().initialize();
+  FirebaseMessaging.onBackgroundMessage(
+      _firebaseMessagingBackgroundHandler);
 
-  // ----------------------------------------------------------
-  // Call Notification
-  // ----------------------------------------------------------
+  await getIt<DBManager>().createDatabase();
 
-  final dynamic data =
-      await SharedPrefs().getCallNotificationData();
+  if (userProfileManager.isLogin == true) {
+    AuthApi.updateFcmToken();
+  }
 
-  final bool hasNetworkForSocket =
-      await checkInternetQuickly();
+  dynamic data = await SharedPrefs().getCallNotificationData();
 
-  if (data != null &&
-      userProfileManager.user.value != null &&
-      hasNetworkForSocket) {
+  if (data != null && userProfileManager.user.value != null) {
     isLaunchedFromCallNotification = true;
-
     getIt<SocketManager>().connect();
-
-    performActionOnCallNotificationBanner(
-      data,
-      true,
-      true,
-    );
+    performActionOnCallNotificationBanner(data, true, true);
   } else {
-    // --------------------------------------------------------
-    // Start App
-    // --------------------------------------------------------
-
-    runApp(
-      Phoenix(
+    runApp(Phoenix(
         child: const SocialifiedApp(
-          startScreen: LoadingScreen(),
-        ),
-      ),
-    );
+      startScreen: LoadingScreen(),
+    )));
   }
 }
-
-// ------------------------------------------------------------
-// Firebase Background Notification Handler
-// ------------------------------------------------------------
-
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(
-  RemoteMessage message,
-) async {
-  debugPrint(
-    'Handling a background message: ${message.messageId}',
-  );
-}
-
-// ------------------------------------------------------------
-// Socialified App
-// ------------------------------------------------------------
 
 class SocialifiedApp extends StatefulWidget {
   final Widget startScreen;
 
-  const SocialifiedApp({
-    Key? key,
-    required this.startScreen,
-  }) : super(key: key);
+  const SocialifiedApp({Key? key, required this.startScreen})
+      : super(key: key);
 
   @override
   State<SocialifiedApp> createState() => _SocialifiedAppState();
@@ -325,7 +207,6 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
   @override
   void initState() {
     super.initState();
-
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -334,20 +215,63 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
   @override
   Widget build(BuildContext context) {
     return OverlaySupport.global(
-      child: FutureBuilder<Locale>(
-        future: SharedPrefs().getLocale(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GetMaterialApp(
-              translations: Languages(),
-              locale: snapshot.data!,
-              home: widget.startScreen,
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
-      ),
-    );
+        child: FutureBuilder<Locale>(
+            future: SharedPrefs().getLocale(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return GetMaterialApp(
+                  translations: Languages(),
+                  locale: snapshot.data!,
+                  // locale: const Locale('pt',/ 'BR'),
+                  fallbackLocale: const Locale('en', 'US'),
+                  debugShowCheckedModeBanner: false,
+                  // navigatorKey: navigationKey,
+                  home: widget.startScreen,
+                  builder: EasyLoading.init(),
+                  // theme: AppTheme.lightTheme,
+                  // darkTheme: AppTheme.darkTheme,
+                  themeMode: ThemeMode.dark,
+                  // localizationsDelegates: context.localizationDelegates,
+                  localizationsDelegates: [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    // GlobalCupertinoLocalizations.delegate,
+                    // Add this line
+                    GiphyGetUILocalizations.delegate,
+                  ],
+                  supportedLocales: const <Locale>[
+                    Locale('hi', 'US'),
+                    Locale('en', 'SA'),
+                    Locale('ar', 'SA'),
+                    Locale('tr', 'SA'),
+                    Locale('ru', 'SA'),
+                    Locale('es', 'SA'),
+                    Locale('fr', 'SA'),
+                    Locale('pt', 'BR')
+                  ],
+                );
+              } else {
+                return Container();
+              }
+            }));
   }
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(
+    RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
+
+  print('message.data ${message.data}');
+  Get.put(DashboardController());
+  Get.put(UserProfileManager());
+  Get.put(SettingsController());
+  Get.put(AgoraCallController());
+  Get.put(VoipController());
+
+  NotificationManager().parseNotificationMessage(message.data);
 }
