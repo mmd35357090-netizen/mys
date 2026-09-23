@@ -1,69 +1,67 @@
-import 'dart:async';
 import 'dart:io';
-
 import 'package:auto_orientation/auto_orientation.dart';
-import 'package:camera/camera.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:overlay_support/overlay_support.dart';
-
-import 'package:foap/controllers/auth/login_controller.dart';
-import 'package:foap/controllers/chat_and_call/agora_call_controller.dart';
-import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
-import 'package:foap/controllers/chat_and_call/chat_history_controller.dart';
-import 'package:foap/controllers/chat_and_call/chat_room_detail_controller.dart';
-import 'package:foap/controllers/chat_and_call/select_user_group_chat_controller.dart';
-import 'package:foap/controllers/chat_and_call/voip_controller.dart';
-import 'package:foap/controllers/clubs/clubs_controller.dart';
-import 'package:foap/controllers/home/home_controller.dart';
-import 'package:foap/controllers/live/agora_live_controller.dart';
-import 'package:foap/controllers/live/live_history_controller.dart';
-import 'package:foap/controllers/live/live_users_controller.dart';
-import 'package:foap/controllers/misc/faq_controller.dart';
-import 'package:foap/controllers/misc/gift_controller.dart';
-import 'package:foap/controllers/misc/map_screen_controller.dart';
-import 'package:foap/controllers/misc/misc_controller.dart';
-import 'package:foap/controllers/misc/request_verification_controller.dart';
-import 'package:foap/controllers/misc/subscription_packages_controller.dart';
-import 'package:foap/controllers/misc/users_controller.dart';
-import 'package:foap/controllers/notification/notifications_controller.dart';
-import 'package:foap/controllers/podcast/podcast_streaming_controller.dart';
-import 'package:foap/controllers/post/add_post_controller.dart';
-import 'package:foap/controllers/post/post_controller.dart';
-import 'package:foap/controllers/profile/profile_controller.dart';
-import 'package:foap/controllers/story/highlights_controller.dart';
+import 'package:foap/api_handler/apis/auth_api.dart';
 import 'package:foap/controllers/story/story_controller.dart';
-import 'package:foap/controllers/tv/live_tv_streaming_controller.dart';
-
-import 'package:foap/helper/device_info.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:foap/controllers/live/live_users_controller.dart';
 import 'package:foap/helper/imports/reel_imports.dart';
-import 'package:foap/helper/languages.dart';
-
-import 'package:foap/manager/location_manager.dart';
-import 'package:foap/manager/notification_manager.dart';
-import 'package:foap/manager/player_manager.dart';
-import 'package:foap/manager/socket_manager.dart';
-
-import 'package:foap/screens/dashboard/loading.dart';
+import 'package:foap/screens/login_sign_up/ask_to_follow.dart';
+import 'package:foap/screens/post/content_creator_view.dart';
 import 'package:foap/screens/settings_menu/help_support_contorller.dart';
 import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
-import 'package:foap/screens/settings_menu/settings_controller.dart';
-
 import 'package:foap/util/constant_util.dart';
-import 'package:foap/util/shared_prefs.dart';
 
 import 'components/giphy/src/l10n/l10n.dart';
-import 'components/post_card_controller.dart';
 import 'components/reply_chat_cells/post_gift_controller.dart';
 import 'components/smart_text_field.dart';
+import 'controllers/chat_and_call/voip_controller.dart';
+import 'controllers/clubs/clubs_controller.dart';
+import 'controllers/misc/faq_controller.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
+import 'package:foap/screens/login_sign_up/splash_screen.dart';
+import 'package:foap/screens/settings_menu/settings_controller.dart';
+import 'package:foap/util/shared_prefs.dart';
+import 'package:camera/camera.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:overlay_support/overlay_support.dart';
 
+import 'components/post_card_controller.dart';
+import 'controllers/misc/gift_controller.dart';
+import 'controllers/misc/misc_controller.dart';
+import 'controllers/misc/users_controller.dart';
+import 'controllers/notification/notifications_controller.dart';
+import 'controllers/post/add_post_controller.dart';
+import 'controllers/chat_and_call/agora_call_controller.dart';
+import 'controllers/live/agora_live_controller.dart';
+import 'controllers/chat_and_call/chat_detail_controller.dart';
+import 'controllers/chat_and_call/chat_history_controller.dart';
+import 'controllers/chat_and_call/chat_room_detail_controller.dart';
+import 'controllers/chat_and_call/select_user_group_chat_controller.dart';
+import 'controllers/home/home_controller.dart';
+import 'controllers/live/live_history_controller.dart';
+import 'controllers/story/highlights_controller.dart';
+import 'controllers/tv/live_tv_streaming_controller.dart';
+import 'controllers/auth/login_controller.dart';
+import 'controllers/misc/map_screen_controller.dart';
+import 'controllers/podcast/podcast_streaming_controller.dart';
+import 'controllers/post/post_controller.dart';
+import 'controllers/profile/profile_controller.dart';
+import 'controllers/misc/request_verification_controller.dart';
+import 'controllers/misc/subscription_packages_controller.dart';
+import 'helper/device_info.dart';
+import 'helper/languages.dart';
+import 'manager/db_manager.dart';
+import 'manager/location_manager.dart';
+import 'manager/notification_manager.dart';
+import 'manager/player_manager.dart';
+import 'manager/socket_manager.dart';
 import 'firebase_options.dart';
+import 'dart:convert';
 
 
 // ============================================================
