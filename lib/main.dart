@@ -107,7 +107,6 @@ Future<void> main() async {
   Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
 
 
-  /
   // ----------------------------------------------------------
   // Controllers Registration
   // ----------------------------------------------------------
