@@ -526,11 +526,11 @@ class _SocialifiedAppState
                       ? ThemeMode.dark
                       : ThemeMode.light,
 
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GiphyGetUILocalizations.delegate,
-              ],
+           //   localizationsDelegates: const [
+             //   GlobalMaterialLocalizations.delegate,
+             //   GlobalWidgetsLocalizations.delegate,
+             //   GiphyGetUILocalizations.delegate,
+            //  ],
 
               supportedLocales:
                   const <Locale>[
