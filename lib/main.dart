@@ -50,6 +50,7 @@ import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/screens/dashboard/loading.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:foap/util/shared_prefs.dart';
+import 'package:foap/screens/settings_menu/settings_controller.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import 'components/giphy/src/l10n/l10n.dart';
@@ -111,22 +112,20 @@ Future<void> main() async {
   // ----------------------------------------------------------
 
   DeviceInfoManager.collectDeviceInfo();
+// ----------------------------------------------------------
+// VoIP token
+// ----------------------------------------------------------
 
-  // ----------------------------------------------------------
-  // VoIP token
-  // ----------------------------------------------------------
+try {
+  final token =
+      await FlutterCallkitIncoming.getDevicePushTokenVoIP();
 
-  try {
-    final token =
-        await FlutterCallkitIncoming.getDevicePushTokenVoIP();
-
-    if (token != null && token.isNotEmpty) {
-      await SharedPrefs().setVoipToken(token);
-    }
-  } catch (e) {
-    debugPrint('VoIP token error: $e');
+  if (token != null && token.isNotEmpty) {
+    SharedPrefs().setVoipToken(token);
   }
-
+} catch (e) {
+  debugPrint('VoIP token error: $e');
+}
   // ----------------------------------------------------------
   // Orientation
   // ----------------------------------------------------------

@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
 
-import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/manager/socket_manager.dart';
-import 'package:foap/util/shared_prefs.dart';
-
 import '../../controllers/misc/subscription_packages_controller.dart';
+import '../../manager/socket_manager.dart';
+import '../../manager/db_manager.dart';
+import '../../screens/settings_menu/settings_controller.dart';
+import '../../util/shared_prefs.dart';
 import '../login_sign_up/set_user_name.dart';
 import '../login_sign_up/tutorial_screen.dart';
 import 'dashboard_screen.dart';
