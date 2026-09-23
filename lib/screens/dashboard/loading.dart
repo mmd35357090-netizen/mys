@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/api_handler/apis/auth_api.dart';
 
 import '../../controllers/misc/subscription_packages_controller.dart';
 import '../../manager/db_manager.dart';
