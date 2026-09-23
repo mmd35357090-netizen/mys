@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foap/helper/imports/common_import.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
 
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/manager/socket_manager.dart';
+import 'package:foap/util/shared_prefs.dart';
+
 import '../../controllers/misc/subscription_packages_controller.dart';
-import '../../manager/socket_manager.dart';
-import '../../util/shared_prefs.dart';
 import '../login_sign_up/set_user_name.dart';
 import '../login_sign_up/tutorial_screen.dart';
 import 'dashboard_screen.dart';
@@ -28,259 +27,461 @@ class _LoadingScreenState extends State<LoadingScreen> {
   final LocalAuthentication localAuth = LocalAuthentication();
 
   int bioMetricType = 0;
+
   bool isLoading = true;
+  bool biometricEnabled = false;
+  bool biometricAuthenticated = false;
+  bool profileReady = false;
+  bool settingsReady = false;
+  bool databaseReady = false;
+  bool hasFinishedNavigation = false;
+
+  Future<void>? profileFuture;
+  Future<void>? settingsFuture;
+  Future<void>? databaseFuture;
 
   @override
   void initState() {
     super.initState();
+
     initializeApp();
   }
 
-  // ------------------------------------------------------------
-  // Internet Check
-  // ------------------------------------------------------------
-
-  Future<bool> hasInternetConnection() async {
-    try {
-      final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 5));
-
-      return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
-    } on TimeoutException {
-      debugPrint('Internet check timeout');
-      return false;
-    } catch (e) {
-      debugPrint('Internet check failed: $e');
-      return false;
-    }
-  }
-
-  // ------------------------------------------------------------
-  // App Initialization
-  // ------------------------------------------------------------
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
 
   Future<void> initializeApp() async {
     try {
-      // 1. Check internet
-      final internetAvailable = await hasInternetConnection();
+      final authKey =
+          await SharedPrefs().getAuthorizationKey();
 
-      if (!internetAvailable) {
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-          });
-        }
+      final bool isOldUser =
+          authKey != null && authKey.isNotEmpty;
 
-        Get.snackbar(
-          'Network Error',
-          'No internet connection. Please check your network.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+      // --------------------------------------------------------
+      // NEW USER
+      // --------------------------------------------------------
 
-        Get.offAll(() => const TutorialScreen());
+      if (!isOldUser) {
+        debugPrint('New user detected.');
+
+        await _initializeLocalServices();
+
+        if (!mounted) return;
+
+        openNextScreen();
+
         return;
       }
 
       // --------------------------------------------------------
-      // 2. Restore previous login session
+      // OLD USER
       // --------------------------------------------------------
 
-      try {
-        final authKey = await SharedPrefs().getAuthorizationKey();
+      debugPrint('Existing user detected.');
 
-        if (authKey != null && authKey.isNotEmpty) {
-          debugPrint('Saved authorization key found.');
+      // --------------------------------------------------------
+      // Start profile refresh immediately.
+      //
+      // This DOES NOT wait for biometric preparation.
+      // --------------------------------------------------------
 
-          // IMPORTANT:
-          // Wait until profile refresh is completed before
-          // checking isLogin.
-          await _userProfileManager.refreshProfile();
+      profileFuture = _refreshProfile();
 
-          debugPrint(
-            'Profile restored. isLogin: ${_userProfileManager.isLogin}',
-          );
-        } else {
-          debugPrint('No saved authorization key found.');
-        }
-      } catch (e) {
-        debugPrint('Login session restore failed: $e');
+      // --------------------------------------------------------
+      // Start settings and database at the same time.
+      // --------------------------------------------------------
+
+      settingsFuture = _loadSettings();
+      databaseFuture = _createDatabase();
+
+      // --------------------------------------------------------
+      // Prepare biometric at the same time.
+      // --------------------------------------------------------
+
+      await _prepareBiometric();
+
+      // --------------------------------------------------------
+      // If biometric is enabled, show fingerprint screen.
+      //
+      // Profile/settings/database continue running in background.
+      // --------------------------------------------------------
+
+      if (biometricEnabled) {
+        if (!mounted) return;
+
+        setState(() {
+          isLoading = false;
+        });
+
+        return;
       }
 
       // --------------------------------------------------------
-      // 3. Check biometric lock
+      // Biometric is not enabled.
+      //
+      // Wait for required startup operations.
       // --------------------------------------------------------
 
-      await checkBiometric();
+      await Future.wait([
+        if (profileFuture != null) profileFuture!,
+        if (settingsFuture != null) settingsFuture!,
+        if (databaseFuture != null) databaseFuture!,
+      ]);
+
+      profileReady = true;
+      settingsReady = true;
+      databaseReady = true;
+
+      if (!mounted) return;
+
+      openNextScreen();
     } catch (e) {
       debugPrint('App initialization error: $e');
 
-      // Never leave the user stuck on the loading screen.
+      if (!mounted) return;
+
       openNextScreen();
     }
   }
 
-  // ------------------------------------------------------------
-  // Biometric Check
-  // ------------------------------------------------------------
+  // ============================================================
+  // PROFILE
+  // ============================================================
 
-  Future<void> checkBiometric() async {
+  Future<void> _refreshProfile() async {
     try {
-      final biometricEnabled =
+      await _userProfileManager.refreshProfile();
+
+      profileReady = true;
+
+      debugPrint(
+        'Profile restored. '
+        'isLogin: ${_userProfileManager.isLogin}',
+      );
+    } catch (e) {
+      debugPrint(
+        'Profile refresh failed: $e',
+      );
+
+      // Do not crash the application.
+      profileReady = true;
+    }
+  }
+
+  // ============================================================
+  // SETTINGS
+  // ============================================================
+
+  Future<void> _loadSettings() async {
+    try {
+      final settingsController =
+          Get.find<SettingsController>();
+
+      await settingsController.getSettings();
+
+      settingsReady = true;
+    } catch (e) {
+      debugPrint(
+        'Settings loading failed: $e',
+      );
+
+      settingsReady = true;
+    }
+  }
+
+  // ============================================================
+  // DATABASE
+  // ============================================================
+
+  Future<void> _createDatabase() async {
+    try {
+      await getIt<DBManager>().createDatabase();
+
+      databaseReady = true;
+    } catch (e) {
+      debugPrint(
+        'Database initialization failed: $e',
+      );
+
+      databaseReady = true;
+    }
+  }
+
+  // ============================================================
+  // LOCAL SERVICES
+  // ============================================================
+
+  Future<void> _initializeLocalServices() async {
+    await Future.wait([
+      _loadSettings(),
+      _createDatabase(),
+    ]);
+  }
+
+  // ============================================================
+  // BIOMETRIC PREPARATION
+  // ============================================================
+
+  Future<void> _prepareBiometric() async {
+    try {
+      biometricEnabled =
           await SharedPrefs().getBioMetricAuthStatus();
 
       if (!biometricEnabled) {
-        openNextScreen();
+        debugPrint(
+          'Biometric lock is disabled.',
+        );
+
         return;
       }
 
       final availableBiometrics =
           await localAuth.getAvailableBiometrics();
 
-      if (!mounted) {
+      if (availableBiometrics.contains(
+        BiometricType.face,
+      )) {
+        bioMetricType = 1;
+      } else if (availableBiometrics.contains(
+        BiometricType.fingerprint,
+      )) {
+        bioMetricType = 2;
+      } else {
+        biometricEnabled = false;
+        bioMetricType = 0;
+      }
+
+      debugPrint(
+        'Biometric enabled: $biometricEnabled',
+      );
+    } catch (e) {
+      debugPrint(
+        'Biometric preparation failed: $e',
+      );
+
+      biometricEnabled = false;
+      bioMetricType = 0;
+    }
+  }
+
+  // ============================================================
+  // BIOMETRIC LOGIN
+  // ============================================================
+
+  Future<void> biometricLogin() async {
+    if (!biometricEnabled) {
+      openNextScreen();
+      return;
+    }
+
+    try {
+      final didAuthenticate =
+          await localAuth.authenticate(
+        localizedReason:
+            'Please authenticate to login into app',
+        options: const AuthenticationOptions(
+          biometricOnly: false,
+          stickyAuth: true,
+          useErrorDialogs: true,
+        ),
+      );
+
+      if (!didAuthenticate) {
+        debugPrint(
+          'Biometric authentication cancelled.',
+        );
+
         return;
       }
 
-      if (availableBiometrics.contains(BiometricType.face)) {
-        setState(() {
-          isLoading = false;
-          bioMetricType = 1;
-        });
-      } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
-        setState(() {
-          isLoading = false;
-          bioMetricType = 2;
-        });
-      } else {
-        openNextScreen();
-      }
-    } catch (e) {
-      debugPrint('Biometric check failed: $e');
+      biometricAuthenticated = true;
+
+      // --------------------------------------------------------
+      // Profile/settings/database may already be finished
+      // while user was authenticating.
+      // --------------------------------------------------------
+
+      await Future.wait([
+        if (profileFuture != null) profileFuture!,
+        if (settingsFuture != null) settingsFuture!,
+        if (databaseFuture != null) databaseFuture!,
+      ]);
+
+      profileReady = true;
+      settingsReady = true;
+      databaseReady = true;
+
+      if (!mounted) return;
+
       openNextScreen();
-    }
-  }
-
-  // ------------------------------------------------------------
-  // Navigate to Correct Screen
-  // ------------------------------------------------------------
-
-  void openNextScreen() {
-    if (_userProfileManager.isLogin == true) {
-      packageController.initiate();
-
-      final user = _userProfileManager.user.value;
-
-      if (user != null && user.userName.isNotEmpty) {
-        Get.offAll(() => const DashboardScreen());
-
-        try {
-          getIt<SocketManager>().connect();
-        } catch (e) {
-          debugPrint('Socket connection failed: $e');
-        }
-      } else {
-        Get.offAll(() => const SetUserName());
-      }
-    } else {
-      Get.offAll(() => const TutorialScreen());
-    }
-  }
-
-  // ------------------------------------------------------------
-  // Biometric Login
-  // ------------------------------------------------------------
-
-  Future<void> biometricLogin() async {
-    try {
-      final didAuthenticate = await localAuth.authenticate(
-        localizedReason: 'Please authenticate to login into app',
-      );
-
-      if (didAuthenticate) {
-        openNextScreen();
-      }
     } on PlatformException catch (e) {
-      debugPrint('Biometric authentication error: ${e.code}');
+      debugPrint(
+        'Biometric authentication error: ${e.code}',
+      );
 
       if (e.code == auth_error.notAvailable ||
           e.code == auth_error.notEnrolled ||
           e.code == auth_error.passcodeNotSet) {
+        biometricEnabled = false;
+
+        await Future.wait([
+          if (profileFuture != null) profileFuture!,
+          if (settingsFuture != null) settingsFuture!,
+          if (databaseFuture != null) databaseFuture!,
+        ]);
+
+        if (!mounted) return;
+
         openNextScreen();
       }
     } catch (e) {
-      debugPrint('Biometric authentication failed: $e');
+      debugPrint(
+        'Biometric authentication failed: $e',
+      );
     }
   }
 
-  // ------------------------------------------------------------
+  // ============================================================
+  // NEXT SCREEN
+  // ============================================================
+
+  Future<void> openNextScreen() async {
+    if (hasFinishedNavigation) {
+      return;
+    }
+
+    hasFinishedNavigation = true;
+
+    // ----------------------------------------------------------
+    // LOGIN USER
+    // ----------------------------------------------------------
+
+    if (_userProfileManager.isLogin == true) {
+      packageController.initiate();
+
+      final user =
+          _userProfileManager.user.value;
+
+      if (user != null &&
+          user.userName.isNotEmpty) {
+        Get.offAll(
+          () => const DashboardScreen(),
+        );
+
+        // ------------------------------------------------------
+        // Socket should NOT block Dashboard.
+        // ------------------------------------------------------
+
+        try {
+          getIt<SocketManager>().connect();
+        } catch (e) {
+          debugPrint(
+            'Socket connection failed: $e',
+          );
+        }
+
+        return;
+      }
+
+      // --------------------------------------------------------
+      // Logged in but username missing
+      // --------------------------------------------------------
+
+      Get.offAll(
+        () => const SetUserName(),
+      );
+
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // NEW / LOGGED OUT USER
+    // ----------------------------------------------------------
+
+    Get.offAll(
+      () => const TutorialScreen(),
+    );
+  }
+
+  // ============================================================
   // UI
-  // ------------------------------------------------------------
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColorConstants.backgroundColor,
+      backgroundColor:
+          AppColorConstants.backgroundColor,
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
-    // Normal app startup loading
-    if (isLoading) {
+    // ----------------------------------------------------------
+    // Normal startup
+    // ----------------------------------------------------------
+
+    if (isLoading && !biometricEnabled) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
 
-    // Biometric disabled/unavailable
-    if (bioMetricType == 0) {
-      return const Center(
-        child: CircularProgressIndicator(),
+    // ----------------------------------------------------------
+    // Fingerprint / Face lock
+    // ----------------------------------------------------------
+
+    if (biometricEnabled) {
+      return Center(
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              bioMetricType == 1
+                  ? 'assets/face-id.png'
+                  : 'assets/fingerprint.png',
+              height: 80,
+              width: 80,
+              color:
+                  AppColorConstants.themeColor,
+            ),
+
+            const SizedBox(height: 50),
+
+            Heading4Text(
+              appLockedString.tr,
+              weight: TextWeight.medium,
+            ),
+
+            const SizedBox(height: 10),
+
+            Heading4Text(
+              bioMetricType == 1
+                  ? unlockAppWithFaceIdString.tr
+                  : unlockAppWithTouchIdString.tr,
+            ),
+
+            const SizedBox(height: 50),
+
+            Heading3Text(
+              bioMetricType == 1
+                  ? useFaceIdString.tr
+                  : useTouchIdString.tr,
+              color:
+                  AppColorConstants.themeColor,
+            ).ripple(() {
+              biometricLogin();
+            }),
+          ],
+        ),
       );
     }
 
-    // Biometric lock screen
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            bioMetricType == 1
-                ? 'assets/face-id.png'
-                : 'assets/fingerprint.png',
-            height: 80,
-            width: 80,
-            color: AppColorConstants.themeColor,
-          ),
-
-          const SizedBox(height: 50),
-
-          Heading4Text(
-            appLockedString.tr,
-            weight: TextWeight.medium,
-          ),
-
-          const SizedBox(height: 10),
-
-          Heading4Text(
-            bioMetricType == 1
-                ? unlockAppWithFaceIdString.tr
-                : unlockAppWithTouchIdString.tr,
-          ),
-
-          const SizedBox(height: 50),
-
-          Heading3Text(
-            bioMetricType == 1
-                ? useFaceIdString.tr
-                : useTouchIdString.tr,
-            color: AppColorConstants.themeColor,
-          ).ripple(() {
-            biometricLogin();
-          }),
-        ],
-      ),
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 }
