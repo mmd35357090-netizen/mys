@@ -1,235 +1,157 @@
 import 'dart:convert';
-
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class SharedPrefs {
-  // ------------------------------------------------------------
-  // Tutorial
-  // ------------------------------------------------------------
-
-  Future<void> setTutorialSeen() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('tutorialSeen', true);
+  void setTutorialSeen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('tutorialSeen', true);
   }
 
   Future<bool> getTutorialSeen() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('tutorialSeen') ?? false;
   }
 
-  // ------------------------------------------------------------
-  // Dark Mode
-  // ------------------------------------------------------------
-
   Future<bool> isDarkMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('darkMode') ?? false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('darkMode') as bool? ?? false;
   }
 
-  Future<void> setDarkMode(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('darkMode', value);
+  setDarkMode(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('darkMode', value);
   }
 
-  // ------------------------------------------------------------
-  // Authorization / Login
-  // ------------------------------------------------------------
+  void setBioMetricAuthStatus(bool status) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('bioMetricAuthStatus', status);
+  }
 
-  Future<void> setAuthorizationKey(String authKey) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('authKey', authKey);
+  Future<bool> getBioMetricAuthStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('bioMetricAuthStatus') ?? false;
+  }
+
+  //Set/Get UserLoggedIn Status
+  Future setAuthorizationKey(String authKey) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('authKey', authKey);
   }
 
   Future<String?> getAuthorizationKey() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('authKey');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('authKey') as String?;
   }
 
-  Future<void> clearPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('authKey');
-  }
-
-  // ------------------------------------------------------------
-  // FCM Token
-  // ------------------------------------------------------------
-
-  Future<void> setFCMToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('FCMToken', token);
+  void setFCMToken(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('FCMToken', token);
   }
 
   Future<String?> getFCMToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('FCMToken');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('FCMToken') as String?;
   }
 
-  // ------------------------------------------------------------
-  // VoIP Token
-  // ------------------------------------------------------------
-
-  Future<void> setVoipToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('VOIPToken', token);
+  void setVoipToken(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('VOIPToken', token);
   }
 
   Future<String?> getVoipToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('VOIPToken');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('VOIPToken') as String?;
   }
 
-  // ------------------------------------------------------------
-  // Wallpaper
-  // ------------------------------------------------------------
-
-  Future<void> setWallpaper({
-    required int roomId,
-    required String wallpaper,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-      roomId.toString(),
-      wallpaper,
-    );
+  void setWallpaper({required int roomId, required String wallpaper}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(roomId.toString(), wallpaper);
   }
 
-  Future<String> getWallpaper({
-    required int roomId,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(roomId.toString()) ??
-        'assets/chatbg/chatbg3.jpg';
+  Future<String> getWallpaper({required int roomId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get(roomId.toString()) as String? ??
+        "assets/chatbg/chatbg3.jpg";
   }
-
-  // ------------------------------------------------------------
-  // Language
-  // ------------------------------------------------------------
 
   Future<String> getLanguageCode() async {
     return 'en';
   }
 
-  Future<void> setLanguage(String lang) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('language', lang);
+  void clearPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('authKey');
+  }
+
+  void setLanguage(String lang) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('language', lang);
   }
 
   Future<String> getLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString('language') ?? 'en';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('language') as String? ?? 'en';
   }
 
   Future<Locale> getLocale() async {
-    return WidgetsBinding.instance.platformDispatcher.locale;
+    // Get the user's preferred locale from the system settings
+    var locale = WidgetsBinding.instance.window.locale;
+    // Alternatively, you can use the device's current locale:
+    // var locale = await findSystemLocale();
+    return locale;
   }
 
-  // ------------------------------------------------------------
-  // Call Notification Data
-  // ------------------------------------------------------------
-
-  Future<void> setCallNotificationData(dynamic data) async {
-    final prefs = await SharedPreferences.getInstance();
-
+  void setCallNotificationData(dynamic data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (data != null) {
-      await prefs.setString(
-        'notificationData',
-        jsonEncode(data),
-      );
+      prefs.setString('notificationData', jsonEncode(data));
     } else {
-      await prefs.remove('notificationData');
+      prefs.remove('notificationData');
     }
   }
 
   Future<dynamic> getCallNotificationData() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? jsonData = prefs.getString('notificationData');
 
-    final String? jsonData =
-        prefs.getString('notificationData');
-
-    if (jsonData != null && jsonData.isNotEmpty) {
-      try {
-        return jsonDecode(jsonData) as Map<String, dynamic>;
-      } catch (e) {
-        return null;
-      }
+    if (jsonData != null) {
+      return jsonDecode(jsonData) as Map<String, dynamic>;
     }
 
-    return null;
+    // If no data is found, return an empty map or null, depending on your requirements
+    return null; // or return null;
   }
 
-  // ------------------------------------------------------------
-  // Apple ID
-  // ------------------------------------------------------------
-
-  Future<void> setAppleIdEmail({
-    required String forAppleId,
-    required String email,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-      '${forAppleId}_email',
-      email,
-    );
+  void setAppleIdEmail(
+      {required String forAppleId, required String email}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('${forAppleId}_email', email);
   }
 
-  Future<String?> getAppleIdEmail({
-    required String forAppleId,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(
-      '${forAppleId}_email',
-    );
+  Future<String?> getAppleIdEmail({required String forAppleId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('${forAppleId}_email') as String?;
   }
 
-  Future<void> setAppleIdName({
-    required String forAppleId,
-    required String email,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-      '${forAppleId}_name',
-      email,
-    );
+  void setAppleIdName(
+      {required String forAppleId, required String email}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('${forAppleId}_name', email);
   }
 
-  Future<String?> getAppleIdName({
-    required String forAppleId,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(
-      '${forAppleId}_name',
-    );
+  Future<String?> getAppleIdName({required String forAppleId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get('${forAppleId}_name') as String?;
   }
 
-  // ------------------------------------------------------------
-  // API Response Cache
-  // ------------------------------------------------------------
-
-  Future<void> setApiResponse({
-    required String url,
-    required String response,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-      url,
-      response,
-    );
+  void setApiResponse({required String url, required String response}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(url, response);
   }
 
-  Future<String?> getCachedApiResponse({
-    required String url,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(url);
+  Future<String?> getCachedApiResponse({required String url}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get(url) as String?;
   }
 }
