@@ -72,7 +72,6 @@ import 'components/smart_text_field.dart';
 
 import 'firebase_options.dart';
 
-
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -96,15 +95,7 @@ Future<void> main() async {
   // Camera
   // ----------------------------------------------------------
 
-//  cameras = await availableCameras();
-  try {
-  cameras = await availableCameras().timeout(
-    const Duration(seconds: 5),
-  );
-} catch (e) {
-  debugPrint('Camera initialization failed/timeout: $e');
-  cameras = <CameraDescription>[];
-  }
+  cameras = await availableCameras();
 
   // ----------------------------------------------------------
   // Firebase
