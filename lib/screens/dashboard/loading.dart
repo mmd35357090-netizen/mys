@@ -1,13 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:local_auth/error_codes.dart' as auth_error;
-import 'package:local_auth/local_auth.dart';
 
 import '../../controllers/misc/subscription_packages_controller.dart';
-import '../../manager/socket_manager.dart';
 import '../../manager/db_manager.dart';
+import '../../manager/socket_manager.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import '../../util/shared_prefs.dart';
 import '../login_sign_up/set_user_name.dart';
@@ -22,173 +20,163 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  final UserProfileManager _userProfileManager = Get.find();
-  final SubscriptionPackageController packageController = Get.find();
+  late final UserProfileManager _userProfileManager;
+  late final SubscriptionPackageController _packageController;
 
-  final LocalAuthentication localAuth = LocalAuthentication();
+  bool _navigationStarted = false;
+  bool _startupFinished = false;
 
-  int bioMetricType = 0;
-
-  bool isLoading = true;
-  bool biometricEnabled = false;
-  bool biometricAuthenticated = false;
-  bool profileReady = false;
-  bool settingsReady = false;
-  bool databaseReady = false;
-  bool hasFinishedNavigation = false;
-
-  Future<void>? profileFuture;
-  Future<void>? settingsFuture;
-  Future<void>? databaseFuture;
+  String? _savedAuthKey;
 
   @override
   void initState() {
     super.initState();
 
-    initializeApp();
+    _userProfileManager = Get.find<UserProfileManager>();
+    _packageController = Get.find<SubscriptionPackageController>();
+
+    _initializeApp();
   }
 
   // ============================================================
-  // INITIALIZATION
+  // MAIN STARTUP
   // ============================================================
 
-  Future<void> initializeApp() async {
+  Future<void> _initializeApp() async {
+    debugPrint('========================================');
+    debugPrint('FACE HUB STARTUP');
+    debugPrint('Biometric startup check: DISABLED');
+    debugPrint('========================================');
+
     try {
-      final authKey =
-          await SharedPrefs().getAuthorizationKey();
-
-      final bool isOldUser =
-          authKey != null && authKey.isNotEmpty;
-
       // --------------------------------------------------------
-      // NEW USER
+      // 1. Read saved login/session locally
       // --------------------------------------------------------
 
-      if (!isOldUser) {
-        debugPrint('New user detected.');
+      _savedAuthKey = await _safeGetAuthKey();
 
-        await _initializeLocalServices();
+      final bool hasSavedLogin =
+          _savedAuthKey != null && _savedAuthKey!.isNotEmpty;
+
+      debugPrint(
+        'Saved login found: $hasSavedLogin',
+      );
+
+      // --------------------------------------------------------
+      // 2. Start LOCAL services immediately
+      //    These must NEVER control navigation.
+      // --------------------------------------------------------
+
+      unawaited(_initializeDatabase());
+
+      // --------------------------------------------------------
+      // 3. New user
+      // --------------------------------------------------------
+
+      if (!hasSavedLogin) {
+        debugPrint(
+          'No saved login. Opening Tutorial without waiting for server.',
+        );
+
+        _startupFinished = true;
 
         if (!mounted) return;
 
-        openNextScreen();
+        await _openTutorial();
+
+        // Settings can continue in background.
+        unawaited(_retrySettingsInBackground());
 
         return;
       }
 
       // --------------------------------------------------------
-      // OLD USER
-      // --------------------------------------------------------
-
-      debugPrint('Existing user detected.');
-
-      // --------------------------------------------------------
-      // Start profile refresh immediately.
+      // 4. Existing user
       //
-      // This DOES NOT wait for biometric preparation.
+      // Profile and settings are started in background.
+      // They are NOT allowed to permanently block startup.
       // --------------------------------------------------------
 
-      profileFuture = _refreshProfile();
+      debugPrint(
+        'Existing user detected. Starting background sync...',
+      );
+
+      unawaited(_restoreProfileWithRetry());
+      unawaited(_retrySettingsInBackground());
 
       // --------------------------------------------------------
-      // Start settings and database at the same time.
-      // --------------------------------------------------------
-
-      settingsFuture = _loadSettings();
-      databaseFuture = _createDatabase();
-
-      // --------------------------------------------------------
-      // Prepare biometric at the same time.
-      // --------------------------------------------------------
-
-      await _prepareBiometric();
-
-      // --------------------------------------------------------
-      // If biometric is enabled, show fingerprint screen.
+      // 5. Give profile a SHORT chance to restore.
       //
-      // Profile/settings/database continue running in background.
+      // This is only to make normal startup smoother.
+      // It cannot keep the app on loading forever.
       // --------------------------------------------------------
 
-      if (biometricEnabled) {
-        if (!mounted) return;
+      await _waitForProfileBriefly();
 
-        setState(() {
-          isLoading = false;
-        });
+      // --------------------------------------------------------
+      // 6. IMPORTANT:
+      // Saved auth key exists, therefore do not keep the user
+      // trapped on LoadingScreen just because server is slow.
+      // --------------------------------------------------------
 
-        return;
+      _startupFinished = true;
+
+      if (!mounted) return;
+
+      await _openLoggedInUser();
+
+    } catch (e, stackTrace) {
+      debugPrint(
+        'Startup error: $e',
+      );
+
+      debugPrint(
+        'Startup stack: $stackTrace',
+      );
+
+      // --------------------------------------------------------
+      // Emergency fallback
+      // Even if something unexpected happens, do not remain
+      // permanently on LoadingScreen.
+      // --------------------------------------------------------
+
+      _startupFinished = true;
+
+      if (!mounted) return;
+
+      final hasSavedLogin =
+          _savedAuthKey != null && _savedAuthKey!.isNotEmpty;
+
+      if (hasSavedLogin) {
+        await _openLoggedInUser();
+      } else {
+        await _openTutorial();
       }
-
-      // --------------------------------------------------------
-      // Biometric is not enabled.
-      //
-      // Wait for required startup operations.
-      // --------------------------------------------------------
-
-      await Future.wait([
-        if (profileFuture != null) profileFuture!,
-        if (settingsFuture != null) settingsFuture!,
-        if (databaseFuture != null) databaseFuture!,
-      ]);
-
-      profileReady = true;
-      settingsReady = true;
-      databaseReady = true;
-
-      if (!mounted) return;
-
-      openNextScreen();
-    } catch (e) {
-      debugPrint('App initialization error: $e');
-
-      if (!mounted) return;
-
-      openNextScreen();
     }
   }
 
   // ============================================================
-  // PROFILE
+  // AUTH KEY
   // ============================================================
 
-  Future<void> _refreshProfile() async {
+  Future<String?> _safeGetAuthKey() async {
     try {
-      await _userProfileManager.refreshProfile();
-
-      profileReady = true;
-
-      debugPrint(
-        'Profile restored. '
-        'isLogin: ${_userProfileManager.isLogin}',
-      );
+      return await SharedPrefs()
+          .getAuthorizationKey()
+          .timeout(
+            const Duration(seconds: 3),
+            onTimeout: () {
+              debugPrint(
+                'Authorization key read timeout.',
+              );
+              return null;
+            },
+          );
     } catch (e) {
       debugPrint(
-        'Profile refresh failed: $e',
+        'Authorization key error: $e',
       );
-
-      // Do not crash the application.
-      profileReady = true;
-    }
-  }
-
-  // ============================================================
-  // SETTINGS
-  // ============================================================
-
-  Future<void> _loadSettings() async {
-    try {
-      final settingsController =
-          Get.find<SettingsController>();
-
-      await settingsController.getSettings();
-
-      settingsReady = true;
-    } catch (e) {
-      debugPrint(
-        'Settings loading failed: $e',
-      );
-
-      settingsReady = true;
+      return null;
     }
   }
 
@@ -196,210 +184,439 @@ class _LoadingScreenState extends State<LoadingScreen> {
   // DATABASE
   // ============================================================
 
-  Future<void> _createDatabase() async {
+  Future<void> _initializeDatabase() async {
     try {
-      await getIt<DBManager>().createDatabase();
-
-      databaseReady = true;
-    } catch (e) {
       debugPrint(
-        'Database initialization failed: $e',
+        'Database initialization started...',
       );
 
-      databaseReady = true;
+      await getIt<DBManager>()
+          .createDatabase()
+          .timeout(
+            const Duration(seconds: 8),
+          );
+
+      debugPrint(
+        'Database initialization completed.',
+      );
+    } catch (e) {
+      debugPrint(
+        'Database initialization failed/timeout: $e',
+      );
     }
   }
 
   // ============================================================
-  // LOCAL SERVICES
+  // PROFILE RESTORE
   // ============================================================
 
-  Future<void> _initializeLocalServices() async {
-    await Future.wait([
-      _loadSettings(),
-      _createDatabase(),
-    ]);
+  Future<bool> _refreshProfileOnce() async {
+    try {
+      debugPrint(
+        'Profile sync started...',
+      );
+
+      await _userProfileManager
+          .refreshProfile()
+          .timeout(
+            const Duration(seconds: 8),
+          );
+
+      debugPrint(
+        'Profile sync completed. '
+        'isLogin=${_userProfileManager.isLogin}',
+      );
+
+      return true;
+    } on TimeoutException {
+      debugPrint(
+        'Profile sync timeout.',
+      );
+
+      return false;
+    } catch (e) {
+      debugPrint(
+        'Profile sync failed: $e',
+      );
+
+      return false;
+    }
   }
 
   // ============================================================
-  // BIOMETRIC PREPARATION
+  // PROFILE RETRY
+  //
+  // Server slow/down হলেও retry করবে।
+  // প্রতিটি request-এর timeout আছে।
   // ============================================================
 
-  Future<void> _prepareBiometric() async {
-    try {
-      biometricEnabled =
-          await SharedPrefs().getBioMetricAuthStatus();
+  Future<void> _restoreProfileWithRetry() async {
+    const int maxStartupAttempts = 5;
 
-      if (!biometricEnabled) {
+    for (int attempt = 1;
+        attempt <= maxStartupAttempts;
+        attempt++) {
+      if (!mounted && _startupFinished) {
+        return;
+      }
+
+      debugPrint(
+        'Profile sync attempt $attempt/$maxStartupAttempts',
+      );
+
+      final success = await _refreshProfileOnce();
+
+      if (success) {
         debugPrint(
-          'Biometric lock is disabled.',
+          'Profile restored successfully.',
+        );
+
+        _onProfileRestored();
+
+        return;
+      }
+
+      if (attempt < maxStartupAttempts) {
+        final seconds = attempt * 2;
+
+        debugPrint(
+          'Profile retry in $seconds seconds...',
+        );
+
+        await Future.delayed(
+          Duration(seconds: seconds),
+        );
+      }
+    }
+
+    // ----------------------------------------------------------
+    // Startup attempts finished.
+    //
+    // Continue retrying in background, but NEVER block UI.
+    // ----------------------------------------------------------
+
+    debugPrint(
+      'Profile startup retries finished. '
+      'Background retry mode started.',
+    );
+
+    unawaited(
+      _continueProfileBackgroundRetry(),
+    );
+  }
+
+  // ============================================================
+  // BACKGROUND PROFILE RETRY
+  // ============================================================
+
+  Future<void> _continueProfileBackgroundRetry() async {
+    while (true) {
+      await Future.delayed(
+        const Duration(seconds: 30),
+      );
+
+      final success = await _refreshProfileOnce();
+
+      if (success) {
+        debugPrint(
+          'Background profile sync successful.',
+        );
+
+        _onProfileRestored();
+
+        return;
+      }
+
+      debugPrint(
+        'Background profile sync failed. '
+        'Will retry again.',
+      );
+    }
+  }
+
+  // ============================================================
+  // PROFILE SUCCESS
+  // ============================================================
+
+  void _onProfileRestored() {
+    try {
+      if (_userProfileManager.isLogin == true) {
+        debugPrint(
+          'User session confirmed after profile sync.',
+        );
+
+        // FCM update must not block UI.
+        try {
+          unawaited(
+            AuthApi.updateFcmToken(),
+          );
+        } catch (e) {
+          debugPrint(
+            'FCM token update failed: $e',
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint(
+        'Post profile-sync operation failed: $e',
+      );
+    }
+  }
+
+  // ============================================================
+  // SHORT PROFILE WAIT
+  //
+  // Normal fast internet:
+  // profile may finish before navigation.
+  //
+  // Slow internet:
+  // after limited time we continue anyway.
+  // ============================================================
+
+  Future<void> _waitForProfileBriefly() async {
+    const Duration maxWait =
+        Duration(seconds: 5);
+
+    final start = DateTime.now();
+
+    while (DateTime.now()
+            .difference(start) <
+        maxWait) {
+      if (_userProfileManager.isLogin == true) {
+        debugPrint(
+          'Profile became ready during short startup wait.',
         );
 
         return;
       }
 
-      final availableBiometrics =
-          await localAuth.getAvailableBiometrics();
+      await Future.delayed(
+        const Duration(milliseconds: 250),
+      );
+    }
 
-      if (availableBiometrics.contains(
-        BiometricType.face,
-      )) {
-        bioMetricType = 1;
-      } else if (availableBiometrics.contains(
-        BiometricType.fingerprint,
-      )) {
-        bioMetricType = 2;
-      } else {
-        biometricEnabled = false;
-        bioMetricType = 0;
-      }
+    debugPrint(
+      'Short profile wait finished. '
+      'Startup will continue without waiting for server.',
+    );
+  }
+
+  // ============================================================
+  // SETTINGS
+  // ============================================================
+
+  Future<bool> _loadSettingsOnce() async {
+    try {
+      final settingsController =
+          Get.find<SettingsController>();
 
       debugPrint(
-        'Biometric enabled: $biometricEnabled',
+        'Settings sync started...',
       );
+
+      await settingsController
+          .getSettings()
+          .timeout(
+            const Duration(seconds: 8),
+          );
+
+      debugPrint(
+        'Settings sync completed.',
+      );
+
+      return true;
+    } on TimeoutException {
+      debugPrint(
+        'Settings sync timeout.',
+      );
+
+      return false;
     } catch (e) {
       debugPrint(
-        'Biometric preparation failed: $e',
+        'Settings sync failed: $e',
       );
 
-      biometricEnabled = false;
-      bioMetricType = 0;
+      return false;
     }
   }
 
   // ============================================================
-  // BIOMETRIC LOGIN
+  // SETTINGS RETRY
   // ============================================================
 
-  Future<void> biometricLogin() async {
-    if (!biometricEnabled) {
-      openNextScreen();
-      return;
-    }
+  Future<void> _retrySettingsInBackground() async {
+    const int maxAttempts = 5;
 
-    try {
-      final didAuthenticate =
-          await localAuth.authenticate(
-        localizedReason:
-            'Please authenticate to login into app',
-        options: const AuthenticationOptions(
-          biometricOnly: false,
-          stickyAuth: true,
-          useErrorDialogs: true,
-        ),
+    for (int attempt = 1;
+        attempt <= maxAttempts;
+        attempt++) {
+      debugPrint(
+        'Settings sync attempt $attempt/$maxAttempts',
       );
 
-      if (!didAuthenticate) {
+      final success =
+          await _loadSettingsOnce();
+
+      if (success) {
+        return;
+      }
+
+      if (attempt < maxAttempts) {
+        final seconds = attempt * 2;
+
+        await Future.delayed(
+          Duration(seconds: seconds),
+        );
+      }
+    }
+
+    // Continue in background.
+    while (true) {
+      await Future.delayed(
+        const Duration(seconds: 30),
+      );
+
+      final success =
+          await _loadSettingsOnce();
+
+      if (success) {
         debugPrint(
-          'Biometric authentication cancelled.',
+          'Background settings sync successful.',
         );
 
         return;
       }
 
-      biometricAuthenticated = true;
-
-      // --------------------------------------------------------
-      // Profile/settings/database may already be finished
-      // while user was authenticating.
-      // --------------------------------------------------------
-
-      await Future.wait([
-        if (profileFuture != null) profileFuture!,
-        if (settingsFuture != null) settingsFuture!,
-        if (databaseFuture != null) databaseFuture!,
-      ]);
-
-      profileReady = true;
-      settingsReady = true;
-      databaseReady = true;
-
-      if (!mounted) return;
-
-      openNextScreen();
-    } on PlatformException catch (e) {
       debugPrint(
-        'Biometric authentication error: ${e.code}',
-      );
-
-      if (e.code == auth_error.notAvailable ||
-          e.code == auth_error.notEnrolled ||
-          e.code == auth_error.passcodeNotSet) {
-        biometricEnabled = false;
-
-        await Future.wait([
-          if (profileFuture != null) profileFuture!,
-          if (settingsFuture != null) settingsFuture!,
-          if (databaseFuture != null) databaseFuture!,
-        ]);
-
-        if (!mounted) return;
-
-        openNextScreen();
-      }
-    } catch (e) {
-      debugPrint(
-        'Biometric authentication failed: $e',
+        'Background settings sync failed. '
+        'Retrying...',
       );
     }
   }
 
   // ============================================================
-  // NEXT SCREEN
+  // OPEN LOGGED-IN USER
   // ============================================================
 
-  Future<void> openNextScreen() async {
-    if (hasFinishedNavigation) {
+  Future<void> _openLoggedInUser() async {
+    if (!mounted) return;
+
+    if (_navigationStarted) {
       return;
     }
 
-    hasFinishedNavigation = true;
+    _navigationStarted = true;
+
+    debugPrint(
+      'Opening logged-in user flow...',
+    );
 
     // ----------------------------------------------------------
-    // LOGIN USER
+    // Package initialization must never block navigation.
     // ----------------------------------------------------------
 
-    if (_userProfileManager.isLogin == true) {
-      packageController.initiate();
+    try {
+      unawaited(
+        Future<void>(() async {
+          try {
+            _packageController.initiate();
+          } catch (e) {
+            debugPrint(
+              'Package initialization failed: $e',
+            );
+          }
+        }),
+      );
+    } catch (e) {
+      debugPrint(
+        'Package startup error: $e',
+      );
+    }
 
+    // ----------------------------------------------------------
+    // If profile has already loaded and username is available,
+    // go Dashboard.
+    //
+    // If profile has not loaded because server is slow,
+    // saved auth session still allows Dashboard.
+    // Background profile retry will continue.
+    // ----------------------------------------------------------
+
+    try {
       final user =
           _userProfileManager.user.value;
 
       if (user != null &&
           user.userName.isNotEmpty) {
-        Get.offAll(
-          () => const DashboardScreen(),
+        debugPrint(
+          'Cached/loaded profile found. Opening Dashboard.',
         );
-
-        // ------------------------------------------------------
-        // Socket should NOT block Dashboard.
-        // ------------------------------------------------------
-
-        try {
-          getIt<SocketManager>().connect();
-        } catch (e) {
-          debugPrint(
-            'Socket connection failed: $e',
-          );
-        }
-
-        return;
+      } else {
+        debugPrint(
+          'Profile not currently available. '
+          'Opening Dashboard using saved session.',
+        );
       }
 
-      // --------------------------------------------------------
-      // Logged in but username missing
-      // --------------------------------------------------------
-
       Get.offAll(
-        () => const SetUserName(),
+        () => const DashboardScreen(),
       );
 
+      // --------------------------------------------------------
+      // Socket MUST NOT block navigation.
+      // --------------------------------------------------------
+
+      try {
+        unawaited(
+          Future<void>(() async {
+            try {
+              getIt<SocketManager>().connect();
+
+              debugPrint(
+                'Socket connection started.',
+              );
+            } catch (e) {
+              debugPrint(
+                'Socket connection failed: $e',
+              );
+            }
+          }),
+        );
+      } catch (e) {
+        debugPrint(
+          'Socket startup error: $e',
+        );
+      }
+    } catch (e) {
+      debugPrint(
+        'Dashboard navigation failed: $e',
+      );
+
+      _navigationStarted = false;
+
+      if (!mounted) return;
+
+      // Safe fallback.
+      await _openTutorial();
+    }
+  }
+
+  // ============================================================
+  // OPEN TUTORIAL
+  // ============================================================
+
+  Future<void> _openTutorial() async {
+    if (!mounted) return;
+
+    if (_navigationStarted) {
       return;
     }
 
-    // ----------------------------------------------------------
-    // NEW / LOGGED OUT USER
-    // ----------------------------------------------------------
+    _navigationStarted = true;
+
+    debugPrint(
+      'Opening TutorialScreen.',
+    );
 
     Get.offAll(
       () => const TutorialScreen(),
@@ -407,7 +624,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   // ============================================================
-  // UI
+  // BUILD
   // ============================================================
 
   @override
@@ -415,74 +632,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
     return Scaffold(
       backgroundColor:
           AppColorConstants.backgroundColor,
-      body: _buildBody(),
-    );
-  }
-
-  Widget _buildBody() {
-    // ----------------------------------------------------------
-    // Normal startup
-    // ----------------------------------------------------------
-
-    if (isLoading && !biometricEnabled) {
-      return const Center(
+      body: const Center(
         child: CircularProgressIndicator(),
-      );
-    }
-
-    // ----------------------------------------------------------
-    // Fingerprint / Face lock
-    // ----------------------------------------------------------
-
-    if (biometricEnabled) {
-      return Center(
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              bioMetricType == 1
-                  ? 'assets/face-id.png'
-                  : 'assets/fingerprint.png',
-              height: 80,
-              width: 80,
-              color:
-                  AppColorConstants.themeColor,
-            ),
-
-            const SizedBox(height: 50),
-
-            Heading4Text(
-              appLockedString.tr,
-              weight: TextWeight.medium,
-            ),
-
-            const SizedBox(height: 10),
-
-            Heading4Text(
-              bioMetricType == 1
-                  ? unlockAppWithFaceIdString.tr
-                  : unlockAppWithTouchIdString.tr,
-            ),
-
-            const SizedBox(height: 50),
-
-            Heading3Text(
-              bioMetricType == 1
-                  ? useFaceIdString.tr
-                  : useTouchIdString.tr,
-              color:
-                  AppColorConstants.themeColor,
-            ).ripple(() {
-              biometricLogin();
-            }),
-          ],
-        ),
-      );
-    }
-
-    return const Center(
-      child: CircularProgressIndicator(),
+      ),
     );
   }
 }
