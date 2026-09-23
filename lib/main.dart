@@ -51,6 +51,7 @@ import 'package:foap/screens/dashboard/loading.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:foap/util/shared_prefs.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
+import 'components/reply_chat_cells/post_gift_controller.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import 'components/giphy/src/l10n/l10n.dart';
