@@ -12,6 +12,7 @@ import '../../util/shared_prefs.dart';
 import '../login_sign_up/set_user_name.dart';
 import '../login_sign_up/tutorial_screen.dart';
 import 'dashboard_screen.dart';
+import 'no_internet_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -47,11 +48,28 @@ class _LoadingScreenState extends State<LoadingScreen> {
     debugPrint('========================================');
     debugPrint('FACE HUB STARTUP');
     debugPrint('Biometric startup check: DISABLED');
+    debugPrint('Internet check: ENABLED');
     debugPrint('========================================');
 
     try {
       // --------------------------------------------------------
-      // 1. Read saved login/session locally
+      // 1. CHECK INTERNET FIRST
+      // --------------------------------------------------------
+
+      final internetAvailable = await _checkInternet();
+
+      if (!internetAvailable) {
+        debugPrint(
+          'No internet connection. Opening NoInternetScreen.',
+        );
+
+        await _openNoInternetScreen();
+
+        return;
+      }
+
+      // --------------------------------------------------------
+      // 2. Read saved login/session locally
       // --------------------------------------------------------
 
       _savedAuthKey = await _safeGetAuthKey();
@@ -64,14 +82,14 @@ class _LoadingScreenState extends State<LoadingScreen> {
       );
 
       // --------------------------------------------------------
-      // 2. Start LOCAL services immediately
+      // 3. Start LOCAL services immediately
       //    These must NEVER control navigation.
       // --------------------------------------------------------
 
       unawaited(_initializeDatabase());
 
       // --------------------------------------------------------
-      // 3. New user
+      // 4. New user
       // --------------------------------------------------------
 
       if (!hasSavedLogin) {
@@ -92,10 +110,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       }
 
       // --------------------------------------------------------
-      // 4. Existing user
-      //
-      // Profile and settings are started in background.
-      // They are NOT allowed to permanently block startup.
+      // 5. Existing user
       // --------------------------------------------------------
 
       debugPrint(
@@ -106,18 +121,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
       unawaited(_retrySettingsInBackground());
 
       // --------------------------------------------------------
-      // 5. Give profile a SHORT chance to restore.
-      //
-      // This is only to make normal startup smoother.
-      // It cannot keep the app on loading forever.
+      // 6. Give profile a short chance to restore
       // --------------------------------------------------------
 
       await _waitForProfileBriefly();
 
       // --------------------------------------------------------
-      // 6. IMPORTANT:
-      // Saved auth key exists, therefore do not keep the user
-      // trapped on LoadingScreen just because server is slow.
+      // 7. Continue startup
       // --------------------------------------------------------
 
       _startupFinished = true;
@@ -125,7 +135,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
       if (!mounted) return;
 
       await _openLoggedInUser();
-
     } catch (e, stackTrace) {
       debugPrint(
         'Startup error: $e',
@@ -134,12 +143,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
       debugPrint(
         'Startup stack: $stackTrace',
       );
-
-      // --------------------------------------------------------
-      // Emergency fallback
-      // Even if something unexpected happens, do not remain
-      // permanently on LoadingScreen.
-      // --------------------------------------------------------
 
       _startupFinished = true;
 
@@ -157,6 +160,94 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   // ============================================================
+  // INTERNET CHECK
+  // ============================================================
+
+  Future<bool> _checkInternet() async {
+    try {
+      debugPrint(
+        'Checking internet connection...',
+      );
+
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(
+        const Duration(seconds: 5),
+      );
+
+      final connected =
+          result.isNotEmpty &&
+          result.first.rawAddress.isNotEmpty;
+
+      debugPrint(
+        'Internet available: $connected',
+      );
+
+      return connected;
+    } on TimeoutException {
+      debugPrint(
+        'Internet check timeout.',
+      );
+
+      return false;
+    } catch (e) {
+      debugPrint(
+        'Internet check failed: $e',
+      );
+
+      return false;
+    }
+  }
+
+  // ============================================================
+  // NO INTERNET SCREEN
+  // ============================================================
+
+  Future<void> _openNoInternetScreen() async {
+    if (!mounted) return;
+
+    final result = await Get.to<bool>(
+      () => const NoInternetScreen(),
+    );
+
+    if (!mounted) return;
+
+    debugPrint(
+      'Returned from NoInternetScreen: $result',
+    );
+
+    // ----------------------------------------------------------
+    // Check internet again after returning from Settings.
+    // ----------------------------------------------------------
+
+    final internetAvailable = await _checkInternet();
+
+    if (internetAvailable) {
+      debugPrint(
+        'Internet connection restored.',
+      );
+
+      _navigationStarted = false;
+      _startupFinished = false;
+
+      await _initializeApp();
+
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // Still offline.
+    //
+    // Keep the user on NoInternetScreen.
+    // ----------------------------------------------------------
+
+    debugPrint(
+      'Internet is still unavailable.',
+    );
+
+    await _openNoInternetScreen();
+  }
+
+  // ============================================================
   // AUTH KEY
   // ============================================================
 
@@ -170,6 +261,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               debugPrint(
                 'Authorization key read timeout.',
               );
+
               return null;
             },
           );
@@ -177,6 +269,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       debugPrint(
         'Authorization key error: $e',
       );
+
       return null;
     }
   }
@@ -246,17 +339,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   // ============================================================
   // PROFILE RETRY
-  //
-  // Server slow/down হলেও retry করবে।
-  // প্রতিটি request-এর timeout আছে।
   // ============================================================
 
   Future<void> _restoreProfileWithRetry() async {
     const int maxStartupAttempts = 5;
 
-    for (int attempt = 1;
-        attempt <= maxStartupAttempts;
-        attempt++) {
+    for (
+      int attempt = 1;
+      attempt <= maxStartupAttempts;
+      attempt++
+    ) {
       if (!mounted && _startupFinished) {
         return;
       }
@@ -289,12 +381,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
         );
       }
     }
-
-    // ----------------------------------------------------------
-    // Startup attempts finished.
-    //
-    // Continue retrying in background, but NEVER block UI.
-    // ----------------------------------------------------------
 
     debugPrint(
       'Profile startup retries finished. '
@@ -346,7 +432,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
           'User session confirmed after profile sync.',
         );
 
-        // FCM update must not block UI.
         try {
           unawaited(
             AuthApi.updateFcmToken(),
@@ -366,12 +451,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   // ============================================================
   // SHORT PROFILE WAIT
-  //
-  // Normal fast internet:
-  // profile may finish before navigation.
-  //
-  // Slow internet:
-  // after limited time we continue anyway.
   // ============================================================
 
   Future<void> _waitForProfileBriefly() async {
@@ -380,9 +459,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
     final start = DateTime.now();
 
-    while (DateTime.now()
-            .difference(start) <
-        maxWait) {
+    while (
+        DateTime.now().difference(start) <
+            maxWait) {
       if (_userProfileManager.isLogin == true) {
         debugPrint(
           'Profile became ready during short startup wait.',
@@ -448,9 +527,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
   Future<void> _retrySettingsInBackground() async {
     const int maxAttempts = 5;
 
-    for (int attempt = 1;
-        attempt <= maxAttempts;
-        attempt++) {
+    for (
+      int attempt = 1;
+      attempt <= maxAttempts;
+      attempt++
+    ) {
       debugPrint(
         'Settings sync attempt $attempt/$maxAttempts',
       );
@@ -471,7 +552,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
       }
     }
 
-    // Continue in background.
     while (true) {
       await Future.delayed(
         const Duration(seconds: 30),
@@ -513,7 +593,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     );
 
     // ----------------------------------------------------------
-    // Package initialization must never block navigation.
+    // Package initialization
     // ----------------------------------------------------------
 
     try {
@@ -535,12 +615,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     }
 
     // ----------------------------------------------------------
-    // If profile has already loaded and username is available,
-    // go Dashboard.
-    //
-    // If profile has not loaded because server is slow,
-    // saved auth session still allows Dashboard.
-    // Background profile retry will continue.
+    // Dashboard / SetUserName
     // ----------------------------------------------------------
 
     try {
@@ -550,22 +625,69 @@ class _LoadingScreenState extends State<LoadingScreen> {
       if (user != null &&
           user.userName.isNotEmpty) {
         debugPrint(
-          'Cached/loaded profile found. Opening Dashboard.',
+          'Profile found. Opening Dashboard.',
         );
-      } else {
-        debugPrint(
-          'Profile not currently available. '
-          'Opening Dashboard using saved session.',
+
+        Get.offAll(
+          () => const DashboardScreen(),
         );
+
+        try {
+          unawaited(
+            Future<void>(() async {
+              try {
+                getIt<SocketManager>().connect();
+
+                debugPrint(
+                  'Socket connection started.',
+                );
+              } catch (e) {
+                debugPrint(
+                  'Socket connection failed: $e',
+                );
+              }
+            }),
+          );
+        } catch (e) {
+          debugPrint(
+            'Socket startup error: $e',
+          );
+        }
+
+        return;
       }
+
+      // --------------------------------------------------------
+      // Logged in but username missing
+      // --------------------------------------------------------
+
+      if (user != null) {
+        debugPrint(
+          'User logged in but username is missing.',
+        );
+
+        Get.offAll(
+          () => const SetUserName(),
+        );
+
+        return;
+      }
+
+      // --------------------------------------------------------
+      // Profile was not restored.
+      //
+      // Keep the saved session flow, as the original code did.
+      // Dashboard will handle the next state.
+      // --------------------------------------------------------
+
+      debugPrint(
+        'Profile not currently available. '
+        'Opening Dashboard using saved session.',
+      );
 
       Get.offAll(
         () => const DashboardScreen(),
       );
-
-      // --------------------------------------------------------
-      // Socket MUST NOT block navigation.
-      // --------------------------------------------------------
 
       try {
         unawaited(
@@ -597,7 +719,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
       if (!mounted) return;
 
-      // Safe fallback.
       await _openTutorial();
     }
   }
@@ -625,7 +746,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   // ============================================================
-  // BUILD
+  // UI
   // ============================================================
 
   @override
