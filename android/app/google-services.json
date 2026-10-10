@@ -8,6 +8,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:559111651319:android:fbc651a3a7f60f62b7b8f2",
+        "android_client_info": {
+          "package_name": "com.connect.to.friends"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "559111651319-pp5mo24ito5489cenkvqoga4fgs3a6o4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.connect.to.friends",
+            "certificate_hash": "457fe54d6bca8da728449f2d92109ae6fea5a0ce"
+          }
+        },
+        {
+          "client_id": "559111651319-gjc71odm8dvecf3mhljkl47kat6e461o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvHq6PwuGMmOyV2yS14ZkOcjtuxDij4o0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "559111651319-gjc71odm8dvecf3mhljkl47kat6e461o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:559111651319:android:d3972929ede619bdb7b8f2",
         "android_client_info": {
           "package_name": "com.facehub"

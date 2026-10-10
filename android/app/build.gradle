@@ -49,7 +49,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.facehub"
+        applicationId "com.connect.to.friends"
         minSdkVersion 24
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
