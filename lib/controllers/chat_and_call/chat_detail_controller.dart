@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'flutter/material.dart';
+
 import 'package:flutter_contacts/contact.dart';
 import 'package:foap/api_handler/apis/chat_api.dart';
 import 'package:foap/api_handler/apis/misc_api.dart';
@@ -181,7 +182,7 @@ class ChatDetailController extends GetxController {
     return user;
   }
 
-  Future<void> loadChat(
+Future<void> loadChat(
     ChatRoomModel chatRoom,
     VoidCallback completion,
   ) async {
@@ -190,26 +191,29 @@ class ChatDetailController extends GetxController {
       this.chatRoom.refresh();
     }
 
-    // Keep the remaining existing loadChat() code below this point.
-  }
+    final List<ChatMessageModel> msgList =
+        await getIt<DBManager>().getAllMessages(
+      roomId: chatRoom.id,
+      limit: 20,
+      offset: messages.length,
+    );
 
-    List<ChatMessageModel> msgList = await getIt<DBManager>().getAllMessages(
-        roomId: chatRoom.id, limit: 20, offset: messages.length);
     messages.insertAll(0, msgList);
 
-    if (chatRoom.isGroupChat == false) {
-      opponent.value =
-          await getOpponentUser(userId: chatRoom.opponent.userDetail.id);
+    if (!chatRoom.isGroupChat) {
+      opponent.value = await getOpponentUser(
+        userId: chatRoom.opponent.userDetail.id,
+      );
     }
 
     if (msgList.length == 20) {
       completion();
     } else {
-      //check for more message from server
       getChatHistoryInRoom(
         roomId: chatRoom.id,
         chatRoom: chatRoom,
-        lastFetchedMessageId: messages.isNotEmpty ? messages.first.id : 0,
+        lastFetchedMessageId:
+            messages.isNotEmpty ? messages.first.id : 0,
         completion: completion,
       );
     }
