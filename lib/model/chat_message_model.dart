@@ -231,14 +231,19 @@ class ChatMessageModel {
     model.isEncrypted = jsonMap['is_encrypted'] ?? 0;
     model.chatVersion =
         jsonMap['chat_version'] is String? ? 0 : jsonMap['chat_version'];
-    model.messageContent = jsonMap['message'].replaceAll('\\', '');
+    final dynamic rawMessage = jsonMap['message'];
+    model.messageContent = (rawMessage is String
+        ? rawMessage
+        : rawMessage?.toString() ?? '')
+    .replaceAll('\\', '');
     model.repliedOnMessageContent = jsonMap['replied_on_message'];
     model.messageType = jsonMap['messageType'] ?? jsonMap['type'];
     model.senderId = jsonMap['created_by'];
     model.createdAt = jsonMap['created_at'];
     model.viewedAt = jsonMap['viewed_at'];
-    model.deleteAfter =
-        jsonMap['deleteAfter'] ?? userProfileManager.user.value!.chatDeleteTime;
+    model.deleteAfter = 
+      jsonMap['deleteAfter'] ??  userProfileManager.user.value?.chatDeleteTime ??
+    AppConfigConstants.secondsInADay;
     model.isDeleted = jsonMap['isDeleted'] == 1;
     model.isStar = jsonMap['isStar'] ?? 0;
     model.opponentId = jsonMap['opponent_id'] ?? 0;

@@ -299,15 +299,18 @@ class SettingModel {
   }
 
   bool get enableAudioCalling {
-    return getFeatureAvailabilityStatus('enable_audio_calling') && agoraApiKey!.isNotEmpty;
+    return getFeatureAvailabilityStatus('enable_audio_calling') &&
+        (agoraApiKey?.trim().isNotEmpty ?? false);
   }
 
   bool get enableVideoCalling {
-    return getFeatureAvailabilityStatus('enable_video_calling') && agoraApiKey!.isNotEmpty;
+    return getFeatureAvailabilityStatus('enable_video_calling') &&
+        (agoraApiKey?.trim().isNotEmpty ?? false);
   }
 
   bool get enableLive {
-    return getFeatureAvailabilityStatus('enable_live') && agoraApiKey!.isNotEmpty;
+    return getFeatureAvailabilityStatus('enable_live') &&
+        (agoraApiKey?.trim().isNotEmpty ?? false);
   }
 
   bool get enableClubs {
