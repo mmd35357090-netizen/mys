@@ -48,11 +48,13 @@ class ChatHistoryController extends GetxController {
     //   isLoading = false;
     // }
   }
-
+  
   refreshPublicGroups(VoidCallback callback) {
     publicGroupsDataWrapper = DataWrapper();
+    publicGroups.clear();
     getPublicChatRooms(callback);
   }
+
 
   loadMorePublicGroups(VoidCallback callback) {
     if (publicGroupsDataWrapper.haveMoreData.value) {
@@ -62,22 +64,39 @@ class ChatHistoryController extends GetxController {
     }
   }
 
-  getPublicChatRooms(VoidCallback callback) async {
-    publicGroupsDataWrapper.isLoading.value = true;
+ getPublicChatRooms(VoidCallback callback) async {
+  publicGroupsDataWrapper.isLoading.value = true;
 
-    ChatApi.getPublicChatRooms(
-        page: publicGroupsDataWrapper.page,
-        resultCallback: (result, metaData) async {
-          publicGroupsDataWrapper.isLoading.value = false;
-          publicGroups.addAll(result);
+  ChatApi.getPublicChatRooms(
+    page: publicGroupsDataWrapper.page,
+    resultCallback: (result, metaData) async {
+      publicGroupsDataWrapper.isLoading.value = false;
 
-          publicGroupsDataWrapper.haveMoreData.value =
-              metaData.currentPage <= metaData.pageCount;
-          publicGroupsDataWrapper.page += 1;
-          callback();
-          update();
-        });
-  }
+      for (final room in result) {
+        final index =
+            publicGroups.indexWhere((item) => item.id == room.id);
+
+        if (index == -1) {
+          publicGroups.add(room);
+        } else {
+          publicGroups[index] = room;
+        }
+      }
+
+      publicGroupsDataWrapper.haveMoreData.value =
+          metaData.currentPage < metaData.pageCount;
+
+      publicGroupsDataWrapper.page += 1;
+
+      publicGroups.refresh();
+      callback();
+      update();
+    },
+   );
+ }
+
+
+  
 
   searchTextChanged(String text) {
     if (text.isEmpty) {
