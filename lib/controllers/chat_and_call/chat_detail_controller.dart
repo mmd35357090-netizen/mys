@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'flutter/material.dart';
 import 'package:flutter_contacts/contact.dart';
 import 'package:foap/api_handler/apis/chat_api.dart';
 import 'package:foap/api_handler/apis/misc_api.dart';
@@ -106,44 +107,91 @@ class ChatDetailController extends GetxController {
     update();
   }
 
-  getUpdatedChatRoomDetail(
-      {required ChatRoomModel room, required VoidCallback callback}) {
-    ChatApi.getChatRoomDetail(room.id, resultCallback: (result) async {
-      chatRoom.value = result;
-      chatRoom.refresh();
+  Future<void> getUpdatedChatRoomDetail({
+    required ChatRoomModel room,
+    required VoidCallback callback,
+  }) async {
+    try {
+      ChatApi.getChatRoomDetail(
+        room.id,
+        resultCallback: (result) async {
+          try {
+            chatRoom.value = result;
+            chatRoom.refresh();
 
-      // update room in local storage
-      await getIt<DBManager>().updateRoom(chatRoom.value!);
+            // Update room in local storage.
+            await getIt<DBManager>().updateRoom(result);
+
+            callback();
+          } catch (e) {
+            debugPrint('Failed to update chat room: $e');
+            callback();
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('Failed to fetch chat room details: $e');
       callback();
-    });
+    }
   }
 
-  getChatRoomWithUser(
-      {required int userId, required Function(ChatRoomModel) callback}) {
-    createChatRoom(userId, (roomId) async {
-      ChatApi.getChatRoomDetail(roomId, resultCallback: (result) async {
-        await getIt<DBManager>().saveRooms([result]);
-        callback(result);
+  Future<void> getChatRoomWithUser({
+    required int userId,
+    required Function(ChatRoomModel) callback,
+  }) async {
+    try {
+      createChatRoom(userId, (roomId) async {
+        try {
+          ChatApi.getChatRoomDetail(
+            roomId,
+            resultCallback: (result) async {
+              try {
+                await getIt<DBManager>().saveRooms([result]);
+                callback(result);
+              } catch (e) {
+                debugPrint('Failed to save chat room: $e');
+              }
+            },
+          );
+        } catch (e) {
+          debugPrint('Failed to fetch chat room: $e');
+        }
       });
-    });
+    } catch (e) {
+      debugPrint('Failed to create chat room: $e');
+    }
   }
 
-  Future<UserModel?> getOpponentUser({required int userId}) async {
+  Future<UserModel?> getOpponentUser({
+    required int userId,
+  }) async {
     UserModel? user;
-    await UsersApi.getOtherUser(
+
+    try {
+      await UsersApi.getOtherUser(
         userId: userId,
         resultCallback: (result) {
           user = result;
-        });
+        },
+      );
+    } catch (e) {
+      debugPrint('Failed to fetch opponent user: $e');
+    }
 
     return user;
   }
 
-  loadChat(ChatRoomModel chatRoom, VoidCallback completion) async {
+  Future<void> loadChat(
+    ChatRoomModel chatRoom,
+    VoidCallback completion,
+  ) async {
     if (this.chatRoom.value == null) {
       this.chatRoom.value = chatRoom;
       this.chatRoom.refresh();
     }
+
+    // Keep the remaining existing loadChat() code below this point.
+  }
 
     List<ChatMessageModel> msgList = await getIt<DBManager>().getAllMessages(
         roomId: chatRoom.id, limit: 20, offset: messages.length);
