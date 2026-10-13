@@ -72,7 +72,6 @@ import 'components/smart_text_field.dart';
 
 import 'firebase_options.dart';
 
-HttpOverrides.global = MyHttpOverrides();
 
 late List<CameraDescription> cameras;
 
@@ -82,7 +81,7 @@ bool isAnyPageInStack = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // HttpOverrides.global = MyHttpOverrides();
+   HttpOverrides.global = MyHttpOverrides();
 
   // ----------------------------------------------------------
   // Camera
