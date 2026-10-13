@@ -72,6 +72,14 @@ import 'components/smart_text_field.dart';
 
 import 'firebase_options.dart';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 late List<CameraDescription> cameras;
 
