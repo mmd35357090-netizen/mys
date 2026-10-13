@@ -1,3 +1,4 @@
+
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,150 +42,203 @@ class DashboardState extends State<DashboardScreen> {
   @override
   void initState() {
     isAnyPageInStack = true;
+
     items = [
       const HomeFeedScreen(),
       const Explore(),
-      const Reels(
-        needBackBtn: false,
-      ),
+      const Reels(needBackBtn: false),
       const ChatHistory(),
-      const MyProfile(
-        showBack: false,
-      ),
-      //const Settings()
+      const MyProfile(showBack: false),
     ];
 
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => _dashboardController.isLoading.value == true
-        ? SizedBox(
-            height: Get.height,
-            width: Get.width,
-            child: const Center(child: CircularProgressIndicator()),
-          )
-        : _settingsController.forceUpdate.value == true
-            ? ForceUpdateView()
-            : _settingsController.appearanceChanged?.value == null
-                ? Container()
-                : Scaffold(
-                    backgroundColor: AppColorConstants.backgroundColor,
-                    body: items[_dashboardController.currentIndex.value],
-                    floatingActionButtonLocation:
-                        FloatingActionButtonLocation.centerDocked,
-                    bottomNavigationBar: SizedBox(
-                      height: MediaQuery.of(context).viewPadding.bottom > 0
-                          ? 100
-                          : 80.0,
-                      width: Get.width,
-                      child: BottomNavigationBar(
-                        backgroundColor: AppColorConstants.backgroundColor,
-                        type: BottomNavigationBarType.fixed,
-                        currentIndex: _dashboardController.currentIndex.value,
-                        selectedFontSize: 12,
-                        unselectedFontSize: 12,
-                        unselectedItemColor: Colors.grey,
-                        selectedItemColor: AppColorConstants.themeColor,
-                        onTap: (index) => {onTabTapped(index)},
-                        items: [
-                          BottomNavigationBarItem(
-                              icon: Obx(() => ThemeIconWidget(
-                                    ThemeIcon.home,
-                                    size: 28,
-                                    color: _dashboardController
-                                                .currentIndex.value ==
-                                            0
-                                        ? AppColorConstants.themeColor
-                                        : AppColorConstants.iconColor,
-                                  ).bP8),
-                              label: homeString.tr),
-                          BottomNavigationBarItem(
-                            icon: ThemeIconWidget(
-                              ThemeIcon.search,
-                              size: 28,
-                              color: _dashboardController
-                                  .currentIndex.value ==
-                                  1
-                                  ? AppColorConstants.themeColor
-                                  : AppColorConstants.iconColor,
-                            ),
-                            label: exploreString.tr,
-                          ),
-                          BottomNavigationBarItem(
-                            icon: Obx(() => Container(
-                                  color: AppColorConstants.themeColor
-                                      .withOpacity(0.25),
-                                  child: ThemeIconWidget(
-                                    ThemeIcon.reels,
-                                    size: 28,
-                                    color: _dashboardController
-                                                .currentIndex.value ==
-                                            2
-                                        ? AppColorConstants.themeColor
-                                        : AppColorConstants.iconColor,
-                                  ).p4,
-                                ).circular),
-                            label: reelsString.tr,
-                          ),
+  // Premium animated Reels navigation button
+  Widget _buildPremiumReelsButton() {
+    return Obx(() {
+      final bool isSelected =
+          _dashboardController.currentIndex.value == 2;
 
-                          BottomNavigationBarItem(
-                            icon: Obx(() => Stack(
-                              children: [
-                                Obx(() => ThemeIconWidget(
-                                  ThemeIcon.chat,
-                                  size: 28,
-                                  color: _dashboardController
-                                      .currentIndex.value ==
-                                      3
-                                      ? AppColorConstants.themeColor
-                                      : AppColorConstants.iconColor,
-                                ).bP8),
-                                if (_dashboardController
-                                    .unreadMsgCount.value >
-                                    0)
-                                  Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Container(
-                                        height: 12,
-                                        width: 12,
-                                        color: AppColorConstants.themeColor,
-                                      ).circular)
-                              ],
-                            )),
-                            label: chatsString.tr,
-                          ),
-                          BottomNavigationBarItem(
-                            icon: Obx(() => ThemeIconWidget(
-                                  ThemeIcon.account,
-                                  size: 28,
-                                  color:
-                                      _dashboardController.currentIndex.value ==
-                                              4
-                                          ? AppColorConstants.themeColor
-                                          : AppColorConstants.iconColor,
-                                ).bP8),
-                            label: accountString.tr,
-                          ),
-                        ],
-                      ),
-                    )));
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColorConstants.themeColor,
+                    AppColorConstants.themeColor.withOpacity(0.65),
+                  ],
+                )
+              : null,
+          color: isSelected
+              ? null
+              : AppColorConstants.themeColor.withOpacity(0.10),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? Colors.white.withOpacity(0.35)
+                : AppColorConstants.themeColor.withOpacity(0.30),
+            width: 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColorConstants.themeColor.withOpacity(0.35),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        child: ThemeIconWidget(
+          ThemeIcon.reels,
+          size: 26,
+          color: isSelected
+              ? Colors.white
+              : AppColorConstants.iconColor,
+        ),
+      );
+    });
   }
 
-  void onTabTapped(int index) async {
-    // if (index == 2) {
-    //   Future.delayed(
-    //     Duration.zero,
-    //     () => showGeneralDialog(
-    //         context: context,
-    //         pageBuilder: (context, animation, secondaryAnimation) =>
-    //             const SelectMedia()),
-    //   );
-    // } else {
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => _dashboardController.isLoading.value
+          ? SizedBox(
+              height: Get.height,
+              width: Get.width,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : _settingsController.forceUpdate.value
+              ? ForceUpdateView()
+              : _settingsController.appearanceChanged?.value == null
+                  ? Container()
+                  : Scaffold(
+                      backgroundColor:
+                          AppColorConstants.backgroundColor,
+                      body: items[
+                          _dashboardController.currentIndex.value],
+                      floatingActionButtonLocation:
+                          FloatingActionButtonLocation.centerDocked,
+                      bottomNavigationBar: SizedBox(
+                        height:
+                            MediaQuery.of(context).viewPadding.bottom > 0
+                                ? 100
+                                : 80,
+                        width: Get.width,
+                        child: BottomNavigationBar(
+                          backgroundColor:
+                              AppColorConstants.backgroundColor,
+                          type: BottomNavigationBarType.fixed,
+                          currentIndex:
+                              _dashboardController.currentIndex.value,
+                          selectedFontSize: 12,
+                          unselectedFontSize: 12,
+                          unselectedItemColor: Colors.grey,
+                          selectedItemColor:
+                              AppColorConstants.themeColor,
+                          onTap: onTabTapped,
+                          items: [
+                            BottomNavigationBarItem(
+                              icon: Obx(
+                                () => ThemeIconWidget(
+                                  ThemeIcon.home,
+                                  size: 28,
+                                  color: _dashboardController
+                                              .currentIndex.value ==
+                                          0
+                                      ? AppColorConstants.themeColor
+                                      : AppColorConstants.iconColor,
+                                ).bP8,
+                              ),
+                              label: homeString.tr,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Obx(
+                                () => ThemeIconWidget(
+                                  ThemeIcon.search,
+                                  size: 28,
+                                  color: _dashboardController
+                                              .currentIndex.value ==
+                                          1
+                                      ? AppColorConstants.themeColor
+                                      : AppColorConstants.iconColor,
+                                ),
+                              ),
+                              label: exploreString.tr,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: _buildPremiumReelsButton(),
+                              label: reelsString.tr,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Obx(
+                                () => Stack(
+                                  children: [
+                                    ThemeIconWidget(
+                                      ThemeIcon.chat,
+                                      size: 28,
+                                      color: _dashboardController
+                                                  .currentIndex.value ==
+                                              3
+                                          ? AppColorConstants.themeColor
+                                          : AppColorConstants.iconColor,
+                                    ).bP8,
+                                    if (_dashboardController
+                                            .unreadMsgCount.value >
+                                        0)
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Container(
+                                          height: 12,
+                                          width: 12,
+                                          decoration: BoxDecoration(
+                                            color: AppColorConstants
+                                                .themeColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              label: chatsString.tr,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Obx(
+                                () => ThemeIconWidget(
+                                  ThemeIcon.account,
+                                  size: 28,
+                                  color: _dashboardController
+                                              .currentIndex.value ==
+                                          4
+                                      ? AppColorConstants.themeColor
+                                      : AppColorConstants.iconColor,
+                                ).bP8,
+                              ),
+                              label: accountString.tr,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+    );
+  }
+
+  void onTabTapped(int index) {
     Future.delayed(
-        Duration.zero, () => _dashboardController.indexChanged(index));
-    // }
+      Duration.zero,
+      () => _dashboardController.indexChanged(index),
+    );
   }
 }

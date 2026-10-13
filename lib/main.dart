@@ -72,14 +72,7 @@ import 'components/smart_text_field.dart';
 
 import 'firebase_options.dart';
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
+HttpOverrides.global = MyHttpOverrides();
 
 late List<CameraDescription> cameras;
 
@@ -89,13 +82,27 @@ bool isAnyPageInStack = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  HttpOverrides.global = MyHttpOverrides();
+  // HttpOverrides.global = MyHttpOverrides();
 
   // ----------------------------------------------------------
   // Camera
   // ----------------------------------------------------------
 
-  cameras = await availableCameras();
+  
+cameras = <CameraDescription>[];
+
+try {
+  cameras = await availableCameras().timeout(
+    const Duration(seconds: 5),
+  );
+  debugPrint('Available cameras: ${cameras.length}');
+} on TimeoutException {
+  debugPrint('Camera discovery timed out. Continuing startup.');
+} catch (e, stackTrace) {
+  debugPrint('Camera discovery failed: $e');
+  debugPrint('$stackTrace');
+}
+
 
   // ----------------------------------------------------------
   // Firebase
@@ -238,57 +245,71 @@ class SocialifiedApp extends StatefulWidget {
   State<SocialifiedApp> createState() => _SocialifiedAppState();
 }
 
+
 class _SocialifiedAppState extends State<SocialifiedApp> {
+  late final Future<Locale> _localeFuture;
+
   @override
   void initState() {
     super.initState();
+
+    _localeFuture = _loadLocaleSafely();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
   }
 
+  Future<Locale> _loadLocaleSafely() async {
+    try {
+      return await SharedPrefs().getLocale().timeout(
+        const Duration(seconds: 3),
+      );
+    } catch (e) {
+      debugPrint('Locale loading failed: $e');
+      return const Locale('en', 'US');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return OverlaySupport.global(
       child: FutureBuilder<Locale>(
-        future: SharedPrefs().getLocale(),
+        future: _localeFuture,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GetMaterialApp(
-              translations: Languages(),
-              locale: snapshot.data!,
-              fallbackLocale: const Locale('en', 'US'),
-              debugShowCheckedModeBanner: false,
-              home: widget.startScreen,
-              builder: EasyLoading.init(),
-              themeMode: ThemeMode.dark,
-              localizationsDelegates: [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GiphyGetUILocalizations.delegate,
-              ],
-              supportedLocales: const <Locale>[
-                Locale('hi', 'US'),
-                Locale('en', 'SA'),
-                Locale('ar', 'SA'),
-                Locale('tr', 'SA'),
-                Locale('ru', 'SA'),
-                Locale('es', 'SA'),
-                Locale('fr', 'SA'),
-                Locale('pt', 'BR'),
-              ],
-            );
-          }
+          final locale = snapshot.data ?? const Locale('en', 'US');
 
-          return const Material(
-            child: SizedBox.expand(),
+          return GetMaterialApp(
+            translations: Languages(),
+            locale: locale,
+            fallbackLocale: const Locale('en', 'US'),
+            debugShowCheckedModeBanner: false,
+            home: widget.startScreen,
+            builder: EasyLoading.init(),
+            themeMode: ThemeMode.dark,
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GiphyGetUILocalizations.delegate,
+            ],
+            supportedLocales: const <Locale>[
+              Locale('en', 'US'),
+              Locale('hi', 'US'),
+              Locale('en', 'SA'),
+              Locale('ar', 'SA'),
+              Locale('tr', 'SA'),
+              Locale('ru', 'SA'),
+              Locale('es', 'SA'),
+              Locale('fr', 'SA'),
+              Locale('pt', 'BR'),
+            ],
           );
         },
       ),
     );
   }
 }
+
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(
