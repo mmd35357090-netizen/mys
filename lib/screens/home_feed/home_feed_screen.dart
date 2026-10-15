@@ -324,6 +324,111 @@ class HomeFeedState extends State<HomeFeedScreen> {
                         ),
                         _buildTopFilterTab(
                           title: followingString.tr,
+  postsView() {
+    int baseOffset = _settingsController.setting.value!.enableStories ? 3 : 2;
+    
+    return Obx(() {
+      return ListView.separated(
+              controller: _controller,
+              padding: const EdgeInsets.only(top: 50, bottom: 100),
+              itemCount: _homeController.posts.length + baseOffset,
+              itemBuilder: (context, index) {
+                
+                // ১. স্ক্রোলযোগ্য মেইন হেডার (অ্যাপ নেম ১ লাইনে থাকবে এবং স্ক্রোলের সাথে ওপরে উঠে যাবে)
+                if (index == 0) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Heading3Text(
+                          AppConfigConstants.appName,
+                          weight: TextWeight.bold,
+                          color: Colors.black,
+                          maxLines: 1, 
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                              height: 35,
+                              width: 35,
+                              child: ThemeIconWidget(
+                                ThemeIcon.plus,
+                                size: 26,
+                                color: Colors.black,
+                              )).ripple(() {
+                            Future.delayed(
+                              Duration.zero,
+                              () => showGeneralDialog(
+                                  context: Get.context!,
+                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                      const ContentCreatorView()),
+                            );
+                          }),
+                          const SizedBox(width: 15),
+                          SizedBox(
+                            height: 35,
+                            width: 35,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                ThemeIconWidget(
+                                  ThemeIcon.notification,
+                                  size: 26,
+                                  color: AppColorConstants.themeColor,
+                                ).ripple(() {
+                                  // নোটিফিকেশন ক্লিক অ্যাকশন
+                                }),
+                                Obx(() => _dashboardController.unreadMsgCount.value == 0
+                                    ? Container()
+                                    : Positioned(
+                                        top: 2,
+                                        right: 2,
+                                        child: Container(
+                                          color: AppColorConstants.red,
+                                          height: 9,
+                                          width: 9,
+                                        ).circular,
+                                      ))
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ).hp(16);
+                }
+                
+                // ২. স্টোরি সেকশন (tP15 এরর স্থায়ী ফিক্স করা হয়েছে standard Padding দিয়ে)
+                if (index == 1 && _settingsController.setting.value!.enableStories) {
+                  return Obx(() => _homeController.isRefreshingStories.value == true
+                      ? const Padding(
+                          padding: EdgeInsets.only(top: 15),
+                          child: StoryAndHighlightsShimmer(),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: storiesView(),
+                        ));
+                }
+                
+                // ৩. স্ক্রোলযোগ্য অল, ফলোয়িং, ভিডিও কাস্টম ট্যাব বার
+                int tabIndex = _settingsController.setting.value!.enableStories ? 2 : 1;
+                if (index == tabIndex) {
+                  return Container(
+                    height: 38,
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        _buildTopFilterTab(
+                          title: allString.tr,
+                          isSelected: _homeController.selectedSegment.value == 0,
+                          onTap: () => _homeController.selectSegment(0),
+                        ),
+                        _buildTopFilterTab(
+                          title: followingString.tr,
                           isSelected: _homeController.selectedSegment.value == 1,
                           onTap: () => _homeController.selectSegment(1),
                         ),
@@ -400,7 +505,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
                   );
                 }
               })
-
           .addPullToRefresh(
               refreshController: _refreshController,
               enablePullUp: true,
@@ -409,4 +513,3 @@ class HomeFeedState extends State<HomeFeedScreen> {
               enablePullDown: true);
     });
   }
-}
