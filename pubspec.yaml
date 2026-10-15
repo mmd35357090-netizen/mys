@@ -129,11 +129,12 @@ dependencies:
   flutter_stripe: ^11.3.0
   flutter_easyloading: ^3.0.5
   image: ^4.1.4
+  ffmpeg_kit_flutter_new: ^3.2.0
 
-#  ffmpeg_kit_flutter:
-#    git:
-#      url: https://github.com/Carapacik/ffmpeg-kit
-#      path: flutter/flutter
+ # ffmpeg_kit_flutter:
+ #   git:
+ #     url: https://github.com/Carapacik/ffmpeg-kit
+ #     path: flutter/flutter
 
   flare_flutter:
     git:
@@ -142,7 +143,6 @@ dependencies:
       ref: remove_hashValues
 
   video_compress: ^3.1.4
-  ffmpeg_kit_flutter: ^6.0.3 
 #  video_compress:
 #    git:
 #      url: https://github.com/jonataslaw/VideoCompress.git
