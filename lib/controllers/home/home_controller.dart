@@ -74,15 +74,35 @@ class HomeController extends GetxController {
   selectSegment(int index) {
     if (selectedSegment.value != index) {
       selectedSegment.value = index;
+      
+      // নতুন করে ফিল্টার করার আগে পূর্বের কন্ডিশনগুলো রিসেট করা
+      postSearchQuery.isFollowing = 0;
+      
+      // যদি আপনার কোডে mediaType সাপোর্ট থাকে, তবে অল এবং ফলোয়িং ট্যাবের জন্য এটি খালি করে দিতে হবে
+      try {
+        postSearchQuery.mediaType = null; 
+      } catch (e) {
+        // mediaType না থাকলে এরর এড়াতে এটি হ্যান্ডেল করা হলো
+      }
+
       if (index == 0) {
         postSearchQuery.isFollowing = 0;
-      } else {
+      } else if (index == 1) {
         postSearchQuery.isFollowing = 1;
+      } else if (index == 2) {
+        // ৩ নম্বর ট্যাব (Videos) সিলেক্ট হলে মিডিয়া টাইপ ২ (ভিডিও) সেট হবে
+        try {
+          postSearchQuery.mediaType = 2; // অথবা আপনার এপিআই রিকোয়েস্ট অনুযায়ী postSearchQuery.isVideo = 1; দিতে পারেন
+        } catch (e) {
+          // আপনার কাস্টম কোয়েরি অবজেক্টের স্ট্রাকচার অনুযায়ী ভেরিয়েবল সেট করুন
+        }
       }
+      
       clearPosts();
       getPosts(callback: () {});
     }
   }
+
 
   closeQuickLinks() {
     openQuickLinks.value = false;
