@@ -87,126 +87,21 @@ class HomeFeedState extends State<HomeFeedScreen> {
     return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 50,
-            ),
-            
-            // --- ১. প্রধান হেডার অংশ (নাম, প্লাস এবং নোটিফিকেশন বেল) ---
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Heading3Text(
-                    AppConfigConstants.appName,
-                    weight: TextWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                        height: 35,
-                        width: 35,
-                        child: ThemeIconWidget(
-                          ThemeIcon.plus,
-                          size: 26,
-                          color: Colors.black,
-                        )).ripple(() {
-                      Future.delayed(
-                        Duration.zero,
-                        () => showGeneralDialog(
-                            context: Get.context!,
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    const ContentCreatorView()),
-                      );
-                    }),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    SizedBox(
-                      height: 35,
-                      width: 35,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          ThemeIconWidget(
-                            ThemeIcon.notification,
-                            size: 26,
-                            color: AppColorConstants.themeColor,
-                          ).ripple(() {
-                            // নোটিফিকেশন ক্লিক হ্যান্ডলার
-                          }),
-                          Obx(() =>
-                              _dashboardController.unreadMsgCount.value == 0
-                                  ? Container()
-                                  : Positioned(
-                                      top: 2,
-                                      right: 2,
-                                      child: Container(
-                                        color: AppColorConstants.red,
-                                        height: 9,
-                                        width: 9,
-                                      ).circular,
-                                    ))
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ).hp(16),
-            
-            const SizedBox(
-              height: 15,
-            ),
-            
-            // --- ২. ৩টি ফিল্টার ট্যাব (All = 0, Following = 1, Videos = 2) ---
-            Obx(() => Container(
-                  height: 38,
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      _buildTopFilterTab(
-                        title: allString.tr,
-                        isSelected: _homeController.selectedSegment.value == 0,
-                        onTap: () => _homeController.selectSegment(0),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildTopFilterTab(
-                        title: followingString.tr,
-                        isSelected: _homeController.selectedSegment.value == 1,
-                        onTap: () => _homeController.selectSegment(1),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildTopFilterTab(
-                        title: "Videos",
-                        isSelected: _homeController.selectedSegment.value == 2,
-                        onTap: () => _homeController.selectSegment(2),
-                      ),
-                    ],
-                  ),
-                )),
-                
-            const SizedBox(
-              height: 15,
-            ),
-            
             Expanded(
-              child: postsView(),
+              child: postsView(), // পুরো বডিকে postsView-এর স্ক্রোলের সাথে ইন্টিগ্রেট করা হয়েছে
             ),
           ],
         ));
   }
 
   Widget _buildTopFilterTab({required String title, required bool isSelected, required VoidCallback onTap}) {
-    return Expanded(
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
           decoration: BoxDecoration(
             color: isSelected ? AppColorConstants.themeColor : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(20),
@@ -214,6 +109,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
           child: Center(
             child: Text(
               title,
+              maxLines: 1,
               style: TextStyle(
                 color: isSelected ? Colors.white : Colors.black87,
                 fontWeight: FontWeight.w600,
@@ -329,25 +225,126 @@ class HomeFeedState extends State<HomeFeedScreen> {
           }),
     );
   }
-
-  postsView() {
-    int offset = _settingsController.setting.value!.enableStories ? 2 : 1;
+    postsView() {
+    int baseOffset = _settingsController.setting.value!.enableStories ? 3 : 2;
+    
     return Obx(() {
       return ListView.separated(
               controller: _controller,
-              padding: const EdgeInsets.only(bottom: 100),
-              itemCount: _homeController.posts.length + offset,
+              padding: const EdgeInsets.only(top: 50, bottom: 100),
+              itemCount: _homeController.posts.length + baseOffset,
               itemBuilder: (context, index) {
-                if (index == 0 &&
-                    _settingsController.setting.value!.enableStories) {
-                  return Obx(() =>
-                      _homeController.isRefreshingStories.value == true
-                          ? const StoryAndHighlightsShimmer()
-                          : storiesView());
-                } else if (index == offset - 1) {
+                
+                // ১. স্ক্রোলযোগ্য মেইন হেডার (face Hub নাম এবং প্লাস ও নোটিফিকেশন আইকন)
+                if (index == 0) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Heading3Text(
+                          AppConfigConstants.appName,
+                          weight: TextWeight.bold,
+                          color: Colors.black,
+                          maxLines: 1, 
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                              height: 35,
+                              width: 35,
+                              child: ThemeIconWidget(
+                                ThemeIcon.plus,
+                                size: 26,
+                                color: Colors.black,
+                              )).ripple(() {
+                            Future.delayed(
+                              Duration.zero,
+                              () => showGeneralDialog(
+                                  context: Get.context!,
+                                  pageBuilder: (context, animation, secondaryAnimation) =>
+                                      const ContentCreatorView()),
+                            );
+                          }),
+                          const SizedBox(width: 15),
+                          SizedBox(
+                            height: 35,
+                            width: 35,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                ThemeIconWidget(
+                                  ThemeIcon.notification,
+                                  size: 26,
+                                  color: AppColorConstants.themeColor,
+                                ).ripple(() {
+                                  // নোটিফিকেশন আইকন ক্লিক অ্যাকশন
+                                }),
+                                Obx(() => _dashboardController.unreadMsgCount.value == 0
+                                    ? Container()
+                                    : Positioned(
+                                        top: 2,
+                                        right: 2,
+                                        child: Container(
+                                          color: AppColorConstants.red,
+                                          height: 9,
+                                          width: 9,
+                                        ).circular,
+                                      ))
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ).hp(16);
+                }
+                
+                // ২. স্টোরি সেকশন
+                if (index == 1 && _settingsController.setting.value!.enableStories) {
+                  return Obx(() => _homeController.isRefreshingStories.value == true
+                      ? const StoryAndHighlightsShimmer().tP15
+                      : storiesView().tP15);
+                }
+                
+                // ৩. স্ক্রোলযোগ্য অল, ফলোয়িং, ভিডিও কাস্টম ট্যাব বার
+                int tabIndex = _settingsController.setting.value!.enableStories ? 2 : 1;
+                if (index == tabIndex) {
+                  return Container(
+                    height: 38,
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        _buildTopFilterTab(
+                          title: allString.tr,
+                          isSelected: _homeController.selectedSegment.value == 0,
+                          onTap: () => _homeController.selectSegment(0),
+                        ),
+                        _buildTopFilterTab(
+                          title: followingString.tr,
+                          isSelected: _homeController.selectedSegment.value == 1,
+                          onTap: () => _homeController.selectSegment(1),
+                        ),
+                        _buildTopFilterTab(
+                          title: "Videos",
+                          isSelected: _homeController.selectedSegment.value == 2,
+                          onTap: () => _homeController.selectSegment(2),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                
+                // ৪. পোস্টিং প্রোগ্রেস ভিউ
+                if (index == baseOffset - 1) {
                   return postingView().hP16;
-                } else {
-                  PostModel model = _homeController.posts[index - offset];
+                } 
+                
+                // ৫. সাধারণ পোস্ট কার্ড লিস্ট
+                else {
+                  PostModel model = _homeController.posts[index - baseOffset];
                   return PostCard(
                     model: model,
                     removePostHandler: () {
@@ -360,11 +357,14 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 }
               },
               separatorBuilder: (context, index) {
+                if (index < baseOffset) {
+                  return const SizedBox.shrink();
+                }
+                
                 if (index > 0 &&
                     index % 5 == 0 &&
                     _homeController.sponsoredPosts.length >= index / 5) {
-                  PostModel post =
-                      _homeController.sponsoredPosts[(index ~/ 5) - 1];
+                  PostModel post = _homeController.sponsoredPosts[(index ~/ 5) - 1];
                   return Column(
                     children: [
                       PostCard(
@@ -377,10 +377,10 @@ class HomeFeedState extends State<HomeFeedScreen> {
                         },
                       ),
                       divider(
-                        height: index > (offset - 1) ? 10 : 0,
+                        height: index > (baseOffset - 1) ? 10 : 0,
                       ).tP16
                     ],
-                  ).vp(index > (offset - 1) ? 16 : 8);
+                  ).vp(index > (baseOffset - 1) ? 16 : 8);
                 } else {
                   return divider(
                     height: index > 1 ? 10 : 0,
