@@ -90,103 +90,111 @@ class HomeFeedState extends State<HomeFeedScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(
-              height: 55,
+              height: 50,
             ),
+            
+            // --- ১. প্রধান হেডার অংশ (নাম, প্লাস এবং নোটিফিকেশন বেল) ---
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Heading4Text(
-                  AppConfigConstants.appName,
-                  weight: TextWeight.semiBold,
-                  color: AppColorConstants.themeColor,
-                ),
-                const Spacer(),
-                Obx(() => CupertinoSegmentedControl(
-                    groupValue: _homeController.selectedSegment.value,
-                    children: <int, Widget>{
-                      0: BodySmallText(
-                        allString.tr,
-                        color: _homeController.selectedSegment.value == 0
-                            ? Colors.white
-                            : null,
-                      ).hP4,
-                      1: BodySmallText(followingString.tr,
-                              color:
-                                  _homeController.selectedSegment.value ==
-                                          1
-                                      ? Colors.white
-                                      : null)
-                          .hP4,
-                    },
-                    unselectedColor: AppColorConstants.backgroundColor,
-                    selectedColor: AppColorConstants.themeColor,
-                    onValueChanged: (value) {
-                      _homeController.selectSegment(value! as int);
-                    })),
-                const Spacer(),
-                SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: ThemeIconWidget(
-                      ThemeIcon.plus,
-                      size: 25,
-                    )).ripple(() {
-                  Future.delayed(
-                    Duration.zero,
-                    () => showGeneralDialog(
-                        context: Get.context!,
-                        pageBuilder:
-                            (context, animation, secondaryAnimation) =>
-                                const ContentCreatorView()),
-                  );
-                }),
-                const SizedBox(
-                  width: 5,
-                ),
-                // SizedBox(
-                //     height: 30,
-                //     width: 30,
-                //     child: ThemeIconWidget(
-                //       ThemeIcon.map,
-                //       size: 25,
-                //     )).ripple(() {
-                //   Get.to(() => MapsUsersScreen());
-                // }),
-                // const SizedBox(
-                //   width: 5,
-                // ),
-                SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      ThemeIconWidget(
-                        ThemeIcon.chat,
-                        size: 25,
-                      ).ripple(() {
-                        Get.to(() => const ChatHistory());
-                      }),
-                      Obx(() =>
-                          _dashboardController.unreadMsgCount.value == 0
-                              ? Container()
-                              : Positioned(
-                                  top: 0,
-                                  right: 5,
-                                  child: Container(
-                                    color: AppColorConstants.red,
-                                    height: 10,
-                                    width: 10,
-                                  ).circular,
-                                ))
-                    ],
+                Expanded(
+                  child: Heading3Text(
+                    AppConfigConstants.appName,
+                    weight: TextWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
+                Row(
+                  children: [
+                    SizedBox(
+                        height: 35,
+                        width: 35,
+                        child: ThemeIconWidget(
+                          ThemeIcon.plus,
+                          size: 26,
+                          color: Colors.black,
+                        )).ripple(() {
+                      Future.delayed(
+                        Duration.zero,
+                        () => showGeneralDialog(
+                            context: Get.context!,
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const ContentCreatorView()),
+                      );
+                    }),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: 35,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ThemeIconWidget(
+                            ThemeIcon.notification,
+                            size: 26,
+                            color: AppColorConstants.themeColor,
+                          ).ripple(() {
+                            // নোটিফিকেশন ক্লিক হ্যান্ডলার
+                          }),
+                          Obx(() =>
+                              _dashboardController.unreadMsgCount.value == 0
+                                  ? Container()
+                                  : Positioned(
+                                      top: 2,
+                                      right: 2,
+                                      child: Container(
+                                        color: AppColorConstants.red,
+                                        height: 9,
+                                        width: 9,
+                                      ).circular,
+                                    ))
+                        ],
+                      ),
+                    ),
+                  ],
+                )
               ],
-            ).hp(10),
+            ).hp(16),
+            
             const SizedBox(
-              height: 20,
+              height: 15,
             ),
+            
+            // --- ২. ৩টি ফিল্টার ট্যাব (All = 0, Following = 1, Videos = 2) ---
+            Obx(() => Container(
+                  height: 38,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      _buildTopFilterTab(
+                        title: allString.tr,
+                        isSelected: _homeController.selectedSegment.value == 0,
+                        onTap: () => _homeController.selectSegment(0),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildTopFilterTab(
+                        title: followingString.tr,
+                        isSelected: _homeController.selectedSegment.value == 1,
+                        onTap: () => _homeController.selectSegment(1),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildTopFilterTab(
+                        title: "Videos",
+                        isSelected: _homeController.selectedSegment.value == 2,
+                        onTap: () => _homeController.selectSegment(2),
+                      ),
+                    ],
+                  ),
+                )),
+                
+            const SizedBox(
+              height: 15,
+            ),
+            
             Expanded(
               child: postsView(),
             ),
@@ -194,7 +202,30 @@ class HomeFeedState extends State<HomeFeedScreen> {
         ));
   }
 
-  Widget postingView() {
+  Widget _buildTopFilterTab({required String title, required bool isSelected, required VoidCallback onTap}) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: isSelected ? AppColorConstants.themeColor : Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+    Widget postingView() {
     return Obx(() => _addPostController.isPosting.value
         ? Container(
             height: 55,
@@ -223,9 +254,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                                 width: 40,
                                 height: 40,
                               ).round(5)
-                            // : BodyLargeText(_addPostController.postingTitle)
                             : Container()
-                    // : BodyLargeText(_addPostController.postingTitle),
                     : Container(),
                 const SizedBox(
                   width: 10,
@@ -271,7 +300,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
           builder: (ctx) {
             return StoryUpdatesBar(
               stories: _homeController.stories,
-              // liveUsers: _homeController.liveUsers,
               addStoryCallback: () {
                 openStoryUploader();
               },
@@ -297,9 +325,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
                       fullscreenDialog: true);
                 }
               },
-              // joinLiveUserCallback: (user) {
-              //
-              // },
             ).hp(DesignConstants.horizontalPadding / 2);
           }),
     );
