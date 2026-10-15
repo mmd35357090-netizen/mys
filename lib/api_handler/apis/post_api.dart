@@ -1,44 +1,39 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
-
-import '../../helper/enum.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import '../../helper/enum_linking.dart';
-import '../../helper/localization_strings.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/comment_model.dart';
 import '../../model/location.dart';
 import '../../model/post_model.dart';
-import '../../model/user_model.dart';
 import '../api_wrapper.dart';
 
 class PostApi {
   static addPost(
-      {required PostType postType,
+      {required PostCategory postType,
+      required PostContentType postContentType,
       required String title,
       required List<Map<String, String>> gallery,
       required bool allowComments,
-      required PostContentType postContentType,
+      required bool isPaidContent,
       LocationModel? location,
       String? hashTag,
       String? mentions,
       int? competitionId,
-      int? clubId,
       int? sharingPostId,
+      int? contentRefId,
+      int? clubId,
+      int? eventId,
+      int? fundRaisingCampaignId,
       int? audioId,
-        int? contentRefId,
-
-        double? audioStartTime,
+      double? audioStartTime,
       double? audioEndTime,
-      bool? addToPost,
       required Function(int?) resultCallback}) async {
     var url = competitionId == null
         ? NetworkConstantsUtil.addPost
         : NetworkConstantsUtil.addCompetitionPost;
 
     var parameters = {
-      "origin_post_id": sharingPostId,
       "type": postTypeValueFrom(postType).toString(),
+      "origin_post_id": sharingPostId,
       "title": title,
       "hashtag": hashTag,
       "mentionUser": mentions,
@@ -46,16 +41,22 @@ class PostApi {
       'competition_id': competitionId,
       'content_type_reference_id': contentRefId,
       'club_id': clubId,
-      'post_content_type': postContentTypeIdFrom(postContentType).toString(),
+      'event_id': eventId,
+      'campaign_id': fundRaisingCampaignId,
+      'post_content_type':
+          postContentTypeIdFrom(postContentType).toString(),
       'audio_id': audioId,
       'audio_start_time': audioStartTime,
       'audio_end_time': audioEndTime,
-      'is_add_to_post': addToPost == true ? 1 : 0,
+      'is_add_to_post': 1,
+      'display_whose': isPaidContent ? 2 : 1,
       'is_comment_enable': allowComments == true ? 1 : 0,
       'latitude': location == null ? '' : location.latitude.toString(),
       'longitude': location == null ? '' : location.longitude.toString(),
       'address': location == null ? '' : location.name.toString()
     };
+
+    print('parameters $parameters');
 
     await ApiWrapper().postApi(url: url, param: parameters).then((result) {
       if (result?.success == true) {
@@ -86,23 +87,30 @@ class PostApi {
   }
 
   static getPosts(
-      {int? userId,
+      {PostCategory? postType,
+      int? userId,
       int? isPopular,
       int? isFollowing,
       int? clubId,
+      int? eventId,
+      int? fundRaisingCampaignId,
       int? isSold,
-      int? isReel,
-      int? audioId,
-      int? isMine,
       int? isSaved,
+      int? audioId,
       int? isVideo,
+      int? isMine,
       int? isRecent,
+      int? isCollaboration,
       String? title,
       String? hashtag,
       int page = 0,
-      required Function(List<PostModel>, APIMetaData) resultCallback}) async {
+      required Function(List<PostModel>, APIMetaData)
+          resultCallback}) async {
     var url = NetworkConstantsUtil.searchPost;
 
+    if (postType != null) {
+      url = '$url&type=${postTypeValueFrom(postType).toString()}';
+    }
     if (userId != null) {
       url = '$url&user_id=$userId';
     }
@@ -114,6 +122,8 @@ class PostApi {
     }
     if (isRecent != null) {
       url = '$url&is_recent=$isRecent';
+    } else {
+      url = '$url&is_recent=1';
     }
     if (isFollowing != null) {
       url = '$url&is_following_user_post=$isFollowing';
@@ -130,8 +140,14 @@ class PostApi {
     if (clubId != null) {
       url = '$url&club_id=$clubId';
     }
-    if (isReel != null) {
-      url = '$url&is_reel=$isReel';
+    if (isCollaboration != null) {
+      url = '$url&is_collaborate=1';
+    }
+    if (eventId != null) {
+      url = '$url&event_id=$eventId';
+    }
+    if (fundRaisingCampaignId != null) {
+      url = '$url&campaign_id=$fundRaisingCampaignId';
     }
     if (audioId != null) {
       url = '$url&audio_id=$audioId';
@@ -143,19 +159,13 @@ class PostApi {
       url = '$url&is_video_post=1';
     }
     url = '$url&page=$page';
-    EasyLoading.show(status: loadingString.tr);
-
-
     await ApiWrapper().getApi(url: url).then((response) {
-      EasyLoading.dismiss();
-
       if (response?.data != null) {
         List<PostModel> posts = [];
         var items = response!.data['post']['items'];
-        posts = List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
-            .where((element) =>
-                element.gallery.isNotEmpty )
-            .toList();
+        posts =
+            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
+                .toList();
 
         APIMetaData metaData =
             APIMetaData.fromJson(response.data['post']['_meta']);
@@ -165,23 +175,44 @@ class PostApi {
     });
   }
 
-  static getMentionedPosts(
-      {int? userId,
-      int page = 0,
-      required Function(List<PostModel>, APIMetaData) resultCallback}) async {
-    var url = '${NetworkConstantsUtil.mentionedPosts}$userId&page=$page';
-
-    EasyLoading.show(status: loadingString.tr);
+  static getPromotionalPosts(
+      {int page = 0,
+      required Function(List<PostModel>, APIMetaData)
+          resultCallback}) async {
+    var url = NetworkConstantsUtil.getPromotedPosts;
 
     await ApiWrapper().getApi(url: url).then((response) {
-      EasyLoading.dismiss();
+      Loader.dismiss();
 
       if (response?.data != null) {
         List<PostModel> posts = [];
+        var items = response!.data['postPromotionList']['items'];
+        posts =
+            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
+                .toList();
+
+        APIMetaData metaData = APIMetaData.fromJson(
+            response.data['postPromotionList']['_meta']);
+
+        resultCallback(posts, metaData);
+      }
+    });
+  }
+
+  static getMentionedPosts(
+      {int? userId,
+      int page = 1,
+      required Function(List<PostModel>, APIMetaData)
+          resultCallback}) async {
+    var url = '${NetworkConstantsUtil.mentionedPosts}$userId&page=$page';
+
+    await ApiWrapper().getApi(url: url).then((response) {
+      if (response?.data != null) {
+        List<PostModel> posts = [];
         var items = response!.data['post']['items'];
-        posts = List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
-            .where((element) => element.gallery.isNotEmpty)
-            .toList();
+        posts =
+            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
+                .toList();
 
         APIMetaData metaData =
             APIMetaData.fromJson(response.data['post']['_meta']);
@@ -209,7 +240,7 @@ class PostApi {
       {required Function(PostModel?) resultCallback}) async {
     var url = NetworkConstantsUtil.postDetailByUniqueId;
     url =
-    '$url$id&expand=user,user.userLiveDetail,clubDetail,audio,giftSummary,clubDetail.createdByUser';
+        '$url$id&expand=user,user.userLiveDetail,clubDetail,audio,giftSummary,clubDetail.createdByUser';
     await ApiWrapper().getApi(url: url).then((response) {
       if (response?.success == true) {
         var post = response!.data['post'];
@@ -231,17 +262,18 @@ class PostApi {
     var url = NetworkConstantsUtil.getComments;
     if (parentId != null) {
       url =
-          '$url?expand=user,isLike&post_id=$postId&parent_id=$parentId&page=$page';
+          '$url?expand=user,isPin,isLike&post_id=$postId&parent_id=$parentId&page=$page';
     } else {
       url =
-          '$url?expand=user,isLike,totalChildComment,childCommentDetail.isLike,childCommentDetail.user&post_id=$postId&page=$page';
+          '$url?expand=user,isPin,isLike,totalChildComment,childCommentDetail.isLike,childCommentDetail.user&post_id=$postId&page=$page';
     }
 
     await ApiWrapper().getApi(url: url).then((response) {
       if (response?.success == true) {
         var items = response!.data['comment']['items'];
         resultCallback(
-            List<CommentModel>.from(items.map((x) => CommentModel.fromJson(x))),
+            List<CommentModel>.from(
+                items.map((x) => CommentModel.fromJson(x))),
             APIMetaData.fromJson(response.data['comment']['_meta']));
       }
     });
@@ -278,7 +310,8 @@ class PostApi {
   }
 
   static deleteComment(
-      {required int commentId, required VoidCallback resultCallback}) async {
+      {required int commentId,
+      required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.deleteComment + commentId.toString();
 
     await ApiWrapper().deleteApi(url: url).then((value) {
@@ -287,7 +320,8 @@ class PostApi {
   }
 
   static reportComment(
-      {required int commentId, required VoidCallback resultCallback}) async {
+      {required int commentId,
+      required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.reportComment;
 
     await ApiWrapper().postApi(
@@ -298,7 +332,8 @@ class PostApi {
   }
 
   static favComment(
-      {required int commentId, required VoidCallback resultCallback}) async {
+      {required int commentId,
+      required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.likeComment;
 
     await ApiWrapper().postApi(url: url, param: {
@@ -310,7 +345,8 @@ class PostApi {
   }
 
   static unfavComment(
-      {required int commentId, required VoidCallback resultCallback}) async {
+      {required int commentId,
+      required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.unLikeComment;
 
     await ApiWrapper().postApi(url: url, param: {
@@ -325,8 +361,8 @@ class PostApi {
       {required int postId, required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.reportPost;
 
-    await ApiWrapper()
-        .postApi(url: url, param: {"post_id": postId.toString()}).then((value) {
+    await ApiWrapper().postApi(
+        url: url, param: {"post_id": postId.toString()}).then((value) {
       resultCallback();
     });
   }
@@ -363,7 +399,8 @@ class PostApi {
   static Future<void> postLikedByUsers(
       {required int postId,
       required int page,
-      required Function(List<UserModel>, APIMetaData) resultCallback}) async {
+      required Function(List<UserModel>, APIMetaData)
+          resultCallback}) async {
     var url = NetworkConstantsUtil.postLikedByUsers
         .replaceAll('{{post_id}}', postId.toString());
 
@@ -391,6 +428,19 @@ class PostApi {
     }).then((value) {});
   }
 
+  static postView(
+      {required int postId,
+      required int sourceType,
+      int? postPromotionId}) async {
+    var url = NetworkConstantsUtil.postView;
+
+    await ApiWrapper().postApi(url: url, param: {
+      'post_id': postId.toString(),
+      'view_source': sourceType.toString(),
+      'post_promotion_id': postPromotionId
+    });
+  }
+
   static linkCollaborator(
       {required int postId, required int collaboratorId}) async {
     var url = NetworkConstantsUtil.addCollaborate;
@@ -409,6 +459,30 @@ class PostApi {
     await ApiWrapper().postApi(url: url, param: {
       'id': id.toString(),
       'status': collaborationStatusTypeId(status).toString(),
+    });
+  }
+
+  static createPoll(
+      {required String question,
+      required List<String> options,
+      required Function(int) successCallback,
+      required VoidCallback failureCallback}) async {
+    var url = NetworkConstantsUtil.createPoll;
+
+    await ApiWrapper().postApi(url: url, param: {
+      "type": '2',
+      "category_id": "1",
+      "description": "Just for testing",
+      "start_time": "2023/08/27",
+      "end_time": "2030/08/27",
+      "title": question,
+      'options': options.map((e) => {"title": e}).toList(),
+    }).then((result) {
+      if (result?.success == true) {
+        successCallback(result!.data['id']);
+      } else {
+        failureCallback();
+      }
     });
   }
 }

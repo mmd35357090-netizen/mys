@@ -5,8 +5,8 @@ class VideoChatTile extends StatelessWidget {
   final ChatMessageModel message;
   final bool? showSmall;
 
-  const VideoChatTile({Key? key, required this.message, this.showSmall})
-      : super(key: key);
+  const VideoChatTile({super.key, required this.message, this.showSmall})
+      ;
 
   @override
   Widget build(BuildContext context) {

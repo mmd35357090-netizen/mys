@@ -1,6 +1,8 @@
 import 'package:foap/model/story_model.dart';
 import 'package:foap/util/time_convertor.dart';
 
+import '../util/app_util.dart';
+
 class HighlightsModel {
   int id;
   int userId;
@@ -48,8 +50,7 @@ class HighlightMediaModel {
         highlightId: json['highlight_id'],
         storyId: json['story_id'],
         createdAt: TimeAgo.timeAgoSinceDate(
-            DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
-                .toUtc()),
+            AppUtil.convertToDateTime(json['created_at'])),
         story: StoryMediaModel.fromJson(json['story']));
 
     return model;

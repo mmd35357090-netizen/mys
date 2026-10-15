@@ -1,5 +1,5 @@
+import 'package:foap/helper/enum_linking.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/model/user_model.dart';
 
 class GiftModel {
   int id;
@@ -26,10 +26,11 @@ class GiftModel {
 class ReceivedGiftModel {
   GiftModel giftDetail;
   UserModel sender;
-
+  GiftSource source;
   ReceivedGiftModel({
     required this.giftDetail,
     required this.sender,
+    required this.source,
 
     // required this.subCategories,
   });
@@ -38,5 +39,6 @@ class ReceivedGiftModel {
       ReceivedGiftModel(
         giftDetail: GiftModel.fromJson(json["giftDetail"]),
         sender: UserModel.fromJson(json["senderDetail"]),
+        source: giftSourceType(json["send_on_type"])
       );
 }

@@ -1,14 +1,13 @@
+import 'package:foap/api_handler/apis/gift_api.dart';
 import 'package:foap/components/post_card_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/gift_model.dart';
 import 'package:foap/model/post_model.dart';
 import 'package:foap/model/post_search_query.dart';
+import '../../../../api_handler/apis/post_api.dart';
 import 'package:foap/helper/list_extension.dart';
 
-import '../../../../api_handler/apis/post_api.dart';
-
 class ReelsController extends GetxController {
-  PageController pageController = PageController();
-
   RxList<PostModel> publicReels = <PostModel>[].obs;
   RxList<PostModel> filteredReels = <PostModel>[].obs;
   RxList<PostModel> likedReels = <PostModel>[].obs;
@@ -28,7 +27,7 @@ class ReelsController extends GetxController {
     isLoadingReels = false;
     reelsCurrentPage = 1;
     canLoadMoreReels = true;
-    // currentViewingReel.value = null;
+    currentViewingReel.value = null;
 
     update();
   }
@@ -59,28 +58,6 @@ class ReelsController extends GetxController {
     update();
   }
 
-  // void addNewReel(PostModel post) {
-  //   int index = 0;
-  //   if (currentViewingReel.value != null) {
-  //     index = publicReels
-  //         .indexWhere((element) => element.id == currentViewingReel.value!.id);
-  //     if (index == -1) {
-  //       index = 0;
-  //     }
-  //   }
-  //
-  //   if (index > 0) {
-  //     pageController.jumpToPage(index);
-  //   }
-  //
-  //   publicReels.insert(index, post);
-  //   publicReels.refresh();
-  //
-  //   Future.delayed(const Duration(milliseconds: 1500), () {
-  //     update();
-  //   });
-  // }
-
   setReelsSearchQuery(PostSearchQuery query) {
     if (query != reelSearchQuery) {
       clearReels();
@@ -95,7 +72,7 @@ class ReelsController extends GetxController {
       isLoadingReels = true;
 
       PostApi.getPosts(
-          isReel: 1,
+          postType: PostCategory.reel,
           userId: reelSearchQuery.userId,
           isPopular: reelSearchQuery.isPopular,
           isFollowing: reelSearchQuery.isFollowing,
@@ -109,8 +86,8 @@ class ReelsController extends GetxController {
             publicReels.addAll(result);
             publicReels.unique((e) => e.id);
 
-            publicReels.value = publicReels.where((e) => e.gallery.isNotEmpty).toList();
-            publicReels.sort((a, b) => b.createDate!.compareTo(a.createDate!));
+            publicReels
+                .sort((a, b) => b.createDate!.compareTo(a.createDate!));
 
             isLoadingReels = false;
             if (reelsCurrentPage == 1 && publicReels.isNotEmpty) {
@@ -134,7 +111,7 @@ class ReelsController extends GetxController {
       isLoadingReelsWithAudio = true;
 
       PostApi.getPosts(
-          isReel: 1,
+          postType: PostCategory.reel,
           audioId: audioId,
           page: reelsWithAudioCurrentPage,
           resultCallback: (result, metadata) {
@@ -184,6 +161,10 @@ class ReelsController extends GetxController {
     AppUtil.showToast(message: deletedString.tr, isSuccess: true);
   }
 
+  reportPost({required PostModel post, required VoidCallback callback}) {
+    PostApi.reportPost(postId: post.id, resultCallback: callback);
+  }
+
   void blockUser({required int userId, required VoidCallback callback}) {
     final PostCardController postCardController = Get.find();
     postCardController.blockUser(userId: userId, callback: () {});
@@ -196,5 +177,20 @@ class ReelsController extends GetxController {
   sharePost({required PostModel post}) {
     final PostCardController postCardController = Get.find();
     postCardController.sharePost(post: post);
+  }
+
+  sendPostGift(GiftModel gift, int receiverId, int? postId) {
+    GiftApi.sendStickerGift(
+        gift: gift,
+        liveId: null,
+        postId: postId,
+        receiverId: receiverId,
+        resultCallback: () {
+          UserProfileManager userProfileManager = Get.find();
+          AppUtil.showToast(
+              message: giftSentSuccessfullyString.tr, isSuccess: true);
+          // refresh profile to get updated wallet info
+          userProfileManager.refreshProfile();
+        });
   }
 }

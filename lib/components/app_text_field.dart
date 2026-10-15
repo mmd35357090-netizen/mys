@@ -13,16 +13,15 @@ class AppTextField extends StatelessWidget {
   final Function(bool)? focusStatusChangeHandler;
 
   const AppTextField(
-      {Key? key,
-        required this.controller,
-        this.hintText,
-        this.label,
-        this.maxLines,
-        this.onChanged,
-        this.icon,
-        this.maxLength,
-        this.focusStatusChangeHandler})
-      : super(key: key);
+      {super.key,
+      required this.controller,
+      this.hintText,
+      this.label,
+      this.maxLines,
+      this.onChanged,
+      this.icon,
+      this.maxLength,
+      this.focusStatusChangeHandler});
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +47,12 @@ class AppPasswordTextField extends StatelessWidget {
   final ValueChanged<String> onChanged;
 
   const AppPasswordTextField(
-      {Key? key,
+      {super.key,
       required this.controller,
       required this.onChanged,
       this.hintText,
       this.icon})
-      : super(key: key);
+      ;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +79,7 @@ class AppMobileTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
 
   const AppMobileTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hintText,
     this.label,
@@ -88,7 +87,7 @@ class AppMobileTextField extends StatelessWidget {
     this.countryCodeText,
     this.countryCodeValueChanged,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -96,10 +95,10 @@ class AppMobileTextField extends StatelessWidget {
       controller: controller,
       hintText: hintText,
       countryCodeText: countryCodeText,
-      countrycodeValueChanged: countryCodeValueChanged,
+      countryCodeValueChanged: countryCodeValueChanged,
       label: label,
-      backgroundColor: AppColorConstants.cardColor,
-      textStyle: TextStyle(fontSize: FontSizes.h6),
+      backgroundColor: AppColorConstants.cardColor.darken(0.02),
+      // textStyle: TextStyle(fontSize: FontSizes.h6),
       cornerRadius: 10,
       onChanged: onChanged,
       iconColor: AppColorConstants.iconColor,
@@ -109,35 +108,43 @@ class AppMobileTextField extends StatelessWidget {
 
 class AppDateTextField extends StatelessWidget {
   final String? hintText;
-  final String? defaultText;
 
   final ThemeIcon? icon;
   final String? label;
   final String? countryCodeText;
+  final String? format;
 
-  final ValueChanged<TimeOfDay>? onChanged;
+  final ValueChanged<DateTime>? onChanged;
+  final DateTime? selectedDate;
+  final DateTime? minDate;
+  final DateTime? maxDate;
 
   const AppDateTextField({
-    Key? key,
-    this.defaultText,
+    super.key,
     this.hintText,
     this.label,
     this.icon,
+    this.format,
     this.countryCodeText,
     this.onChanged,
-  }) : super(key: key);
+    this.selectedDate,
+    this.minDate,
+    this.maxDate,
+  });
 
   @override
   Widget build(BuildContext context) {
     return RoundedInputDateField(
-      defaultText: defaultText,
       hintText: hintText,
       label: label,
-      backgroundColor: AppColorConstants.cardColor,
-      textStyle: TextStyle(fontSize: FontSizes.h6),
-      cornerRadius: 5,
+      backgroundColor: AppColorConstants.cardColor.withValues(alpha: 0.7),
+      cornerRadius: 10,
       onChanged: onChanged,
+      format: format,
       iconColor: AppColorConstants.iconColor,
+      selectedDate: selectedDate,
+      minDate: minDate,
+      maxDate: maxDate,
     );
   }
 }
@@ -154,7 +161,7 @@ class AppDateTimeTextField extends StatelessWidget {
   final DateTime? maxDate;
 
   const AppDateTimeTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hintText,
     this.label,
@@ -163,7 +170,7 @@ class AppDateTimeTextField extends StatelessWidget {
     this.onChanged,
     this.minDate,
     this.maxDate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -173,8 +180,8 @@ class AppDateTimeTextField extends StatelessWidget {
       maxDate: maxDate,
       hintText: hintText,
       label: label,
-      backgroundColor: AppColorConstants.cardColor,
-      textStyle: TextStyle(fontSize: FontSizes.h6),
+      backgroundColor: AppColorConstants.cardColor.darken(0.02),
+      // textStyle: TextStyle(fontSize: FontSizes.h6),
       cornerRadius: 10,
       onChanged: onChanged,
       iconColor: AppColorConstants.iconColor,
@@ -193,7 +200,7 @@ class AppPriceTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
 
   const AppPriceTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hintText,
     this.label,
@@ -201,7 +208,7 @@ class AppPriceTextField extends StatelessWidget {
     this.currency,
     this.currencyValueChanged,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -211,8 +218,8 @@ class AppPriceTextField extends StatelessWidget {
       currency: currency,
       disable: true,
       label: label,
-      backgroundColor: AppColorConstants.cardColor,
-      textStyle: TextStyle(fontSize: FontSizes.h6),
+      backgroundColor: AppColorConstants.cardColor.darken(0.02),
+      // textStyle: TextStyle(fontSize: FontSizes.h6),
       cornerRadius: 10,
       onChanged: onChanged,
       currencyValueChanged: currencyValueChanged,
@@ -231,14 +238,13 @@ class AppDropdownField extends StatelessWidget {
   final List<String> options;
 
   const AppDropdownField(
-      {Key? key,
+      {super.key,
       this.hintText,
       this.label,
       this.icon,
       this.value,
       required this.onChanged,
-      required this.options})
-      : super(key: key);
+      required this.options});
 
   @override
   Widget build(BuildContext context) {
@@ -247,8 +253,8 @@ class AppDropdownField extends StatelessWidget {
       hintText: hintText,
       label: label,
       value: value,
-      backgroundColor: AppColorConstants.cardColor,
-      textStyle: TextStyle(fontSize: FontSizes.h6),
+      backgroundColor: AppColorConstants.cardColor.darken(0.02),
+      // textStyle: TextStyle(fontSize: FontSizes.h6),
       cornerRadius: 10,
       onChanged: onChanged,
       iconColor: AppColorConstants.iconColor,

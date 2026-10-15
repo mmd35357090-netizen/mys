@@ -5,7 +5,7 @@ class SelectPlaceAction extends StatelessWidget {
   final String tapToSelectActionText;
   final VoidCallback onTap;
 
-  const SelectPlaceAction(this.locationName, this.onTap, this.tapToSelectActionText, {Key? key}) : super(key: key);
+  const SelectPlaceAction(this.locationName, this.onTap, this.tapToSelectActionText, {super.key}) ;
 
   @override
   Widget build(BuildContext context) {

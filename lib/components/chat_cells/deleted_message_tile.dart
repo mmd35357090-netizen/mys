@@ -4,8 +4,8 @@ import 'package:foap/helper/imports/common_import.dart';
 class DeletedMessageChatTile extends StatelessWidget {
   final ChatMessageModel message;
 
-  const DeletedMessageChatTile({Key? key, required this.message})
-      : super(key: key);
+  const DeletedMessageChatTile({super.key, required this.message})
+      ;
 
   @override
   Widget build(BuildContext context) {

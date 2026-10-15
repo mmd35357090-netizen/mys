@@ -3,32 +3,33 @@ import 'package:foap/helper/imports/common_import.dart';
 Widget backNavigationBar({required String title}) {
   return Container(
     height: 100,
-    width: Get.width,
-    color: AppColorConstants.themeColor.withOpacity(0.1),
+    color: AppColorConstants.cardColor,
     child: Stack(
+      alignment: Alignment.center,
       children: [
-        Container(
-          color: AppColorConstants.themeColor.withOpacity(0.4),
-          height: 40,
-          width: 40,
-          child: Center(
-            child: const Icon(
-              Icons.arrow_back_ios,
-              size: 20,
-              color: Colors.white,
-            ).lP8.ripple(() {
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: Center(
+                child: Icon(
+                  Icons.arrow_back_ios,
+                  size: 20,
+                  color: AppColorConstants.iconColor,
+                ),
+              ),
+            ).ripple(() {
               Get.back();
             }),
-          ).p8,
-        ).circular,
-        Positioned(
-          left: 50,
-          right: 50,
-          top: 10,
-          child: Center(
-              child: BodyLargeText(title.tr,
-                  maxLines: 1, weight: TextWeight.medium)),
-        )
+            const SizedBox(
+              width: 40,
+            )
+          ],
+        ),
+        BodyLargeText(title.tr, maxLines: 1, weight: TextWeight.medium)
       ],
     ).setPadding(
         left: DesignConstants.horizontalPadding,
@@ -74,60 +75,6 @@ Widget backNavigationBarWithTrailingWidget(
             ),
           ),
         )
-      ],
-    ).setPadding(
-        left: DesignConstants.horizontalPadding,
-        right: DesignConstants.horizontalPadding,
-        top: 40),
-  );
-}
-
-Widget backNavigationBarWithIcon(
-    {required ThemeIcon icon,
-    required String title,
-    Color? iconColor,
-    required VoidCallback iconBtnClicked}) {
-  return Container(
-    height: 100,
-    color: AppColorConstants.themeColor.withOpacity(0.1),
-    child: Stack(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Container(
-              height: 35,
-              width: 35,
-              color: AppColorConstants.themeColor,
-              child: Center(
-                child: const ThemeIconWidget(
-                  ThemeIcon.backArrow,
-                  size: 18,
-                  color: Colors.white,
-                ).lP8.ripple(() {
-                  Get.back();
-                }),
-              ),
-            ).circular,
-            ThemeIconWidget(
-              icon,
-              size: 20,
-              color: iconColor ?? AppColorConstants.iconColor,
-            ).ripple(() {
-              iconBtnClicked();
-            }),
-          ],
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          child: Center(
-            child: BodyLargeText(title.tr, weight: TextWeight.medium),
-          ),
-        ),
       ],
     ).setPadding(
         left: DesignConstants.horizontalPadding,
@@ -200,11 +147,31 @@ Widget titleNavigationBarWithIcon(
       bottom: 16);
 }
 
+Widget titleNavigationBarWithWidget(
+    {required String title,
+    required Widget widget,
+    required VoidCallback completion}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      const SizedBox(
+        width: 25,
+      ),
+      BodyLargeText(title.tr, weight: TextWeight.medium),
+      widget,
+    ],
+  ).setPadding(
+      left: DesignConstants.horizontalPadding,
+      right: DesignConstants.horizontalPadding,
+      top: 8,
+      bottom: 16);
+}
+
 Widget titleNavigationBar({required String title}) {
   return Container(
     height: 100,
     width: Get.width,
-    color: AppColorConstants.themeColor.withOpacity(0.1),
+    color: AppColorConstants.cardColor,
     child: Center(
       child: BodyLargeText(title.tr, weight: TextWeight.medium)
           .setPadding(top: 40),
@@ -212,3 +179,33 @@ Widget titleNavigationBar({required String title}) {
   );
 }
 
+Widget customNavigationBar(
+    {required String title, VoidCallback? action, Widget? trailing}) {
+  return Container(
+    height: 100,
+    color: AppColorConstants.cardColor,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        ThemeIconWidget(
+          ThemeIcon.backArrow,
+          size: 18,
+          color: AppColorConstants.iconColor,
+        ).ripple(() {
+          if (action != null) {
+            action();
+          } else {
+            Get.back();
+          }
+        }),
+        Heading4Text(title, weight: TextWeight.bold),
+        trailing ?? const SizedBox(width: 20),
+      ],
+    ).setPadding(
+        left: DesignConstants.horizontalPadding,
+        right: DesignConstants.horizontalPadding,
+        top: 8,
+        bottom: 16),
+  );
+}

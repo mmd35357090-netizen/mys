@@ -1,9 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
-
 import '../../controllers/misc/faq_controller.dart';
 
 class FaqList extends StatefulWidget {
-  const FaqList({Key? key}) : super(key: key);
+  const FaqList({super.key});
 
   @override
   State<FaqList> createState() => _FaqListState();
@@ -26,11 +25,12 @@ class _FaqListState extends State<FaqList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           backNavigationBar(title: faqString.tr),
+
           Expanded(
               child: Obx(
             () => ListView.builder(

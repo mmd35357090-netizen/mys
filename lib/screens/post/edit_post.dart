@@ -9,9 +9,9 @@ class EditPostScreen extends StatefulWidget {
   final PostModel post;
 
   const EditPostScreen({
-    Key? key,
+    super.key,
     required this.post,
-  }) : super(key: key);
+  });
 
   @override
   EditPostScreenState createState() => EditPostScreenState();
@@ -63,22 +63,22 @@ class EditPostScreenState extends State<EditPostScreen> {
                                 Get.back();
                                 addPostController.clear();
                               },
-                              child: const ThemeIconWidget(ThemeIcon.backArrow)),
+                              child: ThemeIconWidget(ThemeIcon.backArrow)),
                           const Spacer(),
                           Container(
-                              color: AppColorConstants.themeColor,
-                              child: BodyLargeText(
-                                updateString.tr,
-                                weight: TextWeight.medium,
-                                color: Colors.white,
-                              ).setPadding(
-                                  left: 8, right: 8, top: 5, bottom: 5))
+                                  color: AppColorConstants.themeColor,
+                                  child: BodyLargeText(
+                                    updateString.tr,
+                                    weight: TextWeight.medium,
+                                    color: Colors.white,
+                                  ).setPadding(
+                                      left: 8, right: 8, top: 5, bottom: 5))
                               .round(10)
                               .ripple(() {
                             if (descriptionText.text.isNotEmpty) {
                               addPostController.updatePost(
                                   allowComments:
-                                  addPostController.enableComments.value,
+                                      addPostController.enableComments.value,
                                   title: descriptionText.text,
                                   postId: widget.post.id);
                             }
@@ -103,12 +103,12 @@ class EditPostScreenState extends State<EditPostScreen> {
                             width: 20,
                           ),
                           Obx(() => ThemeIconWidget(
-                              addPostController.enableComments.value
-                                  ? ThemeIcon.selectedCheckbox
-                                  : ThemeIcon.emptyCheckbox)
-                              .ripple(() {
-                            addPostController.toggleEnableComments();
-                          })),
+                                      addPostController.enableComments.value
+                                          ? ThemeIcon.selectedCheckbox
+                                          : ThemeIcon.emptyCheckbox)
+                                  .ripple(() {
+                                addPostController.toggleEnableComments();
+                              })),
                         ],
                       ).hp(DesignConstants.horizontalPadding),
                       const SizedBox(
@@ -116,20 +116,20 @@ class EditPostScreenState extends State<EditPostScreen> {
                       ),
                       Expanded(
                         child: Obx(() => Container(
-                          width: double.infinity,
-                          color: AppColorConstants.disabledColor
-                              .withOpacity(0.1),
-                          child: _smartTextFieldController
-                              .currentHashtag.isNotEmpty
-                              ? TagHashtagView()
-                              : _smartTextFieldController
-                              .currentUserTag.isNotEmpty
-                              ? TagUsersView()
-                              : Container().ripple(() {
-                            FocusManager.instance.primaryFocus
-                                ?.unfocus();
-                          }),
-                        )),
+                              width: double.infinity,
+                              color: AppColorConstants.disabledColor
+                                  .withValues(alpha: 0.1),
+                              child: _smartTextFieldController
+                                      .currentHashtag.isNotEmpty
+                                  ? TagHashtagView()
+                                  : _smartTextFieldController
+                                          .currentUserTag.isNotEmpty
+                                      ? TagUsersView()
+                                      : Container().ripple(() {
+                                          FocusManager.instance.primaryFocus
+                                              ?.unfocus();
+                                        }),
+                            )),
                       ),
                       Obx(() => _smartTextFieldController.isEditing.value == 0
                           ? const Spacer()
@@ -153,7 +153,7 @@ class EditPostScreenState extends State<EditPostScreen> {
         return Container(
           color: AppColorConstants.cardColor,
           child: SmartTextField(
-              maxLine: 5,
+            maxLine: 5,
               controller: descriptionText,
               onTextChangeActionHandler: (text, offset) {
                 _smartTextFieldController.textChanged(text, offset);

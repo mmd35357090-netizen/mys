@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'package:aescryptojs/aescryptojs.dart';
-import 'package:foap/util/app_config_constants.dart';
-
+import 'package:intl/intl.dart';
 import 'imports/common_import.dart';
 
 extension StringExtension on String {
+  DateTime toDateInFormat(String format) {
+    return DateFormat(format).parse(this);
+  }
+
   bool get isValidUrl {
     String pattern =
         r'(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?';
@@ -39,17 +43,6 @@ extension StringExtension on String {
   }
 
   String encrypted() {
-    // final encryptionKey =
-    //     encrypt.Key.fromUtf8(AppConfigConstants.encryptionKey);
-    //
-    // final iv = encrypt.IV.fromLength(16);
-    //
-    // final encrypter = encrypt.Encrypter(
-    //     encrypt.AES(encryptionKey, mode: encrypt.AESMode.ecb));
-    //
-    // final encryptedMessageContent = encrypter.encrypt(this, iv: iv);
-    //
-    // return encryptedMessageContent.base64;
     if (isEmpty) {
       return '';
     }
@@ -61,16 +54,6 @@ extension StringExtension on String {
   }
 
   String decrypted() {
-    // final encryptionKey =
-    //     encrypt.Key.fromUtf8(AppConfigConstants.encryptionKey);
-    //
-    // final iv = encrypt.IV.fromLength(16);
-    //
-    // final encrypter = encrypt.Encrypter(
-    //     encrypt.AES(encryptionKey, mode: encrypt.AESMode.ecb));
-    //
-    // final decrypted = encrypter.decrypt64(this, iv: iv);
-    // return decrypted.replaceAll('\\', '');
     if (isEmpty) {
       return '';
     }
@@ -89,5 +72,37 @@ extension StringExtension on String {
     } else {
       return nameParts[0].substring(0, 1).toUpperCase();
     }
+  }
+
+  Color get generateColorFromText {
+    // Convert the name to a UTF-8 encoded string
+    List<int> bytes = utf8.encode(toLowerCase());
+
+    // Use a hash function to generate a unique integer value from the name
+    int hash = 0;
+    for (int i = 0; i < bytes.length; i++) {
+      hash = (31 * hash + bytes[i]) % 0xFFFFFFFF;
+    }
+
+    // Use the generated hash value to generate a color
+    return Color(hash).darken(0.3).withValues(alpha: 1.0);
+  }
+
+  bool get isNetworkPath {
+    return startsWith('http://') || startsWith('https://');
+  }
+
+}
+
+extension AgeCalculator on String {
+  String get calculateAge {
+    DateTime now = DateTime.now();
+    DateTime dob = DateTime.parse(this); // Parse the date string
+    int age = now.year - dob.year;
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
+      age--;
+    }
+    return age.toString();
   }
 }

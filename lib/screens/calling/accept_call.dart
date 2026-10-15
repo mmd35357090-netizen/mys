@@ -1,10 +1,8 @@
-import 'package:flutter_svg/svg.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:pip_view/pip_view.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-
 import '../../controllers/chat_and_call/agora_call_controller.dart';
 
 class AcceptCallScreen extends StatefulWidget {
@@ -13,7 +11,7 @@ class AcceptCallScreen extends StatefulWidget {
   const AcceptCallScreen({
     super.key,
     required this.call,
-  });
+  }) ;
 
   @override
   State<AcceptCallScreen> createState() => _AcceptCallScreenState();
@@ -21,7 +19,6 @@ class AcceptCallScreen extends StatefulWidget {
 
 class _AcceptCallScreenState extends State<AcceptCallScreen> {
   final AgoraCallController agoraCallController = Get.find();
-  // final GlobalKey<TimerViewState> _timerKey = GlobalKey();
 
   @override
   void initState() {
@@ -38,7 +35,7 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
   // Create UI with local view and remote view
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: incomingCallView(),
     );
@@ -66,7 +63,7 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
           height: 70,
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const ThemeIconWidget(
+            ThemeIconWidget(
               ThemeIcon.backArrow,
               color: Colors.white,
               size: 25,
@@ -105,11 +102,11 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
         Stack(
           alignment: Alignment.center,
           children: [
-            SvgPicture.asset(
-              'assets/svg/outline/call_bubble_overlay.svg',
-              height: 350,
-              width: 250,
-            ),
+            // SvgPicture.asset(
+            //   'assets/svg/outline/call_bubble_overlay.svg',
+            //   height: 350,
+            //   width: 250,
+            // ),
             Container(
               color: AppColorConstants.themeColor,
               child: UserAvatarView(
@@ -155,13 +152,13 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
               color: AppColorConstants.red,
               height: 80,
               width: 80,
-              child: const ThemeIconWidget(
+              child: ThemeIconWidget(
                 ThemeIcon.declineCall,
                 size: 30,
                 color: Colors.white,
               ).p16,
             ).circular.ripple(() {
-              agoraCallController.declineIncomingCall(call: widget.call);
+              agoraCallController.declineCall(call: widget.call);
             }),
             const SizedBox(
               width: 25,
@@ -170,7 +167,7 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
               color: AppColorConstants.themeColor,
               height: 80,
               width: 80,
-              child: const ThemeIconWidget(
+              child: ThemeIconWidget(
                 ThemeIcon.acceptCall,
                 size: 30,
                 color: Colors.white,

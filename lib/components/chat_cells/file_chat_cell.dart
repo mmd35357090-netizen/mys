@@ -7,7 +7,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 class FileChatTile extends StatefulWidget {
   final ChatMessageModel message;
 
-  const FileChatTile({Key? key, required this.message}) : super(key: key);
+  const FileChatTile({super.key, required this.message});
 
   @override
   State<FileChatTile> createState() => _FileChatTileState();
@@ -15,7 +15,6 @@ class FileChatTile extends StatefulWidget {
 
 class _FileChatTileState extends State<FileChatTile> {
   late TaskInfo taskInfo;
-  // final ReceivePort _port = ReceivePort();
 
   @override
   void initState() {
@@ -230,6 +229,8 @@ class _FileChatTileState extends State<FileChatTile> {
   }
 
   Future<void> _prepareSaveDir() async {
+    await FileManager.messageMediaDirectory(
+        widget.message.localMessageId, widget.message.roomId);
   }
 
   // Future<void> _requestDownload(TaskInfo task) async {

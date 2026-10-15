@@ -6,7 +6,7 @@ import '../../manager/player_manager.dart';
 class AudioFilePlayer extends StatefulWidget {
   final String path;
 
-  const AudioFilePlayer({Key? key, required this.path}) : super(key: key);
+  const AudioFilePlayer({super.key, required this.path}) ;
 
   @override
   State<AudioFilePlayer> createState() => _AudioFilePlayerState();

@@ -1,11 +1,5 @@
 import 'package:foap/helper/date_extension.dart';
-import 'package:foap/util/time_convertor.dart';
-import 'package:get/get.dart';
-
-import '../helper/enum.dart';
-import '../helper/localization_strings.dart';
-import '../util/app_config_constants.dart';
-import 'user_model.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class CommentModel {
   int id = 0;
@@ -18,7 +12,8 @@ class CommentModel {
   String? userPicture;
   String commentTime = '';
   UserModel? user;
-  CommentType type = CommentType.text; // text=1, image=2, video = 3, gif =4
+  CommentType type =
+      CommentType.text; // text=1, image=2, video = 3, gif =4
   String filePath = '';
   int level = 1;
   bool isFavourite = false;
@@ -41,6 +36,11 @@ class CommentModel {
     model.userId = json['user_id'];
     model.level = json['level'] ?? 1;
     model.isFavourite = json['isLike'] == 1;
+    // model.replies = json['childCommentDetail'] == null
+    //     ? []
+    //     : (json['childCommentDetail'] as List)
+    //         .map((e) => CommentModel.fromJson(e))
+    //         .toList();
 
     model.totalReplies = json['totalChildComment'] ?? 0;
     model.pendingReplies = json['totalChildComment'] ?? 0;
@@ -55,18 +55,18 @@ class CommentModel {
     model.type = json['type'] == 4
         ? CommentType.gif
         : json['type'] == 3
-        ? CommentType.video
-        : json['type'] == 2
-        ? CommentType.image
-        : CommentType.text;
+            ? CommentType.video
+            : json['type'] == 2
+                ? CommentType.image
+                : CommentType.text;
     model.filePath = json['filenameUrl'] ?? '';
 
-    DateTime createDate =
-    DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000).toUtc();
-    model.commentTime = createDate.getTimeAgo;
+    DateTime createDate = AppUtil.convertToDateTime(json['created_at']);
 
+    model.commentTime = createDate.getTimeAgo;
     model.isPinned = json['isPin'] != null;
     model.pinId = json['isPin'] == null ? null : json['isPin']['id'];
+
     return model;
   }
 

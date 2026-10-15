@@ -1,13 +1,12 @@
 import 'package:foap/controllers/post/post_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import '../../components/post_card/post_card.dart';
 import '../../model/post_model.dart';
 
 class ViewPostInsights extends StatefulWidget {
   final PostModel post;
 
-  const ViewPostInsights({Key? key, required this.post}) : super(key: key);
+  const ViewPostInsights({super.key, required this.post});
 
   @override
   State<ViewPostInsights> createState() => _ViewPostInsightsState();
@@ -18,45 +17,35 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
 
   @override
   void initState() {
-    // _postController.viewInsight(widget.post.id);
     _postController.viewInsight(widget.post.id);
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           backNavigationBar(title: insightsString.tr),
-          divider(),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.only(top: 20, bottom: 100),
               children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    height: 150,
-                    width: 150,
-                    child: PostMediaTile(
-                      model: widget.post,
-                      isSharedPostMedia: false,
-                    ),
+                AbsorbPointer(
+                  child: PostContent(
+                    model: widget.post,
+                    isSponsored: false,
                   ),
                 ),
-                const SizedBox(
-                  height: 40,
-                ),
+                divider(height: 1).vP25,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Column(
                       children: [
-                        const ThemeIconWidget(ThemeIcon.message),
+                        ThemeIconWidget(ThemeIcon.message),
                         const SizedBox(
                           height: 5,
                         ),
@@ -67,7 +56,7 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     ),
                     Column(
                       children: [
-                        const ThemeIconWidget(ThemeIcon.favFilled),
+                        ThemeIconWidget(ThemeIcon.favFilled),
                         const SizedBox(
                           height: 5,
                         ),
@@ -76,28 +65,6 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                         )
                       ],
                     ),
-                    // Column(
-                    //   children: [
-                    //     ThemeIconWidget(ThemeIcon.send),
-                    //     const SizedBox(
-                    //       height: 5,
-                    //     ),
-                    //     BodySmallText(
-                    //       '10',
-                    //     )
-                    //   ],
-                    // ),
-                    // Column(
-                    //   children: [
-                    //     ThemeIconWidget(ThemeIcon.bookMark),
-                    //     const SizedBox(
-                    //       height: 5,
-                    //     ),
-                    //     BodySmallText(
-                    //       '10',
-                    //     )
-                    //   ],
-                    // )
                   ],
                 ).hp(50),
                 divider().vP25,
@@ -161,7 +128,8 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BodyMediumText(viewsString.tr, weight: TextWeight.medium),
+                  BodyMediumText(viewsString.tr,
+                      weight: TextWeight.medium),
                   BodyMediumText(
                       _postController.insight.value!.totalView.toString()),
                 ],
@@ -205,8 +173,23 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     followsString.tr,
                     weight: TextWeight.medium,
                   ),
+                  BodyMediumText(_postController
+                      .insight.value!.followFromPost
+                      .toString()),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   BodyMediumText(
-                      _postController.insight.value!.followFromPost.toString()),
+                    shareString.tr,
+                    weight: TextWeight.medium,
+                  ),
+                  BodyMediumText(_postController.insight.value!.totalShare
+                      .toString()),
                 ],
               ),
             ],
@@ -233,8 +216,9 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     maleString.tr,
                     weight: TextWeight.medium,
                   ),
-                  BodyMediumText(
-                      _postController.insight.value!.viewFromMale.toString()),
+                  BodyMediumText(_postController
+                      .insight.value!.viewFromMale
+                      .toString()),
                 ],
               ),
               const SizedBox(
@@ -247,8 +231,9 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     femaleString.tr,
                     weight: TextWeight.medium,
                   ),
-                  BodyMediumText(
-                      _postController.insight.value!.viewFromFemale.toString()),
+                  BodyMediumText(_postController
+                      .insight.value!.viewFromFemale
+                      .toString()),
                 ],
               ),
               const SizedBox(
@@ -261,8 +246,9 @@ class _ViewPostInsightsState extends State<ViewPostInsights> {
                     otherString.tr,
                     weight: TextWeight.medium,
                   ),
-                  BodyMediumText(
-                      _postController.insight.value!.viewFromOther.toString()),
+                  BodyMediumText(_postController
+                      .insight.value!.viewFromOther
+                      .toString()),
                 ],
               ),
               const SizedBox(

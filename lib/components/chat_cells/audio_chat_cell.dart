@@ -6,7 +6,7 @@ import '../audio_progress_bar.dart';
 class AudioChatTile extends StatefulWidget {
   final ChatMessageModel message;
 
-  const AudioChatTile({Key? key, required this.message}) : super(key: key);
+  const AudioChatTile({super.key, required this.message}) ;
 
   @override
   State<AudioChatTile> createState() => _AudioChatTileState();
@@ -44,22 +44,22 @@ class _AudioChatTileState extends State<AudioChatTile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _playerManager.currentlyPlayingAudio.value?.id ==
-                  widget.message.localMessageId.toString() &&
-                  _playerManager.isPlaying.value
-                  ? const ThemeIconWidget(
-                ThemeIcon.pause,
-                // color: Colors.white,
-                size: 30,
-              ).ripple(() {
-                pauseAudio();
-              })
-                  : const ThemeIconWidget(
-                ThemeIcon.play,
-                // color: Colors.white,
-                size: 30,
-              ).ripple(() {
-                playAudio();
-              }),
+                          widget.message.localMessageId.toString() &&
+                      _playerManager.isPlaying.value
+                  ? ThemeIconWidget(
+                      ThemeIcon.pause,
+                      color: Colors.white,
+                      size: 30,
+                    ).ripple(() {
+                      pauseAudio();
+                    })
+                  : ThemeIconWidget(
+                      ThemeIcon.play,
+                      color: Colors.white,
+                      size: 30,
+                    ).ripple(() {
+                      playAudio();
+                    }),
               const SizedBox(
                 width: 15,
               ),

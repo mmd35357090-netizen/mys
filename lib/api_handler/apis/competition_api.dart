@@ -9,9 +9,7 @@ class CompetitionApi {
       required Function(List<CompetitionModel>, APIMetaData) resultCallback}) async{
     var url = '${NetworkConstantsUtil.getCompetitions}&page=$page';
 
-    EasyLoading.show(status: loadingString.tr);
     await ApiWrapper().getApi(url: url).then((result) {
-      EasyLoading.dismiss();
       if (result?.success == true) {
         var items = result!.data['competition']['items'];
 
@@ -42,11 +40,11 @@ class CompetitionApi {
       {required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.joinCompetition;
 
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
     await ApiWrapper().postApi(
         url: url,
         param: {"competition_id": competitionId.toString()}).then((result) {
-      EasyLoading.dismiss();
+      Loader.dismiss();
       if (result?.success == true) {
         resultCallback();
       }

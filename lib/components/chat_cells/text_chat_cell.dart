@@ -9,7 +9,7 @@ import '../link_preview.dart';
 class TextChatTile extends StatelessWidget {
   final ChatMessageModel message;
 
-  const TextChatTile({Key? key, required this.message}) : super(key: key);
+  const TextChatTile({super.key, required this.message}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,6 @@ class TextChatTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               linkPreview(messageString),
-              // LinkPreviewGenerator(
-              //   bodyMaxLines: 3,
-              //   link: messageString,
-              //   linkPreviewStyle: LinkPreviewStyle.large,
-              //   showGraphic: true,
-              //   errorBody: messageString,
-              // ),
               const SizedBox(
                 height: 10,
               ),

@@ -32,6 +32,7 @@ class UserProfileStatistics extends StatelessWidget {
             if (user.totalPost > 0) {
               Get.to(() => Posts(
                     userId: user.id,
+                    title: user.userName,
                   ));
             }
           }),

@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter_contacts/contact.dart';
 import 'package:foap/api_handler/apis/chat_api.dart';
 import 'package:foap/api_handler/apis/misc_api.dart';
@@ -10,12 +8,14 @@ import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/string_extension.dart';
+
 // import 'package:google_mlkit_smart_reply/google_mlkit_smart_reply.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import '../../components/notification_banner.dart';
 import '../../helper/enum_linking.dart';
 import '../../helper/permission_utils.dart';
+import '../../manager/db_manager_realm.dart';
 import '../../manager/socket_manager.dart';
 import '../../model/call_model.dart';
 import '../../model/gallery_media.dart';
@@ -35,11 +35,8 @@ class ChatDetailController extends GetxController {
 
   bool expandActions = false;
 
-  // RxMap<String, dynamic> isOnlineMapping = <String, dynamic>{}.obs;
   RxMap<String, dynamic> isTypingMapping = <String, dynamic>{}.obs;
 
-  // RxBool isOnline = false.obs;
-  // RxBool isTyping = false.obs;
   RxString wallpaper = "assets/chatbg/chatbg3.jpg".obs;
 
   Rx<ChatMessageActionMode> actionMode = ChatMessageActionMode.none.obs;
@@ -55,6 +52,7 @@ class ChatDetailController extends GetxController {
   DateTime? typingStatusUpdatedAt;
 
   RxSet<String> whoIsTyping = RxSet<String>();
+
   // final smartReply = SmartReply();
 
   int chatHistoryPage = 1;
@@ -74,7 +72,6 @@ class ChatDetailController extends GetxController {
     selectedMessages.clear();
     messages.clear();
     chatRoom.value = null;
-    // opponents.value = [];
     actionMode.value = ChatMessageActionMode.none;
     selectedMessage.value = null;
     typingStatusUpdatedAt = null;
@@ -108,116 +105,67 @@ class ChatDetailController extends GetxController {
     update();
   }
 
-  Future<void> getUpdatedChatRoomDetail({
-    required ChatRoomModel room,
-    required VoidCallback callback,
-  }) async {
-    try {
-      ChatApi.getChatRoomDetail(
-        room.id,
-        resultCallback: (result) async {
-          try {
-            chatRoom.value = result;
-            chatRoom.refresh();
+  getUpdatedChatRoomDetail(
+      {required ChatRoomModel room, required VoidCallback callback}) {
+    ChatApi.getChatRoomDetail(room.id, resultCallback: (result) async {
+      chatRoom.value = result;
+      chatRoom.refresh();
 
-            // Update room in local storage.
-            await getIt<DBManager>().updateRoom(result);
-
-            callback();
-          } catch (e) {
-            debugPrint('Failed to update chat room: $e');
-            callback();
-          }
-        },
-      );
-    } catch (e) {
-      debugPrint('Failed to fetch chat room details: $e');
+      // update room in local storage
+      await getIt<RealmDBManager>()
+          .startUpdateRoom(chatRoom.value!, false);
       callback();
-    }
+    });
   }
 
-  Future<void> getChatRoomWithUser({
-    required int userId,
-    required Function(ChatRoomModel) callback,
-  }) async {
-    try {
-      createChatRoom(userId, (roomId) async {
-        try {
-          ChatApi.getChatRoomDetail(
-            roomId,
-            resultCallback: (result) async {
-              try {
-                await getIt<DBManager>().saveRooms([result]);
-                callback(result);
-              } catch (e) {
-                debugPrint('Failed to save chat room: $e');
-              }
-            },
-          );
-        } catch (e) {
-          debugPrint('Failed to fetch chat room: $e');
-        }
+  getChatRoomWithUser(
+      {required int userId, required Function(ChatRoomModel) callback}) {
+    createChatRoom(userId, (roomId) async {
+      ChatApi.getChatRoomDetail(roomId, resultCallback: (result) async {
+        await getIt<RealmDBManager>().saveRooms([result]);
+        callback(result);
       });
-    } catch (e) {
-      debugPrint('Failed to create chat room: $e');
-    }
+    });
   }
 
-  Future<UserModel?> getOpponentUser({
-    required int userId,
-  }) async {
+  Future<UserModel?> getOpponentUser({required int userId}) async {
     UserModel? user;
-
-    try {
-      await UsersApi.getOtherUser(
+    await UsersApi.getOtherUser(
         userId: userId,
         resultCallback: (result) {
           user = result;
-        },
-      );
-    } catch (e) {
-      debugPrint('Failed to fetch opponent user: $e');
-    }
+        });
 
     return user;
   }
 
-Future<void> loadChat(
-    ChatRoomModel chatRoom,
-    VoidCallback completion,
-  ) async {
+  loadChat(ChatRoomModel chatRoom, VoidCallback completion) async {
     if (this.chatRoom.value == null) {
       this.chatRoom.value = chatRoom;
       this.chatRoom.refresh();
     }
 
-    final List<ChatMessageModel> msgList =
-        await getIt<DBManager>().getAllMessages(
-      roomId: chatRoom.id,
-      limit: 20,
-      offset: messages.length,
-    );
-
+    List<ChatMessageModel> msgList = await getIt<RealmDBManager>()
+        .getAllMessages(
+            roomId: chatRoom.id, limit: 20, offset: messages.length);
     messages.insertAll(0, msgList);
 
-    if (!chatRoom.isGroupChat) {
-      opponent.value = await getOpponentUser(
-        userId: chatRoom.opponent.userDetail.id,
-      );
+    if (chatRoom.isGroupChat == false) {
+      opponent.value =
+          await getOpponentUser(userId: chatRoom.opponent!.userDetail.id);
     }
 
     if (msgList.length == 20) {
       completion();
     } else {
+      //check for more message from server
       getChatHistoryInRoom(
         roomId: chatRoom.id,
         chatRoom: chatRoom,
-        lastFetchedMessageId:
-            messages.isNotEmpty ? messages.first.id : 0,
+        lastFetchedMessageId: messages.isNotEmpty ? messages.first.id : 0,
         completion: completion,
       );
     }
-
     scrollToBottom();
     update();
   }
@@ -233,9 +181,10 @@ Future<void> loadChat(
       ChatApi.getChatHistory(
           roomId: roomId,
           lastMessageId: lastFetchedMessageId,
-          resultCallback: (result) async {
+          resultCallback: (result, metadata) async {
             if (result.isNotEmpty) {
-              await getIt<DBManager>().saveMessage(chatMessages: result);
+              await getIt<RealmDBManager>().prepareSaveMessage(
+                  chatMessages: result, alreadyWritingInDB: false);
 
               if (chatRoom.id == this.chatRoom.value?.id) {
                 loadChat(chatRoom, () {});
@@ -249,7 +198,8 @@ Future<void> loadChat(
   }
 
   getRoomDetail(int roomId, Function(ChatRoomModel) callback) async {
-    ChatRoomModel? chatRoom = await getIt<DBManager>().getRoomById(roomId);
+    ChatRoomModel? chatRoom =
+        await getIt<RealmDBManager>().getRoomById(roomId);
 
     if (chatRoom == null) {
       await ChatApi.getChatRoomDetail(roomId, resultCallback: (result) {
@@ -267,7 +217,8 @@ Future<void> loadChat(
   createChatRoom(int userId, Function(int) callback) {
     ChatApi.createChatRoom(userId, resultCallback: (roomId) {
       getIt<SocketManager>().emit(SocketConstants.addUserInChatRoom, {
-        'userId': '${_userProfileManager.user.value!.id},$userId'.toString(),
+        'userId':
+            '${_userProfileManager.user.value!.id},$userId'.toString(),
         'room': roomId
       });
 
@@ -282,20 +233,18 @@ Future<void> loadChat(
   starMessage(ChatMessageModel message) {
     message.isStar = 1;
     selectedMessages.refresh();
-    getIt<DBManager>().starUnStarMessage(
-        roomId: message.roomId,
-        localMessageId: message.localMessageId,
-        isStar: 1);
+    getIt<RealmDBManager>().starUnStarMessage(
+        localMessageId: message.localMessageId, isStar: 1);
+
     update();
   }
 
   unStarMessage(ChatMessageModel message) {
     message.isStar = 0;
     selectedMessages.refresh();
-    getIt<DBManager>().starUnStarMessage(
-        roomId: message.roomId,
-        localMessageId: message.localMessageId,
-        isStar: 0);
+    getIt<RealmDBManager>().starUnStarMessage(
+        localMessageId: message.localMessageId, isStar: 0);
+
     update();
   }
 
@@ -330,11 +279,6 @@ Future<void> loadChat(
     update();
   }
 
-// updateOnlineStatus() {
-//   isOnline.value = !isOnline.value;
-//   update();
-// }
-
   expandCollapseActions() {
     expandActions = !expandActions;
     update();
@@ -344,29 +288,28 @@ Future<void> loadChat(
     getIt<SocketManager>()
         .emit(SocketConstants.typing, {'room': chatRoom.value!.id});
     messageTf.refresh();
-    // update();
   }
 
   sendMessageAsRead(ChatMessageModel message) {
     messages.value = messages.map((element) {
       if (element.id == message.id) {
-        element.status = 3;
+        ChatMessageUser currentUser = element.myUserDataInMessage;
+        currentUser.status = 3;
       }
       return element;
     }).toList();
 
     getIt<SocketManager>().emit(SocketConstants.readMessage,
         {'id': message.id, 'room': message.roomId});
-    // messages.refresh();
-    // update();
-    getIt<DBManager>().updateMessageStatus(
+
+    getIt<RealmDBManager>().updateMessageStatus(
         roomId: message.roomId,
-        localMessageId: message.localMessageId,
-        id: message.id,
-        status: 3);
+        // localMessageId: message.localMessageId,
+        messageId: message.id,
+        status: 3,
+        userId: _userProfileManager.user.value!.id);
   }
 
-  /// Todo : instead of opponent send chatroom id
   Future<bool> sendPostAsMessage(
       {required PostModel post, required ChatRoomModel room}) async {
     bool status = true;
@@ -402,19 +345,22 @@ Future<void> loadChat(
     // currentMessageModel.messageTime = justNow;
     currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
-    currentMessageModel.messageType = messageTypeId(MessageContentType.post);
+    currentMessageModel.messageType =
+        messageTypeId(MessageContentType.post);
     // currentMessageModel.messageContent = json.encode(content).replaceAll('\\', '');
     currentMessageModel.messageContent = json.encode(content).encrypted();
 
     currentMessageModel.createdAt =
         (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
     // save message to database
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
     // send message to socket server
 
-    status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+    status =
+        getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
     update();
     // });
     setReplyMessage(message: null);
@@ -430,7 +376,8 @@ Future<void> loadChat(
     final filter = ProfanityFilter();
     bool hasProfanity = filter.hasProfanity(messageText);
     if (hasProfanity) {
-      AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
+      AppUtil.showToast(
+          message: notAllowedMessageString.tr, isSuccess: true);
       return false;
     }
 
@@ -458,15 +405,17 @@ Future<void> loadChat(
         'chat_version': AppConfigConstants.chatVersion,
         'room': room.id,
         'created_by': _userProfileManager.user.value!.id,
-        'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
+        'created_at':
+            (DateTime.now().millisecondsSinceEpoch / 1000).round()
       };
 
       //save message to socket server
-      status =
-          getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+      status = getIt<SocketManager>()
+          .emit(SocketConstants.sendMessage, message);
 
       ChatMessageModel currentMessageModel = ChatMessageModel();
-      currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
+      currentMessageModel.isEncrypted =
+          AppConfigConstants.enableEncryption;
       currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
       currentMessageModel.localMessageId = localMessageId;
@@ -480,15 +429,17 @@ Future<void> loadChat(
           mode == ChatMessageActionMode.reply
               ? MessageContentType.reply
               : MessageContentType.text);
-      currentMessageModel.messageContent = json.encode(content).encrypted();
+      currentMessageModel.messageContent =
+          json.encode(content).encrypted();
       currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
       currentMessageModel.createdAt =
           (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-      addNewMessage(message: currentMessageModel, roomId: room.id);
+      addNewMessage(message: currentMessageModel, room: room);
       // save message to database
-      getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+      getIt<RealmDBManager>().prepareSaveMessage(
+          chatMessages: [currentMessageModel], alreadyWritingInDB: false);
 
       setReplyMessage(message: null);
       messageTf.value.text = '';
@@ -531,7 +482,8 @@ Future<void> loadChat(
     };
 
     //save message to socket server
-    status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+    status =
+        getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
 
     ChatMessageModel currentMessageModel = ChatMessageModel();
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
@@ -553,9 +505,10 @@ Future<void> loadChat(
     currentMessageModel.createdAt =
         (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
     // save message to database
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
 
     setReplyMessage(message: null);
     update();
@@ -577,8 +530,9 @@ Future<void> loadChat(
       'userId': user.id,
       'userPicture': user.picture,
       'userName': user.userName,
-      'location':
-          user.city != null ? '${user.city ?? ''}, ${user.country ?? ''}' : '',
+      'location': user.city != null
+          ? '${user.city ?? ''}, ${user.country ?? ''}'
+          : '',
     };
 
     var message = {
@@ -617,12 +571,14 @@ Future<void> loadChat(
     currentMessageModel.createdAt =
         (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
     // save message to database
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
     // send message to socket server
 
-    status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+    status =
+        getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
     setReplyMessage(message: null);
 
     update();
@@ -667,7 +623,8 @@ Future<void> loadChat(
     };
 
     //save message to socket server
-    status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+    status =
+        getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
 
     ChatMessageModel currentMessageModel = ChatMessageModel();
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
@@ -689,10 +646,11 @@ Future<void> loadChat(
     currentMessageModel.createdAt =
         (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
     // save message to database
 
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
 
     setReplyMessage(message: null);
     update();
@@ -719,7 +677,8 @@ Future<void> loadChat(
     currentMessageModel.roomId = room.id;
     currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
-    currentMessageModel.messageType = messageTypeId(MessageContentType.forward);
+    currentMessageModel.messageType =
+        messageTypeId(MessageContentType.forward);
     currentMessageModel.messageContent =
         json.encode(originalContent).encrypted();
     currentMessageModel.createdAt =
@@ -737,9 +696,11 @@ Future<void> loadChat(
       'created_at': currentMessageModel.createdAt,
     };
 
-    status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+    status =
+        getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
 
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
     // setReplyMessage(message: null);
     return status;
   }
@@ -783,8 +744,9 @@ Future<void> loadChat(
     currentMessageModel.messageContent = json.encode(content).encrypted();
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    addNewMessage(message: currentMessageModel, room: room);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
 
     update();
 
@@ -805,9 +767,10 @@ Future<void> loadChat(
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
-            'messageType': messageTypeId(mode == ChatMessageActionMode.reply
-                ? MessageContentType.reply
-                : MessageContentType.photo),
+            'messageType': messageTypeId(
+                mode == ChatMessageActionMode.reply
+                    ? MessageContentType.reply
+                    : MessageContentType.photo),
             'message': json.encode(content).encrypted(),
             'replied_on_message': repliedOnMessage,
             'room': room.id,
@@ -816,16 +779,17 @@ Future<void> loadChat(
           };
 
           // send message to socket
-          status =
-              getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+          status = getIt<SocketManager>()
+              .emit(SocketConstants.sendMessage, message);
 
           // update in cache message
 
-          currentMessageModel.messageContent = json.encode(content).encrypted();
+          currentMessageModel.messageContent =
+              json.encode(content).encrypted();
           // update message in local database
-          getIt<DBManager>().updateMessageContent(
-              roomId: room.id,
-              localMessageId: currentMessageModel.localMessageId.toString(),
+          getIt<RealmDBManager>().updateMessageContent(
+              localMessageId:
+                  currentMessageModel.localMessageId.toString(),
               content: json.encode(content).encrypted());
         });
 
@@ -873,9 +837,10 @@ Future<void> loadChat(
     // currentMessageModel.media = media;
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
 
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
 
     update();
 
@@ -898,9 +863,10 @@ Future<void> loadChat(
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
-            'messageType': messageTypeId(mode == ChatMessageActionMode.reply
-                ? MessageContentType.reply
-                : MessageContentType.video),
+            'messageType': messageTypeId(
+                mode == ChatMessageActionMode.reply
+                    ? MessageContentType.reply
+                    : MessageContentType.video),
             'message': json.encode(content).encrypted(),
             'room': room.id,
             'created_by': _userProfileManager.user.value!.id,
@@ -908,18 +874,19 @@ Future<void> loadChat(
           };
 
           // send message to socket
-          status =
-              getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+          status = getIt<SocketManager>()
+              .emit(SocketConstants.sendMessage, message);
 
           // update in cache message
-          currentMessageModel.messageContent = json.encode(content).encrypted();
+          currentMessageModel.messageContent =
+              json.encode(content).encrypted();
 
           update();
 
           // update message in local database
-          getIt<DBManager>().updateMessageContent(
-              roomId: room.id,
-              localMessageId: currentMessageModel.localMessageId.toString(),
+          getIt<RealmDBManager>().updateMessageContent(
+              localMessageId:
+                  currentMessageModel.localMessageId.toString(),
               content: json.encode(content).encrypted());
         });
 
@@ -966,9 +933,10 @@ Future<void> loadChat(
     // currentMessageModel.media = media;
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
 
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
     update();
 
     // upload audio and send message
@@ -988,9 +956,10 @@ Future<void> loadChat(
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
-            'messageType': messageTypeId(mode == ChatMessageActionMode.reply
-                ? MessageContentType.reply
-                : MessageContentType.audio),
+            'messageType': messageTypeId(
+                mode == ChatMessageActionMode.reply
+                    ? MessageContentType.reply
+                    : MessageContentType.audio),
             'message': json.encode(content).encrypted(),
             'room': room.id,
             'created_by': _userProfileManager.user.value!.id,
@@ -999,17 +968,18 @@ Future<void> loadChat(
           };
 
           // send message to socket
-          status =
-              getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+          status = getIt<SocketManager>()
+              .emit(SocketConstants.sendMessage, message);
 
           // update in cache message
 
-          currentMessageModel.messageContent = json.encode(content).encrypted();
+          currentMessageModel.messageContent =
+              json.encode(content).encrypted();
 
           // update message in local database
-          getIt<DBManager>().updateMessageContent(
-              roomId: room.id,
-              localMessageId: currentMessageModel.localMessageId.toString(),
+          getIt<RealmDBManager>().updateMessageContent(
+              localMessageId:
+                  currentMessageModel.localMessageId.toString(),
               content: json.encode(content).encrypted());
         });
 
@@ -1054,7 +1024,7 @@ Future<void> loadChat(
     currentMessageModel.messageContent =
         json.encode(content).replaceAll('\\', '').encrypted();
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
 
     update();
 
@@ -1073,11 +1043,14 @@ Future<void> loadChat(
       'created_at': currentMessageModel.createdAt,
     };
 
-    status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+    status =
+        getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
 
     // save message to database
 
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
+
     setReplyMessage(message: null);
     return status;
   }
@@ -1099,44 +1072,6 @@ Future<void> loadChat(
 
     ChatMessageModel currentMessageModel = ChatMessageModel();
 
-    // if (mode == ChatMessageActionMode.reply) {
-    //   currentMessageModel.localMessageId = localMessageId;
-    //   currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
-    //   currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
-    //   currentMessageModel.sender = _userProfileManager.user.value!;
-    //
-    //   currentMessageModel.roomId = room.id;
-    //   // currentMessageModel.messageTime = justNow;
-    //   currentMessageModel.userName = you;
-    //   currentMessageModel.senderId = _userProfileManager.user.value!.id;
-    //   currentMessageModel.messageType = messageTypeId(MessageContentType.reply);
-    //   currentMessageModel.repliedOnMessageContent = repliedOnMessage;
-    //
-    //   // reply content start
-    //   ChatMessageModel replyMessage = ChatMessageModel();
-    //   replyMessage.isEncrypted = AppConfigConstants.enableEncryption;
-    //   replyMessage.chatVersion = AppConfigConstants.chatVersion;
-    //
-    //   replyMessage.id = 0;
-    //   replyMessage.roomId = room.id;
-    //   replyMessage.localMessageId = localMessageId;
-    //   replyMessage.senderId = _userProfileManager.user.value!.id;
-    //   replyMessage.messageType = messageTypeId(MessageContentType.file);
-    //   replyMessage.media = media;
-    //   replyMessage.messageContent = ''.encrypted();
-    //   replyMessage.createdAt =
-    //       (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    //
-    //   currentMessageModel.cachedReplyMessage = replyMessage;
-    //   // reply content end
-    //
-    //   currentMessageModel.createdAt =
-    //       (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    //   currentMessageModel.messageContent = ''.encrypted();
-    //
-    //   addNewMessage(message: currentMessageModel, roomId: room.id);
-    //   getIt<DBManager>().saveMessage(room, [currentMessageModel]);
-    // } else {
     currentMessageModel.localMessageId = localMessageId;
     currentMessageModel.roomId = room.id;
     currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
@@ -1156,9 +1091,9 @@ Future<void> loadChat(
     currentMessageModel.media = media;
     currentMessageModel.repliedOnMessageContent = repliedOnMessage;
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
-    // }
+    addNewMessage(message: currentMessageModel, room: room);
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
 
     update();
 
@@ -1186,9 +1121,10 @@ Future<void> loadChat(
             'localMessageId': localMessageId,
             'is_encrypted': AppConfigConstants.enableEncryption,
             'chat_version': AppConfigConstants.chatVersion,
-            'messageType': messageTypeId(mode == ChatMessageActionMode.reply
-                ? MessageContentType.reply
-                : MessageContentType.file),
+            'messageType': messageTypeId(
+                mode == ChatMessageActionMode.reply
+                    ? MessageContentType.reply
+                    : MessageContentType.file),
             'message': json.encode(content).encrypted(),
             'replied_on_message': repliedOnMessage,
             'room': room.id,
@@ -1197,16 +1133,17 @@ Future<void> loadChat(
           };
 
           // send message to socket
-          status =
-              getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+          status = getIt<SocketManager>()
+              .emit(SocketConstants.sendMessage, message);
 
           // update in cache message
 
-          currentMessageModel.messageContent = json.encode(content).encrypted();
+          currentMessageModel.messageContent =
+              json.encode(content).encrypted();
           // update message in local database
-          getIt<DBManager>().updateMessageContent(
-              roomId: room.id,
-              localMessageId: currentMessageModel.localMessageId.toString(),
+          getIt<RealmDBManager>().updateMessageContent(
+              localMessageId:
+                  currentMessageModel.localMessageId.toString(),
               content: json.encode(content).encrypted());
         });
     setReplyMessage(message: null);
@@ -1222,7 +1159,8 @@ Future<void> loadChat(
     final filter = ProfanityFilter();
     bool hasProfanity = filter.hasProfanity(messageText);
     if (hasProfanity) {
-      AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
+      AppUtil.showToast(
+          message: notAllowedMessageString.tr, isSuccess: true);
       return false;
     }
 
@@ -1246,15 +1184,17 @@ Future<void> loadChat(
         'chat_version': AppConfigConstants.chatVersion,
         'room': room.id,
         'created_by': _userProfileManager.user.value!.id,
-        'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
+        'created_at':
+            (DateTime.now().millisecondsSinceEpoch / 1000).round()
       };
 
       //save message to socket server
-      status =
-          getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+      status = getIt<SocketManager>()
+          .emit(SocketConstants.sendMessage, message);
 
       ChatMessageModel currentMessageModel = ChatMessageModel();
-      currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
+      currentMessageModel.isEncrypted =
+          AppConfigConstants.enableEncryption;
       currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
       currentMessageModel.localMessageId = localMessageId;
@@ -1266,7 +1206,8 @@ Future<void> loadChat(
       currentMessageModel.senderId = _userProfileManager.user.value!.id;
       currentMessageModel.messageType =
           messageTypeId(MessageContentType.textReplyOnStory);
-      currentMessageModel.messageContent = json.encode(content).encrypted();
+      currentMessageModel.messageContent =
+          json.encode(content).encrypted();
       currentMessageModel.repliedOnMessageContent = repliedOnStory;
 
       currentMessageModel.createdAt =
@@ -1274,7 +1215,8 @@ Future<void> loadChat(
 
       // addNewMessage(message: currentMessageModel, roomId: room.id);
       // save message to database
-      getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+      getIt<RealmDBManager>().prepareSaveMessage(
+          chatMessages: [currentMessageModel], alreadyWritingInDB: false);
 
       update();
     }
@@ -1296,8 +1238,6 @@ Future<void> loadChat(
 
     String reactedOnStory = jsonEncode(story.toJson()).encrypted();
 
-    print('reactedOnStory ${story.toJson()}');
-
     if (encryptedTextMessage.removeAllWhitespace.trim().isNotEmpty) {
       String localMessageId = randomId();
       var message = {
@@ -1310,15 +1250,17 @@ Future<void> loadChat(
         'chat_version': AppConfigConstants.chatVersion,
         'room': room.id,
         'created_by': _userProfileManager.user.value!.id,
-        'created_at': (DateTime.now().millisecondsSinceEpoch / 1000).round()
+        'created_at':
+            (DateTime.now().millisecondsSinceEpoch / 1000).round()
       };
 
       //save message to socket server
-      status =
-          getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+      status = getIt<SocketManager>()
+          .emit(SocketConstants.sendMessage, message);
 
       ChatMessageModel currentMessageModel = ChatMessageModel();
-      currentMessageModel.isEncrypted = AppConfigConstants.enableEncryption;
+      currentMessageModel.isEncrypted =
+          AppConfigConstants.enableEncryption;
       currentMessageModel.chatVersion = AppConfigConstants.chatVersion;
 
       currentMessageModel.localMessageId = localMessageId;
@@ -1330,15 +1272,16 @@ Future<void> loadChat(
       currentMessageModel.senderId = _userProfileManager.user.value!.id;
       currentMessageModel.messageType =
           messageTypeId(MessageContentType.reactedOnStory);
-      currentMessageModel.messageContent = json.encode(content).encrypted();
+      currentMessageModel.messageContent =
+          json.encode(content).encrypted();
       currentMessageModel.repliedOnMessageContent = reactedOnStory;
 
       currentMessageModel.createdAt =
           (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-      // addNewMessage(message: currentMessageModel, roomId: room.id);
       // save message to database
-      getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
+      getIt<RealmDBManager>().prepareSaveMessage(
+          chatMessages: [currentMessageModel], alreadyWritingInDB: false);
     }
 
     return status;
@@ -1376,19 +1319,21 @@ Future<void> loadChat(
 
     currentMessageModel.userName = youString.tr;
     currentMessageModel.senderId = _userProfileManager.user.value!.id;
-    currentMessageModel.messageType = messageTypeId(MessageContentType.story);
+    currentMessageModel.messageType =
+        messageTypeId(MessageContentType.story);
     currentMessageModel.messageContent = json.encode(content).encrypted();
 
     currentMessageModel.createdAt =
         (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-    addNewMessage(message: currentMessageModel, roomId: room.id);
+    addNewMessage(message: currentMessageModel, room: room);
     // save message to database
-    getIt<DBManager>().saveMessage(chatMessages: [currentMessageModel]);
-
+    getIt<RealmDBManager>().prepareSaveMessage(
+        chatMessages: [currentMessageModel], alreadyWritingInDB: false);
     // send message to socket server
 
-    status = getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
+    status =
+        getIt<SocketManager>().emit(SocketConstants.sendMessage, message);
     update();
     // });
     setReplyMessage(message: null);
@@ -1396,21 +1341,11 @@ Future<void> loadChat(
   }
 
   addNewMessage(
-      {required ChatMessageModel message, required int roomId}) async {
-    if (roomId != message.roomId) {
+      {required ChatMessageModel message,
+      required ChatRoomModel room}) async {
+    if (room.id != message.roomId) {
       return;
     }
-    // add date separator
-    if (messages.isNotEmpty) {
-      // String dateTimeStr = messages.last.date;
-      // if (dateTimeStr != message.date) {
-      //   ChatMessageModel separatorMessage = ChatMessageModel();
-      //   separatorMessage.createdAt = message.createdAt;
-      //   separatorMessage.isDateSeparator = true;
-      //   messages.add(separatorMessage);
-      // }
-    }
-
     messages.add(message);
 
     // prepare smart reply suggestion messages
@@ -1436,7 +1371,8 @@ Future<void> loadChat(
     scrollToBottom();
   }
 
-  Future<bool> forwardSelectedMessages({required ChatRoomModel room}) async {
+  Future<bool> forwardSelectedMessages(
+      {required ChatRoomModel room}) async {
     bool status = true;
     for (ChatMessageModel msg in selectedMessages) {
       await forwardMessage(msg: msg, room: room).then((value) {
@@ -1454,70 +1390,34 @@ Future<void> loadChat(
       required Function(UploadedGalleryMedia) callback}) async {
     Map<String, String> gallery = {};
 
-    await AppUtil.checkInternet().then((value) async {
-      if (value) {
-        // File mainFile;
-        String? videoThumbnailPath;
-        // String messageMediaDirectoryPath =
-        //     await messageMediaDirectory(messageId);
+    // File mainFile;
+    String? videoThumbnailPath;
 
-        if (media.mediaType == GalleryMediaType.photo) {
-        } else if (media.mediaType == GalleryMediaType.video) {
-          await MiscApi.uploadFile(thumbnailFile!.path,
-              mediaType: GalleryMediaType.photo,
-              type: UploadMediaType.chat, resultCallback: (filename, filepath) {
+    if (media.mediaType == GalleryMediaType.video) {
+      await MiscApi.uploadFile(thumbnailFile!.path,
+          mediaType: GalleryMediaType.photo,
+          type: UploadMediaType.chat,
+          resultCallback: (filename, filepath) {
             videoThumbnailPath = filepath;
           });
-        } else if (media.mediaType == GalleryMediaType.audio) {
-          // mainFile = await FileManager.saveChatMediaToDirectory(
-          //     media, messageId, false, chatRoom.value!.id);
+    }
 
-          // Uint8List mainFileData;
-          // if (media.mediaByte == null) {
-          //   mainFileData = media.file!.readAsBytesSync();
-          // } else {
-          //   mainFileData = media.mediaByte!;
-          // }
-          // // audio
-          // String audioPath = '$messageMediaDirectoryPath/$messageId.mp3';
-          // mainFile = await File(audioPath).create();
-          // mainFile.writeAsBytesSync(mainFileData);
-        } else {
-          // Uint8List mainFileData;
-          // if (media.mediaByte == null) {
-          //   mainFileData = media.file!.readAsBytesSync();
-          // } else {
-          //   mainFileData = media.mediaByte!;
-          // }
-          // // file
-          //
-          // final extension = p.extension(media.file!.path); // '.dart'
-          //
-          // String filePath = '$messageMediaDirectoryPath/$messageId$extension';
-          // mainFile = await File(filePath).create();
-          // mainFile.writeAsBytesSync(mainFileData);
-          // mainFile = await FileManager.saveChatMediaToDirectory(
-          //     media, messageId, false, chatRoom.value!.id);
-        }
-
-        await MiscApi.uploadFile(mainFile.path,
-            mediaType: media.mediaType!,
-            type: UploadMediaType.chat, resultCallback: (filename, filepath) {
+    await MiscApi.uploadFile(mainFile.path,
+        mediaType: media.mediaType!, type: UploadMediaType.chat,
+        resultCallback: (filename, filepath) {
           String mainFileUploadedPath = filepath;
-
-          // await mainFile.delete();
 
           UploadedGalleryMedia uploadedGalleryMedia = UploadedGalleryMedia(
               mediaType: media.mediaType == GalleryMediaType.photo
                   ? 1
                   : media.mediaType == GalleryMediaType.video
-                      ? 2
-                      : 3,
+                  ? 2
+                  : 3,
               thumbnail: media.mediaType == GalleryMediaType.photo
                   ? mainFileUploadedPath
                   : media.mediaType == GalleryMediaType.video
-                      ? videoThumbnailPath!
-                      : null,
+                  ? videoThumbnailPath!
+                  : null,
               video: media.mediaType == GalleryMediaType.video
                   ? mainFileUploadedPath
                   : null,
@@ -1527,16 +1427,12 @@ Future<void> loadChat(
               file: mainFileUploadedPath);
           callback(uploadedGalleryMedia);
         });
-      } else {
-        AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
-      }
-    });
     return gallery;
   }
 
   deleteMessage({required int deleteScope}) async {
     // remove message in local database
-    await getIt<DBManager>()
+    await getIt<RealmDBManager>()
         .softDeleteMessages(messagesToDelete: selectedMessages);
 
     // remove saved media
@@ -1549,14 +1445,6 @@ Future<void> loadChat(
           .toList()
           .contains(element.localMessageId)) {
         element.isDeleted = true;
-
-        // print('element.chatMessageUser ${element.chatMessageUser.length}');
-        // ChatMessageUser user = element.chatMessageUser
-        //     .where((element) =>
-        //         element.userId == _userProfileManager.user.value!.id)
-        //     .first;
-        // //TODO : check deleted message status
-        // user.status == 4;
       } else {}
       return element;
     }).toList();
@@ -1582,12 +1470,12 @@ Future<void> loadChat(
 //*************** updates from socket *******************//
 
   messagedDeleted({required int messageId, required int roomId}) async {
-    //update message in local cache
+    // update message in local cache
     if (chatRoom.value?.id == roomId) {
       messages.value = messages.map((element) {
         if (element.id == messageId) {
           element.isDeleted = true;
-        }
+        } else {}
         return element;
       }).toList();
       messages.refresh();
@@ -1595,19 +1483,23 @@ Future<void> loadChat(
     }
 
     // delete media messages
-    List<ChatMessageModel> messagesList = await getIt<DBManager>()
+    List<ChatMessageModel> messagesList = await getIt<RealmDBManager>()
         .getMessagesById(messageId: messageId, roomId: roomId);
 
     // remove saved media
     getIt<FileManager>().multipleDeleteMessageMedia(messagesList);
 
     // delete message in local database
-    getIt<DBManager>().softDeleteMessages(messagesToDelete: messagesList);
+    getIt<RealmDBManager>()
+        .softDeleteMessages(messagesToDelete: messagesList);
   }
 
   newMessageReceived(ChatMessageModel message) async {
     if (chatRoom.value?.id == message.roomId) {
-      addNewMessage(message: message, roomId: message.roomId);
+      if (messages.isNotEmpty) {
+        message.chatMessageUser = messages.first.chatMessageUser;
+      }
+      addNewMessage(message: message, room: chatRoom.value!);
 
       isTypingMapping[message.userName] = false;
       // isTyping.value = false;
@@ -1627,38 +1519,29 @@ Future<void> loadChat(
     update();
   }
 
-  messageUpdateReceived(Map<String, dynamic> updatedData) async {
-    String? localMessageId = updatedData['localMessageId'];
+  messageSendConfirmationReceived(Map<String, dynamic> updatedData) async {
+    String localMessageId = updatedData['localMessageId'];
     int roomId = updatedData['room'];
-    int status = updatedData['current_status'];
+
     int messageId = updatedData['id'];
-    // int createdAt = updatedData['created_at'];
-    if (localMessageId != null) {
-      if (chatRoom.value?.id == roomId) {
-        var message =
-            messages.where((e) => e.localMessageId == localMessageId).first;
-        message.id = messageId;
-        message.status = status;
-        // message.createdAt = createdAt;
-        // message.media = null;
-        if (message.messageContentType == MessageContentType.reply) {
-          // message.reply.media = null;
-        }
-        messages.refresh();
 
-        update();
-      }
+    getIt<RealmDBManager>()
+        .setMessageId(localMessageId: localMessageId, id: messageId);
+    // add chat message user to message for first time, as here we received the message id
+    addUsersToMessage(
+        roomId: roomId,
+        messageId: messageId,
+        localMessageId: localMessageId);
+  }
 
-      await getIt<DBManager>().updateMessageStatus(
-          roomId: roomId,
-          localMessageId: localMessageId,
-          id: messageId,
-          status: status);
-    }
-    if (status == 1) {
-      // add chat message user to message for first time, as here we received the message id
-      List<ChatRoomMember> usersInRoom =
-          await getIt<DBManager>().getAllMembersInRoom(roomId);
+  Future addUsersToMessage(
+      {required int roomId,
+      required int messageId,
+      String? localMessageId}) async {
+    List<ChatRoomMember> usersInRoom =
+        getIt<RealmDBManager>().getAllMembersInRoom(roomId);
+
+    if (usersInRoom.isNotEmpty) {
       List<ChatMessageUser> chatMessageUsers = usersInRoom.map((e) {
         ChatMessageUser user = ChatMessageUser();
         user.id = 1;
@@ -1667,12 +1550,69 @@ Future<void> loadChat(
         user.status = 1;
         return user;
       }).toList();
-      getIt<DBManager>().insertChatMessageUsers(users: chatMessageUsers);
+
+      if (chatRoom.value?.id == roomId) {
+        var message = messages
+            .where((e) =>
+                e.localMessageId == localMessageId || e.id == messageId)
+            .first;
+        message.chatMessageUser = chatMessageUsers;
+        message.id = messageId;
+        messages.refresh();
+
+        update();
+      }
+      await getIt<RealmDBManager>().prepareSavingUsersInMessage(
+          users: chatMessageUsers, alreadyWritingInDB: false);
+    } else {
+      // get room detail for users in room, this case is to handle when first message is send room and users dont know about who are in the group
+
+      await ChatApi.getChatRoomDetail(roomId,
+          resultCallback: (room) async {
+        chatRoom.value = room;
+        chatRoom.refresh();
+
+        // update room in local storage
+        await getIt<RealmDBManager>().saveRooms([chatRoom.value!]);
+      });
     }
   }
 
+  messageUpdateReceived(Map<String, dynamic> updatedData) async {
+    int roomId = updatedData['room'];
+    int status = updatedData['status'];
+    int messageId = updatedData['id'] ?? updatedData['messageId'];
+    int userId = updatedData['userId'];
+
+    if (chatRoom.value?.id == roomId) {
+      var matchedMessages = messages.where((e) => e.id == messageId);
+      if (matchedMessages.isNotEmpty) {
+        matchedMessages.first.id = messageId;
+        // find user in message who sent this notification
+        List<ChatMessageUser> usersFromNotification = matchedMessages
+            .first.chatMessageUser
+            .where((element) => element.userId == userId)
+            .toList();
+        if (usersFromNotification.isNotEmpty) {
+          usersFromNotification.first.status = status;
+        }
+
+        messages.refresh();
+        update();
+      }
+    }
+
+    await getIt<RealmDBManager>().updateMessageStatus(
+        roomId: roomId,
+        messageId: messageId,
+        status: status,
+        userId: userId);
+  }
+
   userTypingStatusChanged(
-      {required String userName, required int roomId, required bool status}) {
+      {required String userName,
+      required int roomId,
+      required bool status}) {
     if (chatRoom.value?.id != roomId) {
       return;
     }
@@ -1689,7 +1629,8 @@ Future<void> loadChat(
     if (status == true) {
       Timer(const Duration(seconds: 5), () {
         if (typingStatusUpdatedAt != null) {
-          if (DateTime.now().difference(typingStatusUpdatedAt!).inSeconds > 4) {
+          if (DateTime.now().difference(typingStatusUpdatedAt!).inSeconds >
+              4) {
             isTypingMapping[userName] = false;
             isTypingMapping.refresh();
             whoIsTyping.remove(userName);
@@ -1708,10 +1649,12 @@ Future<void> loadChat(
     // }
   }
 
-  userAvailabilityStatusChange({required int userId, required bool isOnline}) {
+  userAvailabilityStatusChange(
+      {required int userId, required bool isOnline}) {
     if (chatRoom.value != null) {
       if (chatRoom.value?.isGroupChat == false) {
-        chatRoom.value!.roomMembers = chatRoom.value!.roomMembers.map((member) {
+        chatRoom.value!.roomMembers =
+            chatRoom.value!.roomMembers.map((member) {
           if (member.userDetail.id == userId) {
             member.userDetail.isOnline = isOnline;
           }

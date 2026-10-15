@@ -5,9 +5,9 @@ class TimerView extends StatefulWidget {
   final Function? updateTimerStatus;
 
   const TimerView({
-    Key? key,
+    super.key,
     this.updateTimerStatus,
-  }) : super(key: key);
+  }) ;
 
   @override
   TimerViewState createState() => TimerViewState();

@@ -5,7 +5,7 @@ import '../../controllers/misc/users_controller.dart';
 class UsersList extends StatelessWidget {
   final UsersController _usersController = Get.find();
 
-  UsersList({Key? key}) : super(key: key);
+  UsersList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +17,21 @@ class UsersList extends StatelessWidget {
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent ==
           scrollController.position.pixels) {
-        if (!_usersController.accountsIsLoading.value) {
+        if (!_usersController.dataWrapper.isLoading.value) {
           _usersController.loadUsers(() {});
         }
       }
     });
 
-    return Obx(() => _usersController.accountsIsLoading.value
+    return Obx(() => _usersController.dataWrapper.isLoading.value
         ? const ShimmerUsers()
         : _usersController.searchedUsers.isNotEmpty
-            ? ListView.separated(
+            ? GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 15.0,
+                    mainAxisSpacing: 15.0,
+                    childAspectRatio: 0.6),
                 controller: scrollController,
                 padding: EdgeInsets.only(
                     top: 20,
@@ -34,7 +39,7 @@ class UsersList extends StatelessWidget {
                     right: DesignConstants.horizontalPadding),
                 itemCount: _usersController.searchedUsers.length,
                 itemBuilder: (BuildContext ctx, int index) {
-                  return UserTile(
+                  return UserCard(
                     profile: _usersController.searchedUsers[index],
                     followCallback: () {
                       _usersController
@@ -46,11 +51,7 @@ class UsersList extends StatelessWidget {
                     },
                   );
                 },
-                separatorBuilder: (BuildContext ctx, int index) {
-                  return const SizedBox(
-                    height: 20,
-                  );
-                })
+              )
             : SizedBox(
                 height: Get.size.height * 0.5,
                 child: emptyUser(title: noUserFoundString.tr, subTitle: ''),

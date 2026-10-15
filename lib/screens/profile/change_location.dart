@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import '../../controllers/profile/profile_controller.dart';
 
 class ChangeLocation extends StatefulWidget {
-  const ChangeLocation({Key? key}) : super(key: key);
+  const ChangeLocation({super.key});
 
   @override
   State<ChangeLocation> createState() => _ChangeLocationState();
@@ -30,7 +30,7 @@ class _ChangeLocationState extends State<ChangeLocation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -44,7 +44,6 @@ class _ChangeLocationState extends State<ChangeLocation> {
               completion: () {
                 updateLocation();
               }),
-          divider().vP8,
           const SizedBox(
             height: 20,
           ),

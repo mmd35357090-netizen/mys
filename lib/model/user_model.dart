@@ -1,7 +1,8 @@
 import 'package:foap/helper/date_extension.dart';
+import 'package:foap/helper/enum_linking.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/setting_model.dart';
-import 'package:foap/model/subscription_plan.dart';
+import 'package:foap/model/subscription_plan_model.dart';
 import 'chat_room_model.dart';
 
 class UserModel {
@@ -20,6 +21,10 @@ class UserModel {
   String? countryCode = '';
   String? city = '';
   String? gender = ''; //sex : 1=male, 2=female, 3=others
+
+  int? passionate;
+
+  int? holisticPath;
 
   int coins = 0;
   bool? isReported = false;
@@ -62,6 +67,7 @@ class UserModel {
   String? height;
   String? color;
   String? religion;
+
   int? maritalStatus;
   int? smoke;
   String? drink;
@@ -78,14 +84,12 @@ class UserModel {
   List<UserSetting>? userSetting;
 
   GenderType? genderType;
-  bool isPrivate = false;
+  bool isPrivateProfile = false;
   bool isShareOnlineStatus = false;
   List<FeatureModel> features = [];
-
   bool isEligibleForSubscription = false;
   List<SubscriptionPlan> subscriptionPlans = [];
   SubscribedStatus subscribedStatus = SubscribedStatus.notSubscribed;
-
 
   UserModel();
 
@@ -93,11 +97,10 @@ class UserModel {
     UserModel model = UserModel();
     model.id = json['id'];
     model.name = json['name'];
-    model.role = json['role'] == 3 ? UserRole.user : UserRole.admin;
+    model.role = userRoleType(json['role'] ?? 3);
     model.userName = json['username'] == null
         ? ''
         : json['username'].toString().toLowerCase();
-    // model.category = json['category'] ?? 'Other';
 
     model.email = json['email'];
     model.picture = json['picture'] ?? json['campaginImage'];
@@ -107,12 +110,15 @@ class UserModel {
     model.followingStatus = json['isFollowing'] == 0
         ? FollowingStatus.notFollowing
         : json['isFollowing'] == 1
-        ? FollowingStatus.following
-        : FollowingStatus.requested;
+            ? FollowingStatus.following
+            : FollowingStatus.requested;
     model.isFollower = json['isFollower'] == 1;
 
     model.latitude = json['latitude'];
     model.longitude = json['longitude'];
+
+    model.passionate = json['passionate'];
+    model.holisticPath = json['holistic_path'];
 
     model.phone = json['phone'];
     model.country = json['country'];
@@ -122,8 +128,8 @@ class UserModel {
     model.genderType = model.gender == '1'
         ? GenderType.male
         : model.gender == '2'
-        ? GenderType.female
-        : GenderType.other;
+            ? GenderType.female
+            : GenderType.other;
 
     model.totalPost = json['totalActivePost'] ?? json['totalPost'] ?? 0;
     model.totalReels = json['totalReel'] ?? 0;
@@ -137,7 +143,7 @@ class UserModel {
 
     model.isReported = json['is_reported'] == 1;
     model.isOnline = json['is_chat_user_online'] == 1;
-    model.isPrivate = json['profile_visibility'] == 2;
+    model.isPrivateProfile = json['profile_visibility'] == 2;
     model.isShareOnlineStatus = json['is_show_online_chat_status'] == 1;
 
     model.chatLastTimeOnline = json['chat_last_time_online'];
@@ -177,11 +183,11 @@ class UserModel {
 
     model.interests = json['interest'] != null
         ? List<InterestModel>.from(
-        json['interest'].map((x) => InterestModel.fromJson(x)))
+            json['interest'].map((x) => InterestModel.fromJson(x)))
         : null;
     model.languages = json['language'] != null
         ? List<LanguageModel>.from(
-        json['language'].map((x) => LanguageModel.fromJson(x)))
+            json['language'].map((x) => LanguageModel.fromJson(x)))
         : null;
 
     model.profileCategoryTypeId = json['profile_category_type'] ?? 0;
@@ -189,34 +195,42 @@ class UserModel {
 
     model.userSetting = json['userSetting'] != null
         ? List<UserSetting>.from(
-        json['userSetting'].map((x) => UserSetting.fromJson(x)))
+            json['userSetting'].map((x) => UserSetting.fromJson(x)))
         : null;
     model.features = json["featureList"] == null
         ? []
         : (json["featureList"] as List)
-        .map((e) => FeatureModel.fromJson(e))
-        .toList();
-    return model;
+            .map((e) => FeatureModel.fromJson(e))
+            .toList();
 
+    model.subscriptionPlans = json['subscriptionPlanUser'] != null
+        ? List<SubscriptionPlan>.from(json['subscriptionPlanUser']
+            .map((x) => SubscriptionPlan.fromJson(x)))
+        : [];
+
+    model.isEligibleForSubscription = json["isSubscriptionAllowed"] == 1;
+    model.subscribedStatus =
+        subscribedStatusType(json["subscribedStatus"] ?? 0);
+    return model;
   }
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "username": userName,
-    "email": email,
-    "picture": picture,
-    "bio": bio,
-    "phone": phone,
-    "country": country,
-    "country_code": countryCode,
-    "city": city,
-    "sex": gender,
-    "totalPost": totalPost,
-    "available_coin": coins,
-    "is_reported": isReported,
-    "paypal_id": paypalId,
-    "available_balance": balance
-  };
+        "id": id,
+        "username": userName,
+        "email": email,
+        "picture": picture,
+        "bio": bio,
+        "phone": phone,
+        "country": country,
+        "country_code": countryCode,
+        "city": city,
+        "sex": gender,
+        "totalPost": totalPost,
+        "available_coin": coins,
+        "is_reported": isReported,
+        "paypal_id": paypalId,
+        "available_balance": balance
+      };
 
   static UserModel placeholderUser() {
     UserModel model = UserModel();
@@ -266,7 +280,7 @@ class UserModel {
     }
 
     DateTime dateTime =
-    DateTime.fromMillisecondsSinceEpoch(chatLastTimeOnline! * 1000).toUtc();
+    AppUtil.convertToDateTime(chatLastTimeOnline!);
     // return '${lastSeenString.tr} ${timeago.format(dateTime)}';
     return '${lastSeenString.tr} ${dateTime.getTimeAgo}';
   }
@@ -275,10 +289,6 @@ class UserModel {
     final UserProfileManager userProfileManager = Get.find();
 
     return id == userProfileManager.user.value!.id;
-  }
-
-  bool get isVIPUser {
-    return subscriptionPlans.isNotEmpty;
   }
 
   bool get canUseDating {
@@ -304,12 +314,17 @@ class UserModel {
   bool get canViewRelations {
     if (relationsRevealSetting == RelationsRevealSetting.none) {
       return false;
-    } else if (relationsRevealSetting == RelationsRevealSetting.followers &&
+    } else if (relationsRevealSetting ==
+            RelationsRevealSetting.followers &&
         followingStatus == FollowingStatus.following) {
       return true;
     } else {
       return true;
     }
+  }
+
+  bool get isVIPUser {
+    return subscriptionPlans.isNotEmpty;
   }
 }
 
@@ -392,13 +407,21 @@ class GiftSummary {
 class InterestModel {
   int id = 0;
   String name = "";
+  bool isSelected = false;
 
   InterestModel();
 
   factory InterestModel.fromJson(dynamic json) {
     InterestModel model = InterestModel();
     model.id = json['id'] ?? json['interest_id'];
-    model.name = json['name'];
+    model.name = json['name'] ?? json['interest'];
+    return model;
+  }
+
+  factory InterestModel.fromAudienceJson(dynamic json) {
+    InterestModel model = InterestModel();
+    model.id = json['interest_id'];
+    model.name = json['interest'];
     return model;
   }
 }
@@ -412,32 +435,11 @@ class LanguageModel {
     required this.name,
   });
 
-  factory LanguageModel.fromJson(Map<String, dynamic> json) => LanguageModel(
+  factory LanguageModel.fromJson(Map<String, dynamic> json) =>
+      LanguageModel(
         id: json["id"] ?? json["language_id"],
         name: json["name"],
       );
-}
-
-class UserSetting {
-  int? id;
-  int? userId;
-  int? relationSetting;
-
-  UserSetting({this.id, this.userId, this.relationSetting});
-
-  UserSetting.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    userId = json['user_id'];
-    relationSetting = json['relation_setting'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['user_id'] = userId;
-    data['relation_setting'] = relationSetting;
-    return data;
-  }
 }
 
 class LiveViewer {
@@ -477,4 +479,26 @@ class LiveViewer {
               ? LiveUserRole.moderator
               : LiveUserRole.viewer,
       user: UserModel.fromJson(json['user']));
+}
+
+class UserSetting {
+  int? id;
+  int? userId;
+  int? relationSetting;
+
+  UserSetting({this.id, this.userId, this.relationSetting});
+
+  UserSetting.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    userId = json['user_id'];
+    relationSetting = json['relation_setting'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['user_id'] = userId;
+    data['relation_setting'] = relationSetting;
+    return data;
+  }
 }

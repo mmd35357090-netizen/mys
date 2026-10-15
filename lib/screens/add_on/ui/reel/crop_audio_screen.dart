@@ -4,8 +4,8 @@ import 'package:foap/helper/imports/common_import.dart';
 class CropAudioScreen extends StatefulWidget {
   final ReelMusicModel reelMusicModel;
 
-  const CropAudioScreen({Key? key, required this.reelMusicModel})
-      : super(key: key);
+  const CropAudioScreen({super.key, required this.reelMusicModel})
+      ;
 
   @override
   State<StatefulWidget> createState() {

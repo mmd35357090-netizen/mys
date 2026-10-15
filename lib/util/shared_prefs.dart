@@ -2,7 +2,16 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
+import '../model/account.dart';
+
 class SharedPrefs {
+  Future<Locale> getLocale() async {
+    String selectedLanguage = await SharedPrefs().getLanguage();
+    var locale = Locale(selectedLanguage);
+    return locale;
+  }
+
+  //Set/Get UserLoggedIn Status
   void setTutorialSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('tutorialSeen', true);
@@ -31,6 +40,11 @@ class SharedPrefs {
   Future<bool> getBioMetricAuthStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('bioMetricAuthStatus') ?? false;
+  }
+
+  Future<bool> isUserLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
   }
 
   //Set/Get UserLoggedIn Status
@@ -64,7 +78,8 @@ class SharedPrefs {
     return prefs.get('VOIPToken') as String?;
   }
 
-  void setWallpaper({required int roomId, required String wallpaper}) async {
+  void setWallpaper(
+      {required int roomId, required String wallpaper}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(roomId.toString(), wallpaper);
   }
@@ -74,6 +89,12 @@ class SharedPrefs {
     return prefs.get(roomId.toString()) as String? ??
         "assets/chatbg/chatbg3.jpg";
   }
+
+  //Set/Get UserLoggedIn Status
+  // Future<bool> setLanguageCode(String code) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return await prefs.setString('language', code);
+  // }
 
   Future<String> getLanguageCode() async {
     return 'en';
@@ -92,14 +113,6 @@ class SharedPrefs {
   Future<String> getLanguage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.get('language') as String? ?? 'en';
-  }
-
-  Future<Locale> getLocale() async {
-    // Get the user's preferred locale from the system settings
-    var locale = WidgetsBinding.instance.window.locale;
-    // Alternatively, you can use the device's current locale:
-    // var locale = await findSystemLocale();
-    return locale;
   }
 
   void setCallNotificationData(dynamic data) async {
@@ -145,7 +158,8 @@ class SharedPrefs {
     return prefs.get('${forAppleId}_name') as String?;
   }
 
-  void setApiResponse({required String url, required String response}) async {
+  void setApiResponse(
+      {required String url, required String response}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(url, response);
   }
@@ -153,5 +167,60 @@ class SharedPrefs {
   Future<String?> getCachedApiResponse({required String url}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.get(url) as String?;
+  }
+
+  // manage accounts
+
+  Future<void> saveAccount(SayHiAppAccount account) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> accounts = prefs.getStringList('accounts') ?? [];
+
+    // Check if account already exists and update if found
+    int index = accounts.indexWhere((acc) =>
+        SayHiAppAccount.fromMap(jsonDecode(acc)).userId == account.userId);
+    if (index != -1) {
+      accounts[index] = jsonEncode(account.toMap());
+    } else {
+      accounts.add(jsonEncode(account.toMap()));
+    }
+
+    await prefs.setStringList('accounts', accounts);
+  }
+
+  Future<List<SayHiAppAccount>> getAccounts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> accounts = prefs.getStringList('accounts') ?? [];
+
+    return accounts
+        .map((acc) => SayHiAppAccount.fromMap(jsonDecode(acc)))
+        .toList();
+  }
+
+  Future<SayHiAppAccount?> getAccount(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> accounts = prefs.getStringList('accounts') ?? [];
+
+    List<SayHiAppAccount> accountObjs = accounts
+        .map((acc) => SayHiAppAccount.fromMap(jsonDecode(acc)))
+        .toList();
+    if (accountObjs.where((e) => e.userId == id).isNotEmpty) {
+      return accountObjs.where((e) => e.userId == id).first;
+    } else {
+      return null;
+    }
+  }
+
+  Future<SayHiAppAccount?> getCurrentAccount(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> accounts = prefs.getStringList('accounts') ?? [];
+
+    List<SayHiAppAccount> accountObjs = accounts
+        .map((acc) => SayHiAppAccount.fromMap(jsonDecode(acc)))
+        .toList();
+    if (accountObjs.where((e) => e.userId == id).isNotEmpty) {
+      return accountObjs.where((e) => e.userId == id).first;
+    } else {
+      return null;
+    }
   }
 }

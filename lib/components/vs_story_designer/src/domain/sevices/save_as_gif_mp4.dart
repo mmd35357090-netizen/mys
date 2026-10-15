@@ -153,10 +153,10 @@
 
 // class ScreenRecorder extends StatelessWidget {
 //   const ScreenRecorder({
-//     Key? key,
+//     super.key,
 //     required this.child,
 //     required this.controller,
-//   }) : super(key: key);
+//   }) ;
 
 //   /// The child which should be recorded.
 //   final Widget child;

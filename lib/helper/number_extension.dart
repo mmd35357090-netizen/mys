@@ -82,4 +82,10 @@ extension IntegerExtension on int {
       }
     }
   }
+
+  int addDays(int days) {
+    final date = DateTime.fromMillisecondsSinceEpoch(this);
+    final newDate = date.add(Duration(days: days));
+    return newDate.millisecondsSinceEpoch;
+  }
 }

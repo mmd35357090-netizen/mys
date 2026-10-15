@@ -5,8 +5,7 @@ import '../../../components/user_card.dart';
 class GroupChatRoomDetail extends StatefulWidget {
   final ChatRoomModel chatRoom;
 
-  const GroupChatRoomDetail({Key? key, required this.chatRoom})
-      : super(key: key);
+  const GroupChatRoomDetail({super.key, required this.chatRoom});
 
   @override
   State<GroupChatRoomDetail> createState() => _GroupChatRoomDetailState();
@@ -18,7 +17,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
@@ -45,7 +44,6 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                 )
               ],
             ).hp(DesignConstants.horizontalPadding),
-            divider().vP8,
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -90,7 +88,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                 children: [
                   Container(
                     color: AppColorConstants.themeColor,
-                    child: const ThemeIconWidget(
+                    child: ThemeIconWidget(
                       ThemeIcon.gallery,
                       color: Colors.white,
                     ).p4,
@@ -125,7 +123,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
                 children: [
                   Container(
                     color: AppColorConstants.themeColor,
-                    child: const ThemeIconWidget(
+                    child: ThemeIconWidget(
                       ThemeIcon.wallpaper,
                       color: Colors.white,
                     ).p4,
@@ -198,7 +196,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
         Container(
           child: Column(
             children: [
-              const ThemeIconWidget(
+              ThemeIconWidget(
                 ThemeIcon.mobile,
                 size: 20,
               ),
@@ -218,7 +216,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
         Container(
           child: Column(
             children: [
-              const ThemeIconWidget(
+              ThemeIconWidget(
                 ThemeIcon.videoCamera,
                 size: 20,
               ),
@@ -243,7 +241,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
     return Column(
       children: [
         UserAvatarView(
-          user: widget.chatRoom.opponent.userDetail,
+          user: widget.chatRoom.opponent!.userDetail,
           size: 100,
           onTapHandler: () {
             //open live
@@ -252,7 +250,7 @@ class _GroupChatRoomDetailState extends State<GroupChatRoomDetail> {
         const SizedBox(
           height: 10,
         ),
-        Heading6Text(widget.chatRoom.opponent.userDetail.userName,
+        Heading6Text(widget.chatRoom.opponent!.userDetail.userName,
             weight: TextWeight.bold)
       ],
     );

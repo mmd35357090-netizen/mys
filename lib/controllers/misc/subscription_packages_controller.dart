@@ -52,6 +52,7 @@ class SubscriptionPackageController extends GetxController {
         .map((e) =>
             Platform.isIOS ? e.inAppPurchaseIdIOS : e.inAppPurchaseIdAndroid)
         .toList();
+
     ProductDetailsResponse productDetailResponse =
         await inAppPurchase.queryProductDetails(kProductIds.toSet());
 
@@ -76,27 +77,8 @@ class SubscriptionPackageController extends GetxController {
         } else if (purchaseDetails.status == PurchaseStatus.purchased) {
           //show success
 
-          AppUtil.checkInternet().then((value) {
-            if (value) {
-              subscribeToPackage(
-                  purchaseDetails.purchaseID!, purchaseDetails.productID);
-              // ApiController()
-              //     .subscribePackage(
-              //         packages[selectedPackage.value].id.toString(),
-              //         purchaseDetails.purchaseID!,
-              //         packages[selectedPackage.value].price.toString())
-              //     .then((response) {
-              //   AppUtil.showToast(
-              //
-              //       message: coinsAdded,
-              //       isSuccess: true);
-              //   _userProfileManager.refreshProfile();
-              //   if (response.success) {
-              //     user.value.coins = packages[selectedPackage.value].coin;
-              //   }
-              // });
-            }
-          });
+          subscribeToPackage(
+              purchaseDetails.purchaseID!, purchaseDetails.productID);
         }
         if (Platform.isAndroid) {
           if (!kAutoConsume &&

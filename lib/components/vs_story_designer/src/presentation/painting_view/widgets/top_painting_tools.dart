@@ -37,8 +37,8 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                     child: Transform.scale(
                         scale: 0.6,
                         child: const ImageIcon(
-                          AssetImage('assets/icons/return.png',
-                              package: 'vs_story_designer'),
+                          AssetImage('assets/story/assets/icons/return.png',
+                              ),
                           color: Colors.white,
                         )),
                   ),
@@ -57,13 +57,13 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       backGroundColor:
                           paintingNotifier.paintingType == PaintingType.pen
-                              ? Colors.white.withOpacity(0.9)
+                              ? Colors.white.withValues(alpha: 0.9)
                               : Colors.black12,
                       child: Transform.scale(
                           scale: 1.2,
                           child: ImageIcon(
-                            const AssetImage('assets/icons/pen.png',
-                                package: 'vs_story_designer'),
+                            const AssetImage('assets/story/assets/icons/pen.png',
+                                ),
                             color: paintingNotifier.paintingType ==
                                     PaintingType.pen
                                 ? Colors.black
@@ -85,13 +85,13 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       backGroundColor:
                           paintingNotifier.paintingType == PaintingType.marker
-                              ? Colors.white.withOpacity(0.9)
+                              ? Colors.white.withValues(alpha: 0.9)
                               : Colors.black12,
                       child: Transform.scale(
                           scale: 1.2,
                           child: ImageIcon(
-                            const AssetImage('assets/icons/marker.png',
-                                package: 'vs_story_designer'),
+                            const AssetImage('assets/story/assets/icons/marker.png',
+                                ),
                             color: paintingNotifier.paintingType ==
                                     PaintingType.marker
                                 ? Colors.black
@@ -114,13 +114,13 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       backGroundColor:
                           paintingNotifier.paintingType == PaintingType.neon
-                              ? Colors.white.withOpacity(0.9)
+                              ? Colors.white.withValues(alpha: 0.9)
                               : Colors.black12,
                       child: Transform.scale(
                           scale: 1.2,
                           child: ImageIcon(
-                            const AssetImage('assets/icons/neon.png',
-                                package: 'vs_story_designer'),
+                            const AssetImage('assets/story/assets/icons/neon.png',
+                                ),
                             color: paintingNotifier.paintingType ==
                                     PaintingType.neon
                                 ? Colors.black

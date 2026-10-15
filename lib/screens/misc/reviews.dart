@@ -9,7 +9,7 @@ import '../../util/app_config_constants.dart';
 class ReviewsList extends StatelessWidget {
   final RatingController _ratingController = Get.find();
 
-  ReviewsList({Key? key}) : super(key: key);
+  ReviewsList({super.key}) ;
 
   @override
   Widget build(BuildContext context) {

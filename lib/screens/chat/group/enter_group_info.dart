@@ -4,7 +4,7 @@ import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EnterGroupInfo extends StatefulWidget {
-  const EnterGroupInfo({Key? key}) : super(key: key);
+  const EnterGroupInfo({super.key});
 
   @override
   State<EnterGroupInfo> createState() => _EnterGroupInfoState();
@@ -21,7 +21,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -36,7 +36,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.close,
                       size: 20,
                     ).ripple(() {
@@ -59,7 +59,6 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
               ],
             ),
           ).hp(DesignConstants.horizontalPadding),
-          divider().tP8,
           SizedBox(
             height: 250,
             child: Column(
@@ -74,7 +73,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                           width: 50,
                           color: AppColorConstants.cardColor.darken(),
                           child: enterGroupInfoController.groupImagePath.isEmpty
-                              ? const ThemeIconWidget(
+                              ? ThemeIconWidget(
                                   ThemeIcon.camera,
                                   size: 15,
                                 )
@@ -99,7 +98,9 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                     )
                   ],
                 ),
-                const SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
                 AppTextField(
                   maxLines: 5,
                   controller: groupDescription,
@@ -112,35 +113,35 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
             height: 20,
           ),
           Obx(() => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BodyMediumText(
-                    publicGroupString.tr,
-                    weight: TextWeight.semiBold,
+                  Row(
+                    children: [
+                      BodyMediumText(
+                        publicGroupString.tr,
+                        weight: TextWeight.semiBold,
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      ThemeIconWidget(
+                              enterGroupInfoController.isPublicGroup.value
+                                  ? ThemeIcon.selectedCheckbox
+                                  : ThemeIcon.emptyCheckbox)
+                          .ripple(() {
+                        enterGroupInfoController.togglePublicGroup();
+                      }),
+                    ],
                   ),
                   const SizedBox(
-                    width: 20,
+                    height: 20,
                   ),
-                  ThemeIconWidget(
-                      enterGroupInfoController.isPublicGroup.value
-                          ? ThemeIcon.selectedCheckbox
-                          : ThemeIcon.emptyCheckbox)
-                      .ripple(() {
-                    enterGroupInfoController.togglePublicGroup();
-                  }),
+                  if (enterGroupInfoController.isPublicGroup.value)
+                    BodySmallText(
+                      groupGroupInfoString.tr,
+                    ),
                 ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              if (enterGroupInfoController.isPublicGroup.value)
-                BodySmallText(
-                  groupGroupInfoString.tr,
-                ),
-            ],
-          ).hp(DesignConstants.horizontalPadding)),
+              ).hp(DesignConstants.horizontalPadding)),
         ],
       ),
     );
@@ -156,7 +157,8 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
       AppUtil.showToast(message: pleaseSelectUsersString.tr, isSuccess: false);
       return;
     }
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
+
     enterGroupInfoController.createGroup(
         name: groupName.text,
         description: groupDescription.text,

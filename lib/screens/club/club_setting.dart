@@ -7,11 +7,11 @@ class ClubSettings extends StatefulWidget {
 
   // final Function(ClubModel) updateClubCallback;
   const ClubSettings({
-    Key? key,
+    super.key,
     required this.club,
     required this.deleteClubCallback,
     // required this.updateClubCallback
-  }) : super(key: key);
+  }) ;
 
   @override
   State<ClubSettings> createState() => _ClubSettingsState();
@@ -22,12 +22,11 @@ class _ClubSettingsState extends State<ClubSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar(
-               title: clubSettingsString.tr),
+          backNavigationBar(title: clubSettingsString.tr),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.only(top: 25),
@@ -38,7 +37,7 @@ class _ClubSettingsState extends State<ClubSettings> {
                       editClubInfoString.tr,
                     ),
                     const Spacer(),
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.nextArrow,
                       size: 20,
                     )
@@ -59,7 +58,7 @@ class _ClubSettingsState extends State<ClubSettings> {
                       editClubImageString.tr,
                     ),
                     const Spacer(),
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.nextArrow,
                       size: 20,
                     )
@@ -77,19 +76,24 @@ class _ClubSettingsState extends State<ClubSettings> {
                 Row(
                   children: [
                     Heading6Text(deleteClubString.tr,
-                        weight: TextWeight.medium, color: AppColorConstants.red),
+                        weight: TextWeight.medium,
+                        color: AppColorConstants.red),
                   ],
                 ).ripple(() {
-                  AppUtil.showConfirmationAlert(
-                      title: deleteClubString.tr,
-                      subTitle: areYouSureToDeleteClubString.tr,
-                      okHandler: () {
-                        _clubsController.deleteClub(
-                            club: widget.club,
-                            callback: () {
-                              widget.deleteClubCallback(widget.club);
-                            });
-                      });
+                  AppUtil.showNewConfirmationAlert(
+                    title: deleteClubString.tr,
+                    subTitle: areYouSureToDeleteClubString.tr,
+                    okHandler: () {
+                      _clubsController.deleteClub(
+                          club: widget.club,
+                          callback: () {
+                            widget.deleteClubCallback(widget.club);
+                          });
+                    },
+                    cancelHandler: () {
+                      Get.back();
+                    },
+                  );
                 }),
                 divider().vP16,
               ],

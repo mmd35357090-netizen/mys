@@ -8,10 +8,10 @@ class HashTagTile extends StatelessWidget {
   final VoidCallback onItemCallback;
 
   const HashTagTile({
-    Key? key,
+    super.key,
     required this.hashtag,
     required this.onItemCallback,
-  }) : super(key: key);
+  }) ;
 
   @override
   Widget build(BuildContext context) {

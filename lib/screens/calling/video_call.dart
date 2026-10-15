@@ -14,7 +14,7 @@ class VideoCallingScreen extends StatefulWidget {
   const VideoCallingScreen({
     super.key,
     required this.call,
-  });
+  }) ;
 
   @override
   State<VideoCallingScreen> createState() => _VideoCallingScreenState();
@@ -43,7 +43,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
   Widget build(BuildContext context) {
     return PIPView(
       builder: (context, isFloating) {
-        return Scaffold(
+        return AppScaffold(
           backgroundColor: AppColorConstants.backgroundColor,
           body: widget.call.isOutGoing
               ? outgoingCallView(isFloating)
@@ -127,7 +127,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
           height: 70,
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const ThemeIconWidget(
+            ThemeIconWidget(
               ThemeIcon.backArrow,
               color: Colors.white,
               size: 25,
@@ -303,7 +303,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                       : AppColorConstants.themeColor.lighten(),
                   height: 65,
                   width: 65,
-                  child: const ThemeIconWidget(
+                  child: ThemeIconWidget(
                     ThemeIcon.cameraSwitch,
                     size: 30,
                     color: Colors.white,
@@ -316,7 +316,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
             ),
             // Obx(() => Container(
             //       color: agoraCallController.mutedVideo.value
-            //           ? AppColorConstants.themeColor.withOpacity(0.5)
+            //           ? AppColorConstants.themeColor.withValues(alpha: 0.5)
             //           : AppColorConstants.themeColor,
             //       height: 65,
             //       width: 65,
@@ -335,7 +335,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
             // ),
             Obx(() => Container(
                   color: agoraCallController.mutedAudio.value
-                      ? AppColorConstants.themeColor.withOpacity(0.5)
+                      ? AppColorConstants.themeColor.withValues(alpha: 0.5)
                       : AppColorConstants.themeColor,
                   height: 65,
                   width: 65,
@@ -356,7 +356,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               color: AppColorConstants.red,
               height: 65,
               width: 65,
-              child: const ThemeIconWidget(
+              child: ThemeIconWidget(
                 ThemeIcon.callEnd,
                 size: 30,
                 color: Colors.white,
@@ -378,13 +378,13 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               color: AppColorConstants.red,
               height: 80,
               width: 80,
-              child: const ThemeIconWidget(
+              child: ThemeIconWidget(
                 ThemeIcon.declineCall,
                 size: 30,
                 color: Colors.white,
               ).p16,
             ).circular.ripple(() {
-              agoraCallController.declineIncomingCall(call: widget.call);
+              agoraCallController.declineCall(call: widget.call);
             }),
             const SizedBox(
               width: 25,
@@ -393,7 +393,7 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
               color: AppColorConstants.themeColor,
               height: 80,
               width: 80,
-              child: const ThemeIconWidget(
+              child: ThemeIconWidget(
                 ThemeIcon.acceptCall,
                 size: 30,
                 color: Colors.white,

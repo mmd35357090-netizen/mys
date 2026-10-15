@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import '../util/app_util.dart';
 
 class TVShowModel {
   int? id;
@@ -44,10 +45,10 @@ class TVShowModel {
     createdAt = json['created_at'];
     createdBy = json['created_by'];
     showTime = DateFormat('dd-MM-yyyy hh:mm a')
-        .format(DateTime.fromMillisecondsSinceEpoch(json['show_time'] * 1000));
+        .format(AppUtil.convertToDateTime(json['show_time']));
     imageUrl = json['imageUrl'];
     totalRatings = json['rating']['totalCount'] ?? 0;
-    ratingScore = json['rating']['ratingScore'] ?? 0;
+    ratingScore = double.parse((json['rating']['ratingScore'].toString()));
   }
 }
 
@@ -76,7 +77,7 @@ class TVShowEpisodeModel {
     tvShowId = json['tv_show_id'];
     episodePeriod = json['episode_period'];
     createdAt = DateFormat('dd-MM-yyyy hh:mm a')
-        .format(DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000));
+        .format(AppUtil.convertToDateTime(json['created_at']));
     imageUrl = json['imageUrl'];
     videoUrl = json['videoUrl'];
   }

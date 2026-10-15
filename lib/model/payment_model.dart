@@ -1,19 +1,36 @@
 import 'package:intl/intl.dart';
+import '../helper/enum.dart';
+import '../helper/enum_linking.dart';
+import '../util/app_util.dart';
 
-class PaymentModel {
-  String amount = '';
+class TransactionModel {
+  int id = 0;
+  double? amount;
+  int? coins;
+
   int status = 0;
   String createDate = '';
+  PaymentType paymentType = PaymentType.package;
+  TransactionType transactionType = TransactionType.credit;
+  PaymentMode paymentMode = PaymentMode.inAppPurchase;
+  TransactionMedium transactionMedium = TransactionMedium.money;
 
-  PaymentModel();
+  TransactionModel();
 
-  factory PaymentModel.fromJson(dynamic json) {
-    PaymentModel model = PaymentModel();
-    model.amount = (json['amount'] ?? '').toString();
+  factory TransactionModel.fromJson(dynamic json) {
+    TransactionModel model = TransactionModel();
+    model.id = json['id'];
+    model.amount = json['amount'];
+    model.coins = json['coin'];
+
     model.status = json['status'];
+    model.paymentType = paymentTypeFromId(json['payment_type']);
+    model.transactionType =
+        transactionTypeFromId(json['transaction_type']);
+    model.paymentMode = paymentModeFromId(json['payment_mode']);
+    model.transactionMedium = transactionMediumTypeFromId(json['type']);
 
-    DateTime createDate =
-        DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000).toUtc();
+    DateTime createDate = AppUtil.convertToDateTime(json['created_at']);
     String dateString = DateFormat('MMM dd, yyyy').format(createDate);
     model.createDate = dateString;
 

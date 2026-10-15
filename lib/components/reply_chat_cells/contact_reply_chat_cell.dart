@@ -7,11 +7,11 @@ class ReplyContactChatTile extends StatelessWidget {
   final Function(ChatMessageModel) messageTapHandler;
 
   const ReplyContactChatTile(
-      {Key? key,
+      {super.key,
       required this.message,
       required this.replyMessageTapHandler,
       required this.messageTapHandler})
-      : super(key: key);
+      ;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +19,10 @@ class ReplyContactChatTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-                height: 80,
+                height: 70,
                 color: message.isMineMessage
                     ? AppColorConstants.disabledColor
-                    : AppColorConstants.themeColor.withOpacity(0.2),
+                    : AppColorConstants.themeColor.withValues(alpha: 0.2),
                 child: ReplyOriginalMessageTile(
                     message: message.repliedOnMessage,
                     replyMessageTapHandler: replyMessageTapHandler))

@@ -57,8 +57,8 @@
 //                   decoration: BoxDecoration(
 //                       color: fonts[index] ==
 //                               textStoryMakerController.currentFont.value
-//                           ? AppColorConstants.themeColor.withOpacity(0.5)
-//                           : Colors.black.withOpacity(0.4),
+//                           ? AppColorConstants.themeColor.withValues(alpha: 0.5)
+//                           : Colors.black.withValues(alpha: 0.4),
 //                       shape: BoxShape.circle,
 //                       border: Border.all(color: Colors.white)),
 //                   child: Center(

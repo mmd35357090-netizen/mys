@@ -13,9 +13,11 @@ class Posts extends StatefulWidget {
   final int? index;
   final int? page;
   final int? totalPages;
+  final String title;
 
   const Posts(
-      {Key? key,
+      {super.key,
+      required this.title,
       this.page,
       this.totalPages,
       this.hashTag,
@@ -23,7 +25,7 @@ class Posts extends StatefulWidget {
       this.locationId,
       this.posts,
       this.index})
-      : super(key: key);
+      ;
 
   @override
   State<Posts> createState() => _PostsState();
@@ -54,19 +56,6 @@ class _PostsState extends State<Posts> {
     });
   }
 
-  // void loadData() {
-  //   if (widget.userId != null) {
-  //     PostSearchQuery query = PostSearchQuery();
-  //     query.userId = widget.userId!;
-  //     _postController.setPostSearchQuery(query: query, callback: () {});
-  //   }
-  //   if (widget.hashTag != null) {
-  //     PostSearchQuery query = PostSearchQuery();
-  //     query.hashTag = widget.hashTag!;
-  //     _postController.setPostSearchQuery(query: query, callback: () {});
-  //   }
-  // }
-
   @override
   void dispose() {
     super.dispose();
@@ -74,7 +63,7 @@ class _PostsState extends State<Posts> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -93,6 +82,7 @@ class _PostsState extends State<Posts> {
                   Get.back();
                 }),
                 const Spacer(),
+                BodyLargeText(widget.title),
                 // Image.asset(
                 //   'assets/logo.png',
                 //   width: 80,
@@ -145,7 +135,6 @@ class _PostsState extends State<Posts> {
                           children: [
                             PostCard(
                                 model: model,
-
                                 removePostHandler: () {
                                   _postController.removePostFromList(model);
                                 },

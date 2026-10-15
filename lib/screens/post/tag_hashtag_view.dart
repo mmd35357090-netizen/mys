@@ -5,41 +5,41 @@ import '../../helper/imports/common_import.dart';
 
 class TagHashtagView extends StatelessWidget {
   TagHashtagView({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final SmartTextFieldController _smartTextFieldController = Get.find();
 
   final RefreshController _hashtagRefreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
     return Obx(() => ListView.builder(
-      padding: EdgeInsets.only(
-          left: DesignConstants.horizontalPadding,
-          right: DesignConstants.horizontalPadding),
-      itemCount: _smartTextFieldController.hashTags.length,
-      itemBuilder: (BuildContext ctx, int index) {
-        return HashTagTile(
-          hashtag: _smartTextFieldController.hashTags[index],
-          onItemCallback: () {
-            _smartTextFieldController
-                .addHashTag(_smartTextFieldController.hashTags[index].name);
+          padding: EdgeInsets.only(
+              left: DesignConstants.horizontalPadding,
+              right: DesignConstants.horizontalPadding),
+          itemCount: _smartTextFieldController.hashTags.length,
+          itemBuilder: (BuildContext ctx, int index) {
+            return HashTagTile(
+              hashtag: _smartTextFieldController.hashTags[index],
+              onItemCallback: () {
+                _smartTextFieldController
+                    .addHashTag(_smartTextFieldController.hashTags[index].name);
+              },
+            );
           },
-        );
-      },
-    ).addPullToRefresh(
-        refreshController: _hashtagRefreshController,
-        onRefresh: () {},
-        onLoading: () {
-          _smartTextFieldController.searchHashTags(
-              text: _smartTextFieldController.currentHashtag.value,
-              callBackHandler: () {
-                _hashtagRefreshController.loadComplete();
-              });
-        },
-        enablePullUp: true,
-        enablePullDown: false));
+        ).addPullToRefresh(
+            refreshController: _hashtagRefreshController,
+            onRefresh: () {},
+            onLoading: () {
+              _smartTextFieldController.searchHashTags(
+                  text: _smartTextFieldController.currentHashtag.value,
+                  callBackHandler: () {
+                    _hashtagRefreshController.loadComplete();
+                  });
+            },
+            enablePullUp: true,
+            enablePullDown: false));
   }
 }

@@ -1,8 +1,8 @@
 import 'package:camera/camera.dart';
-import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/add_on/controller/reel/create_reel_controller.dart';
 import 'package:foap/screens/add_on/ui/reel/select_music.dart';
-import 'package:foap/screens/post/content_creator_view.dart';
-import '../../controller/reel/create_reel_controller.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import '../../../content_creator_view.dart';
 
 class CreateReelScreen extends StatefulWidget {
   const CreateReelScreen({super.key});
@@ -110,13 +110,12 @@ class _CreateReelScreenState extends State<CreateReelScreen>
 
                           Get.bottomSheet(
                             SelectMusic(
-                              selectedAudioCallback: (croppedAudio, music) {
-                                _createReelController
-                                    .setCroppedAudio(croppedAudio);
-                                cameraService.initializeCamera(
-                                    CameraLensDirection.front);
-                              },
-                            ),
+                                selectedAudioCallback: (croppedAudio, music) {
+                              _createReelController
+                                  .setCroppedAudio(croppedAudio);
+                              cameraService
+                                  .initializeCamera(CameraLensDirection.front);
+                            }),
                             isScrollControlled: true,
                             ignoreSafeArea: true,
                           );
@@ -133,7 +132,7 @@ class _CreateReelScreenState extends State<CreateReelScreen>
                 left: 15,
                 top: 150,
                 child: Container(
-                  color: AppColorConstants.cardColor.withOpacity(0.4),
+                  color: AppColorConstants.cardColor.withValues(alpha: 0.4),
                   child: Column(
                     children: [
                       GestureDetector(

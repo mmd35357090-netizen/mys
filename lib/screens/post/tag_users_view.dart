@@ -1,21 +1,19 @@
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../components/smart_text_field.dart';
 import '../../components/user_card.dart';
 import '../../helper/imports/common_import.dart';
 import '../../controllers/misc/users_controller.dart';
-import '../../controllers/post/add_post_controller.dart';
 
 class TagUsersView extends StatelessWidget {
   TagUsersView({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final SmartTextFieldController _smartTextFieldController = Get.find();
   final UsersController _usersController = Get.find();
 
   final RefreshController _usersRefreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {

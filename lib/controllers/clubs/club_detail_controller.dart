@@ -1,7 +1,7 @@
 import 'package:foap/api_handler/apis/club_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../../api_handler/apis/post_api.dart';
-import '../../manager/db_manager.dart';
+import '../../manager/db_manager_realm.dart';
 import '../../model/club_join_request.dart';
 import '../../model/club_model.dart';
 import '../../model/data_wrapper.dart';
@@ -24,10 +24,9 @@ class ClubDetailController extends GetxController {
   DataWrapper requestsDataWrapper = DataWrapper();
 
   clear() {
+    postDataWrapper = DataWrapper();
     posts.clear();
     joinRequests.clear();
-
-    postDataWrapper = DataWrapper();
     requestsDataWrapper = DataWrapper();
   }
 
@@ -39,7 +38,7 @@ class ClubDetailController extends GetxController {
   }
 
   getClubJoinRequests({required int clubId}) {
-    if (requestsDataWrapper.haveMoreData.value) {
+    if (requestsDataWrapper.isLoading.value == true) {
       requestsDataWrapper.isLoading.value = true;
 
       ClubApi.getClubJoinRequests(
@@ -57,8 +56,12 @@ class ClubDetailController extends GetxController {
   postTextTapHandler({required PostModel post, required String text}) {
     if (text.startsWith('#')) {
       Get.to(() => Posts(
-            hashTag: text.replaceAll('#', ''),
-          ));
+                hashTag: text.replaceAll('#', ''),
+                title: text,
+              ))!
+          .then((value) {
+        getPosts(clubId: postSearchQuery.clubId!, callback: () {});
+      });
     } else {
       String userTag = text.replaceAll('@', '');
       if (post.mentionedUsers
@@ -68,7 +71,9 @@ class ClubDetailController extends GetxController {
             .where((element) => element.userName == userTag)
             .first
             .id;
-        Get.to(() => OtherUserProfile(userId: mentionedUserId));
+        Get.to(() => OtherUserProfile(userId: mentionedUserId))!.then((value) {
+          getPosts(clubId: postSearchQuery.clubId!, callback: () {});
+        });
       }
     }
   }
@@ -82,54 +87,6 @@ class ClubDetailController extends GetxController {
     posts.removeWhere((element) => element.user.id == post.user.id);
 
     posts.refresh();
-  }
-
-  joinClub() {
-    if (club.value!.isRequestBased == true) {
-      club.value!.isRequested = true;
-      club.refresh();
-
-      ClubApi.sendClubJoinRequest(clubId: club.value!.id!);
-    } else {
-      club.value!.isJoined = true;
-      club.refresh();
-
-      ClubApi.joinClub(
-          clubId: club.value!.id!,
-          resultCallback: () {
-            if (club.value!.enableChat == 1) {
-              _chatDetailController.getRoomDetail(club.value!.chatRoomId!,
-                  (chatRoom) {
-                getIt<DBManager>().saveRooms([chatRoom]);
-              });
-            }
-          });
-    }
-  }
-
-  leaveClub() {
-    club.value!.isJoined = false;
-    club.refresh();
-
-    ClubApi.leaveClub(clubId: club.value!.id!);
-  }
-
-  acceptClubJoinRequest(ClubJoinRequest request) {
-    joinRequests.remove(request);
-    joinRequests.refresh();
-    update();
-
-    ClubApi.acceptDeclineClubJoinRequest(
-        requestId: request.id!, replyStatus: 10);
-  }
-
-  declineClubJoinRequest(ClubJoinRequest request) {
-    joinRequests.remove(request);
-    joinRequests.refresh();
-    update();
-
-    ClubApi.acceptDeclineClubJoinRequest(
-        requestId: request.id!, replyStatus: 3);
   }
 
   refreshPosts({required int clubId, required VoidCallback callback}) {
@@ -162,5 +119,53 @@ class ClubDetailController extends GetxController {
           callback();
           update();
         });
+  }
+
+  joinClub() {
+    if (club.value!.isRequestBased == true) {
+      club.value!.isRequested = true;
+      club.refresh();
+
+      ClubApi.sendClubJoinRequest(clubId: club.value!.id!);
+    } else {
+      club.value!.isJoined = true;
+      club.refresh();
+
+      ClubApi.joinClub(
+          clubId: club.value!.id!,
+          resultCallback: () {
+            if (club.value!.enableChat == 1) {
+              _chatDetailController.getRoomDetail(club.value!.chatRoomId!,
+                  (chatRoom) {
+                getIt<RealmDBManager>().saveRooms([chatRoom]);
+              });
+            }
+          });
+    }
+  }
+
+  leaveClub() {
+    club.value!.isJoined = false;
+    club.refresh();
+
+    ClubApi.leaveClub(clubId: club.value!.id!);
+  }
+
+  acceptClubJoinRequest(ClubJoinRequest request) {
+    joinRequests.remove(request);
+    joinRequests.refresh();
+    update();
+
+    ClubApi.acceptDeclineClubJoinRequest(
+        requestId: request.id!, replyStatus: 10);
+  }
+
+  declineClubJoinRequest(ClubJoinRequest request) {
+    joinRequests.remove(request);
+    joinRequests.refresh();
+    update();
+
+    ClubApi.acceptDeclineClubJoinRequest(
+        requestId: request.id!, replyStatus: 3);
   }
 }

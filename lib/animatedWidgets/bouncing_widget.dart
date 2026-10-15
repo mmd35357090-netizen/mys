@@ -17,12 +17,12 @@ class BouncingWidget extends StatefulWidget {
 
   /// BouncingWidget constructor
   const BouncingWidget({
-    Key? key,
+    super.key,
     required this.child,
     required this.onPressed,
     this.scaleFactor = 1,
     this.duration = const Duration(milliseconds: 200),
-  }) : super(key: key);
+  });
 
   @override
   State<BouncingWidget> createState() => _BouncingWidgetState();

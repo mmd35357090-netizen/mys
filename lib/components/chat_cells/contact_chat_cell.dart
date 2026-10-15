@@ -4,7 +4,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class ContactChatTile extends StatelessWidget {
   final ChatMessageModel message;
 
-  const ContactChatTile({Key? key, required this.message}) : super(key: key);
+  const ContactChatTile({super.key, required this.message}) ;
 
   @override
   Widget build(BuildContext context) {

@@ -79,7 +79,7 @@ class FlutterStoryView extends StatefulWidget {
   // Padding of indicator
   final EdgeInsets? indicatorPadding;
 
-  FlutterStoryView({
+  const FlutterStoryView({
     required this.onComplete,
     required this.onPageChanged,
     required this.controller,
@@ -97,7 +97,7 @@ class FlutterStoryView extends StatefulWidget {
   });
 
   @override
-  _FlutterStoryViewState createState() => _FlutterStoryViewState();
+  State<FlutterStoryView> createState() => _FlutterStoryViewState();
 }
 
 class _FlutterStoryViewState extends State<FlutterStoryView>
@@ -526,7 +526,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
 }
 
 class TransparentGradientView extends StatelessWidget {
-  const TransparentGradientView({Key? key}) : super(key: key);
+  const TransparentGradientView({super.key}) ;
 
   @override
   Widget build(BuildContext context) {

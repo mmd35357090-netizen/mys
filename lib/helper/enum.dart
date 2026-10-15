@@ -1,13 +1,13 @@
-enum UserRole {
-  admin,
-  user,
-}
-
 enum RecordType {
   profile,
   post,
   hashtag,
   location,
+}
+
+enum UserRole {
+  admin,
+  user,
 }
 
 enum SearchFrom {
@@ -16,20 +16,34 @@ enum SearchFrom {
   phone,
 }
 
-enum PostSource { posts, mentions, videos, saved }
+enum TimelineType { posts, mentions, videos, saved }
 
-enum PostingStatus { none, posting, posted, error }
+enum PostCategory {
+  basic,
+  competition,
+  club,
+  reel,
+  reshare,
+  event,
+  fundRaising
+}
 
-enum PostType { basic, competition, club, reel, reshare }
+enum PostOptionType { camera, gallery, video, drawing, audio, gif, poll }
 
 enum PostContentType {
   text,
   media,
   location,
   poll,
+  event,
   competitionAdded,
   competitionResultDeclared,
+  job,
+  fundRaising,
+  offer,
+  classified,
   club,
+  donation,
   openGroup
 }
 
@@ -66,12 +80,14 @@ enum MessageContentType {
 }
 
 enum UploadMediaType {
+  shop,
   storyOrHighlights,
   chat,
   club,
   verification,
+  uploadResume,
+  event,
   post
-
 }
 
 ///Media picker selection type
@@ -115,7 +131,7 @@ enum AgoraCallType {
 enum PaymentGateway {
   creditCard,
   // applePay,
-  paypal,
+  // paypal,
   razorpay,
   wallet,
   stripe,
@@ -125,8 +141,6 @@ enum PaymentGateway {
 }
 
 enum BookingStatus { confirmed, cancelled }
-
-enum EventStatus { upcoming, active, completed }
 
 enum TvBannerType { tv, show }
 
@@ -148,7 +162,8 @@ enum SMNotificationType {
   none,
   verification,
   supportRequest,
-  subscribed
+  subscribed,
+  collaborate
 }
 
 enum CommentType { text, image, video, gif }
@@ -170,10 +185,29 @@ enum TransactionType {
   debit,
 }
 
+enum TransactionMedium {
+  coin,
+  money,
+}
+
 enum PaymentType {
+  package,
+  award,
   withdrawal,
-  gift,
+  withdrawalRefund,
+  liveTvSubscribe,
+  giftSent,
+  giftReceived,
   redeemCoin,
+  eventTicket,
+  eventTicketRefund,
+  datingSubscription,
+  promotion,
+  promotionRefund,
+  fundRaising,
+  featureAd,
+  bannerAd,
+  subscription
 }
 
 enum PaymentMode {
@@ -201,20 +235,42 @@ enum PlayStateState { paused, playing, loading, idle }
 
 enum LiveUserRole { host, moderator, viewer }
 
-enum LiveStreamingStatus { none, checking, preparing, streaming, ended, failed }
-
-enum SMSGateway{
-  twilio,
-  sms91,
-  firebase
+enum LiveStreamingStatus {
+  none,
+  checking,
+  preparing,
+  streaming,
+  ended,
+  failed
 }
 
-enum SubscribedStatus{
-  notSubscribed,
-  subscribed,
-  expired
+enum SMSGateway { twilio, sms91, firebase }
+
+enum SubscribedStatus { notSubscribed, subscribed, expired }
+
+enum ProcessingPaymentStatus { inProcess, completed, failed }
+
+enum PinContentType { post, comment }
+
+enum CollaborationStatusType {
+  deleted,
+  pending,
+  rejected,
+  cancelled,
+  accepted
 }
 
-enum PinContentType {post, comment}
+enum EventStatus {
+  upcoming,
+  cancelled,
+  active,
+  completed
+}
 
-enum CollaborationStatusType {deleted, pending, rejected, cancelled, accepted}
+enum ReactionOnEvent {
+  interested,
+  notInterested,
+  none,
+}
+
+enum GiftSource { post, live, profile }

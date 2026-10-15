@@ -2,8 +2,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dart:io';
 import 'package:foap/manager/progress_notifier.dart';
-
-import '../screens/add_on/model/reel_music_model.dart';
+import 'package:foap/screens/add_on/model/reel_music_model.dart';
 
 class Audio {
   String id;

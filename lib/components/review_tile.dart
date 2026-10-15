@@ -6,7 +6,7 @@ import '../helper/imports/common_import.dart';
 class ReviewsTile extends StatelessWidget {
   final RatingModel review;
 
-  const ReviewsTile({Key? key, required this.review}) : super(key: key);
+  const ReviewsTile({super.key, required this.review}) ;
 
   @override
   Widget build(BuildContext context) {

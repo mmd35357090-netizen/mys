@@ -1,6 +1,5 @@
+import 'package:foap/helper/imports/models.dart';
 import 'package:get/get.dart';
-
-import 'api_meta_data.dart';
 
 class DataWrapper {
   List<dynamic> items = [];

@@ -1,4 +1,3 @@
-import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
 
@@ -21,10 +20,28 @@ class _ClubPostTileState extends State<ClubPostTile> {
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: widget.post.createdClub!.image!,
-      fit: BoxFit.cover,
-      width: double.infinity,
+    return Stack(
+      children: [
+        CachedNetworkImage(
+          imageUrl: widget.post.createdClub!.image!,
+          fit: BoxFit.cover,
+          width: double.infinity,
+        ),
+        // if (widget.post.createdClub!.isJoined == false)
+        //   Positioned(
+        //       right: 20,
+        //       bottom: 20,
+        //       child: Container(
+        //         color: AppColorConstants.backgroundColor.withValues(alpha: 0.8),
+        //         child: BodyLargeText(joinString.tr).p8,
+        //       ).round(10).ripple((() {
+        //         Get.to(() => ClubDetail(
+        //               club: widget.post.createdClub!,
+        //               needRefreshCallback: () {},
+        //               deleteCallback: (club) {},
+        //             ));
+        //       }))),
+      ],
     );
   }
 }

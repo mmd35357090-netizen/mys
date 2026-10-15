@@ -6,8 +6,8 @@ class ReplyOriginalMessageTile extends StatelessWidget {
   final Function(ChatMessageModel) replyMessageTapHandler;
 
   const ReplyOriginalMessageTile(
-      {Key? key, required this.message, required this.replyMessageTapHandler})
-      : super(key: key);
+      {super.key, required this.message, required this.replyMessageTapHandler})
+      ;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class ReplyOriginalMessageTile extends StatelessWidget {
                 weight: TextWeight.bold,
                 color: AppColorConstants.themeColor.darken(0.5),
               ),
-              const SizedBox(height: 15),
+              // const SizedBox(height: 15),
               messageTypeShortInfo(
                 message: message,
               )

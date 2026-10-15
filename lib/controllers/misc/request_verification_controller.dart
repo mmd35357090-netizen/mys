@@ -1,9 +1,9 @@
 import 'package:foap/api_handler/apis/profile_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/verification_request_model.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'dart:async';
-import 'package:foap/model/verification_request_model.dart';
 import '../../api_handler/apis/misc_api.dart';
 
 class RequestVerificationController extends GetxController {
@@ -91,7 +91,7 @@ class RequestVerificationController extends GetxController {
 
     List<Map<String, String>> idProofImages = [];
 
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
     for (File file in selectedImages) {
       await MiscApi.uploadFile(file.path,
           mediaType: GalleryMediaType.photo, type: UploadMediaType.verification,
@@ -110,7 +110,7 @@ class RequestVerificationController extends GetxController {
         documentType: documentType.value.text,
         images: idProofImages,
         resultCallback: () {
-          EasyLoading.dismiss();
+          Loader.dismiss();
 
           getVerificationRequests();
 

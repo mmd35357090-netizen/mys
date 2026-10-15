@@ -1,5 +1,5 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/model/subscription_plan.dart';
+import 'package:foap/model/subscription_plan_model.dart';
 import '../../model/api_meta_data.dart';
 import '../api_wrapper.dart';
 

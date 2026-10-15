@@ -1,8 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/tvs/subscribed_tvs.dart';
 import 'package:foap/screens/tvs/tv_list_home.dart';
-
-
 import 'fav_tv_list.dart';
 
 class TvDashboardController extends GetxController {
@@ -20,7 +18,7 @@ class TvDashboardController extends GetxController {
 }
 
 class TvDashboardScreen extends StatefulWidget {
-  const TvDashboardScreen({Key? key}) : super(key: key);
+  const TvDashboardScreen({super.key}) ;
 
   @override
   TvDashboardScreenState createState() => TvDashboardScreenState();
@@ -45,7 +43,7 @@ class TvDashboardScreenState extends State<TvDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
+    return Obx(() => AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: items[_dashboardController.currentIndex.value],
         bottomNavigationBar: SizedBox(
@@ -70,7 +68,7 @@ class TvDashboardScreenState extends State<TvDashboardScreen> {
                           : AppColorConstants.iconColor),
                   label: ''),
               BottomNavigationBarItem(
-                  icon: Image.asset('assets/tv/fav.png',
+                  icon: Image.asset('assets/fav.png',
                       height: 20,
                       width: 20,
                       color: _dashboardController.currentIndex.value == 1

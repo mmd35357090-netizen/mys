@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 class UpdateGroupInfo extends StatefulWidget {
   final ChatRoomModel group;
 
-  const UpdateGroupInfo({Key? key, required this.group}) : super(key: key);
+  const UpdateGroupInfo({super.key, required this.group}) ;
 
   @override
   State<UpdateGroupInfo> createState() => _UpdateGroupInfoState();
@@ -30,7 +30,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -45,7 +45,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.close,
                       size: 20,
                     ).ripple(() {
@@ -69,7 +69,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
               ],
             ),
           ).hp(DesignConstants.horizontalPadding),
-          const SizedBox(height: 8,),
+
           SizedBox(
             height: 250,
             child: Column(
@@ -100,7 +100,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                                           height: 50,
                                           width: 50,
                                         )
-                                      : const ThemeIconWidget(
+                                      : ThemeIconWidget(
                                           ThemeIcon.camera,
                                           size: 15,
                                         ),

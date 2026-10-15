@@ -1,6 +1,5 @@
 import 'package:chewie/chewie.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:video_player/video_player.dart';
 import '../controllers/tv/live_tv_streaming_controller.dart';
 import '../model/live_tv_model.dart';
@@ -14,13 +13,13 @@ class SocialifiedVideoPlayer extends StatefulWidget {
   final bool? isPlayingTv;
 
   const SocialifiedVideoPlayer({
-    Key? key,
+    super.key,
     required this.url,
     required this.play,
     required this.orientation,
     this.isPlayingTv,
     this.tvModel,
-  }) : super(key: key);
+  }) ;
 
   @override
   State<SocialifiedVideoPlayer> createState() => _SocialifiedVideoPlayerState();
@@ -182,7 +181,7 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                     top: 0,
                     child: Container(
                       height: 80,
-                      color: AppColorConstants.themeColor.withOpacity(0.1),
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.1),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -194,7 +193,8 @@ class _SocialifiedVideoPlayerState extends State<SocialifiedVideoPlayer> {
                             Get.back();
                           }),
                         ],
-                      ).setPadding(left: DesignConstants.horizontalPadding, top: 28),
+                      ).setPadding(
+                          left: DesignConstants.horizontalPadding, top: 28),
                     ),
                   )
                 : Container())

@@ -1,74 +1,3 @@
-import 'package:foap/model/post_gift_model.dart';
-
-class TimelineGift {
-  int? id;
-  int? receiverId;
-  int? senderId;
-  int? giftId;
-  int? coin;
-  int? sendOnType;
-
-  // Null liveCallId;
-  int? postId;
-  int? createdAt;
-  int? postType;
-  SenderDetail? senderDetail;
-  PostGiftModel? giftTimelineDetail;
-
-  TimelineGift(
-      {id,
-      recieverId,
-      senderId,
-      giftId,
-      coin,
-      sendOnType,
-      // liveCallId,
-      postId,
-      createdAt,
-      postType,
-      senderDetail,
-      giftTimelineDetail});
-
-  TimelineGift.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    receiverId = json['reciever_id'];
-    senderId = json['sender_id'];
-    giftId = json['gift_id'];
-    coin = json['coin'];
-    sendOnType = json['send_on_type'];
-    // liveCallId = json['live_call_id'];
-    postId = json['post_id'];
-    createdAt = json['created_at'];
-    postType = json['post_type'];
-    senderDetail = json['senderDetail'] != null
-        ? SenderDetail.fromJson(json['senderDetail'])
-        : null;
-    giftTimelineDetail = json['giftTimelineDetail'] != null
-        ? PostGiftModel.fromJson(json['giftTimelineDetail'])
-        : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['reciever_id'] = receiverId;
-    data['sender_id'] = senderId;
-    data['gift_id'] = giftId;
-    data['coin'] = coin;
-    data['send_on_type'] = sendOnType;
-    // data['live_call_id'] = liveCallId;
-    data['post_id'] = postId;
-    data['created_at'] = createdAt;
-    data['post_type'] = postType;
-    if (senderDetail != null) {
-      data['senderDetail'] = senderDetail!.toJson();
-    }
-    if (giftTimelineDetail != null) {
-      data['giftTimelineDetail'] = giftTimelineDetail!.toJson();
-    }
-    return data;
-  }
-}
 
 class SenderDetail {
   String? name;
@@ -86,15 +15,15 @@ class SenderDetail {
 
   SenderDetail(
       {name,
-      username,
-      email,
-      image,
-      id,
-      isReported,
-      picture,
-      coverImageUrl,
-      profileCategoryName,
-      isLike});
+        username,
+        email,
+        image,
+        id,
+        isReported,
+        picture,
+        coverImageUrl,
+        profileCategoryName,
+        isLike});
 
   SenderDetail.fromJson(Map<String, dynamic> json) {
     name = json['name'];

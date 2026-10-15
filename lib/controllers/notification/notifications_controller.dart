@@ -29,7 +29,7 @@ class NotificationController extends GetxController {
     if (selectedNotificationsTypes.isNotEmpty) {
       filteredNotifications = allNotification
           .where((element) =>
-          selectedNotificationsTypes.contains(element.type))
+              selectedNotificationsTypes.contains(element.type))
           .toList();
     } else {
       filteredNotifications = allNotification;
@@ -109,6 +109,7 @@ class NotificationController extends GetxController {
         resultCallback: (result, metadata) {
           followRequestDataWrapper.processCompletedWithData(metadata);
           followRequests.addAll(result);
+          followRequests.unique((e) => e.id);
           callback();
           update();
         });
@@ -118,7 +119,10 @@ class NotificationController extends GetxController {
     followRequests.removeWhere((element) => element.sender.id == userId);
     update();
 
-    MiscApi.acceptFollowRequest(userId: userId);
+    MiscApi.acceptFollowRequest(userId: userId, completionHandler: () {
+      UserProfileManager controller = Get.find();
+      controller.refreshProfile();
+    });
   }
 
   delcineFollowRequest(int userId) {

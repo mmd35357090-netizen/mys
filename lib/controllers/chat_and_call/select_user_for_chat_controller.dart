@@ -1,58 +1,63 @@
+import 'dart:ui';
+
 import 'package:foap/api_handler/apis/users_api.dart';
+import 'package:foap/helper/list_extension.dart';
+import 'package:foap/model/data_wrapper.dart';
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../model/post_model.dart';
+import '../../model/search_model.dart';
 import '../../model/user_model.dart';
-import 'package:foap/helper/list_extension.dart';
 
 class SelectUserForChatController extends GetxController {
   final ChatDetailController chatDetailController = Get.find();
 
-  RxList<UserModel> following = <UserModel>[].obs;
+  RxList<UserModel> searchedUsers = <UserModel>[].obs;
 
   RxList<UserModel> processingActionUsers = <UserModel>[].obs;
   RxList<UserModel> completedActionUsers = <UserModel>[].obs;
   RxList<UserModel> failedActionUsers = <UserModel>[].obs;
 
-  int followingPage = 1;
-  bool canLoadMoreFollowing = true;
-  bool followingIsLoading = false;
+  DataWrapper dataWrapper = DataWrapper();
+  UserSearchModel searchModel = UserSearchModel();
 
-  String searchText = '';
+  clearPreviousSearchedUsers() {
+    dataWrapper = DataWrapper();
+    searchedUsers.clear();
+  }
 
   clear() {
-    followingPage = 1;
-    canLoadMoreFollowing = true;
-    followingIsLoading = false;
+    dataWrapper = DataWrapper();
 
     processingActionUsers.clear();
     failedActionUsers.clear();
     completedActionUsers.clear();
-    following.clear();
+    searchedUsers.clear();
   }
 
   searchTextChanged(String text) {
-    searchText = text;
+    searchModel.searchText = text;
+    clearPreviousSearchedUsers();
+    loadUsers(() {});
   }
 
-  getFollowingUsers() {
-    if (canLoadMoreFollowing) {
-      followingIsLoading = true;
-      UsersApi.getFollowingUsers(
-          page: followingPage,
-          resultCallback: (result, metadata) {
-            followingIsLoading = false;
-            following.addAll(result);
-            following.unique((e)=> e.id);
+  loadUsers(VoidCallback callback) {
+    if (dataWrapper.isLoading.value == false) {
+      dataWrapper.isLoading.value = true;
 
-            followingPage += 1;
-            if (result.length == metadata.perPage) {
-              canLoadMoreFollowing = true;
-            } else {
-              canLoadMoreFollowing = false;
-            }
+      UsersApi.searchUsers(
+          searchModel: searchModel,
+          page: dataWrapper.page,
+          resultCallback: (result, metadata) {
+            searchedUsers.addAll(result);
+            searchedUsers.unique((e) => e.id);
+
+            dataWrapper.processCompletedWithData(metadata);
+            callback();
             update();
           });
+    } else {
+      callback();
     }
   }
 

@@ -36,8 +36,8 @@ class ColorSelector extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 1.5)),
                 child: ImageIcon(
-                  const AssetImage('assets/icons/pickColor.png',
-                      package: 'vs_story_designer'),
+                  const AssetImage('assets/story/assets/icons/pickColor.png',
+                     ),
                   color: controlProvider.isPainting
                       ? (paintingProvider.lineColor == 0
                           ? Colors.black

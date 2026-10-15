@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:foap/util/app_config_constants.dart';
+import 'dart:math' as math;
 
 enum ThemeIcon {
   home,
+  homeOutlined,
   cart,
   setting,
   account,
+  bannedAccount,
   group,
   camera,
   gallery,
@@ -16,7 +19,6 @@ enum ThemeIcon {
   videoCamera,
   emptyCheckbox,
   selectedCheckbox,
-  search,
   downArrow,
   arrowUp,
   star,
@@ -44,6 +46,7 @@ enum ThemeIcon {
   checkMarkWithCircle,
   security,
   bike,
+  categories,
   clock,
   calendar,
   offer,
@@ -71,9 +74,9 @@ enum ThemeIcon {
   name,
   showPwd,
   notification,
-  language,
   discount,
   share,
+  copyToClipboard,
   addressType,
   addressPin,
   plus,
@@ -82,6 +85,8 @@ enum ThemeIcon {
   avatar,
   card,
   thumbsUp,
+  thumbsDown,
+
   mic,
   micOff,
   book,
@@ -95,7 +100,6 @@ enum ThemeIcon {
   play,
   stop,
   videoPost,
-  reels,
   delete,
   message,
   chat,
@@ -127,21 +131,34 @@ enum ThemeIcon {
   dating,
   acceptCall,
   declineCall,
-  callback,
-  copyToClipboard,
-  bannedAccount,
-  competition,
+  business,
+  language,
+  darkMode,
+  product,
+  event,
+  search,
+  bookings,
+  text,
+  fontSize,
+  boomerang,
+  textLeftAlign,
+  textCenterAlign,
+  textRightAlign,
+  colorPicker,
+  textBackground,
+  done,
+  fundRaisingCampaign,
   pin,
   noData,
+  poll
 }
 
 class ThemeIconWidget extends StatelessWidget {
   final ThemeIcon icon;
   final double? size;
-  final Color? color;
+  Color? color;
 
-  const ThemeIconWidget(this.icon, {Key? key, this.size, this.color})
-      : super(key: key);
+  ThemeIconWidget(this.icon, {super.key, this.size, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +170,12 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.home:
         return Icon(
           Icons.home,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.homeOutlined:
+        return Icon(
+          Icons.home_outlined,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -177,12 +200,6 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.downArrow:
         return Icon(
           Icons.keyboard_arrow_down,
-          size: size ?? 20,
-          color: color ?? AppColorConstants.iconColor,
-        );
-      case ThemeIcon.arrowUp:
-        return Icon(
-          Icons.arrow_upward,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -238,6 +255,12 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.review:
         return Icon(
           Icons.library_books_outlined,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.copyToClipboard:
+        return Icon(
+          Icons.copy,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -317,6 +340,12 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.account:
         return Icon(
           Icons.person_outline,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.bannedAccount:
+        return Icon(
+          Icons.person_off,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -454,12 +483,7 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-      case ThemeIcon.language:
-        return Icon(
-          Icons.language,
-          size: size ?? 20,
-          color: color ?? AppColorConstants.iconColor,
-        );
+
       case ThemeIcon.discount:
         return Icon(
           Icons.local_offer_outlined,
@@ -472,6 +496,7 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
+
       case ThemeIcon.addressType:
         return Icon(
           Icons.location_city_outlined,
@@ -480,7 +505,7 @@ class ThemeIconWidget extends StatelessWidget {
         );
       case ThemeIcon.plus:
         return Icon(
-          Icons.add,
+          Icons.add_circle,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -522,6 +547,12 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
+      case ThemeIcon.thumbsDown:
+        return Icon(
+          Icons.thumb_down_alt_outlined,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
       case ThemeIcon.mic:
         return Icon(
           Icons.mic_none_outlined,
@@ -559,13 +590,6 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-      case ThemeIcon.reels:
-        return Icon(
-          Icons.play_arrow_outlined,
-          size: size ?? 20,
-          color: color ?? AppColorConstants.iconColor,
-        );
-
       case ThemeIcon.delete:
         return Icon(
           Icons.delete_outline,
@@ -899,6 +923,18 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
+      case ThemeIcon.categories:
+        return Icon(
+          Icons.category_outlined,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.business:
+        return Icon(
+          Icons.business,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
       case ThemeIcon.acceptCall:
         return Icon(
           Icons.call,
@@ -911,27 +947,104 @@ class ThemeIconWidget extends StatelessWidget {
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-      case ThemeIcon.callback:
+      case ThemeIcon.arrowUp:
+        return Transform.rotate(
+          angle: math.pi / 2,
+          child: Icon(
+            Icons.arrow_back_ios,
+            size: size ?? 20,
+            color: color ?? AppColorConstants.iconColor,
+          ),
+        );
+      case ThemeIcon.product:
         return Icon(
-          Icons.phone_callback,
+          Icons.storefront,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-      case ThemeIcon.copyToClipboard:
+      case ThemeIcon.language:
         return Icon(
-          Icons.copy,
+          Icons.language,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-      case ThemeIcon.bannedAccount:
+      case ThemeIcon.darkMode:
         return Icon(
-          Icons.person_off,
+          Icons.sunny,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
-      case ThemeIcon.competition:
+      case ThemeIcon.event:
         return Icon(
-          Icons.emoji_events,
+          Icons.event,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+
+      case ThemeIcon.bookings:
+        return Icon(
+          Icons.calendar_month,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.boomerang:
+        return Image.asset(
+          'assets/boomerang.png',
+          height: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.text:
+        return Icon(
+          Icons.text_fields,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+
+      case ThemeIcon.textLeftAlign:
+        return Icon(
+          Icons.format_align_left_outlined,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.textCenterAlign:
+        return Icon(
+          Icons.format_align_center,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.textRightAlign:
+        return Icon(
+          Icons.format_align_right_outlined,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.colorPicker:
+        return Icon(
+          Icons.color_lens,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.textBackground:
+        return Icon(
+          Icons.format_color_text,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.done:
+        return Icon(
+          Icons.done,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.fontSize:
+        return Icon(
+          Icons.text_fields_rounded,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.fundRaisingCampaign:
+        return Icon(
+          Icons.campaign,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );
@@ -944,6 +1057,12 @@ class ThemeIconWidget extends StatelessWidget {
       case ThemeIcon.noData:
         return Icon(
           Icons.search_off,
+          size: size ?? 20,
+          color: color ?? AppColorConstants.iconColor,
+        );
+      case ThemeIcon.poll:
+        return Icon(
+          Icons.poll_outlined,
           size: size ?? 20,
           color: color ?? AppColorConstants.iconColor,
         );

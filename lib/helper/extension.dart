@@ -4,7 +4,6 @@ import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-
 extension RoundedHelper on Widget {
   ClipRRect round(double value) => ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(value)),
@@ -39,7 +38,7 @@ extension PaddingHelper on Widget {
   Padding get hP8 =>
       Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: this);
 
-  Padding get hp16 =>
+  Padding get hP16 =>
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: this);
 
   Padding get hP25 =>
@@ -134,7 +133,6 @@ extension PaddingHelper on Widget {
           child: this);
 }
 
-
 extension CornerRadius on Widget {
   ClipRRect get circular => ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(1000)),
@@ -210,7 +208,7 @@ extension ShadowView on Widget {
         //   //     offset: const Offset(1, 1),
         //   //     blurRadius: radius,
         //   //     color: AppColorConstants.shadowColor
-        //   //         .withOpacity(shadowOpacity ?? 0.15),
+        //   //         .withValues(alpha: shadowOpacity ?? 0.15),
         //   //   ),
         //   // ],
         // ),
@@ -240,17 +238,17 @@ extension ShadowView on Widget {
                 offset: const Offset(1, 1),
                 blurRadius: radius,
                 color: fillColor != null
-                    ? fillColor.withOpacity(.2)
+                    ? fillColor.withValues(alpha: .2)
                     : AppColorConstants.disabledColor
-                        .withOpacity(shadowOpacity ?? 0.25),
+                        .withValues(alpha: shadowOpacity ?? 0.25),
               ),
               BoxShadow(
                 offset: const Offset(-1, 0),
                 blurRadius: radius,
                 color: fillColor != null
-                    ? fillColor.withOpacity(.2)
+                    ? fillColor.withValues(alpha: .2)
                     : AppColorConstants.disabledColor
-                        .withOpacity(shadowOpacity ?? 0.25),
+                        .withValues(alpha: shadowOpacity ?? 0.25),
               )
             ],
           ),
@@ -298,8 +296,8 @@ extension BorderView on Widget {
 extension ShimmerView on Widget {
   Shimmer addShimmer() => Shimmer.fromColors(
         enabled: true,
-        baseColor: Theme.of(Get.context!).highlightColor.withOpacity(0.1),
-        highlightColor: Theme.of(Get.context!).highlightColor.withOpacity(0.2),
+        baseColor: Theme.of(Get.context!).highlightColor.withValues(alpha: 0.1),
+        highlightColor: Theme.of(Get.context!).highlightColor.withValues(alpha: 0.2),
         child: this,
       );
 }
@@ -372,7 +370,6 @@ extension PulltoRefresh on Widget {
     required VoidCallback onLoading,
     required bool enablePullUp,
     required bool enablePullDown,
-
   }) =>
       SmartRefresher(
         enablePullDown: enablePullDown,
@@ -428,7 +425,11 @@ extension PinchZoomImage on Widget {
 
 extension AppChip on Widget {
   Widget makeChip({Color? backGroundColor}) => Container(
-    color: backGroundColor ?? AppColorConstants.themeColor.withOpacity(0.2),
-    child: setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 8),
-  ).borderWithRadius(value: 1, radius: 20);
+        color: backGroundColor ?? AppColorConstants.themeColor.withValues(alpha: 0.2),
+        child: setPadding(
+            left: DesignConstants.horizontalPadding,
+            right: DesignConstants.horizontalPadding,
+            top: 8,
+            bottom: 8),
+      ).borderWithRadius(value: 1, radius: 20);
 }

@@ -34,7 +34,9 @@ class WatchVideosController extends GetxController {
   }
 
   void getPosts(VoidCallback callback) async {
-    postDataWrapper.isLoading.value = true;
+    if(postDataWrapper.page == 1){
+      postDataWrapper.isLoading.value = true;
+    }
     PostApi.getPosts(
         isVideo: 1,
         page: postDataWrapper.page,
@@ -42,13 +44,8 @@ class WatchVideosController extends GetxController {
           videos.addAll(result);
           videos.sort((a, b) => b.createDate!.compareTo(a.createDate!));
           videos.unique((e) => e.id);
-          postDataWrapper.isLoading.value = false;
 
-          postDataWrapper.totalRecords.value = metadata.totalCount;
-          postDataWrapper.haveMoreData.value =
-              metadata.pageCount >= metadata.currentPage;
-
-          postDataWrapper.page += 1;
+          postDataWrapper.processCompletedWithData(metadata);
 
           callback();
           update();

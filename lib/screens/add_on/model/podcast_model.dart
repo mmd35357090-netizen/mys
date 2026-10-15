@@ -10,7 +10,6 @@ class HostModel {
   String description = '';
   String image = '';
   String copyright = '';
-  String categoryName = '';
   int isSubscribed = 0;
   int isFavorite = 0;
   int currentViewer = 0;
@@ -28,7 +27,6 @@ class HostModel {
     model.description = json['description'] ?? '';
     model.image = json['imageUrl'];
     model.copyright = json['copyright'];
-    model.categoryName = json['categoryName'];
     model.isSubscribed = json['is_subscribed'] ?? 0;
     model.isFavorite = json['is_favorite'] ?? 0;
     model.currentViewer = json['currentViewer'] ?? 0;
@@ -39,6 +37,10 @@ class HostModel {
   bool get isLocked {
     return isPaid == 1 && isSubscribed == 0;
   }
+}
+
+class HostSearchModel {
+  String? name;
 }
 
 class PodcastModel {
@@ -64,7 +66,8 @@ class PodcastModel {
     model.ageGroup = json['age_group'];
     model.description = json['description'] ?? '';
     model.image = json['imageUrl'];
-    model.showTime = DateFormat('dd-MM-yyyy hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(json['show_time'] * 1000));
+    model.showTime = DateFormat('dd-MM-yyyy hh:mm a')
+        .format(DateTime.fromMillisecondsSinceEpoch(json['show_time'] * 1000));
     return model;
   }
 }
@@ -89,4 +92,10 @@ class PodcastEpisodeModel {
     model.audioUrl = json['audioUrl'];
     return model;
   }
+}
+
+class PodcastSearchModel {
+  int? hostId;
+  int? categoryId;
+  String? name;
 }

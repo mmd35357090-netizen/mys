@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../components/custom_texts.dart';
 import '../util/app_config_constants.dart';
+import '../util/constant_util.dart';
 
 class HorizontalMenuBar extends StatefulWidget {
   final Function(int) onSegmentChange;
@@ -15,13 +16,13 @@ class HorizontalMenuBar extends StatefulWidget {
   final int selectedIndex;
 
   const HorizontalMenuBar(
-      {Key? key,
+      {super.key,
       required this.onSegmentChange,
       required this.menus,
       required this.selectedIndex,
       this.height,
       this.padding})
-      : super(key: key);
+      ;
 
   @override
   HorizontalMenuBarState createState() => HorizontalMenuBarState();
@@ -38,58 +39,49 @@ class HorizontalMenuBarState extends State<HorizontalMenuBar> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: widget.height ??
-          (widget.padding == null
-              ? 35
-              : (35 + widget.padding!.top + widget.padding!.bottom)),
-      child: Center(
-        child: ListView.separated(
-            padding: widget.padding ?? EdgeInsets.zero,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (BuildContext context, index) {
-              return Column(
-                children: [
-                  Container(
+      height: 40,
+      child: ListView.separated(
+          padding: EdgeInsets.only(
+              left: DesignConstants.horizontalPadding,
+              right: DesignConstants.horizontalPadding),
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (BuildContext context, index) {
+            return Column(
+              children: [
+                Container(
+                  color: index == widget.selectedIndex
+                      ? AppColorConstants.themeColor
+                      : isDarkMode
+                          ? AppColorConstants.cardColor.lighten()
+                          : AppColorConstants.cardColor.darken(),
+                  child: BodyLargeText(
+                    widget.menus[index].tr,
                     color: index == widget.selectedIndex
-                        ? AppColorConstants.themeColor
-                        : AppColorConstants.cardColor.darken(),
-                    child: BodySmallText(
-                      widget.menus[index].tr,
-                      color: AppColorConstants.mainTextColor,
-                      weight: index == widget.selectedIndex
-                          ? TextWeight.semiBold
-                          : TextWeight.medium,
-                    )
-                        .setPadding(
-                            left: DesignConstants.horizontalPadding,
-                            right: DesignConstants.horizontalPadding,
-                            top: 5,
-                            bottom: 5)
-                        .ripple(() {
-                      setState(() {
-                        // selectedMenu = menus[index];
-                        widget.onSegmentChange(index);
-                      });
-                    }),
-                  ).round(20),
-                  // const SizedBox(
-                  //   height: 5,
-                  // ),
-                  // Container(
-                  //   height: 2,
-                  //   width: widget.menus[index].length * 8,
-                  //   color: index == widget.selectedIndex
-                  //       ? ColorConstants.themeColor
-                  //       : Colors.transparent,
-                  // ).round(10)
-                ],
-              );
-            },
-            separatorBuilder: (BuildContext context, index) {
-              return const SizedBox(width: 10);
-            },
-            itemCount: widget.menus.length),
-      ),
+                        ? Colors.white
+                        : AppColorConstants.mainTextColor,
+                    weight: index == widget.selectedIndex
+                        ? TextWeight.semiBold
+                        : TextWeight.medium,
+                  )
+                      .setPadding(
+                          left: DesignConstants.horizontalPadding,
+                          right: DesignConstants.horizontalPadding,
+                          top: 5,
+                          bottom: 5)
+                      .ripple(() {
+                    setState(() {
+                      // selectedMenu = menus[index];
+                      widget.onSegmentChange(index);
+                    });
+                  }),
+                ).round(20),
+              ],
+            );
+          },
+          separatorBuilder: (BuildContext context, index) {
+            return const SizedBox(width: 10);
+          },
+          itemCount: widget.menus.length),
     );
   }
 }
@@ -100,11 +92,11 @@ class StaggeredMenuBar extends StatefulWidget {
   final List<Widget> childs;
 
   const StaggeredMenuBar({
-    Key? key,
+    super.key,
     this.title,
     required this.childs,
     required this.onSegmentChange,
-  }) : super(key: key);
+  }) ;
 
   @override
   State<StaggeredMenuBar> createState() => _StaggeredMenuBarState();
@@ -152,7 +144,7 @@ class HorizontalSegmentBar extends StatefulWidget {
   final bool? adjustInMinimumWidth;
 
   const HorizontalSegmentBar({
-    Key? key,
+    super.key,
     required this.onSegmentChange,
     required this.segments,
     this.textStyle,
@@ -160,7 +152,7 @@ class HorizontalSegmentBar extends StatefulWidget {
     this.width,
     this.hideHighlightIndicator,
     this.adjustInMinimumWidth,
-  }) : super(key: key);
+  }) ;
 
   @override
   State<HorizontalSegmentBar> createState() => _HorizontalSegmentBarState();
@@ -177,7 +169,7 @@ class _HorizontalSegmentBarState extends State<HorizontalSegmentBar> {
     width = 0;
     Future.delayed(Duration.zero, () {
       setState(() {
-        width = widget.width ?? MediaQuery.of(context).size.width - 40;
+        width = widget.width ?? Get.width - 40;
       });
     });
   }
@@ -265,10 +257,10 @@ class LargeHorizontalMenuBar extends StatefulWidget {
   final List<Widget> childs;
 
   const LargeHorizontalMenuBar({
-    Key? key,
+    super.key,
     required this.onSegmentChange,
     required this.childs,
-  }) : super(key: key);
+  }) ;
 
   @override
   State<LargeHorizontalMenuBar> createState() => _LargeHorizontalMenuBarState();
@@ -315,14 +307,14 @@ class HorizontalSegmentBarWithPointer extends StatefulWidget {
   final int? selectedMenuIndex;
 
   const HorizontalSegmentBarWithPointer(
-      {Key? key,
+      {super.key,
       required this.onSegmentChange,
       required this.segments,
       this.textStyle,
       this.selectedTextStyle,
       this.width,
       this.selectedMenuIndex})
-      : super(key: key);
+      ;
 
   @override
   State<HorizontalSegmentBarWithPointer> createState() =>
@@ -349,7 +341,7 @@ class _HorizontalSegmentBarWithPointerState
 
     Future.delayed(Duration.zero, () {
       setState(() {
-        width = widget.width ?? MediaQuery.of(context).size.width - 40;
+        width = widget.width ?? Get.width - 40;
       });
     });
   }
@@ -403,7 +395,7 @@ class _HorizontalSegmentBarWithPointerState
                             height: 2,
                             width: width / menus.length,
                             color: AppColorConstants.disabledColor
-                                .withOpacity(0.5),
+                                .withValues(alpha: 0.5),
                           )
                   ],
                 ),

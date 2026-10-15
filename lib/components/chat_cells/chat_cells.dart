@@ -13,13 +13,12 @@ class ChatMessageTile extends StatelessWidget {
   final Function(ChatMessageModel) messageTapHandler;
 
   ChatMessageTile(
-      {Key? key,
+      {super.key,
       required this.message,
       required this.showName,
       required this.actionMode,
       required this.replyMessageTapHandler,
-      required this.messageTapHandler})
-      : super(key: key);
+      required this.messageTapHandler});
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +57,8 @@ class ChatMessageTile extends StatelessWidget {
                           message.messageContentType == MessageContentType.story
                       ? Colors.transparent
                       : message.isMineMessage
-                          ? AppColorConstants.backgroundColor
-                          : AppColorConstants.themeColor.darken(0.05),
+                          ? AppColorConstants.themeColor.withValues(alpha: 0.5)
+                          : AppColorConstants.cardColor,
                   child: Column(
                     crossAxisAlignment: message.isMineMessage
                         ? CrossAxisAlignment.end
@@ -193,7 +192,7 @@ class ChatMessageTile extends StatelessWidget {
 
   Widget nameWidget(BuildContext context) {
     return BodyLargeText(
-      message.isMineMessage ? youString.tr : message.sender!.userName,
+      message.isMineMessage ? '' : message.sender!.userName,
       weight: TextWeight.bold,
     );
   }
@@ -202,8 +201,7 @@ class ChatMessageTile extends StatelessWidget {
 class MessageDeliveryStatusView extends StatelessWidget {
   final ChatMessageModel message;
 
-  const MessageDeliveryStatusView({Key? key, required this.message})
-      : super(key: key);
+  const MessageDeliveryStatusView({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +213,7 @@ class MessageDeliveryStatusView extends StatelessWidget {
           var visiblePercentage = visibilityInfo.visibleFraction * 100;
 
           if (!message.isMineMessage && visiblePercentage > 90) {
-            if (message.messageStatusType != MessageStatus.read &&
+            if (message.isMessageReadyByMe == false &&
                 message.messageContentType != MessageContentType.groupAction &&
                 !message.isDateSeparator) {
               chatDetailController.sendMessageAsRead(message);
@@ -224,7 +222,9 @@ class MessageDeliveryStatusView extends StatelessWidget {
           }
         },
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: message.isMineMessage
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             message.isStar == 1

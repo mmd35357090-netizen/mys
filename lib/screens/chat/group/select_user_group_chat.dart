@@ -1,14 +1,13 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import '../../../components/search_bar.dart';
 import '../../../components/user_card.dart';
 
 class SelectUserForGroupChat extends StatefulWidget {
   final ChatRoomModel? group;
   final VoidCallback? invitedUserCallback;
 
-  const SelectUserForGroupChat({Key? key, this.group, this.invitedUserCallback})
-      : super(key: key);
+  const SelectUserForGroupChat({super.key, this.group, this.invitedUserCallback})
+      ;
 
   @override
   SelectUserForGroupChatState createState() => SelectUserForGroupChatState();
@@ -28,7 +27,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -43,7 +42,7 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.close,
                       size: 20,
                     ).ripple(() {
@@ -98,65 +97,6 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
               ],
             ),
           ).hp(DesignConstants.horizontalPadding),
-          const SizedBox(height: 8,),
-          GetBuilder<SelectUserForGroupChatController>(
-            init: selectUserForGroupChatController,
-            builder: (ctx) {
-              List<UserModel> usersList =
-                  selectUserForGroupChatController.selectedFriends;
-
-              return usersList.isNotEmpty
-                  ? SizedBox(
-                      height: 110,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.only(
-                            top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 10),
-                        itemCount: usersList.length,
-                        itemBuilder: (context, index) {
-                          return Stack(
-                            children: [
-                              Column(
-                                children: [
-                                  UserAvatarView(
-                                    user: usersList[index],
-                                    size: 50,
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  BodyLargeText(
-                                    usersList[index].userName,
-                                  )
-                                ],
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: Container(
-                                    height: 25,
-                                    width: 25,
-                                    color: AppColorConstants.cardColor,
-                                    child: const ThemeIconWidget(
-                                      ThemeIcon.close,
-                                      size: 20,
-                                    )).circular.ripple(() {
-                                  selectUserForGroupChatController
-                                      .selectFriend(usersList[index]);
-                                }),
-                              ),
-                            ],
-                          );
-                        },
-                        separatorBuilder: (context, index) {
-                          return const SizedBox(
-                            width: 15,
-                          );
-                        },
-                      ))
-                  : Container();
-            },
-          ),
           SFSearchBar(
                   showSearchIcon: true,
                   iconColor: AppColorConstants.themeColor,
@@ -168,7 +108,6 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                   },
                   onSearchCompleted: (searchTerm) {})
               .p16,
-          divider().tP16,
           Expanded(
             child: GetBuilder<SelectUserForGroupChatController>(
                 init: selectUserForGroupChatController,
@@ -198,17 +137,11 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                         .toList();
                   }
 
-                  return GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 5,
-                            crossAxisSpacing: 5.0,
-                            mainAxisSpacing: 5.0,
-                            childAspectRatio: 0.8),
-                    padding: const EdgeInsets.only(top: 25, left: 8, right: 8),
+                  return ListView.separated(
+                    padding: const EdgeInsets.only(top: 25),
                     itemCount: usersList.length,
                     itemBuilder: (context, index) {
-                      return SelectableUserCard(
+                      return SelectableUserTile(
                         model: usersList[index],
                         isSelected: selectUserForGroupChatController
                             .selectedFriends
@@ -217,8 +150,9 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                           selectUserForGroupChatController
                               .selectFriend(usersList[index]);
                         },
-                      );
+                      ).hp(DesignConstants.horizontalPadding);
                     },
+                    separatorBuilder: (ctx, index) => divider(height: 0.5).vP16,
                   );
                 }),
           ),

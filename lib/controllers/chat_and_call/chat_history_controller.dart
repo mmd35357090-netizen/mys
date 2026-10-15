@@ -1,60 +1,48 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:foap/api_handler/apis/chat_api.dart';
-import 'package:foap/controllers/profile/profile_controller.dart';
+import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import 'package:get/get.dart';
-import '../../helper/user_profile_manager.dart';
-import '../../model/data_wrapper.dart';
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/list_extension.dart';
+import 'package:foap/model/data_wrapper.dart';
+import '../../manager/db_manager_realm.dart';
 import '../../screens/dashboard/dashboard_screen.dart';
 
 class ChatHistoryController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();
   final DashboardController _dashboardController = Get.find();
-  final ProfileController _profileController = Get.find();
 
   List<ChatRoomModel> allRooms = [];
   RxList<ChatRoomModel> publicGroups = <ChatRoomModel>[].obs;
 
-  RxList<ChatRoomModel> searchedRooms = <ChatRoomModel>[].obs;
+  final RxList<ChatRoomModel> _searchedRooms = <ChatRoomModel>[].obs;
+  RxMap<String, List<ChatRoomModel>> groupedRooms =
+      <String, List<ChatRoomModel>>{}.obs;
 
   Map<String, dynamic> typingStatus = {};
+
   DataWrapper publicGroupsDataWrapper = DataWrapper();
-  DataWrapper chatRoomDataWrapper = DataWrapper();
 
   getChatRooms() async {
-    allRooms = await getIt<DBManager>().getAllRooms();
+    allRooms = await getIt<RealmDBManager>().getAllRooms();
 
-    searchedRooms.value = allRooms;
+    _searchedRooms.value = allRooms;
     update();
 
-    // if (allRooms.isEmpty) {
     ChatApi.getChatRooms(resultCallback: (result) async {
-      List<ChatRoomModel> groupChatRooms = result
-          // .where((element) => element.isGroupChat == true)
-          .toList();
-      await getIt<DBManager>().saveRooms(groupChatRooms);
+      allRooms = result;
+      await getIt<RealmDBManager>().saveRooms(result);
 
-      allRooms = await getIt<DBManager>().getAllRooms();
-      // allRooms = await getIt<DBManager>().mapUnReadCount(groupChatRooms);
-      searchedRooms.value = allRooms;
-      searchedRooms.value = searchedRooms
-          .where(
-              (e) => e.isGroupChat == true || (e.roomMembers.length > 1))
-          .toList();
+      _searchedRooms.value = allRooms;
+      groupRooms();
       update();
     });
-    // } else {
-    //   isLoading = false;
-    // }
-  }
-  
-  refreshPublicGroups(VoidCallback callback) {
-    publicGroupsDataWrapper = DataWrapper();
-    publicGroups.clear();
-    getPublicChatRooms(callback);
   }
 
+  refreshPublicGroups(VoidCallback callback) {
+    publicGroupsDataWrapper = DataWrapper();
+    getPublicChatRooms(callback);
+  }
 
   loadMorePublicGroups(VoidCallback callback) {
     if (publicGroupsDataWrapper.haveMoreData.value) {
@@ -64,65 +52,66 @@ class ChatHistoryController extends GetxController {
     }
   }
 
- getPublicChatRooms(VoidCallback callback) async {
-  publicGroupsDataWrapper.isLoading.value = true;
+  getPublicChatRooms(VoidCallback callback) async {
+    publicGroupsDataWrapper.isLoading.value = true;
 
-  ChatApi.getPublicChatRooms(
-    page: publicGroupsDataWrapper.page,
-    resultCallback: (result, metaData) async {
-      publicGroupsDataWrapper.isLoading.value = false;
+    ChatApi.getPublicChatRooms(
+        page: publicGroupsDataWrapper.page,
+        resultCallback: (result, metaData) async {
+          publicGroups.addAll(result);
+          publicGroups.unique((e) => e.id);
 
-      for (final room in result) {
-        final index =
-            publicGroups.indexWhere((item) => item.id == room.id);
+          publicGroupsDataWrapper.processCompletedWithData(metaData);
+          callback();
+          update();
+        });
+  }
 
-        if (index == -1) {
-          publicGroups.add(room);
-        } else {
-          publicGroups[index] = room;
-        }
+  groupRooms() {
+    _searchedRooms.value = _searchedRooms
+        .where((e) => e.isGroupChat == true || (e.roomMembers.length > 1))
+        .toList();
+    _searchedRooms.value = _searchedRooms.map((e) {
+      ChatRoomModel room = e;
+      if (e.lastMessage?.date.isToday == true || e.createAtDate.isToday) {
+        room.roomDateForGrouping = todayString;
+      } else if (e.lastMessage?.date.isThisWeek == true ||
+          e.createAtDate.isThisWeek) {
+        room.roomDateForGrouping = thisWeekString;
+      } else if (e.lastMessage?.date.isThisMonth == true ||
+          e.createAtDate.isThisMonth) {
+        room.roomDateForGrouping = thisMonthString;
+      } else {
+        room.roomDateForGrouping = earlierString;
       }
-
-      publicGroupsDataWrapper.haveMoreData.value =
-          metaData.currentPage < metaData.pageCount;
-
-      publicGroupsDataWrapper.page += 1;
-
-      publicGroups.refresh();
-      callback();
-      update();
-    },
-   );
- }
-
-
-  
+      return room;
+    }).toList();
+    groupedRooms.value = _searchedRooms.groupBy((m) => m.roomDateForGrouping);
+    update();
+  }
 
   searchTextChanged(String text) {
     if (text.isEmpty) {
-      searchedRooms.value = allRooms;
-      update();
+      _searchedRooms.value = allRooms;
+      groupRooms();
       return;
     }
-    searchedRooms.value = allRooms.where((room) {
+    _searchedRooms.value = allRooms.where((room) {
       if (room.isGroupChat) {
         return room.name!.toLowerCase().contains(text);
       } else {
-        return room.opponent.userDetail.userName
-            .toLowerCase()
-            .contains(text);
+        return room.opponent!.userDetail.userName.toLowerCase().contains(text);
       }
     }).toList();
-    searchedRooms.refresh();
+    groupRooms();
     update();
   }
 
   clearUnreadCount({required ChatRoomModel chatRoom}) async {
-    getIt<DBManager>().clearUnReadCount(roomId: chatRoom.id);
+    getIt<RealmDBManager>().clearUnReadCount(roomId: chatRoom.id);
     int roomsWithUnreadMessageCount =
-        await getIt<DBManager>().roomsWithUnreadMessages();
-    _dashboardController
-        .updateUnreadMessageCount(roomsWithUnreadMessageCount);
+        await getIt<RealmDBManager>().roomsWithUnreadMessages();
+    _dashboardController.updateUnreadMessageCount(roomsWithUnreadMessageCount);
 
     getChatRooms();
     update();
@@ -130,7 +119,7 @@ class ChatHistoryController extends GetxController {
 
   deleteRoom(ChatRoomModel chatRoom) {
     allRooms.removeWhere((element) => element.id == chatRoom.id);
-    getIt<DBManager>().deleteRooms([chatRoom]);
+    getIt<RealmDBManager>().deleteRooms([chatRoom]);
     update();
     ChatApi.deleteChatRoom(chatRoom.id);
   }
@@ -148,20 +137,16 @@ class ChatHistoryController extends GetxController {
       room.whoIsTyping.remove(message.userName);
       typingStatus[message.userName] = null;
 
-      // room.unreadMessages += 1;
-      // allRooms.refresh();
-      searchedRooms.refresh();
+      _searchedRooms.refresh();
       update();
-      getIt<DBManager>().updateUnReadCount(roomId: message.roomId);
+      getIt<RealmDBManager>().updateUnReadCount(roomId: message.roomId);
     }
 
     getChatRooms();
   }
 
   userTypingStatusChanged(
-      {required String userName,
-      required int roomId,
-      required bool status}) {
+      {required String userName, required int roomId, required bool status}) {
     var matchedRooms = allRooms.where((element) => element.id == roomId);
 
     if (matchedRooms.isNotEmpty) {
@@ -169,24 +154,19 @@ class ChatHistoryController extends GetxController {
 
       if (typingStatus[userName] == null) {
         room.whoIsTyping.add(userName);
-        searchedRooms.refresh();
+        _searchedRooms.refresh();
       }
 
       typingStatus[userName] = DateTime.now();
 
-      // room.isTyping = status;
-      // searchedRooms.refresh();
-      // update();
       if (status == true) {
         Timer(const Duration(seconds: 5), () {
           if (typingStatus[userName] != null) {
-            if (DateTime.now()
-                    .difference(typingStatus[userName]!)
-                    .inSeconds >
+            if (DateTime.now().difference(typingStatus[userName]!).inSeconds >
                 4) {
               room.whoIsTyping.remove(userName);
               typingStatus[userName] = null;
-              searchedRooms.refresh();
+              _searchedRooms.refresh();
               update();
             }
           }
@@ -196,21 +176,16 @@ class ChatHistoryController extends GetxController {
     }
   }
 
-  userAvailabilityStatusChange(
-      {required int userId, required bool isOnline}) {
-    _profileController.user.value?.isOnline = isOnline;
-    _profileController.update();
-    // var matchedRooms = allRooms
-    //     .where((e) => e.roomMembers.isNotEmpty)
-    //     .where((element) => element.opponent.id == userId);
-    //
-    // if (matchedRooms.isNotEmpty) {
-    //   var room = matchedRooms.first;
-    //   room.isOnline = isOnline;
-    //   room.opponent.userDetail.isOnline = isOnline;
-    //   searchedRooms.refresh();
-    //   // update();
-    // }
+  userAvailabilityStatusChange({required int userId, required bool isOnline}) {
+    var matchedRooms =
+        allRooms.where((element) => element.opponent?.id == userId);
+
+    if (matchedRooms.isNotEmpty) {
+      var room = matchedRooms.first;
+      room.isOnline = isOnline;
+      room.opponent!.userDetail.isOnline = isOnline;
+      _searchedRooms.refresh();
+    }
   }
 
   joinPublicGroup(ChatRoomModel room) {

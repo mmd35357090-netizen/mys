@@ -9,7 +9,7 @@ import '../../util/constant_util.dart';
 class DrawingScreen extends StatefulWidget {
   final Function(Media)? drawingCompleted;
 
-  const DrawingScreen({Key? key, this.drawingCompleted}) : super(key: key);
+  const DrawingScreen({super.key, this.drawingCompleted}) ;
 
   @override
   State<DrawingScreen> createState() => _DrawingScreenState();
@@ -49,9 +49,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
     Directory directory = await getTemporaryDirectory();
     filePath = '${directory.path}/drawing.png';
     File file = File(filePath);
-    // print(filePath);
     if (file.existsSync()) {
-      // print('deleted');
       file.delete();
     }
   }
@@ -64,7 +62,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
@@ -73,8 +71,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
                   controller: _drawingController,
                   background: Container(
                       width: Get.width,
-                      height: Get.height,
-                      // height: double.infinity,
+                      height: Get.height * 0.5,
                       color: _drawingBoardController
                           .selectedBackgroundColor.value),
                 )),
@@ -184,14 +181,13 @@ class _DrawingScreenState extends State<DrawingScreen> {
           height: 30,
           width: 30,
           color: AppColorConstants.backgroundColor,
-          child: const ThemeIconWidget(ThemeIcon.edit),
+          child: ThemeIconWidget(ThemeIcon.edit),
         ).borderWithRadius(value: 5, radius: 1),
         SizedBox(
-          width: Get.width - 80,
+          width: Get.width - 100,
           height: 50,
           child: ListView.builder(
-              padding:
-                  EdgeInsets.only(left: DesignConstants.horizontalPadding),
+              padding: EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
@@ -212,11 +208,10 @@ class _DrawingScreenState extends State<DrawingScreen> {
           color: Colors.white,
         ).borderWithRadius(value: 5, radius: 1),
         SizedBox(
-          width: Get.width - 80,
+          width: Get.width - 100,
           height: 50,
           child: ListView.builder(
-              padding:
-                  EdgeInsets.only(left: DesignConstants.horizontalPadding),
+              padding: EdgeInsets.only(left: DesignConstants.horizontalPadding),
               itemCount: 10,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
@@ -234,20 +229,17 @@ class _DrawingScreenState extends State<DrawingScreen> {
       child: Obx(() => FloatingActionButton.small(
             tooltip: "Erase",
             backgroundColor: const Color(0xFFF7FBFF),
-            elevation:
-                _drawingBoardController.isErasing.value == true ? 10 : 2,
+            elevation: _drawingBoardController.isErasing.value == true ? 10 : 2,
             shape: const CircleBorder(),
             onPressed: () {
               if (_drawingBoardController.isErasing.value == true) {
-                _drawingController.setPaintContent(SimpleLine());
+                _drawingController.addContent(SimpleLine());
               } else {
-                _drawingController.setPaintContent(Eraser());
+                _drawingController.addContent(Eraser());
               }
-
-              _drawingBoardController.eraseToggle();
+              // _drawingBoardController.eraseToggle();
             },
-            child: const Icon(Icons.cleaning_services,
-                color: Colors.blueGrey),
+            child: const Icon(Icons.cleaning_services, color: Colors.blueGrey),
           )),
     );
   }
@@ -263,10 +255,9 @@ class _DrawingScreenState extends State<DrawingScreen> {
               : 40,
           color: color,
         ).border(
-            value:
-                _drawingBoardController.selectedStrokeColor.value == color
-                    ? 5
-                    : 0,
+            value: _drawingBoardController.selectedStrokeColor.value == color
+                ? 5
+                : 0,
             color: AppColorConstants.themeColor)).ripple(() {
       _drawingController.setStyle(color: color);
       _drawingBoardController.setStrokeColor(color);
@@ -278,17 +269,16 @@ class _DrawingScreenState extends State<DrawingScreen> {
     required Color color,
   }) {
     return Obx(() => Container(
-          width: _drawingBoardController.selectedBackgroundColor.value ==
-                  color
+          width: _drawingBoardController.selectedBackgroundColor.value == color
               ? 30
               : 40,
           height: 40,
           color: color,
         ).border(
-            value: _drawingBoardController.selectedBackgroundColor.value ==
-                    color
-                ? 5
-                : 0,
+            value:
+                _drawingBoardController.selectedBackgroundColor.value == color
+                    ? 5
+                    : 0,
             color: AppColorConstants.themeColor)).ripple(() {
       // print('background color');
       _drawingBoardController.setBackgroundColor(color);
@@ -306,9 +296,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
         }
       },
       disabledElevation: 0,
-      backgroundColor: _drawingController.currentIndex > 0
-          ? Colors.blueGrey
-          : Colors.grey,
+      backgroundColor:
+          _drawingController.currentIndex > 0 ? Colors.blueGrey : Colors.grey,
       child: const Icon(
         Icons.undo_rounded,
         color: Colors.white,
@@ -328,10 +317,10 @@ class _DrawingScreenState extends State<DrawingScreen> {
         }
       },
       disabledElevation: 0,
-      backgroundColor: _drawingController.currentIndex <
-              _drawingController.getHistory.length
-          ? Colors.blueGrey
-          : Colors.grey,
+      backgroundColor:
+          _drawingController.currentIndex < _drawingController.getHistory.length
+              ? Colors.blueGrey
+              : Colors.grey,
       child: const Icon(
         Icons.redo_rounded,
         color: Colors.white,

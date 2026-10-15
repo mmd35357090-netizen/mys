@@ -21,7 +21,6 @@ class TvStreamingController extends GetxController {
   RxBool showChatMessages = false.obs;
   RxList<TVBannersModel> banners = <TVBannersModel>[].obs;
   RxList<TvModel> tvs = <TvModel>[].obs;
-
   RxList<TvCategoryModel> categories = <TvCategoryModel>[].obs;
   RxList<TVShowModel> tvShows = <TVShowModel>[].obs;
   RxList<TVShowEpisodeModel> tvEpisodes = <TVShowEpisodeModel>[].obs;
@@ -59,7 +58,6 @@ class TvStreamingController extends GetxController {
 
   clearTvs() {
     tvs.clear();
-
     currentViewingTv.value = null;
 
     isLoadingFavTvs = false;

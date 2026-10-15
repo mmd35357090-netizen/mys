@@ -69,7 +69,9 @@ class RichTextPostTitle extends StatelessWidget {
       query.hashTag = text.replaceAll('#', '');
       postController.setPostSearchQuery(query: query, callback: () {});
 
-      Get.to(() => const Posts());
+      Get.to(() => Posts(
+            title: text,
+          ));
       // _postController.getPosts();
     } else {
       String userTag = text.replaceAll('@', '');

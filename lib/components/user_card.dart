@@ -1,36 +1,95 @@
+import 'package:foap/controllers/misc/users_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/live_imports.dart';
+import 'package:foap/helper/number_extension.dart';
+import 'package:foap/model/collaboration_model.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
-import '../controllers/live/agora_live_controller.dart';
-import '../controllers/profile/profile_controller.dart';
-import '../model/call_model.dart';
 import '../model/club_join_request.dart';
 import '../model/club_member_model.dart';
-import '../model/collaboration_model.dart';
 import '../model/gift_model.dart';
-import '../model/live_model.dart';
 import '../model/story_model.dart';
 import '../screens/profile/other_user_profile.dart';
-import '../screens/profile/update_profile.dart';
 import '../screens/settings_menu/settings_controller.dart';
+
+class UserFollowUnfollowBtnController extends GetxController {
+  Rx<UserModel?> user = Rx<UserModel?>(null);
+  UsersController userController = Get.find();
+
+  setUser(UserModel user) {
+    this.user.value = user;
+  }
+
+  followUser() {
+    userController.followUser(user.value!);
+    user.refresh();
+  }
+
+  unFollowUser() {
+    userController.unFollowUser(user.value!);
+    user.refresh();
+  }
+}
+
+class UserFollowUnfollowButton extends StatelessWidget {
+  final UserFollowUnfollowBtnController controller;
+
+  final bool? isSmallSized;
+
+  const UserFollowUnfollowButton(
+      {super.key, required this.controller, this.isSmallSized});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => SizedBox(
+          height: isSmallSized == true ? 25 : 35,
+          width: isSmallSized == true ? 100 : 120,
+          child: controller.user.value!.followingStatus ==
+                  FollowingStatus.notFollowing
+              ? AppThemeBorderButton(
+                  text: controller.user.value!.isFollower == true
+                      ? followBackString.tr
+                      : followString.tr,
+                  backgroundColor: AppColorConstants.backgroundColor,
+                  onPress: () {
+                    controller.followUser();
+                  })
+              : controller.user.value!.followingStatus ==
+                      FollowingStatus.requested
+                  ? AppThemeBorderButton(
+                      text: requestedString.tr,
+                      backgroundColor: AppColorConstants.themeColor
+                          .withValues(alpha: 0.2),
+                      onPress: () {
+                        controller.unFollowUser();
+                      })
+                  : AppThemeButton(
+                      text: unFollowString.tr,
+                      onPress: () {
+                        controller.unFollowUser();
+                      }),
+        ));
+  }
+}
 
 class FollowUnfollowButton extends StatelessWidget {
   final UserModel user;
   final VoidCallback? followCallback;
   final VoidCallback? unFollowCallback;
+  final bool? isSmallSized;
 
   const FollowUnfollowButton(
-      {Key? key,
+      {super.key,
       required this.user,
       required this.followCallback,
-      required this.unFollowCallback})
-      : super(key: key);
+      this.isSmallSized,
+      required this.unFollowCallback});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 35,
-      width: 120,
+      height: isSmallSized == true ? 25 : 35,
+      width: isSmallSized == true ? 80 : 120,
       child: user.followingStatus == FollowingStatus.notFollowing
           ? AppThemeBorderButton(
               text: user.isFollower == true
@@ -45,7 +104,7 @@ class FollowUnfollowButton extends StatelessWidget {
               ? AppThemeBorderButton(
                   text: requestedString.tr,
                   backgroundColor:
-                      AppColorConstants.themeColor.withOpacity(0.2),
+                      AppColorConstants.themeColor.withValues(alpha: 0.2),
                   onPress: () {
                     if (unFollowCallback != null) {
                       unFollowCallback!();
@@ -65,24 +124,26 @@ class FollowUnfollowButton extends StatelessWidget {
 class UserInfo extends StatelessWidget {
   final UserModel model;
 
-  const UserInfo({Key? key, required this.model}) : super(key: key);
+  const UserInfo({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         UserAvatarView(
           user: model,
-          size: 40,
+          size: 25,
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
                 children: [
-                  BodyLargeText(
+                  BodySmallText(
                     model.name ?? model.userName,
                     weight: TextWeight.semiBold,
                     maxLines: 1,
@@ -106,147 +167,6 @@ class UserInfo extends StatelessWidget {
   }
 }
 
-class SelectableUserCard extends StatefulWidget {
-  final UserModel model;
-  final bool isSelected;
-  final VoidCallback? selectionHandler;
-
-  const SelectableUserCard(
-      {Key? key,
-      required this.model,
-      required this.isSelected,
-      this.selectionHandler})
-      : super(key: key);
-
-  @override
-  SelectableUserCardState createState() => SelectableUserCardState();
-}
-
-class SelectableUserCardState extends State<SelectableUserCard> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 50,
-          width: 50,
-          child: Stack(
-            children: [
-              UserAvatarView(
-                user: widget.model,
-                size: 50,
-              ),
-              widget.isSelected == true
-                  ? Positioned(
-                      child: Container(
-                      height: 50,
-                      width: 50,
-                      color: Colors.black45,
-                      child: const Center(
-                        child: ThemeIconWidget(
-                          ThemeIcon.checkMark,
-                          color: Colors.white,
-                          size: 25,
-                        ),
-                      ),
-                    ).round(25))
-                  : Container()
-            ],
-          ).ripple(
-            () {
-              widget.selectionHandler!();
-            },
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: BodySmallText(
-                widget.model.userName,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            if (widget.model.isVerified) verifiedUserTag()
-          ],
-        )
-      ],
-    );
-  }
-}
-
-class SelectableUserTile extends StatefulWidget {
-  final UserModel model;
-  final bool? canSelect;
-  final bool? isSelected;
-  final VoidCallback? selectionHandler;
-
-  const SelectableUserTile(
-      {Key? key,
-      required this.model,
-      this.canSelect,
-      this.isSelected,
-      this.selectionHandler})
-      : super(key: key);
-
-  @override
-  SelectableUserTileState createState() => SelectableUserTileState();
-}
-
-class SelectableUserTileState extends State<SelectableUserTile> {
-  final UserProfileManager _userProfileManager = Get.find();
-  late final UserModel model;
-
-  @override
-  void initState() {
-    super.initState();
-    model = widget.model;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        UserInfo(model: model),
-        const Spacer(),
-        widget.canSelect == true
-            ? ThemeIconWidget(
-                widget.isSelected == true
-                    ? ThemeIcon.checkMarkWithCircle
-                    : ThemeIcon.circleOutline,
-                color: AppColorConstants.themeColor,
-                size: 25,
-              )
-            : Container()
-      ],
-    ).ripple(
-      () {
-        if (widget.canSelect != true) {
-          if (model.id == _userProfileManager.user.value!.id) {
-            Get.to(() => const UpdateProfile());
-          } else {
-            Get.to(() => OtherUserProfile(
-                  userId: model.id,
-                ));
-          }
-        }
-
-        if (widget.selectionHandler != null) {
-          widget.selectionHandler!();
-        }
-      },
-    );
-  }
-}
-
 class UserTile extends StatelessWidget {
   final UserModel profile;
 
@@ -261,7 +181,7 @@ class UserTile extends StatelessWidget {
   final VoidCallback? sendCallback;
 
   const UserTile({
-    Key? key,
+    super.key,
     required this.profile,
     this.followCallback,
     this.unFollowCallback,
@@ -270,11 +190,10 @@ class UserTile extends StatelessWidget {
     this.audioCallCallback,
     this.videoCallCallback,
     this.sendCallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController profileController = Get.find();
     final AgoraLiveController agoraLiveController = Get.find();
     final SettingsController settingsController = Get.find();
 
@@ -286,7 +205,7 @@ class UserTile extends StatelessWidget {
             children: [
               UserAvatarView(
                 user: profile,
-                size: 40,
+                size: 30,
                 onTapHandler: () {
                   LiveModel live = LiveModel();
                   live.channelName = profile.liveCallDetail!.channelName;
@@ -324,8 +243,10 @@ class UserTile extends StatelessWidget {
             ],
           ).ripple(() {
             if (viewCallback == null) {
-              profileController.setUser(profile);
-              Get.to(() => OtherUserProfile(userId: profile.id));
+              Get.to(() => OtherUserProfile(
+                    userId: profile.id,
+                    user: profile,
+                  ));
             } else {
               viewCallback!();
             }
@@ -342,21 +263,21 @@ class UserTile extends StatelessWidget {
           Row(
             children: [
               if (settingsController.setting.value!.enableChat)
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.chat,
                   size: 20,
                 ).rP16.ripple(() {
                   chatCallback!();
                 }),
               if (settingsController.setting.value!.enableAudioCalling)
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.mobile,
                   size: 20,
                 ).rP16.ripple(() {
                   audioCallCallback!();
                 }),
               if (settingsController.setting.value!.enableVideoCalling)
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.videoCamera,
                   size: 20,
                 ).ripple(() {
@@ -374,7 +295,8 @@ class UserTile extends StatelessWidget {
                   icon: const Icon(Icons.send, color: Colors.white),
                   color: Colors.deepPurple.shade500),
               ButtonState.loading: IconedButton(
-                  text: loadingString.tr, color: Colors.deepPurple.shade700),
+                  text: loadingString.tr,
+                  color: Colors.deepPurple.shade700),
               ButtonState.fail: IconedButton(
                   text: failedString.tr,
                   icon: const Icon(Icons.cancel, color: Colors.white),
@@ -393,16 +315,248 @@ class UserTile extends StatelessWidget {
   }
 }
 
+class UserCard extends StatelessWidget {
+  final UserModel profile;
+
+  final VoidCallback? followCallback;
+  final VoidCallback? unFollowCallback;
+  final VoidCallback? viewCallback;
+
+  const UserCard({
+    super.key,
+    required this.profile,
+    this.followCallback,
+    this.unFollowCallback,
+    this.viewCallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: UserPlaneImageView(
+            user: profile,
+            size: double.infinity,
+          ).ripple(() {
+            if (viewCallback == null) {
+              Get.to(() => OtherUserProfile(
+                    userId: profile.id,
+                    user: profile,
+                  ));
+            } else {
+              viewCallback!();
+            }
+          }),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      BodyLargeText(
+                        profile.userName,
+                        weight: TextWeight.semiBold,
+                        maxLines: 1,
+                      ),
+                      if (profile.isVerified) verifiedUserTag(),
+                    ],
+                  ).bP4,
+                  BodyMediumText(
+                    '${profile.totalFollower.formatNumber} $followersString',
+                    color: AppColorConstants.mainTextColor,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        profile.isMe
+            ? const SizedBox(
+                height: 35,
+              )
+            : FollowUnfollowButton(
+                user: profile,
+                followCallback: followCallback,
+                unFollowCallback: unFollowCallback,
+              ),
+      ],
+    );
+  }
+}
+
+class SelectableUserCard extends StatefulWidget {
+  final UserModel model;
+  final bool isSelected;
+  final VoidCallback? selectionHandler;
+
+  const SelectableUserCard(
+      {super.key,
+      required this.model,
+      required this.isSelected,
+      this.selectionHandler});
+
+  @override
+  SelectableUserCardState createState() => SelectableUserCardState();
+}
+
+class SelectableUserCardState extends State<SelectableUserCard> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 50,
+          width: 50,
+          child: Stack(
+            children: [
+              UserAvatarView(
+                user: widget.model,
+                size: 50,
+              ),
+              widget.isSelected == true
+                  ? Positioned(
+                      child: Container(
+                      height: 50,
+                      width: 50,
+                      color: Colors.black45,
+                      child: Center(
+                        child: ThemeIconWidget(
+                          ThemeIcon.checkMark,
+                          color: Colors.white,
+                          size: 25,
+                        ),
+                      ),
+                    ).circular)
+                  : Container()
+            ],
+          ).ripple(
+            () {
+              widget.selectionHandler!();
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            BodyMediumText(widget.model.userName,
+                maxLines: 1, weight: TextWeight.medium),
+            if (widget.model.isVerified) verifiedUserTag()
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class SelectableUserTile extends StatefulWidget {
+  final UserModel model;
+  final bool? isSelected;
+  final VoidCallback? selectionHandler;
+
+  const SelectableUserTile(
+      {super.key,
+      required this.model,
+      this.isSelected,
+      this.selectionHandler});
+
+  @override
+  SelectableUserTileState createState() => SelectableUserTileState();
+}
+
+class SelectableUserTileState extends State<SelectableUserTile> {
+  late final UserModel model;
+
+  @override
+  void initState() {
+    super.initState();
+    model = widget.model;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            UserAvatarView(
+              user: model,
+              size: 40,
+            ),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    BodyLargeText(
+                      model.userName,
+                      weight: TextWeight.semiBold,
+                      maxLines: 1,
+                    ),
+                    if (widget.model.isVerified) verifiedUserTag()
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                model.country != null
+                    ? BodySmallText(
+                        '${model.country},${model.city}',
+                      )
+                    : Container(),
+              ],
+            ),
+          ],
+        ),
+        const Spacer(),
+        ThemeIconWidget(
+          widget.isSelected == true
+              ? ThemeIcon.checkMarkWithCircle
+              : ThemeIcon.circleOutline,
+          color: AppColorConstants.themeColor,
+          size: 25,
+        )
+      ],
+    ).ripple(
+      () {
+        if (widget.selectionHandler != null) {
+          widget.selectionHandler!();
+        }
+      },
+    );
+  }
+}
+
 class InviteUserTile extends StatelessWidget {
   final UserModel profile;
 
   final VoidCallback? inviteCallback;
 
   const InviteUserTile({
-    Key? key,
+    super.key,
     required this.profile,
     this.inviteCallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -484,17 +638,15 @@ class RelationUserTile extends StatelessWidget {
   final VoidCallback? viewCallback;
 
   const RelationUserTile({
-    Key? key,
+    super.key,
     required this.profile,
     this.inviteCallback,
     this.unInviteCallback,
     this.viewCallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController profileController = Get.find();
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -531,8 +683,10 @@ class RelationUserTile extends StatelessWidget {
           ],
         ).ripple(() {
           if (viewCallback == null) {
-            profileController.setUser(profile);
-            Get.to(() => OtherUserProfile(userId: profile.id));
+            Get.to(() => OtherUserProfile(
+                  userId: profile.id,
+                  user: profile,
+                ));
           } else {
             viewCallback!();
           }
@@ -566,11 +720,11 @@ class ClubMemberTile extends StatelessWidget {
   final VoidCallback? viewCallback;
 
   const ClubMemberTile({
-    Key? key,
+    super.key,
     required this.member,
     this.removeBtnCallback,
     this.viewCallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -587,7 +741,8 @@ class ClubMemberTile extends StatelessWidget {
               size: 40,
               onTapHandler: () {
                 LiveModel live = LiveModel();
-                live.channelName = member.user!.liveCallDetail!.channelName;
+                live.channelName =
+                    member.user!.liveCallDetail!.channelName;
                 live.mainHostUserDetail = member.user!;
                 live.token = member.user!.liveCallDetail!.token;
                 live.id = member.user!.liveCallDetail!.id;
@@ -597,7 +752,7 @@ class ClubMemberTile extends StatelessWidget {
               },
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width - 200,
+              width: Get.width - 250,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -662,25 +817,25 @@ class SendMessageUserTile extends StatelessWidget {
   final VoidCallback? sendCallback;
 
   const SendMessageUserTile({
-    Key? key,
+    super.key,
     required this.profile,
     required this.state,
     this.viewCallback,
     this.sendCallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController profileController = Get.find();
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: UserInfo(model: profile).ripple(() {
             if (viewCallback == null) {
-              profileController.setUser(profile);
-              Get.to(() => OtherUserProfile(userId: profile.id));
+              Get.to(() => OtherUserProfile(
+                    userId: profile.id,
+                    user: profile,
+                  ));
             } else {
               viewCallback!();
             }
@@ -702,23 +857,27 @@ class SendMessageUserTile extends StatelessWidget {
                       iconedButtons: {
                         ButtonState.idle: IconedButton(
                             text: sendString.tr,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.send,
-                              color: Colors.white,
+                              color: AppColorConstants.iconColor,
                               size: 15,
                             ),
-                            color: AppColorConstants.themeColor.lighten(0.1)),
+                            color:
+                                AppColorConstants.themeColor.lighten(0.1)),
                         ButtonState.loading: IconedButton(
-                            text: loadingString.tr, color: Colors.white),
+                            text: loadingString.tr,
+                            color: AppColorConstants.iconColor),
                         ButtonState.fail: IconedButton(
                             text: failedString.tr,
-                            icon: const Icon(Icons.cancel,
-                                color: Colors.white, size: 15),
+                            icon: Icon(Icons.cancel,
+                                color: AppColorConstants.iconColor,
+                                size: 15),
                             color: AppColorConstants.red),
                         ButtonState.success: IconedButton(
                             text: sentString.tr,
-                            icon: const Icon(Icons.check_circle,
-                                color: Colors.white, size: 15),
+                            icon: Icon(Icons.check_circle,
+                                color: AppColorConstants.iconColor,
+                                size: 15),
                             color: AppColorConstants.themeColor.darken())
                       },
                       onPressed: sendCallback,
@@ -736,17 +895,17 @@ class BlockedUserTile extends StatelessWidget {
   final VoidCallback? unBlockCallback;
 
   const BlockedUserTile({
-    Key? key,
+    super.key,
     required this.profile,
     this.unBlockCallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        UserInfo(model: profile),
+        Expanded(child: UserInfo(model: profile)),
         SizedBox(
             height: 35,
             width: 110,
@@ -770,34 +929,52 @@ class BlockedUserTile extends StatelessWidget {
 class GifterUserTile extends StatelessWidget {
   final ReceivedGiftModel gift;
 
-  const GifterUserTile({Key? key, required this.gift}) : super(key: key);
+  const GifterUserTile({super.key, required this.gift});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        UserInfo(model: gift.sender),
-        const Spacer(),
-        CachedNetworkImage(
-          imageUrl: gift.giftDetail.logo,
-          height: 40,
-          width: 40,
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        const ThemeIconWidget(
-          ThemeIcon.diamond,
-          color: Colors.yellow,
-          size: 18,
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        BodyLargeText(gift.giftDetail.coins.toString(),
-            weight: TextWeight.semiBold)
-      ],
+    return SizedBox(
+      height: 60,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BodyMediumText(
+              gift.source == GiftSource.post
+                  ? sentOnPostString.tr
+                  : gift.source == GiftSource.live
+                      ? sentOnLiveString.tr
+                      : sentOnProfileString.tr,
+              weight: TextWeight.semiBold),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: UserInfo(model: gift.sender)),
+              const Spacer(),
+              CachedNetworkImage(
+                imageUrl: gift.giftDetail.logo,
+                height: 25,
+                width: 25,
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              ThemeIconWidget(
+                ThemeIcon.diamond,
+                color: AppColorConstants.themeColor,
+                size: 18,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              BodyMediumText(gift.giftDetail.coins.toString(),
+                  weight: TextWeight.semiBold)
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -809,12 +986,12 @@ class ClubJoinRequestTile extends StatelessWidget {
   final VoidCallback viewCallback;
 
   const ClubJoinRequestTile({
-    Key? key,
+    super.key,
     required this.request,
     required this.viewCallback,
     required this.acceptBtnClicked,
     required this.declineBtnClicked,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -830,7 +1007,7 @@ class ClubJoinRequestTile extends StatelessWidget {
               size: 40,
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width - 200,
+              width: Get.width - 200,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -895,9 +1072,9 @@ class StoryViewerTile extends StatelessWidget {
   final StoryViewerModel viewer;
 
   const StoryViewerTile({
-    Key? key,
+    super.key,
     required this.viewer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -923,11 +1100,11 @@ class FollowRequestSenderUserTile extends StatelessWidget {
   final VoidCallback declineCallback;
 
   const FollowRequestSenderUserTile({
-    Key? key,
+    super.key,
     required this.profile,
     required this.acceptCallback,
     required this.declineCallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -971,6 +1148,7 @@ class FollowRequestSenderUserTile extends StatelessWidget {
           ).ripple(() {
             Get.to(() => OtherUserProfile(
                   userId: profile.id,
+                  user: profile,
                 ));
           }),
           const SizedBox(
@@ -1014,9 +1192,9 @@ class LiveUserTile extends StatelessWidget {
   final LiveViewer viewer;
 
   const LiveUserTile({
-    Key? key,
+    super.key,
     required this.viewer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1071,7 +1249,6 @@ class LiveUserTile extends StatelessWidget {
     );
   }
 }
-
 
 class CollaboratorTile extends StatelessWidget {
   final CollaborationModel collaborator;
@@ -1128,8 +1305,8 @@ class CollaboratorTile extends StatelessWidget {
                     ).bP4,
                     collaborator.user!.country != null
                         ? BodyMediumText(
-                      '${collaborator.user!.city!}, ${collaborator.user!.country!}',
-                    )
+                            '${collaborator.user!.city!}, ${collaborator.user!.country!}',
+                          )
                         : Container()
                   ],
                 ).hP8,
@@ -1139,9 +1316,9 @@ class CollaboratorTile extends StatelessWidget {
           ).ripple(() {
             if (viewCallback == null) {
               Get.to(() => OtherUserProfile(
-                userId: collaborator.user!.id,
-                // user: collaborator.user!,
-              ));
+                    userId: collaborator.user!.id,
+                    user: collaborator.user!,
+                  ));
             } else {
               viewCallback!();
             }

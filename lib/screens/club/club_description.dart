@@ -1,7 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 
 class ClubDescription extends StatefulWidget {
-  const ClubDescription({Key? key}) : super(key: key);
+  const ClubDescription({super.key}) ;
 
   @override
   ClubDescriptionState createState() => ClubDescriptionState();
@@ -12,7 +12,7 @@ class ClubDescriptionState extends State<ClubDescription> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       // appBar: CustomNavigationBar(
       //   child: appBar(),
@@ -24,7 +24,7 @@ class ClubDescriptionState extends State<ClubDescription> {
           backNavigationBar(
             title: clubDescriptionString.tr,
           ),
-          const SizedBox(height: 8,),
+
           const SizedBox(
             height: 20,
           ),

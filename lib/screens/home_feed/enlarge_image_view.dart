@@ -9,8 +9,8 @@ class EnlargeImageViewScreen extends StatefulWidget {
   final PostModel model;
   final VoidCallback? handler;
 
-  const EnlargeImageViewScreen({Key? key, required this.model, this.handler})
-      : super(key: key);
+  const EnlargeImageViewScreen({super.key, required this.model, this.handler})
+      ;
 
   @override
   EnlargeImageViewState createState() => EnlargeImageViewState();
@@ -28,7 +28,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
@@ -40,7 +40,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.backArrow,
                       size: 20,
                     ).ripple(() {
@@ -68,7 +68,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                           child: InkWell(
                               onTap: () {
                                 Get.to(() =>
-                                    OtherUserProfile(userId: model!.user.id));
+                                    OtherUserProfile(userId: model!.user.id,user: model!.user,));
                               },
                               child: Heading5Text(
                                 model!.user.userName,
@@ -78,7 +78,6 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                       ),
               ],
             ).hp(DesignConstants.horizontalPadding),
-            divider().vP8,
             Expanded(
               child: Stack(children: [
                 CachedNetworkImage(
@@ -117,7 +116,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                                   children: [
                                     InkWell(
                                         onTap: () => openComments(),
-                                        child: const ThemeIconWidget(
+                                        child: ThemeIconWidget(
                                             ThemeIcon.message)),
                                     InkWell(
                                       onTap: () => openComments(),
@@ -146,7 +145,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                           weight: TextWeight.semiBold)
                       .p16,
                   ListTile(
-                      leading: const ThemeIconWidget(ThemeIcon.camera),
+                      leading: ThemeIconWidget(ThemeIcon.camera),
                       title: Heading4Text(reportString.tr,
                           weight: TextWeight.regular),
                       onTap: () async {
@@ -155,7 +154,7 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
                       }),
                   divider(),
                   ListTile(
-                      leading: const ThemeIconWidget(ThemeIcon.close),
+                      leading: ThemeIconWidget(ThemeIcon.close),
                       title: Heading4Text(cancelString.tr,
                           weight: TextWeight.regular),
                       onTap: () => Navigator.of(context).pop()),
@@ -165,14 +164,11 @@ class EnlargeImageViewState extends State<EnlargeImageViewScreen> {
   }
 
   void openComments() {
-    Get.to(() => CommentsScreen(
-        post: model!,
+    Get.bottomSheet(CommentsScreen(
+        model: model!,
         isPopup: true,
         commentPostedCallback: () {
           model!.totalComment += 1;
-        },
-        commentDeletedCallback: () {
-          model!.totalComment -= 1;
         },
         handler: () {
           if (widget.handler != null) {

@@ -1,7 +1,7 @@
+import 'package:foap/helper/enum.dart';
 import 'package:foap/screens/chat/media.dart';
 import 'package:get/get.dart';
 
-import '../../helper/enum.dart';
 class SelectPostMediaController extends GetxController {
   RxList<Media> selectedMediaList = <Media>[].obs;
   RxBool allowMultipleSelection = false.obs;
@@ -24,11 +24,6 @@ class SelectPostMediaController extends GetxController {
     update();
   }
 
-  updateGallerySlider(int index) {
-    currentIndex.value = index;
-    update();
-  }
-
   replaceMediaWithEditedMedia(
       {required Media originalMedia, required Media editedMedia}) {
     int indexOfItemToReplace = selectedMediaList
@@ -39,11 +34,16 @@ class SelectPostMediaController extends GetxController {
     update();
   }
 
+  updateGallerySlider(int index) {
+    currentIndex.value = index;
+    update();
+  }
+
   bool get canEditMedia {
     return selectedMediaList
         .where((element) =>
-    element.mediaType == GalleryMediaType.photo ||
-        element.mediaType == GalleryMediaType.video)
+            element.mediaType == GalleryMediaType.photo ||
+            element.mediaType == GalleryMediaType.video)
         .isNotEmpty;
   }
 }

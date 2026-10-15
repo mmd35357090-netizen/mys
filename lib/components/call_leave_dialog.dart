@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:foap/helper/imports/common_import.dart';
 
-
 class LeaveDialog extends StatefulWidget {
   final String title;
   final String yesText;
@@ -9,10 +8,10 @@ class LeaveDialog extends StatefulWidget {
   final Function onYesAction;
 
   const LeaveDialog(
-      {Key? key, required this.title,
+      {super.key, required this.title,
         required this.yesText,
         required this.noText,
-        required this.onYesAction}) : super(key:key);
+        required this.onYesAction});
 
   @override
   State<LeaveDialog> createState() => _LeaveDialogState();
@@ -40,7 +39,7 @@ class _LeaveDialogState extends State<LeaveDialog> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(5),
               ),
-              width: MediaQuery.of(context).size.width * 0.85,
+              width: Get.width * 0.85,
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(
                   horizontal: 20, vertical: 40),

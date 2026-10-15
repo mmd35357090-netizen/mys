@@ -6,8 +6,8 @@ import 'find_random_user.dart';
 class ChooseProfileCategory extends StatefulWidget {
   final bool isCalling;
 
-  const ChooseProfileCategory({Key? key, required this.isCalling})
-      : super(key: key);
+  const ChooseProfileCategory({super.key, required this.isCalling})
+      ;
 
   @override
   State<ChooseProfileCategory> createState() => _ChooseProfileCategoryState();
@@ -27,7 +27,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +52,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
           ),
           Expanded(
               child: Obx(() => ListView.separated(
-                  padding: EdgeInsets.only(
+                  padding:  EdgeInsets.only(
                       top: 20, bottom: 100, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                   itemCount: _setProfileCategoryController.categories.length,
                   itemBuilder: (ctx, index) {
@@ -64,7 +64,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
                         BodyLargeText(
                           category.name,
                         ),
-                        const ThemeIconWidget(ThemeIcon.nextArrow)
+                        ThemeIconWidget(ThemeIcon.nextArrow)
                       ],
                     ).ripple(() {
                       Get.to(() => FindRandomUser(

@@ -3,7 +3,7 @@ export 'package:foap/screens/post/single_post_detail.dart';
 export 'package:foap/screens/post/select_media.dart';
 export 'package:foap/components/post_card/post_card.dart';
 export 'package:foap/components/post_card_controller.dart';
-export 'package:foap/components/comment_card.dart';
+export 'package:foap/components/post_card/comment_card.dart';
 export 'package:foap/components/hashtag_tile.dart';
 export 'package:foap/controllers/post/add_post_controller.dart';
 export 'package:foap/controllers/post/post_controller.dart';

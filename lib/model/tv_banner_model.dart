@@ -14,15 +14,15 @@ class TVBannersModel {
 
   TVBannersModel(
       {this.id,
-      this.name,
-      this.coverImage,
-      this.bannerType,
-      this.startTime,
-      this.endTime,
-      this.referenceId,
-      this.createdAt,
-      this.updatedAt,
-      this.coverImageUrl});
+        this.name,
+        this.coverImage,
+        this.bannerType,
+        this.startTime,
+        this.endTime,
+        this.referenceId,
+        this.createdAt,
+        this.updatedAt,
+        this.coverImageUrl});
 
   TVBannersModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

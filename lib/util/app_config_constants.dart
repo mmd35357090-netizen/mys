@@ -14,11 +14,9 @@ class AppConfigConstants {
 
   static String appTagline = 'Share your day activity with friends';
   static const googleMapApiKey = 'AIzaSyA4vcqErGvq5NRbvhvq8JKSp0VFpNBBPjE';
+  static const restApiBaseUrl = 'https://facehub.sbehf.com/api/web/v1/';
 
-
-  static const restApiBaseUrl =
-      'https://facehub.sbehf.com/api/web/v1/';
-
+  // Socket api url
   static const socketApiBaseUrl = "https://facehub.sbehf.com:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
@@ -32,16 +30,32 @@ class AppConfigConstants {
 
   // is demo app
   static const bool isDemoApp = false;
+  static const bool askForFollow = false;
 
   // parameters for delete chat
   static const secondsInADay = 86400;
   static const secondsInThreeDays = 259200;
   static const secondsInSevenDays = 604800;
   static const liveBattleConfirmationWaitTime = 30;
+
+  // Marketplace
+  static int showAdvertiesmentAfter =
+      2; // specifiy number of ads after which app will show advertisement
+  static int showAdmobBannerAfter =
+      20; // specifiy number of ads after which app will show admob banner
+
+  static List<String> sortArray = [
+    'Newest first',
+    'Older first',
+    'Price - Low to high',
+    'Price - High to low',
+    'Popular',
+    'Most viewed'
+  ];
 }
 
 class DesignConstants {
-  static double horizontalPadding = 24;
+  static double horizontalPadding = 20;
 }
 
 class AppColorConstants {
@@ -57,24 +71,31 @@ class AppColorConstants {
           settingsController.setting.value?.bgColorForLightTheme ??
               'FFFFFF');
 
-  static Color get cardColor =>
-      isDarkMode ? HexColor.fromHex('636e72') : HexColor.fromHex('dfe6e9');
+  static Color get cardColor => isDarkMode
+      ? HexColor.fromHex(
+              settingsController.setting.value?.bgColorForDarkTheme ??
+                  '202020')
+          .lighten(0.05)
+      : HexColor.fromHex(
+              settingsController.setting.value?.bgColorForLightTheme ??
+                  'FFFFFF')
+          .darken(0.05);
 
   static Color get dividerColor => isDarkMode
-      ? const Color(0xFFFFFFFF).withOpacity(0.4)
-      : Colors.grey.withOpacity(0.7);
+      ? const Color(0xFFFFFFFF).withValues(alpha: 0.4)
+      : Colors.grey.withValues(alpha: 0.7);
 
   static Color get borderColor => isDarkMode
-      ? Colors.white.withOpacity(0.9)
-      : Colors.grey.withOpacity(0.2);
+      ? Colors.white.withValues(alpha: 0.9)
+      : Colors.grey.withValues(alpha: 0.2);
 
   static Color get disabledColor => isDarkMode
-      ? Colors.grey.withOpacity(0.2)
-      : Colors.grey.withOpacity(0.2);
+      ? Colors.grey.withValues(alpha: 0.2)
+      : Colors.grey.withValues(alpha: 0.2);
 
   static Color get shadowColor => isDarkMode
-      ? Colors.white.withOpacity(0.2)
-      : Colors.black.withOpacity(0.2);
+      ? Colors.white.withValues(alpha: 0.2)
+      : Colors.black.withValues(alpha: 0.2);
 
   // static Color get inputFieldBackgroundColor =>
   //     isDarkMode ? const Color(0xFF212121) : const Color(0xFF212121);
@@ -105,59 +126,55 @@ class AppColorConstants {
           : HexColor.fromHex(
               settingsController.setting.value!.textColorForLightTheme!);
 
-  // static Color get mainTextColor => isDarkMode
-  //     ? settingsController.setting.value == null
-  //         ? Colors.white.withOpacity(0.8)
-  //         : HexColor.fromHex(
-  //                 settingsController.setting.value!.textColorForDarkTheme!)
-  //             .withOpacity(0.8)
-  //     : settingsController.setting.value == null
-  //         ? Colors.black.withOpacity(0.8)
-  //         : HexColor.fromHex(
-  //                 settingsController.setting.value!.textColorForLightTheme!)
-  //             .withOpacity(0.8);
-  //
-  // static Color get mainTextColor => isDarkMode
-  //     ? settingsController.setting.value == null
-  //         ? Colors.white.withOpacity(0.7)
-  //         : HexColor.fromHex(
-  //                 settingsController.setting.value!.textColorForDarkTheme!)
-  //             .withOpacity(0.7)
-  //     : settingsController.setting.value == null
-  //         ? Colors.black.withOpacity(0.7)
-  //         : HexColor.fromHex(
-  //                 settingsController.setting.value!.textColorForLightTheme!)
-  //             .withOpacity(0.7);
-
   static Color get subHeadingTextColor => isDarkMode
       ? settingsController.setting.value == null
           ? const Color(0xFF34495e)
           : HexColor.fromHex(
                   settingsController.setting.value!.textColorForDarkTheme!)
-              .withOpacity(0.8)
+              .withValues(alpha: 0.8)
       : settingsController.setting.value == null
           ? const Color(0xFFecf0f1)
           : HexColor.fromHex(settingsController
                   .setting.value!.textColorForLightTheme!)
-              .withOpacity(0.8);
+              .withValues(alpha: 0.8);
 }
 
 class DatingProfileConstants {
-  static List<String> genders = ['Male', 'Female', 'Other'];
-  static List<String> colors = ['Black', 'White', 'Brown'];
-  static List<String> religions = [
-    'Christians',
-    'Muslims',
-    'Hindus',
-    'Buddhists',
-    'Sikhs',
-    'Jainism',
-    'Judaism'
+  static List<String> genders = [
+    maleString.tr,
+    femaleString.tr,
+    nonBinaryString.tr
   ];
-  static List<String> maritalStatus = ['Single', 'Married', 'Divorced'];
+  static List<String> colors = [
+    blackString.tr,
+    whiteString.tr,
+    brownString.tr,
+    fairString.tr
+  ];
+  static List<String> passionateAbout = [
+    bodyString.tr,
+    mindString.tr,
+    soulString.tr,
+    spiritString.tr
+  ];
+  static List<String> religions = [
+    christianString.tr,
+    muslimString.tr,
+    hinduString.tr,
+    buddhistString.tr,
+    sikhString.tr,
+    jainismString.tr,
+    judaismString.tr
+  ];
+  static List<String> maritalStatus = [
+    singleString.tr,
+    marriedString.tr,
+    divorcedString.tr
+  ];
   static List<String> drinkHabits = [
-    'Regular',
-    'Planning to quit',
-    'Socially'
+    noString.tr,
+    regularString.tr,
+    planningToQuitString.tr,
+    sociallyString.tr
   ];
 }

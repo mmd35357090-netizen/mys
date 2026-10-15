@@ -7,12 +7,10 @@ class HelpSupportController extends GetxController {
   RxList<SupportRequest> list = <SupportRequest>[].obs;
 
   void getSupportRequests() {
-    AppUtil.checkInternet().then((value) {
-      MiscApi.getSupportMessages(resultCallback: (result, metadata) {
-        list.clear();
-        list.addAll(result);
-        list.unique((e) => e.id);
-      });
+    MiscApi.getSupportMessages(resultCallback: (result, metadata) {
+      list.clear();
+      list.addAll(result);
+      list.unique((e) => e.id);
     });
   }
 
@@ -27,6 +25,9 @@ class HelpSupportController extends GetxController {
         message!.isNotEmpty) {
       MiscApi.sendSupportRequest(
           name: name, email: email, phone: phone, message: message);
+      AppUtil.showToast(message: supportMessageSentString.tr, isSuccess: true);
+    } else {
+      AppUtil.showToast(message: fillFormString.tr, isSuccess: false);
     }
   }
 

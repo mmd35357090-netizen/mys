@@ -1,10 +1,9 @@
-import 'package:auto_orientation/auto_orientation.dart';
+// import 'package:foap/components/auto_orientation/auto_orientation.dart';
 import 'package:flutter/services.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/tv_imports.dart';
 import 'package:foap/model/live_tv_model.dart';
 import 'package:readmore/readmore.dart' as read_more;
-
 import '../../components/live_tv_player.dart';
 import '../../components/media_card.dart';
 import '../../controllers/misc/rating_controller.dart';
@@ -12,7 +11,7 @@ import '../../controllers/misc/rating_controller.dart';
 class TVChannelDetail extends StatefulWidget {
   final TvModel tvModel;
 
-  const TVChannelDetail({Key? key, required this.tvModel}) : super(key: key);
+  const TVChannelDetail({super.key, required this.tvModel}) ;
 
   @override
   State<TVChannelDetail> createState() => _TVChannelDetailState();
@@ -30,14 +29,14 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
         DeviceOrientation.landscapeLeft
       ]);
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Add Your Code here.
-        if (MediaQuery.of(context).orientation == Orientation.portrait) {
-          AutoOrientation.portraitAutoMode();
-        } else {
-          AutoOrientation.landscapeAutoMode();
-        }
-      });
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   // Add Your Code here.
+      //   if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      //     AutoOrientation.portraitAutoMode();
+      //   } else {
+      //     AutoOrientation.landscapeAutoMode();
+      //   }
+      // });
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -50,12 +49,12 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
   @override
   Widget build(BuildContext context) {
     return OrientationBuilder(builder: (context, orientation) {
-      if (orientation == Orientation.portrait) {
-        AutoOrientation.portraitAutoMode();
-      } else {
-        AutoOrientation.landscapeAutoMode();
-      }
-      return Scaffold(
+      // if (orientation == Orientation.portrait) {
+      //   AutoOrientation.portraitAutoMode();
+      // } else {
+      //   AutoOrientation.landscapeAutoMode();
+      // }
+      return AppScaffold(
           backgroundColor: AppColorConstants.backgroundColor,
           body: Column(
             mainAxisSize: MainAxisSize.min,
@@ -64,16 +63,10 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: 30,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: ThemeIconWidget(
-                        ThemeIcon.backArrow,
-                        size: 18,
-                        color: AppColorConstants.iconColor,
-                      ),
-                    ),
+                  ThemeIconWidget(
+                    ThemeIcon.backArrow,
+                    size: 18,
+                    color: AppColorConstants.iconColor,
                   ).ripple(() {
                     Get.back();
                   }),

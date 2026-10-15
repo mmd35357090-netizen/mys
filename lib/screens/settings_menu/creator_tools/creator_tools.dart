@@ -2,6 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/settings_menu/creator_tools/my_subscribers.dart';
 import 'package:foap/screens/settings_menu/creator_tools/subscription_plan.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
+
 import 'account_verification/request_verification.dart';
 import 'not_elegible_for_subscription.dart';
 
@@ -30,7 +31,7 @@ class _CreatorToolsState extends State<CreatorTools> {
               backNavigationBar(title: creatorToolsString.tr),
               IntrinsicHeight(
                 child: Container(
-                  color: AppColorConstants.themeColor.withOpacity(0.05),
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.05),
                   child: SingleChildScrollView(
                     child: Column(
                       children: [

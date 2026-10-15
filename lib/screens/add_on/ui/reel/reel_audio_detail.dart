@@ -5,7 +5,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class ReelAudioDetail extends StatefulWidget {
   final ReelMusicModel audio;
 
-  const ReelAudioDetail({Key? key, required this.audio}) : super(key: key);
+  const ReelAudioDetail({super.key, required this.audio}) ;
 
   @override
   State<ReelAudioDetail> createState() => _ReelAudioDetailState();

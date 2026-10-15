@@ -1,5 +1,4 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-
 import '../helper/imports/common_import.dart';
 import '../manager/player_manager.dart';
 
@@ -7,15 +6,15 @@ class AudioProgressBar extends StatelessWidget {
   final String id;
   final PlayerManager _playerManager = Get.find();
 
-  AudioProgressBar({Key? key, required this.id}) : super(key: key);
+  AudioProgressBar({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       return ProgressBar(
         thumbColor: AppColorConstants.themeColor.darken(),
-        progressBarColor: AppColorConstants.themeColor,
-        baseBarColor: AppColorConstants.iconColor.lighten(),
+        progressBarColor: AppColorConstants.iconColor,
+        baseBarColor: AppColorConstants.backgroundColor.lighten(),
         thumbRadius: 8,
         barHeight: 2,
         progress: _playerManager.currentlyPlayingAudio.value?.id == id
@@ -23,8 +22,9 @@ class AudioProgressBar extends StatelessWidget {
                 const Duration(seconds: 0)
             : const Duration(seconds: 0),
         // buffered: value.buffered,
-        total:
-            _playerManager.progress.value?.total ?? const Duration(seconds: 0),
+        total: _playerManager.currentlyPlayingAudio.value?.id == id
+            ? _playerManager.progress.value?.total ?? const Duration(seconds: 0)
+            : const Duration(seconds: 0),
         timeLabelPadding: 5,
         timeLabelTextStyle: TextStyle(
             fontSize: FontSizes.b4,

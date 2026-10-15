@@ -4,7 +4,7 @@ import '../../../components/actionSheets/action_sheet1.dart';
 import '../../../model/generic_item.dart';
 
 class GroupSettings extends StatefulWidget {
-  const GroupSettings({Key? key}) : super(key: key);
+  const GroupSettings({super.key}) ;
 
   @override
   State<GroupSettings> createState() => _GroupSettingsState();
@@ -16,14 +16,13 @@ class _GroupSettingsState extends State<GroupSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-
           backNavigationBar(
                title: groupSettingsString.tr),
-          const SizedBox(height: 8,),
+
           const SizedBox(
             height: 20,
           ),
@@ -39,7 +38,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                       height: 30,
                       width: 30,
                       color: AppColorConstants.themeColor,
-                      child: const ThemeIconWidget(
+                      child: ThemeIconWidget(
                         ThemeIcon.send,
                         size: 20,
                       ),
@@ -56,7 +55,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                               ? onlyAdminsString.tr
                               : allParticipantsString.tr,
                         )),
-                    const ThemeIconWidget(
+                    ThemeIconWidget(
                       ThemeIcon.nextArrow,
                       size: 12,
                     )

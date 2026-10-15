@@ -4,7 +4,7 @@ import 'package:foap/helper/imports/highlights_imports.dart';
 class HighlightViewer extends StatefulWidget {
   final HighlightsModel highlight;
 
-  const HighlightViewer({Key? key, required this.highlight}) : super(key: key);
+  const HighlightViewer({super.key, required this.highlight});
 
   @override
   State<HighlightViewer> createState() => _HighlightViewerState();
@@ -100,7 +100,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
                         highlightController.storyMediaModel.value!.createdAt,
                         weight: TextWeight.medium,
                         color: Colors.white,
-                        // color: AppColorConstants.subHeadingTextColor,
+                        // color: AppColorConstants.grayscale600,
                       )
                     ],
                   )),
@@ -113,7 +113,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
             SizedBox(
               height: 25,
               width: 40,
-              child: const ThemeIconWidget(
+              child: ThemeIconWidget(
                 ThemeIcon.more,
                 color: Colors.white,
                 size: 20,
@@ -121,13 +121,11 @@ class _HighlightViewerState extends State<HighlightViewer> {
                 openActionPopup();
               }),
             ),
-            const SizedBox(
-              width: 20,
-            ),
+            const SizedBox(width: 10),
             SizedBox(
               height: 25,
               width: 40,
-              child: const ThemeIconWidget(
+              child: ThemeIconWidget(
                 ThemeIcon.close,
                 color: Colors.white,
                 size: 20,
@@ -143,6 +141,7 @@ class _HighlightViewerState extends State<HighlightViewer> {
 
   void openActionPopup() {
     controller.pause();
+
     showModalBottomSheet(
         context: context,
         builder: (context) => Wrap(

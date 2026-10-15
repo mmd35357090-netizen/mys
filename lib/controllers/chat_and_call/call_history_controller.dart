@@ -1,4 +1,5 @@
 import 'package:foap/api_handler/apis/chat_api.dart';
+import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -8,7 +9,10 @@ import '../../model/call_model.dart';
 import 'agora_call_controller.dart';
 
 class CallHistoryController extends GetxController {
-  RxList<CallHistoryModel> calls = <CallHistoryModel>[].obs;
+  final RxList<CallHistoryModel> _calls = <CallHistoryModel>[].obs;
+  RxMap<String, List<CallHistoryModel>> groupedCalls =
+      <String, List<CallHistoryModel>>{}.obs;
+
   final AgoraCallController agoraCallController = Get.find();
 
   int callHistoryPage = 1;
@@ -17,7 +21,7 @@ class CallHistoryController extends GetxController {
 
   clear() {
     isLoading = false;
-    calls.value = [];
+    _calls.value = [];
     callHistoryPage = 1;
     canLoadMoreCalls = true;
   }
@@ -29,26 +33,34 @@ class CallHistoryController extends GetxController {
       ChatApi.getCallHistory(
           page: callHistoryPage,
           resultCallback: (result, metadata) {
-            calls.addAll(result);
-            calls.unique((e) => e.id);
+            _calls.addAll(result);
+            _calls.unique((e) => e.id);
             isLoading = false;
 
             callHistoryPage += 1;
             canLoadMoreCalls = result.length >= metadata.perPage;
-
+            groupCalls();
             update();
           });
     }
   }
 
-  callDetail(
-      {required int callId,
-      required Function(CallHistoryModel) resultCallback}) {
-    ChatApi.getCallDetail(
-        callId: callId,
-        resultCallback: (detail) {
-          resultCallback(detail);
-        });
+  groupCalls() {
+    _calls.value = _calls.map((e) {
+      CallHistoryModel room = e;
+      if (e.date.isToday) {
+        room.roomDateForGrouping = todayString;
+      } else if (e.date.isThisWeek) {
+        room.roomDateForGrouping = thisWeekString;
+      } else if (e.date.isThisMonth) {
+        room.roomDateForGrouping = thisMonthString;
+      } else {
+        room.roomDateForGrouping = earlierString;
+      }
+      return room;
+    }).toList();
+    groupedCalls.value = _calls.groupBy((m) => m.roomDateForGrouping);
+    update();
   }
 
   void reInitiateCall({required CallHistoryModel call}) {

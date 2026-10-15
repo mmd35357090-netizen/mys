@@ -4,8 +4,8 @@ import 'package:foap/helper/imports/common_import.dart';
 class UserProfileChatTile extends StatelessWidget {
   final ChatMessageModel message;
 
-  const UserProfileChatTile({Key? key, required this.message})
-      : super(key: key);
+  const UserProfileChatTile({super.key, required this.message})
+      ;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class UserProfileChatTile extends StatelessWidget {
         child: Container(
                 color: message.isMineMessage
                     ? AppColorConstants.disabledColor
-                    : AppColorConstants.themeColor.withOpacity(0.2),
+                    : AppColorConstants.themeColor.withValues(alpha: 0.2),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -41,7 +41,7 @@ class UserProfileChatTile extends StatelessWidget {
                       ],
                     ),
                     const Spacer(),
-                    const ThemeIconWidget(ThemeIcon.nextArrow),
+                    ThemeIconWidget(ThemeIcon.nextArrow),
                   ],
                 ).hP8)
             .round(15));

@@ -1,15 +1,13 @@
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:lottie/lottie.dart';
 
 Widget noUserFound(BuildContext context) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Lottie.asset(
-        'assets/lottie/no_record.json',
-        height: 200,
-        // width: 200,
+      ThemeIconWidget(
+        ThemeIcon.noData,
+        size: 200,
       ),
       const SizedBox(
         height: 20,
@@ -29,10 +27,9 @@ Widget emptyPost({
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Lottie.asset(
-        'assets/lottie/no_record.json',
-        height: 200,
-        // width: 200,
+      ThemeIconWidget(
+        ThemeIcon.noData,
+        size: 200,
       ),
       const SizedBox(
         height: 20,
@@ -58,10 +55,9 @@ Widget emptyUser({
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Lottie.asset(
-        'assets/lottie/no_record.json',
-        height: 200,
-        // width: 200,
+      ThemeIconWidget(
+        ThemeIcon.noData,
+        size: 200,
       ),
       const SizedBox(
         height: 20,
@@ -81,10 +77,9 @@ Widget emptyData({required String title, required String subTitle}) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Lottie.asset(
-        'assets/lottie/no_record.json',
-        height: 200,
-        // width: 200,
+      ThemeIconWidget(
+        ThemeIcon.noData,
+        size: 200,
       ),
       const SizedBox(
         height: 20,

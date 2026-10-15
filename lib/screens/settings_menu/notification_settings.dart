@@ -1,8 +1,10 @@
 import 'package:foap/helper/imports/common_import.dart';
+
+
 import '../../controllers/notification/notification_setting_controller.dart';
 
 class AppNotificationSettings extends StatefulWidget {
-  const AppNotificationSettings({Key? key}) : super(key: key);
+  const AppNotificationSettings({super.key});
 
   @override
   State<AppNotificationSettings> createState() =>
@@ -21,7 +23,7 @@ class _AppNotificationSettingsState extends State<AppNotificationSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: Column(

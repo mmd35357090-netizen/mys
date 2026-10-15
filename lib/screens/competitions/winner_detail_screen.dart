@@ -8,8 +8,7 @@ import '../profile/other_user_profile.dart';
 class WinnerDetailScreen extends StatefulWidget {
   final PostModel winnerPost;
 
-  const WinnerDetailScreen({Key? key, required this.winnerPost})
-      : super(key: key);
+  const WinnerDetailScreen({super.key, required this.winnerPost});
 
   @override
   WinnerDetailState createState() => WinnerDetailState();
@@ -26,7 +25,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -72,7 +71,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                       fit: BoxFit.fill,
                       width: Get.width,
                       placeholder: (context, url) =>
-                          AppUtil.addProgressIndicator(size: 100),
+                          AppUtil.addProgressIndicator(size:100),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     ))),
@@ -141,15 +140,14 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
                         imageUrl: model.user.picture!,
                         fit: BoxFit.fill,
                         placeholder: (context, url) =>
-                            AppUtil.addProgressIndicator(size: 100),
+                            AppUtil.addProgressIndicator(size:100),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                       ))
                   : Icon(Icons.person, color: Colors.grey.shade600, size: 40),
             ),
             const SizedBox(width: 5),
-            Heading5Text(model.user.userName,
-                color: AppColorConstants.themeColor),
+            Heading5Text(model.user.userName, color: AppColorConstants.themeColor),
           ]),
         ));
   }
@@ -166,12 +164,9 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
 
   void openComments() {
     Get.to(() => CommentsScreen(
-        post: model,
+        model: model,
         commentPostedCallback: () {
           model.totalComment += 1;
-        },
-        commentDeletedCallback: () {
-          model.totalComment -= 1;
         },
         handler: () {
           setState(() {});
@@ -179,7 +174,7 @@ class WinnerDetailState extends State<WinnerDetailScreen> {
   }
 
   void openProfile() async {
-    Get.to(() => OtherUserProfile(userId: model.user.id));
+    Get.to(() => OtherUserProfile(userId: model.user.id,user: model.user,));
 
     setState(() {});
   }

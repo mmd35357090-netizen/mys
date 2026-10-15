@@ -1,14 +1,12 @@
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import '../../components/group_avatars/group_avatar1.dart';
 import '../../model/category_model.dart';
 
 class CategoriesList extends StatefulWidget {
   final ClubsController clubsController;
 
-  const CategoriesList({Key? key, required this.clubsController})
-      : super(key: key);
+  const CategoriesList({super.key, required this.clubsController});
 
   @override
   State<CategoriesList> createState() => _CategoriesListState();
@@ -17,22 +15,20 @@ class CategoriesList extends StatefulWidget {
 class _CategoriesListState extends State<CategoriesList> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           backNavigationBar(
             title: categoriesString.tr,
           ),
-          const SizedBox(height: 8,),
-
           Expanded(
               child: GetBuilder<ClubsController>(
                   init: widget.clubsController,
                   builder: (ctx) {
                     return GridView.builder(
                         itemCount: widget.clubsController.categories.length,
-                        padding:  EdgeInsets.only(
+                        padding: EdgeInsets.only(
                             top: 20, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 50),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(

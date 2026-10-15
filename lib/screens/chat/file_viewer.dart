@@ -3,7 +3,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class FileViewer extends StatefulWidget {
   final String filePath;
 
-  const FileViewer({Key? key, required this.filePath}) : super(key: key);
+  const FileViewer({super.key, required this.filePath}) ;
 
   @override
   State<FileViewer> createState() => _FileViewerState();

@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import '../../controllers/profile/profile_controller.dart';
 
 class ChangeUserName extends StatefulWidget {
-  const ChangeUserName({Key? key}) : super(key: key);
+  const ChangeUserName({super.key});
 
   @override
   State<ChangeUserName> createState() => _ChangeUserNameState();
@@ -21,7 +21,7 @@ class _ChangeUserNameState extends State<ChangeUserName> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -33,9 +33,9 @@ class _ChangeUserNameState extends State<ChangeUserName> {
               rightBtnTitle: doneString.tr,
               completion: () {
                 profileController.updateUserName(
-                  userName: userName.text,
-                  isSigningUp: false,
-                );
+                    userName: userName.text,
+                    isSigningUp: false,
+                    );
               }),
           const SizedBox(
             height: 20,
@@ -43,7 +43,8 @@ class _ChangeUserNameState extends State<ChangeUserName> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading6Text(userNameString.tr, weight: TextWeight.medium),
+              Heading6Text(userNameString.tr,
+                  weight: TextWeight.medium),
               Stack(
                 children: [
                   AppTextField(
@@ -55,7 +56,7 @@ class _ChangeUserNameState extends State<ChangeUserName> {
                     },
                   ),
                   Positioned(
-                    right: 0,
+                    right: 10,
                     bottom: 0,
                     top: 0,
                     child: Center(

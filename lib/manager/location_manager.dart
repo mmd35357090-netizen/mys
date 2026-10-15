@@ -1,22 +1,23 @@
 import 'package:fl_location/fl_location.dart';
 import 'package:get/get.dart';
+import '../api_handler/apis/profile_api.dart';
 import '../model/location.dart';
 
 class LocationManager extends GetxController {
   Rx<LocationModel?> currentPosition = Rx<LocationModel?>(null);
 
   postLocation() {
-    // Location().getLocation().then((locationData) {
-    //   LatLng location = LatLng(
-    //       latitude: locationData.latitude!, longitude: locationData.longitude!);
-    //   ApiController().updateUserLocation(location);
-    // }).catchError((error) {});
+    print('postLocation');
+    getLocation(locationCallback: (location) {
+      print('updateUserLocation');
+
+      ProfileApi.updateUserLocation(
+          location: location, resultCallback: () {});
+    });
   }
 
   stopPostingLocation() {
-    // Location().getLocation().then((locationData) {
-    //   ApiController().stopSharingUserLocation();
-    // }).catchError((error) {});
+    ProfileApi.pauseUserLocation(resultCallback: () {});
   }
 
   getLocation({required Function(LocationModel) locationCallback}) async {
@@ -39,7 +40,9 @@ class LocationManager extends GetxController {
       // Ask the user for location permission.
       locationPermission = await FlLocation.requestLocationPermission();
       if (locationPermission == LocationPermission.denied ||
-          locationPermission == LocationPermission.deniedForever) return false;
+          locationPermission == LocationPermission.deniedForever) {
+        return false;
+      }
     }
 
     // Location permission must always be allowed (LocationPermission.always)
@@ -60,9 +63,10 @@ class LocationManager extends GetxController {
     const timeLimit = Duration(seconds: 10);
     await FlLocation.getLocation(timeLimit: timeLimit).then((location) {
       currentPosition.value = LocationModel(
-          latitude: location.latitude, longitude: location.longitude, name: '');
+          latitude: location.latitude,
+          longitude: location.longitude,
+          name: '');
       locationCallback(currentPosition.value!);
-
     }).onError((error, stackTrace) {
       // locationCallback(AppConfigConstants.defaultLocationForMap);
     });

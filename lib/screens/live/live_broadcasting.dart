@@ -85,7 +85,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-        backgroundColor: AppColorConstants.themeColor,
+        backgroundColor: AppColorConstants.backgroundColor,
         body: Stack(
           children: [
             GestureDetector(
@@ -141,7 +141,7 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
     return Container(
       width: Get.width,
       height: Get.height,
-      color: AppColorConstants.backgroundColor.withOpacity(0.8),
+      color: AppColorConstants.backgroundColor.withValues(alpha: 0.8),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
         child: Column(
@@ -995,7 +995,8 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
               Expanded(
                 child: Container(
                   height: 40,
-                  color: AppColorConstants.themeColor.withOpacity(0.5),
+                  color:
+                      AppColorConstants.themeColor.withValues(alpha: 0.5),
                   child: Obx(() => Focus(
                         onFocusChange: (status) {
                           _agoraLiveController.messageTextFocusToggle();
@@ -1181,9 +1182,9 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
                     ],
                   ).lp(10).ripple(() {
                     _profileController.getOtherUserDetail(
-                      userId: _agoraLiveController
-                          .live.value!.mainHostUserDetail!.id,
-                    );
+                        userId: _agoraLiveController
+                            .live.value!.mainHostUserDetail!.id,
+                        completionBlock: (user) {});
                     showModalBottomSheet<void>(
                         backgroundColor: Colors.transparent,
                         context: context,

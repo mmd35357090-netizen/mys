@@ -18,7 +18,7 @@ class AddPostController extends GetxController {
 
   RxInt currentIndex = 0.obs;
 
-  Rx<PostingStatus> postingStatus = PostingStatus.none.obs;
+  RxBool isPosting = false.obs;
   RxBool isErrorInPosting = false.obs;
 
   RxBool enableComments = true.obs;
@@ -27,15 +27,16 @@ class AddPostController extends GetxController {
   late String postingTitle;
 
   RxBool isPreviewMode = false.obs;
+  RxBool isPaidContent = false.obs;
 
   Rx<LocationModel?> taggedLocation = Rx<LocationModel?>(null);
   RxList<UserModel> collaborators = <UserModel>[].obs;
 
-  PostType? currentPostType;
+  PostCategory? currentPostType;
 
   clear() {
     currentIndex.value = 0;
-    postingStatus.value = PostingStatus.none;
+    isPosting.value = false;
     isErrorInPosting.value = false;
     isPreviewMode.value = false;
     enableComments.value = true;
@@ -55,6 +56,11 @@ class AddPostController extends GetxController {
     update();
   }
 
+  togglePaidContentMode() {
+    isPaidContent.value = !isPaidContent.value;
+    update();
+  }
+
   toggleEnableComments() {
     enableComments.value = !enableComments.value;
     update();
@@ -63,7 +69,7 @@ class AddPostController extends GetxController {
   discardFailedPost() {
     postingMedia = [];
     postingTitle = '';
-    postingStatus.value = PostingStatus.none;
+    isPosting.value = false;
     isErrorInPosting.value = false;
     clear();
   }
@@ -73,16 +79,18 @@ class AddPostController extends GetxController {
         items: postingMedia,
         title: postingTitle,
         postType: currentPostType!,
+        isPaidContent: false,
         allowComments: true,
         postCompletionHandler: () {});
   }
 
   void submitPost(
-      {required PostType postType,
+      {required PostCategory postType,
       required List<Media> items,
       required String title,
       required bool allowComments,
       required VoidCallback postCompletionHandler,
+      required bool isPaidContent,
       int? competitionId,
       int? clubId,
       int? eventId,
@@ -94,7 +102,7 @@ class AddPostController extends GetxController {
     currentPostType = postType;
     postingMedia = items;
     postingTitle = title;
-    postingStatus.value = PostingStatus.posting;
+    isPosting.value = true;
 
     var responses = await Future.wait([
       for (Media media in items)
@@ -114,6 +122,7 @@ class AddPostController extends GetxController {
       mentions: title.getMentions(),
       allowComments: allowComments,
       competitionId: competitionId,
+      isPaidContent: isPaidContent,
       clubId: clubId,
       eventId: eventId,
       fundRaisingCampaignId: fundRaisingCampaignId,
@@ -137,7 +146,7 @@ class AddPostController extends GetxController {
       Uint8List mainFileData = await media.file!.compress();
 
       file = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}.${media.file!.extension}')
           .create();
       file.writeAsBytesSync(mainFileData);
       uploadMainFile(
@@ -153,7 +162,7 @@ class AddPostController extends GetxController {
       };
       completer.complete(gallery);
     } else if (media.mediaType == GalleryMediaType.video) {
-      EasyLoading.show(status: loadingString.tr);
+      Loader.show(status: loadingString.tr);
       MediaInfo? mediaInfo = await VideoCompress.compressVideo(
         media.file!.path,
         quality: VideoQuality.DefaultQuality,
@@ -164,20 +173,17 @@ class AddPostController extends GetxController {
       file = mediaInfo!.file!;
 
       File videoThumbnail = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.jpg')
           .create();
 
       videoThumbnail.writeAsBytesSync(media.thumbnail!);
 
-      await MiscApi.uploadFile(
-        videoThumbnail.path,
-        mediaType: media.mediaType!,
-        type: UploadMediaType.post,
-        resultCallback: (fileName, filePath) async {
-          videoThumbnailPath = fileName;
-          await videoThumbnail.delete();
-        },
-      );
+      await MiscApi.uploadFile(videoThumbnail.path,
+          type: UploadMediaType.post, mediaType: media.mediaType!,
+          resultCallback: (fileName, filePath) async {
+        videoThumbnailPath = fileName;
+        await videoThumbnail.delete();
+      });
 
       uploadMainFile(
           file, media, videoThumbnailPath, competitionId, completer);
@@ -217,13 +223,14 @@ class AddPostController extends GetxController {
   }
 
   void publishAction({
-    required PostType postType,
+    required PostCategory postType,
     required List<Map<String, String>> galleryItems,
     required String title,
     required List<String> tags,
     required List<String> mentions,
     required bool allowComments,
     required VoidCallback postCompletionHandler,
+    required bool isPaidContent,
     LocationModel? location,
     int? competitionId,
     int? clubId,
@@ -242,11 +249,14 @@ class AddPostController extends GetxController {
         title: title,
         gallery: galleryItems,
         allowComments: allowComments,
+        isPaidContent: isPaidContent,
         hashTag: tags.join(','),
         mentions: mentions.join(','),
         location: location,
         competitionId: competitionId,
         clubId: clubId,
+        eventId: eventId,
+        fundRaisingCampaignId: fundRaisingCampaignId,
         audioId: audioId,
         audioStartTime: audioStartTime,
         audioEndTime: audioEndTime,
@@ -254,20 +264,16 @@ class AddPostController extends GetxController {
           if (postId != null) {
             Get.back();
             postCompletionHandler();
-
             postingMedia = [];
             postingTitle = '';
+
             await linkCollaboratorsToPost(postId);
 
             PostApi.getPostDetail(postId, resultCallback: (result) {
               if (result != null) {
                 _homeController.addNewPost(result);
               }
-              postingStatus.value = PostingStatus.posted;
-
-              Future.delayed(const Duration(seconds: 2), () {
-                postingStatus.value = PostingStatus.none;
-              });
+              isPosting.value = false;
             });
 
             clear();
@@ -305,9 +311,10 @@ class AddPostController extends GetxController {
   void shareToFeed(
       {required int productId, required PostContentType contentType}) {
     PostApi.addPost(
-        postType: PostType.basic,
+        postType: PostCategory.basic,
         postContentType: contentType,
         contentRefId: productId,
+        isPaidContent: false,
         title: '',
         gallery: [],
         allowComments: true,
@@ -322,13 +329,11 @@ class AddPostController extends GetxController {
         resultCallback: (postId) {
           if (postId != null) {
             HomeController homeController = Get.find();
-            homeController.getPosts(callback: () {}, isRecent: true);
+            homeController.getPosts(callback: () {});
             AppUtil.showToast(message: postedString.tr, isSuccess: true);
           }
         });
   }
-
-  //*************** add collaborate ***************//
 
   addCollaborator(UserModel user) {
     if (collaborators.where((e) => e.id == user.id).isNotEmpty) {
@@ -355,5 +360,36 @@ class AddPostController extends GetxController {
   updateCollaborationStatus(
       {required int id, required CollaborationStatusType status}) {
     PostApi.updateCollaborationStatus(id: id, status: status);
+  }
+
+  createPoll(Map<String, dynamic> data) {
+    PostApi.createPoll(
+        question: data["question"],
+        options: data["options"],
+        successCallback: (id) {
+          PostApi.addPost(
+              postType: PostCategory.basic,
+              postContentType: PostContentType.poll,
+              title: '',
+              gallery: [],
+              allowComments: true,
+              isPaidContent: false,
+              contentRefId: id,
+              resultCallback: (postId) {
+                if (postId != null) {
+                  Get.close(2);
+                  PostApi.getPostDetail(postId, resultCallback: (result) {
+                    if (result != null) {
+                      _homeController.addNewPost(result);
+                    }
+                    isPosting.value = false;
+                  });
+                } else {
+                  AppUtil.showToast(
+                      message: errorMessageString.tr, isSuccess: false);
+                }
+              });
+        },
+        failureCallback: () {});
   }
 }

@@ -1,14 +1,12 @@
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
-
 import '../../components/user_card.dart';
 import '../profile/other_user_profile.dart';
 
 class ClubMembers extends StatefulWidget {
   final ClubModel club;
 
-  const ClubMembers({Key? key, required this.club}) : super(key: key);
+  const ClubMembers({super.key, required this.club});
 
   @override
   ClubMembersState createState() => ClubMembersState();
@@ -41,13 +39,11 @@ class ClubMembersState extends State<ClubMembers> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            backNavigationBar(
-                 title: clubMembersString.tr),
-            const SizedBox(height: 8,),
+            backNavigationBar(title: clubMembersString.tr),
             Expanded(
               child: GetBuilder<ClubsController>(
                   init: _clubsController,
@@ -56,15 +52,18 @@ class ClubMembersState extends State<ClubMembers> {
                     scrollController.addListener(() {
                       if (scrollController.position.maxScrollExtent ==
                           scrollController.position.pixels) {
-                        if (!_clubsController.isLoadingMembers) {
+                        if (!_clubsController
+                            .membersDataWrapper.isLoading.value) {
                           _clubsController.getMembers(clubId: widget.club.id!);
                         }
                       }
                     });
 
-                    List<ClubMemberModel> membersList = _clubsController.members;
-                    return _clubsController.isLoadingMembers
-                        ? const ShimmerUsers().hp(DesignConstants.horizontalPadding)
+                    List<ClubMemberModel> membersList =
+                        _clubsController.members;
+                    return _clubsController.membersDataWrapper.isLoading.value
+                        ? const ShimmerUsers()
+                            .hp(DesignConstants.horizontalPadding)
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -82,9 +81,9 @@ class ClubMembersState extends State<ClubMembers> {
                                                   member: membersList[index],
                                                   viewCallback: () {
                                                     Get.to(() => OtherUserProfile(
-                                                            userId:
-                                                                membersList[index]
-                                                                    .id))!
+                                                            userId: membersList[
+                                                                    index]
+                                                                .id))!
                                                         .then((value) =>
                                                             {loadData()});
                                                   },
@@ -97,9 +96,9 @@ class ClubMembersState extends State<ClubMembers> {
                                                   member: membersList[index],
                                                   viewCallback: () {
                                                     Get.to(() => OtherUserProfile(
-                                                            userId:
-                                                                membersList[index]
-                                                                    .id))!
+                                                            userId: membersList[
+                                                                    index]
+                                                                .id))!
                                                         .then((value) =>
                                                             {loadData()});
                                                   },

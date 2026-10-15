@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 
+import '../../manager/db_manager_realm.dart';
+
 class MediaListViewerController extends GetxController {
   int currentIndex = 0;
   RxList<ChatMessageModel> messages = <ChatMessageModel>[].obs;
@@ -25,7 +27,7 @@ class MediaListViewerController extends GetxController {
     getIt<FileManager>().deleteMessageMedia(messageToDelete);
 
     // remove message in local database
-    await getIt<DBManager>()
+    await getIt<RealmDBManager>()
         .softDeleteMessages(messagesToDelete: [messageToDelete]);
     messages.removeAt(currentIndex);
     if (messages.isEmpty) {

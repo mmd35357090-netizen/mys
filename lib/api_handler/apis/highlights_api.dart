@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:foap/api_handler/api_wrapper.dart';
-
 import '../../model/highlights.dart';
 
 class HighlightsApi {
@@ -8,7 +7,7 @@ class HighlightsApi {
       {required String name,
       required String image,
       required String stories,
-      required VoidCallback resultCallback}) async{
+      required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.addHighlight;
 
     var param = {
@@ -27,7 +26,7 @@ class HighlightsApi {
   static addSToryToHighlight({
     required int collectionId,
     required int postId,
-  }) async{
+  }) async {
     var url = NetworkConstantsUtil.addStoryToHighlight;
 
     var param = {
@@ -40,15 +39,16 @@ class HighlightsApi {
 
   static getHighlights(
       {required int userId,
-      required Function(List<HighlightsModel>) resultCallback}) async{
+      required Function(List<HighlightsModel>) resultCallback}) async {
     var url = NetworkConstantsUtil.highlights + userId.toString();
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var items = result!.data['highlight'];
-          resultCallback(List<HighlightsModel>.from(
-              items.map((x) => HighlightsModel.fromJson(x))));
-
+        List<HighlightsModel> highlights = List<HighlightsModel>.from(
+            items.map((x) => HighlightsModel.fromJson(x)));
+        highlights.removeWhere((element) => element.medias.isEmpty);
+        resultCallback(highlights);
       }
     });
   }

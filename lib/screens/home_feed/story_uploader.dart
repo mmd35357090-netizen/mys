@@ -33,8 +33,9 @@ void openStoryUploader() {
                   weight: TextWeight.regular,
                 ).makeChip().ripple(() {
                   Get.back();
+                  // selectPhoto(source: ImageSource.gallery);
                   Get.to(() => VSStoryDesigner(
-                    giphyKey: settingsController.setting.value!.giphyApiKey!,
+                    giphyKey: settingsController.setting.value!.giphyApiKey,
 
                     /// (String), //disabled feature for now
                     onDone: (String uri) async {

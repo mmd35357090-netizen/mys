@@ -1,21 +1,23 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:foap/api_handler/apis/misc_api.dart';
+import 'package:foap/api_handler/apis/post_api.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
 import 'package:foap/model/data_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../api_handler/apis/misc_api.dart';
-import '../../api_handler/apis/post_api.dart';
-import '../../components/giphy/giphy_get.dart';
 import '../../helper/imports/chat_imports.dart';
 import '../../model/comment_model.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import '../../util/constant_util.dart';
+import 'package:giphy_get/giphy_get.dart';
 
 class CommentsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
   final SettingsController _settingsController = Get.find();
+  final ScrollController controller = ScrollController();
 
   RxList<CommentModel> comments = <CommentModel>[].obs;
 
@@ -49,6 +51,7 @@ class CommentsController extends GetxController {
 
             update();
             callback();
+            scrollToBottom();
           });
     } else {
       callback();
@@ -68,8 +71,8 @@ class CommentsController extends GetxController {
           CommentModel mainComment =
               comments.where((e) => e.id == parentId).first;
           mainComment.currentPageForReplies = metadata.currentPage + 1;
-          mainComment.pendingReplies = metadata.totalCount -
-              (metadata.currentPage * metadata.perPage);
+          mainComment.pendingReplies =
+              metadata.totalCount - (metadata.currentPage * metadata.perPage);
           mainComment.replies.addAll(result);
           update();
         });
@@ -92,14 +95,15 @@ class CommentsController extends GetxController {
             comments.add(newComment);
           } else {
             newComment.level = 2;
-            CommentModel mainComment = comments
-                .where((e) => e.id == replyingComment.value!.id)
-                .first;
+            CommentModel mainComment =
+                comments.where((e) => e.id == replyingComment.value!.id).first;
             mainComment.replies.add(newComment);
           }
 
           replyingComment.value = null;
           update();
+          commentPosted();
+          scrollToBottom();
         });
   }
 
@@ -109,15 +113,13 @@ class CommentsController extends GetxController {
     } else {
       CommentModel mainComment =
           comments.where((e) => e.id == comment.parentId).first;
-      mainComment.replies
-          .removeWhere((element) => element.id == comment.id);
+      mainComment.replies.removeWhere((element) => element.id == comment.id);
     }
 
     update();
     PostApi.deleteComment(
         resultCallback: () {
-          AppUtil.showToast(
-              message: commentIsDeletedString, isSuccess: true);
+          AppUtil.showToast(message: commentIsDeletedString, isSuccess: true);
         },
         commentId: comment.id);
   }
@@ -125,8 +127,7 @@ class CommentsController extends GetxController {
   void reportComment({required int commentId}) {
     PostApi.reportComment(
         resultCallback: () {
-          AppUtil.showToast(
-              message: commentIsReportedString, isSuccess: true);
+          AppUtil.showToast(message: commentIsReportedString, isSuccess: true);
         },
         commentId: commentId);
   }
@@ -156,34 +157,29 @@ class CommentsController extends GetxController {
               type, _userProfileManager.user.value!,
               filePath: uploadedImageData.last, id: id));
           update();
+          commentPosted();
+          scrollToBottom();
         });
   }
 
   Future<List<String>> uploadMedia(Media media) async {
     List<String> uploadedImageData = [];
 
-    await AppUtil.checkInternet().then((value) async {
-      if (value) {
-        final tempDir = await getTemporaryDirectory();
-        Uint8List mainFileData = await media.file!.compress();
+    final tempDir = await getTemporaryDirectory();
+    Uint8List mainFileData = await media.file!.compress();
 
-        //media
-        File file = await File(
-                '${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
-            .create();
-        file.writeAsBytesSync(mainFileData);
+    //media
+    File file =
+    await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.${media.file!.extension}')
+        .create();
+    file.writeAsBytesSync(mainFileData);
 
-        await MiscApi.uploadFile(file.path,
-            type: UploadMediaType.post, mediaType: media.mediaType!,
-            resultCallback: (fileName, filePath) async {
+    await MiscApi.uploadFile(file.path,type: UploadMediaType.post,  mediaType: media.mediaType!,
+        resultCallback: (fileName, filePath) async {
           uploadedImageData.add(fileName);
           uploadedImageData.add(filePath);
           await file.delete();
         });
-      } else {
-        AppUtil.showToast(message: noInternetString.tr, isSuccess: false);
-      }
-    });
     return uploadedImageData;
   }
 
@@ -225,4 +221,19 @@ class CommentsController extends GetxController {
       handler();
     }
   }
+
+  scrollToBottom(){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Timer(const Duration(milliseconds: 100), () {
+        if (comments.isNotEmpty) {
+          controller.animateTo(
+            controller.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.fastOutSlowIn,
+          );
+        }
+      });
+    });
+  }
+
 }

@@ -2,6 +2,7 @@ import 'package:app_links/app_links.dart';
 import 'package:foap/api_handler/apis/live_streaming_api.dart';
 import 'package:foap/controllers/live/agora_live_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/event_imports.dart';
 import 'package:foap/helper/imports/post_imports.dart';
 import 'package:get/get.dart';
 
@@ -39,6 +40,12 @@ class DeepLinkManager {
                 );
               }
             });
+      }
+    } else if (urlString.contains('event')) {
+      String? eventId = uri.queryParameters['id'];
+      if (eventId != null) {
+        // final EventDetailController eventDetailController = Get.find();
+        // Get.to(() => EventDetail(postUniqueId: postUniqueId));
       }
     } else {
       String? postUniqueId = uri.queryParameters['pid'];

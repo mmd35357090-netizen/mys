@@ -6,7 +6,7 @@ import '../../model/post_model.dart';
 class ReSharePost extends StatefulWidget {
   final PostModel post;
 
-  const ReSharePost({Key? key, required this.post}) : super(key: key);
+  const ReSharePost({super.key, required this.post}) ;
 
   @override
   ReSharePostState createState() => ReSharePostState();

@@ -13,6 +13,7 @@ class CallHistoryModel {
   int callType;
   UserModel callerDetail;
   UserModel receiverDetail;
+  String roomDateForGrouping = earlierString;
 
   CallHistoryModel({
     required this.id,
@@ -55,6 +56,10 @@ class CallHistoryModel {
     final UserProfileManager userProfileManager = Get.find();
 
     return callerDetail.id == userProfileManager.user.value!.id;
+  }
+
+  DateTime get date {
+    return DateTime.fromMillisecondsSinceEpoch(startTime * 1000);
   }
 
   String get timeOfCall {

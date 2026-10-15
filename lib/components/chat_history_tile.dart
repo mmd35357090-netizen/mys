@@ -5,12 +5,13 @@ import 'package:foap/helper/string_extension.dart';
 class ChatHistoryTile extends StatelessWidget {
   final ChatRoomModel model;
 
-  const ChatHistoryTile({Key? key, required this.model}) : super(key: key);
+  const ChatHistoryTile({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        height: 55,
+    return Container(
+        height: 80,
+        color: AppColorConstants.cardColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -26,7 +27,7 @@ class ChatHistoryTile extends StatelessWidget {
                           width: 45,
                           child:
                               model.image == null || (model.image ?? '').isEmpty
-                                  ? const ThemeIconWidget(
+                                  ? ThemeIconWidget(
                                       ThemeIcon.group,
                                       color: Colors.white,
                                       size: 35,
@@ -40,7 +41,7 @@ class ChatHistoryTile extends StatelessWidget {
                         ).circular
                       : UserAvatarView(
                           size: 45,
-                          user: model.opponent.userDetail,
+                          user: model.opponent!.userDetail,
                           onTapHandler: () {},
                         ),
                   // AvatarView(size: 50, url: model.opponent.picture),
@@ -56,9 +57,9 @@ class ChatHistoryTile extends StatelessWidget {
                         BodyLargeText(
                           model.isGroupChat
                               ? model.name!
-                              : model.opponent.userDetail.userName,
+                              : model.opponent!.userDetail.userName,
                           maxLines: 1,
-                          weight:TextWeight.medium,
+                          weight: TextWeight.bold,
                         ),
                         const SizedBox(
                           height: 8,
@@ -100,15 +101,15 @@ class ChatHistoryTile extends StatelessWidget {
                     : Container(),
                 model.lastMessage == null
                     ? Container()
-                    : BodyMediumText(
+                    : BodySmallText(
                         model.lastMessage!.messageTime,
-                        weight: TextWeight.bold,
-                        color: AppColorConstants.themeColor,
+                        weight: TextWeight.semiBold,
+                        // color: AppColorConstants.themeColor,
                       ),
               ],
             ),
           ],
-        ));
+        ).hP8).round(20);
   }
 }
 
@@ -119,12 +120,12 @@ class PublicChatGroupCard extends StatelessWidget {
   final VoidCallback leaveBtnClicked;
 
   const PublicChatGroupCard(
-      {Key? key,
-        required this.room,
-        required this.joinBtnClicked,
-        required this.leaveBtnClicked,
-        required this.previewBtnClicked})
-      : super(key: key);
+      {super.key,
+      required this.room,
+      required this.joinBtnClicked,
+      required this.leaveBtnClicked,
+      required this.previewBtnClicked})
+      ;
 
   @override
   Widget build(BuildContext context) {
@@ -139,9 +140,9 @@ class PublicChatGroupCard extends StatelessWidget {
               width: double.infinity,
               child: room.image!.isNotEmpty
                   ? CachedNetworkImage(
-                imageUrl: room.image!,
-                fit: BoxFit.cover,
-              )
+                      imageUrl: room.image!,
+                      fit: BoxFit.cover,
+                    )
                   : Center(child: Heading1Text(room.name!.getInitials)),
             ).topRounded(10).ripple(() {
               previewBtnClicked();
@@ -152,58 +153,57 @@ class PublicChatGroupCard extends StatelessWidget {
           ),
           !room.amIGroupAdmin
               ? Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    BodyLargeText(
-                      room.name!,
-                      maxLines: 1,
-                      weight: TextWeight.semiBold,
-                    ).hP8,
-                    const SizedBox(
-                      height: 5,
+                    Expanded(
+                      child: Column(
+                        children: [
+                          BodyLargeText(
+                            room.name!,
+                            maxLines: 1,
+                            weight: TextWeight.semiBold,
+                          ).hP8,
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          // BodySmallText(
+                          //   '${room.totalMembers!.formatNumber} ${clubMembersString.tr}',
+                          // ).hP8,
+                        ],
+                      ),
                     ),
-                    // BodySmallText(
-                    //   '${room.totalMembers!.formatNumber} ${clubMembersString.tr}',
-                    // ).hP8,
+                    Container(
+                        height: 50,
+                        width: 50,
+                        color: room.amIMember == true
+                            ? AppColorConstants.red
+                            : AppColorConstants.themeColor,
+                        child: ThemeIconWidget(
+                          room.amIMember == true
+                              ? ThemeIcon.checkMark
+                              : ThemeIcon.plus,
+                          color: Colors.white,
+                        )).topLeftDiognalRounded(20).ripple(() {
+                      if (room.amIMember == true) {
+                        leaveBtnClicked();
+                      } else {
+                        joinBtnClicked();
+                      }
+                    }),
                   ],
-                ),
-              ),
-              Container(
-                  height: 50,
-                  width: 50,
-                  color: room.amIMember == true
-                      ? AppColorConstants.red
-                      : AppColorConstants.themeColor,
-                  child: ThemeIconWidget(
-                    room.amIMember == true
-                        ? ThemeIcon.checkMark
-                        : ThemeIcon.plus,
-                    color: Colors.white,
-                  )).topLeftDiognalRounded(20).ripple(() {
-                if (room.amIMember == true) {
-                  leaveBtnClicked();
-                } else {
-                  joinBtnClicked();
-                }
-              }),
-            ],
-          )
+                )
               : SizedBox(
-              height: 50,
-              width: 100,
-              child: Center(
-                child: BodyLargeText(
-                  youAreAdminString,
-                  color: AppColorConstants.themeColor,
-                  weight: TextWeight.bold,
-                ),
-              )).hP4,
+                  height: 50,
+                  width: 100,
+                  child: Center(
+                    child: BodyLargeText(
+                      youAreAdminString,
+                      color: AppColorConstants.themeColor,
+                      weight: TextWeight.bold,
+                    ),
+                  )).hP4,
         ],
       ),
     ).round(15);
   }
 }
-

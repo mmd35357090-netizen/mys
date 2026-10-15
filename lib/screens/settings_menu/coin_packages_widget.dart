@@ -7,7 +7,7 @@ import '../../model/package_model.dart';
 import '../../util/constant_util.dart';
 
 class CoinPackagesWidget extends StatefulWidget {
-  const CoinPackagesWidget({Key? key}) : super(key: key);
+  const CoinPackagesWidget({super.key});
 
   @override
   State<CoinPackagesWidget> createState() => _CoinPackagesWidgetState();
@@ -15,7 +15,6 @@ class CoinPackagesWidget extends StatefulWidget {
 
 class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
   final SubscriptionPackageController packageController = Get.find();
-  // final MercadappagoPaymentController _paymentController = Get.find();
 
   @override
   Widget build(BuildContext context) {

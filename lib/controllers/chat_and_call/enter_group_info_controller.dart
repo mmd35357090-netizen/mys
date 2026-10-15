@@ -2,6 +2,7 @@ import 'package:foap/api_handler/apis/chat_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../api_handler/apis/misc_api.dart';
+import '../../manager/db_manager_realm.dart';
 import '../../manager/socket_manager.dart';
 
 class EnterGroupInfoController extends GetxController {
@@ -24,24 +25,26 @@ class EnterGroupInfoController extends GetxController {
   createGroup(
       {required String name,
       required String? description,
+      required bool isPublicGroup,
       required String image,
-        required bool isPublicGroup,
-
-        required List<UserModel> users}) {
-    EasyLoading.show(
-        status: loadingString.tr, maskType: EasyLoadingMaskType.black);
+      required List<UserModel> users}) {
+    Loader.show(status: loadingString.tr);
 
     if (image.isEmpty) {
-      publishGroup(name: name,isPublicGroup:isPublicGroup, description: description, users: users);
+      publishGroup(
+          name: name,
+          isPublicGroup: isPublicGroup,
+          description: description,
+          users: users);
     } else {
-      // EasyLoading.show(status: loadingString.tr);
+      // Loader.show(status: loadingString.tr);
       MiscApi.uploadFile(image,
           mediaType: GalleryMediaType.photo,
           type: UploadMediaType.chat, resultCallback: (filename, filepath) {
         publishGroup(
             name: name,
             image: filename,
-            isPublicGroup:isPublicGroup,
+            isPublicGroup: isPublicGroup,
             description: description,
             users: users);
       });
@@ -54,8 +57,7 @@ class EnterGroupInfoController extends GetxController {
     required String? description,
     required String image,
   }) {
-    EasyLoading.show(
-        status: loadingString.tr, maskType: EasyLoadingMaskType.black);
+    Loader.show(status: loadingString.tr);
 
     if (image.isEmpty) {
       publishUpdatedGroup(group: group, name: name, description: description);
@@ -86,14 +88,13 @@ class EnterGroupInfoController extends GetxController {
   publishGroup(
       {required String name,
       required String? description,
-        required bool isPublicGroup,
-
-        String? image,
+      String? image,
+      required bool isPublicGroup,
       required List<UserModel> users}) {
     ChatApi.createGroupChatRoom(
+        isPublicGroup: isPublicGroup,
         image: image,
         description: description,
-        isPublicGroup:isPublicGroup,
         title: name,
         resultCallback: (roomId) {
           String allUsersIds = users.map((e) => e.id.toString()).join(',');
@@ -108,10 +109,9 @@ class EnterGroupInfoController extends GetxController {
             Get.to(() => ChatDetail(chatRoom: result));
 
             // save group in local storage
-            await getIt<DBManager>().saveRooms([result]);
+            await getIt<RealmDBManager>().saveRooms([result]);
 
             _chatHistoryController.getChatRooms();
-            _chatHistoryController.getPublicChatRooms(() {});
           });
         });
   }

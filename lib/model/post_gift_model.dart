@@ -4,7 +4,7 @@ class PostGiftModel {
   int? isPaid;
   int? coin;
 
-  PostGiftModel({this.id, this.name, this.isPaid, this.coin});
+  PostGiftModel({id, name, isPaid, coin});
 
   PostGiftModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -14,7 +14,7 @@ class PostGiftModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  <String, dynamic>{};
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
     data['is_paid'] = isPaid;

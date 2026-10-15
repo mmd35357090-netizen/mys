@@ -16,8 +16,8 @@ class DialogUtils {
       barrierDismissible: isCancelEnable == true,
       builder: (context) {
         if (Platform.isIOS) {
-          return WillPopScope(
-            onWillPop: () async => false,
+          return PopScope(
+            canPop: false,
             child: _showOkCancelCupertinoAlertDialog(
                 context,
                 message,
@@ -28,8 +28,8 @@ class DialogUtils {
                 cancelButtonAction),
           );
         } else {
-          return WillPopScope(
-            onWillPop: () async => false,
+          return PopScope(
+            canPop: false,
             child: _showOkCancelMaterialAlertDialog(
                 context,
                 message,
@@ -44,22 +44,23 @@ class DialogUtils {
     );
   }
 
-  static void showAlertDialog( String message) {
+  static void showAlertDialog(String message) {
     showDialog(
       context: Get.context!,
       builder: (context) {
         if (Platform.isIOS) {
-          return WillPopScope(
-              onWillPop: () async => false,
+          return PopScope(
+              canPop: false,
               child: _showCupertinoAlertDialog(context, message));
         } else {
-          return WillPopScope(
-              onWillPop: () async => false,
+          return PopScope(
+              canPop: false,
               child: _showMaterialAlertDialog(context, message));
         }
       },
     );
   }
+
 
   static CupertinoAlertDialog _showCupertinoAlertDialog(
       BuildContext context, String message) {

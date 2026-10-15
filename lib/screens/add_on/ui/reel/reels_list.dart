@@ -8,12 +8,12 @@ class ReelsList extends StatefulWidget {
   final int? userId;
   final int? locationId;
   final List<PostModel>? reels;
-  final PostSource? source;
+  final TimelineType? source;
   final int? page;
   final int? totalPages;
 
   const ReelsList({
-    Key? key,
+    super.key,
     this.audioId,
     required this.index,
     this.page,
@@ -23,7 +23,7 @@ class ReelsList extends StatefulWidget {
     this.locationId,
     this.reels,
     this.source,
-  }) : super(key: key);
+  }) ;
 
   @override
   State<ReelsList> createState() => _ReelsListState();

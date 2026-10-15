@@ -9,11 +9,11 @@ class MessageImage extends StatelessWidget {
   final bool? disableRoundCorner;
 
   const MessageImage(
-      {Key? key,
+      {super.key,
       required this.message,
       required this.fitMode,
       this.disableRoundCorner})
-      : super(key: key);
+      ;
 
   @override
   Widget build(BuildContext context) {

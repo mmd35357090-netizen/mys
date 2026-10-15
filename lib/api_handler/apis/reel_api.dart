@@ -1,7 +1,7 @@
+import 'package:foap/api_handler/api_wrapper.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/category_model.dart';
 import '../../screens/add_on/model/reel_music_model.dart';
-import '../api_wrapper.dart';
 
 class ReelApi {
   static getReelCategories(

@@ -126,8 +126,8 @@ class BottomTools extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Image.asset(
-                            'assets/images/instagram_logo.png',
-                            package: 'vs_story_designer',
+                            'assets/story/assets/images/instagram_logo.png',
+
                             color: Colors.white,
                             height: 42,
                           ),

@@ -6,29 +6,31 @@ import '../api_wrapper.dart';
 class LiveStreamingApi {
   static getAllLiveUsers(
       {required int page,
-        String? name,
-        String? profileCategoryType,
-        bool? isFollowing,
-        required Function(List<UserLiveCallDetail>, APIMetaData)
-        resultCallback}) async {
+      String? name,
+      String? profileCategoryType,
+      bool? isFollowing,
+      required Function(List<UserLiveCallDetail>, APIMetaData)
+          resultCallback}) async {
     var url =
         '${NetworkConstantsUtil.liveUsers}?expand=userdetails&name=&profile_category_type=&is_following=&page=$page';
 
+    Loader.show(status: loadingString.tr);
     await ApiWrapper().getApi(url: url).then((result) {
+      Loader.dismiss();
       if (result?.success == true) {
         final liverStreamUser = result!.data['liveStreamUser']['items'];
         resultCallback(
             List<UserLiveCallDetail>.from(liverStreamUser.map((user) {
-              final item = UserLiveCallDetail.fromJson(user);
-              return item;
-            })), APIMetaData.fromJson(result.data['liveStreamUser']['_meta']));
+          final item = UserLiveCallDetail.fromJson(user);
+          return item;
+        })), APIMetaData.fromJson(result.data['liveStreamUser']['_meta']));
       }
     });
   }
 
   static getLiveDetail(
       {required String channelName,
-        required Function(LiveModel) resultCallback}) async {
+      required Function(LiveModel) resultCallback}) async {
     var url = '${NetworkConstantsUtil.liveDetailByChannel}$channelName';
 
     await ApiWrapper().getApi(url: url).then((result) {
@@ -60,7 +62,7 @@ class LiveStreamingApi {
 
   static getLiveHistory(
       {required int page,
-        required Function(List<LiveModel>, APIMetaData) resultCallback}) async {
+      required Function(List<LiveModel>, APIMetaData) resultCallback}) async {
     var url = '${NetworkConstantsUtil.liveHistory}&page=$page';
 
     await ApiWrapper().getApi(url: url).then((result) {
@@ -75,9 +77,9 @@ class LiveStreamingApi {
 
   static getLiveViewers(
       {required int liveId,
-        int? role,
-        bool? isBanned,
-        required Function(List<LiveViewer>, APIMetaData) resultCallback}) async {
+      int? role,
+      bool? isBanned,
+      required Function(List<LiveViewer>, APIMetaData) resultCallback}) async {
     var url = '${NetworkConstantsUtil.liveCallViewers}$liveId';
 
     if (role != null) {

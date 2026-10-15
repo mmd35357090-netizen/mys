@@ -53,7 +53,7 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
           Expanded(
             child: Obx(
               () => _liveUserController.liveStreamUser.isEmpty
-                  ? emptyData(title: noLiveUserString.tr, subTitle: '')
+                  ? emptyData(title: noLiveUserString, subTitle: '')
                   : GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -70,7 +70,8 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                             _liveUserController.liveStreamUser[index];
 
                         return Container(
-                          color: AppColorConstants.themeColor.withOpacity(0.2),
+                          color: AppColorConstants.themeColor
+                              .withValues(alpha: 0.2),
                           child: Stack(
                             children: [
                               Center(
@@ -90,14 +91,16 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                                   height: 30,
                                   color: AppColorConstants.themeColor,
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
                                     children: [
-                                      const ThemeIconWidget(
+                                      ThemeIconWidget(
                                         ThemeIcon.group,
                                         color: Colors.white,
                                       ).p4,
                                       BodyLargeText(
-                                        liveStreaming.totalUsers!.formatNumber,
+                                        liveStreaming
+                                            .totalUsers!.formatNumber,
                                         color: Colors.white,
                                       )
                                     ],
@@ -111,7 +114,8 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                               channelName: liveStreaming.channelName,
                               resultCallback: (result) {
                                 LiveModel live = LiveModel();
-                                live.channelName = liveStreaming.channelName;
+                                live.channelName =
+                                    liveStreaming.channelName;
                                 live.mainHostUserDetail =
                                     liveStreaming.host!.first;
                                 live.token = liveStreaming.token;

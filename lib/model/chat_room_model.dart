@@ -4,7 +4,6 @@ import 'chat_message_model.dart';
 
 class ChatRoomMember {
   int id;
-
   int roomId;
   int userId;
   int isAdmin;
@@ -21,9 +20,9 @@ class ChatRoomMember {
   factory ChatRoomMember.fromJson(Map<String, dynamic> jsonData) =>
       ChatRoomMember(
           id: jsonData["id"],
-          roomId: jsonData["room_id"],
-          userId: jsonData["user_id"],
-          isAdmin: jsonData["is_admin"],
+          roomId: jsonData["room_id"] ?? jsonData["roomId"],
+          userId: jsonData["user_id"] ?? jsonData["userId"],
+          isAdmin: jsonData["is_admin"] ?? jsonData["isAdmin"],
           userDetail: UserModel.fromJson(jsonData['user'] is String
               ? json.decode(jsonData['user'])
               : jsonData['user']));
@@ -45,12 +44,9 @@ class ChatRoomModel {
 
   int createdBy = 0;
   String? name;
-
-  // List<UserModel> users = [];
   ChatMessageModel? lastMessage;
   String? lastMessageId;
 
-  // bool isTyping = false;
   List<String> whoIsTyping = [];
   bool isOnline = false;
   int unreadMessages = 0;
@@ -62,6 +58,7 @@ class ChatRoomModel {
   int groupAccess;
   List<ChatRoomMember> roomMembers;
   UserModel chatGroupOwner;
+  String roomDateForGrouping = earlierString;
 
   ChatRoomModel({
     required this.id,
@@ -71,7 +68,6 @@ class ChatRoomModel {
     required this.createdAt,
     this.updatedAt,
     required this.createdBy,
-    // required this.users,
     required this.isOnline,
     required this.isGroupChat,
     required this.type,
@@ -98,19 +94,18 @@ class ChatRoomModel {
       image: jsonData['imageUrl'],
       description: jsonData['description'],
       groupAccess: jsonData['chat_access_group'] ?? 1,
-      chatGroupOwner: UserModel.fromJson(
-          jsonData['createdByUser'] is String
-              ? json.decode(jsonData['createdByUser'])
-              : jsonData['createdByUser']),
+      chatGroupOwner: UserModel.fromJson(jsonData['createdByUser'] is String
+          ? json.decode(jsonData['createdByUser'])
+          : jsonData['createdByUser']),
       roomMembers: jsonData['chatRoomUser'] != null
           ? jsonData['chatRoomUser'] is String
               ? (json.decode(jsonData['chatRoomUser']) as List<dynamic>)
-                  .map((e) => ChatRoomMember.fromJson(
-                      e is String ? json.decode(e) : e))
+                  .map((e) =>
+                      ChatRoomMember.fromJson(e is String ? json.decode(e) : e))
                   .toList()
               : (jsonData['chatRoomUser'] as List<dynamic>)
-                  .map((e) => ChatRoomMember.fromJson(
-                      e is String ? json.decode(e) : e))
+                  .map((e) =>
+                      ChatRoomMember.fromJson(e is String ? json.decode(e) : e))
                   .toList()
           : [],
       lastMessage: jsonData['lastMessage'] == null
@@ -118,7 +113,6 @@ class ChatRoomModel {
           : ChatMessageModel.fromJson(jsonData['lastMessage']));
 
   Map<String, dynamic> toJson() {
-    // print(users.first.toJson());
     return {
       'id': id,
       'title': name,
@@ -130,26 +124,29 @@ class ChatRoomModel {
       'imageUrl': image,
       'description': description,
       'chat_access_group': groupAccess,
-      'chatRoomUser': json.encode(
-          roomMembers.map((e) => json.encode(e.toJson())).toList()),
+      'chatRoomUser':
+          json.encode(roomMembers.map((e) => json.encode(e.toJson())).toList()),
       'createdByUser': json.encode(chatGroupOwner.toJson()),
       // 'unreadMessages': unreadMessages,
     };
   }
 
-  ChatRoomMember get opponent {
+  ChatRoomMember? get opponent {
     final UserProfileManager userProfileManager = Get.find();
 
-    return roomMembers
+    List<ChatRoomMember> matchedRoomMembers = roomMembers
         .where((element) =>
             element.userDetail.id != userProfileManager.user.value!.id)
-        .first;
+        .toList();
+    if (matchedRoomMembers.isNotEmpty) {
+      return matchedRoomMembers.first;
+    }
+    return null;
   }
 
   bool get amIGroupAdmin {
     return roomMembers
-        .where(
-            (element) => element.isAdmin == 1 && element.userDetail.isMe)
+        .where((element) => element.isAdmin == 1 && element.userDetail.isMe)
         .toList()
         .isNotEmpty;
   }
@@ -175,5 +172,9 @@ class ChatRoomModel {
     return roomMembers
         .where((element) => element.userDetail.id == memberId)
         .first;
+  }
+
+  DateTime get createAtDate {
+    return DateTime.fromMillisecondsSinceEpoch(createdAt * 1000);
   }
 }

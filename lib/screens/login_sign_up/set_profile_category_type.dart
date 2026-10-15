@@ -1,6 +1,4 @@
 import 'package:foap/helper/imports/common_import.dart';
-
-
 import '../../controllers/profile/set_profile_category_controller.dart';
 import '../../controllers/profile/profile_controller.dart';
 import '../../model/category_model.dart';
@@ -8,8 +6,8 @@ import '../../model/category_model.dart';
 class SetProfileCategoryType extends StatefulWidget {
   final bool isFromSignup;
 
-  const SetProfileCategoryType({Key? key, required this.isFromSignup})
-      : super(key: key);
+  const SetProfileCategoryType({super.key, required this.isFromSignup})
+      ;
 
   @override
   State<SetProfileCategoryType> createState() => _SetProfileCategoryTypeState();
@@ -34,7 +32,7 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -77,8 +75,11 @@ class _SetProfileCategoryTypeState extends State<SetProfileCategoryType> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        BodyMediumText(category.name,
-                            weight: TextWeight.semiBold,),
+                        Text(category.name,
+                            style: TextStyle(
+                                fontSize: FontSizes.b2,
+                                color: AppColorConstants.mainTextColor,
+                                fontWeight: TextWeight.semiBold)),
                         Obx(() => ThemeIconWidget(
                               _setProfileCategoryController
                                           .profileCategoryType.value ==

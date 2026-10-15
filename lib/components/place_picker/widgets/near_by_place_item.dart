@@ -5,12 +5,13 @@ class NearbyPlaceItem extends StatelessWidget {
   final NearbyPlace nearbyPlace;
   final VoidCallback onTap;
 
-  const NearbyPlaceItem(this.nearbyPlace, this.onTap, {Key? key})
-      : super(key: key);
+  const NearbyPlaceItem(this.nearbyPlace, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: AppColorConstants.backgroundColor,
+
       child: InkWell(
         onTap: onTap,
         child: Padding(

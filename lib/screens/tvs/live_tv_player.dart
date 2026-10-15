@@ -1,4 +1,3 @@
-import 'package:auto_orientation/auto_orientation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -7,11 +6,12 @@ import 'package:foap/model/live_tv_model.dart';
 import '../../components/live_tv_player.dart';
 import '../../model/chat_message_model.dart';
 import 'package:foap/helper/imports/tv_imports.dart';
+// import 'package:foap/components/auto_orientation/auto_orientation.dart';
 
 class LiveTvPlayer extends StatefulWidget {
   final TvModel tvModel;
 
-  const LiveTvPlayer({Key? key, required this.tvModel}) : super(key: key);
+  const LiveTvPlayer({super.key, required this.tvModel}) ;
 
   @override
   State<LiveTvPlayer> createState() => _LiveTvPlayerState();
@@ -32,18 +32,18 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Add Your Code here.
-      if (MediaQuery.of(context).orientation == Orientation.portrait) {
-        AutoOrientation.portraitAutoMode();
-      } else {
-        AutoOrientation.landscapeAutoMode();
-      }
+      // if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      //   AutoOrientation.portraitAutoMode();
+      // } else {
+      //   AutoOrientation.landscapeAutoMode();
+      // }
       _liveTvStreamingController.setCurrentViewingTv(widget.tvModel);
     });
   }
 
   @override
   void dispose() {
-    AutoOrientation.portraitAutoMode();
+    // AutoOrientation.portraitAutoMode();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -53,13 +53,13 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
   @override
   Widget build(BuildContext context) {
     return OrientationBuilder(builder: (context, orientation) {
-      if (orientation == Orientation.portrait) {
-        AutoOrientation.portraitAutoMode();
-      } else {
-        AutoOrientation.landscapeAutoMode();
-      }
+      // if (orientation == Orientation.portrait) {
+      //   AutoOrientation.portraitAutoMode();
+      // } else {
+      //   AutoOrientation.landscapeAutoMode();
+      // }
       return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
-        return Scaffold(
+        return AppScaffold(
           backgroundColor: AppColorConstants.backgroundColor,
           body: Column(
             children: [
@@ -99,11 +99,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                                       .currentViewingTv.value!);
                             })),
                       ],
-                    ).setPadding(
-                        left: DesignConstants.horizontalPadding,
-                        right: DesignConstants.horizontalPadding,
-                        top: 8,
-                        bottom: 16),
+                    ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 8, bottom: 16),
                     divider().tP8,
                   ],
                 ),
@@ -151,7 +147,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                 ],
               ),
               // const Spacer(),
-              // const ThemeIconWidget(
+              // ThemeIconWidget(
               //   ThemeIcon.close,
               //   size: 25,
               // ).ripple(() {
@@ -170,14 +166,11 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
                     []);
                 return ListView.separated(
                     padding: EdgeInsets.only(
-                        top: 10,
-                        bottom: 50,
-                        left: DesignConstants.horizontalPadding,
-                        right: 70),
+                        top: 10, bottom: 50, left: DesignConstants.horizontalPadding, right: 70),
                     itemCount: messages.length,
                     itemBuilder: (ctx, index) {
                       return Container(
-                        color: AppColorConstants.cardColor.withOpacity(0.5),
+                        color: AppColorConstants.cardColor.withValues(alpha: 0.5),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -233,7 +226,7 @@ class _LiveTvPlayerState extends State<LiveTvPlayer> {
               Expanded(
                 child: Container(
                   height: 40,
-                  color: AppColorConstants.cardColor.withOpacity(0.8),
+                  color: AppColorConstants.cardColor.withValues(alpha: 0.8),
                   child: TextField(
                     controller: messageTextField,
                     textAlign: TextAlign.start,

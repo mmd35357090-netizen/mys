@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:foap/helper/imports/chat_imports.dart';
 
 class ChatMediaList extends StatefulWidget {
   final ChatRoomModel chatRoom;
 
-  const ChatMediaList({Key? key, required this.chatRoom}) : super(key: key);
+  const ChatMediaList({super.key, required this.chatRoom}) ;
 
   @override
   State<ChatMediaList> createState() => _ChatMediaListState();
@@ -23,7 +22,7 @@ class _ChatMediaListState extends State<ChatMediaList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -63,7 +62,7 @@ class _ChatMediaListState extends State<ChatMediaList> {
               )
             ],
           ).hp(DesignConstants.horizontalPadding),
-          divider().tP8,
+
           mediaList()
         ],
       ),
@@ -115,7 +114,7 @@ class _ChatMediaListState extends State<ChatMediaList> {
                   });
                 }),
                 messages[index].messageContentType == MessageContentType.video
-                    ? const Positioned(
+                    ?  Positioned(
                         right: 0,
                         top: 0,
                         left: 0,

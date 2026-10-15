@@ -1,31 +1,38 @@
-import 'dart:io';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:dots_indicator/dots_indicator.dart';
-import 'package:video_compress/video_compress.dart'; // 👈 এই লাইনটি অবশ্যই থাকতে হবে
 import 'package:foap/components/smart_text_field.dart';
-import 'package:foap/components/post_card/video_widget.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
+import 'package:foap/model/fund_raising_campaign.dart';
 import 'package:foap/screens/post/post_option_popup.dart';
-// import 'package:photo_editor_sdk/photo_editor_sdk.dart';
-// import 'package:video_editor_sdk/video_editor_sdk.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../components/place_picker/entities/location_result.dart';
 import '../../components/place_picker/widgets/place_picker.dart';
+import '../../components/post_card/video_widget.dart';
 import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/post/select_post_media_controller.dart';
+import '../../util/constant_util.dart';
 import '../dashboard/dashboard_screen.dart';
+import 'add_collaboratots.dart';
+import 'create_poll.dart';
 import 'tag_hashtag_view.dart';
 import 'tag_users_view.dart';
 import '../chat/media.dart';
 import 'audio_file_player.dart';
+import 'dart:io';
+import 'package:video_compress/video_compress.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:giphy_get/giphy_get.dart';
+import '../chat/drawing_screen.dart';
+import '../chat/voice_record.dart';
 
 class AddPostScreen extends StatefulWidget {
-  final PostType postType;
+  final PostCategory postType;
 
   final List<Media>? items;
   final CompetitionModel? competition;
   final ClubModel? club;
+  final EventModel? event;
+  final FundRaisingCampaign? fundRaisingCampaign;
 
   final bool? isReel;
   final int? audioId;
@@ -40,6 +47,8 @@ class AddPostScreen extends StatefulWidget {
       this.items,
       this.competition,
       this.club,
+      this.event,
+      this.fundRaisingCampaign,
       this.isReel,
       this.audioId,
       this.audioStartTime,
@@ -55,6 +64,9 @@ class AddPostState extends State<AddPostScreen> {
   final SmartTextFieldController _smartTextFieldController = Get.find();
   final SettingsController settingController = Get.find();
   final AddPostController addPostController = Get.find();
+  final UserProfileManager _userProfileManager = Get.find();
+  final ImagePicker _picker = ImagePicker();
+  final SettingsController _settingsController = Get.find();
 
   @override
   void initState() {
@@ -66,62 +78,6 @@ class AddPostState extends State<AddPostScreen> {
   void dispose() {
     super.dispose();
   }
-
-    // 🚀 স্মার্ট ব্যাকগ্রাউন্ড কম্প্রেশন মেথড (টাইমআউট ও সেফটি গার্ড সহ)
-  Future<List<Media>> _processMediaBeforeUpload(List<Media> originalItems) async {
-    List<Media> optimizedItems = [];
-    
-    // আপনার প্রোজেক্টের গ্লোবাল ইজি-লোডিং বা ইন্ডিকেটর চালু করা
-    AppUtil.addProgressIndicator(size: 100); 
-
-    for (var item in originalItems) {
-      // ফাইলটি যদি ভিডিও হয় এবং তার লোকাল পাথ বিদ্যমান থাকে
-      if (item.mediaType == GalleryMediaType.video && item.file != null) {
-        try {
-          print("ভিডিও অপ্টিমাইজেশন শুরু হচ্ছে: ${item.file!.path}");
-          
-          // সর্বোচ্চ ২০ সেকেন্ড ট্রাই করবে, অন্যথায় অরিজিনাল ফাইল পাঠাবে (লোডিং স্টাক হবে না)
-          MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-            item.file!.path,
-            quality: VideoQuality.MediumQuality, 
-            deleteOrigin: false,
-            includeAudio: true,
-          ).timeout(
-            const Duration(seconds: 20),
-            onTimeout: () {
-              print("কম্প্রেশন টাইমআউট! অরিজিনাল ফাইল আপলোড হচ্ছে।");
-              return null; 
-            },
-          );
-
-          if (mediaInfo != null && mediaInfo.path != null) {
-            print("ভিডিও সাকসেসফুলি কম্প্রেসড হয়েছে। নতুন সাইজ: ${mediaInfo.filesize}");
-            
-            // নতুন কম্প্রেসড ফাইল পাথ দিয়ে মিডিয়া আপডেট
-            Media compressedMedia = item;
-            compressedMedia.file = File(mediaInfo.path!);
-            optimizedItems.add(compressedMedia);
-          } else {
-            optimizedItems.add(item); 
-          }
-        } catch (e) {
-          print("কম্প্রেশন এরর (অরিজিনাল ফাইল ব্যবহার করা হচ্ছে): $e");
-          optimizedItems.add(item);
-        }
-      } else {
-        // ইমেজ বা অন্য মিডিয়া ফাইল হলে কোনো পরিবর্তন ছাড়াই যুক্ত হবে
-        optimizedItems.add(item);
-      }
-    }
-
-    // ব্যাকগ্রাউন্ড ক্যাশ ক্লিয়ার করা যাতে ডিভাইস মেমোরি জ্যাম না হয়
-    try {
-      await VideoCompress.deleteAllCache();
-    } catch (_) {}
-    
-    return optimizedItems;
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -154,8 +110,7 @@ class AddPostState extends State<AddPostScreen> {
                                   dashboardController.indexChanged(0);
                                 }
                               },
-                              child: const ThemeIconWidget(
-                                  ThemeIcon.backArrow)),
+                              child: ThemeIconWidget(ThemeIcon.backArrow)),
                           const Spacer(),
                           Container(
                                   color: AppColorConstants.themeColor,
@@ -173,13 +128,17 @@ class AddPostState extends State<AddPostScreen> {
                               .round(10)
                               .ripple(() {
                             if ((widget.items ??
-                                    _selectPostMediaController
-                                        .selectedMediaList)
-                                .isNotEmpty) {
+                                        _selectPostMediaController
+                                            .selectedMediaList)
+                                    .isNotEmpty ||
+                                _smartTextFieldController
+                                    .textField.value.text.isNotEmpty) {
                               addPostController.submitPost(
                                   allowComments: addPostController
                                       .enableComments.value,
                                   postType: widget.postType,
+                                  isPaidContent: addPostController
+                                      .isPaidContent.value,
                                   isReel: widget.isReel ?? false,
                                   audioId: widget.audioId,
                                   audioStartTime: widget.audioStartTime,
@@ -191,6 +150,9 @@ class AddPostState extends State<AddPostScreen> {
                                       .textField.value.text,
                                   competitionId: widget.competition?.id,
                                   clubId: widget.club?.id,
+                                  eventId: widget.event?.id,
+                                  fundRaisingCampaignId:
+                                      widget.fundRaisingCampaign?.id,
                                   postCompletionHandler:
                                       widget.postCompletionHandler);
                             }
@@ -229,26 +191,17 @@ class AddPostState extends State<AddPostScreen> {
                       ).hp(DesignConstants.horizontalPadding),
                       if (widget.isReel != true)
                         PostOptionsPopup(
-                          selectedMediaList: (medias) {
-                            _selectPostMediaController
-                                .mediaSelected(medias);
-                          },
-                          selectGif: (gifMedia) {
-                            _selectPostMediaController
-                                .mediaSelected([gifMedia]);
-                          },
-                          recordedAudio: (audioMedia) {
-                            _selectPostMediaController
-                                .mediaSelected([audioMedia]);
+                          callbackHandler: (option) {
+                            postOptionSelected(option);
                           },
                         ).vP25,
                       SizedBox(
                         height: 50,
                         child: Row(
                           children: [
-                            const ThemeIconWidget(ThemeIcon.message),
+                            ThemeIconWidget(ThemeIcon.message),
                             const SizedBox(
-                              width: 15,
+                              width: 10,
                             ),
                             BodyMediumText(allowCommentsString),
                             const Spacer(),
@@ -262,14 +215,37 @@ class AddPostState extends State<AddPostScreen> {
                           ],
                         ),
                       ).hp(DesignConstants.horizontalPadding),
+                      if (_userProfileManager
+                          .user.value!.subscriptionPlans.isNotEmpty)
+                        SizedBox(
+                          height: 50,
+                          child: Row(
+                            children: [
+                              ThemeIconWidget(ThemeIcon.diamond),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              BodyMediumText(forSubscribersOnlyString),
+                              const Spacer(),
+                              Obx(() => ThemeIconWidget(addPostController
+                                              .isPaidContent.value
+                                          ? ThemeIcon.selectedCheckbox
+                                          : ThemeIcon.emptyCheckbox)
+                                      .ripple(() {
+                                    addPostController
+                                        .togglePaidContentMode();
+                                  })),
+                            ],
+                          ),
+                        ).hp(DesignConstants.horizontalPadding),
                       divider(height: 0.5),
                       SizedBox(
                         height: 50,
                         child: Row(
                           children: [
-                            const ThemeIconWidget(ThemeIcon.location),
+                            ThemeIconWidget(ThemeIcon.location),
                             const SizedBox(
-                              width: 15,
+                              width: 10,
                             ),
                             Obx(() =>
                                 addPostController.taggedLocation.value ==
@@ -278,20 +254,45 @@ class AddPostState extends State<AddPostScreen> {
                                     : BodyLargeText(addPostController
                                         .taggedLocation.value!.name)),
                             const Spacer(),
-                            Obx(() => addPostController
-                                        .taggedLocation.value ==
-                                    null
-                                ? const ThemeIconWidget(
-                                    ThemeIcon.nextArrow)
-                                : const ThemeIconWidget(ThemeIcon.close)
-                                    .ripple(() {
-                                    addPostController
-                                        .setTaggedLocation(null);
-                                  })),
+                            Obx(() =>
+                                addPostController.taggedLocation.value ==
+                                        null
+                                    ? ThemeIconWidget(ThemeIcon.nextArrow)
+                                    : ThemeIconWidget(ThemeIcon.close)
+                                        .ripple(() {
+                                        addPostController
+                                            .setTaggedLocation(null);
+                                      })),
                           ],
                         ),
                       ).hp(DesignConstants.horizontalPadding).ripple(() {
                         openLocationPicker();
+                      }),
+                      divider(height: 0.5),
+                      SizedBox(
+                        height: 50,
+                        child: Row(
+                          children: [
+                            ThemeIconWidget(ThemeIcon.account),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Obx(() => Wrap(
+                                  children: [
+                                    BodyMediumText(addCollaboratorString),
+                                    if (addPostController
+                                        .collaborators.isNotEmpty)
+                                      BodyMediumText(
+                                          '(${addPostController.collaborators.length} $collaboratorsString)'),
+                                  ],
+                                )),
+                            const Spacer(),
+                            ThemeIconWidget(ThemeIcon.nextArrow),
+                          ],
+                        ),
+                      ).hp(DesignConstants.horizontalPadding).ripple(() {
+                        Get.to(() => const AddCollaborators(),
+                            fullscreenDialog: true);
                       }),
                       divider(height: 0.5),
                       const SizedBox(
@@ -305,7 +306,7 @@ class AddPostState extends State<AddPostScreen> {
                                   // height: 500,
                                   width: double.infinity,
                                   color: AppColorConstants.disabledColor
-                                      .withOpacity(0.1),
+                                      .withValues(alpha: 0.1),
                                   child: _smartTextFieldController
                                           .currentHashtag.isNotEmpty
                                       ? TagHashtagView()
@@ -332,12 +333,42 @@ class AddPostState extends State<AddPostScreen> {
     );
   }
 
+  postOptionSelected(PostOptionType type) {
+    if (type == PostOptionType.camera) {
+      selectPhoto(
+        source: ImageSource.camera,
+      );
+    } else if (type == PostOptionType.gallery) {
+      selectPhoto(
+        source: ImageSource.gallery,
+      );
+    } else if (type == PostOptionType.video) {
+      selectVideo(
+        source: ImageSource.gallery,
+      );
+    } else if (type == PostOptionType.drawing) {
+      openDrawingBoard();
+    } else if (type == PostOptionType.audio) {
+      openVoiceRecord();
+    } else if (type == PostOptionType.gif) {
+      openGify();
+    } else if (type == PostOptionType.poll) {
+      Get.to(() => CreatePoll(), fullscreenDialog: true);
+    }
+  }
+
   Widget postSourceWidget() {
     String image = '';
     String name = '';
     if (widget.club != null) {
       image = widget.club!.image!;
       name = widget.club!.name!;
+    } else if (widget.event != null) {
+      image = widget.event!.image;
+      name = widget.event!.name;
+    } else if (widget.fundRaisingCampaign != null) {
+      image = widget.fundRaisingCampaign!.coverImage;
+      name = widget.fundRaisingCampaign!.title;
     }
     if (image.isNotEmpty && name.isNotEmpty) {
       return Container(
@@ -386,8 +417,6 @@ class AddPostState extends State<AddPostScreen> {
   }
 
   Widget media() {
-    print(
-        '_selectPostMediaController.selectedMediaList ${_selectPostMediaController.selectedMediaList.length}');
     return Obx(() {
       if (_selectPostMediaController.selectedMediaList.isNotEmpty) {
         Media media = _selectPostMediaController.selectedMediaList.first;
@@ -415,7 +444,7 @@ class AddPostState extends State<AddPostScreen> {
                             Container(
                               color: Colors.black45,
                             ),
-                            const Center(
+                            Center(
                               child: ThemeIconWidget(
                                 ThemeIcon.play,
                                 size: 50,
@@ -424,7 +453,7 @@ class AddPostState extends State<AddPostScreen> {
                             )
                           ],
                         )
-                      : const ThemeIconWidget(ThemeIcon.mic),
+                      : ThemeIconWidget(ThemeIcon.mic),
         ).round(10).rP8;
       } else {
         return Container();
@@ -477,6 +506,121 @@ class AddPostState extends State<AddPostScreen> {
       }
     });
   }
+
+  selectPhoto({
+    required ImageSource source,
+  }) async {
+    if (source == ImageSource.camera) {
+      XFile? image = await _picker.pickImage(source: ImageSource.camera);
+
+      if (image != null) {
+        convertToMedias(files: [image], mediaType: GalleryMediaType.photo);
+      }
+    } else {
+      List<XFile> images = await _picker.pickMultiImage();
+      // print('images ${images.length}');
+      convertToMedias(files: images, mediaType: GalleryMediaType.photo);
+    }
+  }
+
+  selectVideo({
+    required ImageSource source,
+  }) async {
+    XFile? file = await _picker.pickVideo(source: source);
+
+    if (file != null) {
+      convertToMedias(files: [file], mediaType: GalleryMediaType.video);
+    }
+  }
+
+  convertToMedias(
+      {required List<XFile> files,
+      required GalleryMediaType mediaType}) async {
+    List<Media> medias = [];
+    for (XFile mediaFile in files) {
+      Media media = Media();
+      media.mediaType = mediaType;
+      File file = File(mediaFile.path);
+      media.file = file;
+
+      if (mediaType == GalleryMediaType.video) {
+        final videoInfo = await VideoCompress.getMediaInfo(mediaFile.path);
+
+        media.size = Size(
+            videoInfo.width!.toDouble(), videoInfo.height!.toDouble());
+
+        media.thumbnail = await VideoThumbnail.thumbnailData(
+          video: mediaFile.path,
+          imageFormat: ImageFormat.JPEG,
+          maxWidth: 500,
+          // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+          quality: 25,
+        );
+      }
+
+      media.id = randomId();
+      medias.add(media);
+    }
+
+    _selectPostMediaController.mediaSelected(medias);
+  }
+
+  void openVoiceRecord() {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: Get.context!,
+        builder: (context) => FractionallySizedBox(
+              heightFactor: 0.7,
+              child: VoiceRecord(
+                recordingCallback: (media) async {
+                  _selectPostMediaController.mediaSelected([media]);
+                },
+              ),
+            ));
+  }
+
+  void openGify() async {
+    String randomId = 'hsvcewd78djhbejkd';
+
+    GiphyGif? gif = await GiphyGet.getGif(
+      context: Get.context!,
+      //Required
+      apiKey: _settingsController.setting.value!.giphyApiKey!,
+      //Required.
+      lang: GiphyLanguage.english,
+      //Optional - Language for query.
+      randomID: randomId,
+      // Optional - An ID/proxy for a specific user.
+      tabColor: Colors.teal, // Optional- default accent color.
+    );
+
+    if (gif != null) {
+      Media media = Media();
+      media.filePath = 'https://i.giphy.com/media/${gif.id}/200.gif';
+      media.mediaType = GalleryMediaType.gif;
+      _selectPostMediaController.mediaSelected([media]);
+    }
+  }
+
+  void openDrawingBoard() {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: Get.context!,
+        // isDismissible: false,
+        isScrollControlled: true,
+        // enableDrag: false,
+        builder: (context) => FractionallySizedBox(
+            heightFactor: 0.9,
+            child: DrawingScreen(
+              drawingCompleted: (media) {
+                Loader.show(status: loadingString);
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  Loader.dismiss();
+                  _selectPostMediaController.mediaSelected([media]);
+                });
+              },
+            )));
+  }
 }
 
 class AddedMediaList extends StatelessWidget {
@@ -504,7 +648,7 @@ class AddedMediaList extends StatelessWidget {
                     height: 40,
                     width: 40,
                     color: AppColorConstants.themeColor,
-                    child: const ThemeIconWidget(
+                    child: ThemeIconWidget(
                       ThemeIcon.close,
                       color: Colors.white,
                     )).circular.ripple(() {
@@ -517,7 +661,7 @@ class AddedMediaList extends StatelessWidget {
               child: Stack(
                 children: [
                   Obx(() {
-                    return CarouselSlider(
+                    return WKCarouselSlider(
                       items: [
                         for (Media media
                             in selectPostMediaController.selectedMediaList)
@@ -554,17 +698,15 @@ class AddedMediaList extends StatelessWidget {
                                         )
                                       : audioPostTile(media)
                       ],
-                      options: CarouselOptions(
-                        aspectRatio: 1,
-                        enlargeCenterPage: false,
-                        enableInfiniteScroll: false,
-                        height: double.infinity,
-                        viewportFraction: 1,
-                        onPageChanged: (index, reason) {
-                          selectPostMediaController
-                              .updateGallerySlider(index);
-                        },
-                      ),
+                      // aspectRatio: 1,
+                      enlargeCenterPage: false,
+                      enableInfiniteScroll: false,
+                      height: double.infinity,
+                      viewportFraction: 1,
+                      onPageChanged: (index) {
+                        selectPostMediaController
+                            .updateGallerySlider(index);
+                      },
                     );
                   }),
                   Obx(() {
@@ -580,18 +722,18 @@ class AddedMediaList extends StatelessWidget {
                                 child: Container(
                                         height: 25,
                                         color: AppColorConstants.cardColor,
-                                        child: DotsIndicator(
+                                        child: WKIndicator1(
                                           dotsCount:
                                               selectPostMediaController
                                                   .selectedMediaList
                                                   .length,
                                           position:
                                               selectPostMediaController
-                                                  .currentIndex.value.toDouble(),
-                                          decorator: DotsDecorator(
-                                              activeColor:
-                                                  AppColorConstants
-                                                      .themeColor),
+                                                  .currentIndex.value,
+                                          activeDotColor:
+                                              AppColorConstants.themeColor,
+                                          dotColor: AppColorConstants
+                                              .disabledColor,
                                         ).hP8)
                                     .round(20)),
                           )
@@ -622,39 +764,38 @@ class AddedMediaList extends StatelessWidget {
     );
   }
 
-  // openImageEditor(Media media) async {
-  //   // PESDK.unlockWithLicense("assets/pesdk_license");
-  //
-  //   final result = await PESDK.openEditor(image: media.file!.path);
-  //
-  //   if (result != null) {
-  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-  //     Media editedMedia = media.copy;
-  //     editedMedia.file = File(result.image.replaceAll('file://', ''));
-  //     selectPostMediaController.replaceMediaWithEditedMedia(
-  //         originalMedia: media, editedMedia: editedMedia);
-  //   } else {
-  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-  //     return;
-  //   }
-  // }
-  //
-  // openVideoEditor(Media media) async {
-  //   // PESDK.unlockWithLicense("assets/pesdk_license");
-  //
-  //   final video = Video(media.file!.path);
-  //   final result = await VESDK.openEditor(video);
-  //
-  //   if (result != null) {
-  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-  //     Media editedMedia = media.copy;
-  //     editedMedia.file = File(result.video.replaceAll('file://', ''));
-  //     selectPostMediaController.replaceMediaWithEditedMedia(
-  //         originalMedia: media, editedMedia: editedMedia);
-  //   } else {
-  //     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
-  //     return;
-  //   }
-  // }
+// openImageEditor(Media media) async {
+//   // PESDK.unlockWithLicense("assets/pesdk_license");
+//
+//   final result = await PESDK.openEditor(image: media.file!.path);
+//
+//   if (result != null) {
+//     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+//     Media editedMedia = media.copy;
+//     editedMedia.file = File(result.image.replaceAll('file://', ''));
+//     selectPostMediaController.replaceMediaWithEditedMedia(
+//         originalMedia: media, editedMedia: editedMedia);
+//   } else {
+//     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+//     return;
+//   }
+// }
+//
+// openVideoEditor(Media media) async {
+//   // PESDK.unlockWithLicense("assets/pesdk_license");
+//
+//   final video = Video(media.file!.path);
+//   final result = await VESDK.openEditor(video);
+//
+//   if (result != null) {
+//     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+//     Media editedMedia = media.copy;
+//     editedMedia.file = File(result.video.replaceAll('file://', ''));
+//     selectPostMediaController.replaceMediaWithEditedMedia(
+//         originalMedia: media, editedMedia: editedMedia);
+//   } else {
+//     // The user exported a new photo successfully and the newly generated photo is located at `result.image`.
+//     return;
+//   }
+// }
 }
-

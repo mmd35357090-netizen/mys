@@ -3,7 +3,7 @@ import 'package:foap/helper/imports/setting_imports.dart';
 import '../../controllers/misc/subscription_packages_controller.dart';
 
 class PackagesScreen extends StatefulWidget {
-  const PackagesScreen({Key? key}) : super(key: key);
+  const PackagesScreen({super.key});
 
   @override
   PackagesScreenState createState() => PackagesScreenState();
@@ -29,11 +29,12 @@ class PackagesScreenState extends State<PackagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
         backNavigationBar( title: packagesString.tr),
-        const SizedBox(height: 8,),
+
         const Expanded(child: CoinPackagesWidget()),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

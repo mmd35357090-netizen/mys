@@ -1,12 +1,11 @@
 import 'package:foap/helper/imports/common_import.dart';
-import '../../components/search_bar.dart';
 import '../../components/user_card.dart';
 import '../../controllers/clubs/invite_friends_to_club_controller.dart';
 
 class InviteUsersToClub extends StatefulWidget {
   final int clubId;
 
-  const InviteUsersToClub({Key? key, required this.clubId}) : super(key: key);
+  const InviteUsersToClub({super.key, required this.clubId}) ;
 
   @override
   InviteUsersToClubState createState() => InviteUsersToClubState();
@@ -24,56 +23,49 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           const SizedBox(
-            height: 40,
-          ),
-          SizedBox(
             height: 50,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          ),
+          Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ThemeIconWidget(
+                    ThemeIcon.close,
+                    size: 20,
+                  ).ripple(() {
+                    Navigator.of(context).pop();
+                  }),
+                  Heading6Text(inviteString.tr, weight: TextWeight.medium)
+                      .ripple(() {
+                    _inviteFriendsToClubController
+                        .sendClubJoinInvite(widget.clubId);
+                  }),
+                ],
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const ThemeIconWidget(
-                      ThemeIcon.close,
-                      size: 20,
-                    ).ripple(() {
-                      Navigator.of(context).pop();
-                    }),
-                    Heading6Text(inviteString.tr, weight: TextWeight.medium)
-                        .ripple(() {
-                      _inviteFriendsToClubController
-                          .sendClubJoinInvite(widget.clubId);
-                    }),
+                    Obx(() => _inviteFriendsToClubController
+                            .selectedFriends.isNotEmpty
+                        ? Heading6Text(
+                            '${_inviteFriendsToClubController.selectedFriends.length} ${friendsSelectedString.tr}',
+                            weight: TextWeight.medium)
+                        : Container())
                   ],
                 ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Obx(() => _inviteFriendsToClubController
-                              .selectedFriends.isNotEmpty
-                          ? Heading6Text(
-                              '${_inviteFriendsToClubController.selectedFriends.length} ${friendsSelectedString.tr}',
-                              weight: TextWeight.medium)
-                          : Container())
-                    ],
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           ).hp(DesignConstants.horizontalPadding),
-          const SizedBox(
-            height: 8,
-          ),
           GetBuilder<InviteFriendsToClubController>(
             init: _inviteFriendsToClubController,
             builder: (ctx) {
@@ -104,7 +96,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    BodySmallText(
+                                    Heading6Text(
                                       usersList[index].userName,
                                       maxLines: 1,
                                     )
@@ -118,7 +110,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                                     height: 25,
                                     width: 25,
                                     color: AppColorConstants.cardColor,
-                                    child: const ThemeIconWidget(
+                                    child: ThemeIconWidget(
                                       ThemeIcon.close,
                                       size: 20,
                                     )).circular.ripple(() {
@@ -149,7 +141,7 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                   },
                   onSearchCompleted: (searchTerm) {})
               .p16,
-          divider(),
+          divider().tP16,
           Expanded(
             child: GetBuilder<InviteFriendsToClubController>(
                 init: _inviteFriendsToClubController,
@@ -172,8 +164,11 @@ class InviteUsersToClubState extends State<InviteUsersToClub> {
                             crossAxisCount: 5,
                             crossAxisSpacing: 5.0,
                             mainAxisSpacing: 5.0,
-                            childAspectRatio: 0.8),
-                    padding: const EdgeInsets.only(top: 25, left: 8, right: 8),
+                            childAspectRatio: 0.7),
+                    padding: EdgeInsets.only(
+                        top: 25,
+                        left: DesignConstants.horizontalPadding,
+                        right: DesignConstants.horizontalPadding),
                     itemCount: usersList.length,
                     itemBuilder: (context, index) {
                       return SelectableUserCard(

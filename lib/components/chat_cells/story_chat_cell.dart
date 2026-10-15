@@ -15,7 +15,7 @@ class StoryChatTile extends StatelessWidget {
       child: Container(
         color: message.isMineMessage
             ? AppColorConstants.disabledColor
-            : AppColorConstants.themeColor.withOpacity(0.2),
+            : AppColorConstants.themeColor.withValues(alpha: 0.2),
         child: SizedBox(
           height: 250,
           child: message.storyContent.media.first.image != null

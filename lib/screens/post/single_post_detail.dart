@@ -35,43 +35,36 @@ class _SinglePostDetailState extends State<SinglePostDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           backNavigationBar(title: postString.tr),
+          const SizedBox(height: 20),
+          GetBuilder<SinglePostDetailController>(
+              init: singlePostDetailController,
+              builder: (ctx) {
+                return singlePostDetailController.post.value == null &&
+                        singlePostDetailController.isLoading == false
+                    ? Center(
+                        child: Heading3Text(
+                          postDeletedString.tr,
+                          weight: TextWeight.bold,
+                          color: AppColorConstants.themeColor,
+                        ),
+                      )
+                    : singlePostDetailController.isLoading == false
+                        ? PostCard(
+                            model: singlePostDetailController.post.value!,
+                            removePostHandler: () {
+                              Get.back();
+                            },
+                            blockUserHandler: () {
+                              Get.back();
+                            })
+                        : Container();
+              }),
 
-          Expanded(
-            child: SingleChildScrollView(
-              child: GetBuilder<SinglePostDetailController>(
-                  init: singlePostDetailController,
-                  builder: (ctx) {
-                    return singlePostDetailController.post.value == null &&
-                            singlePostDetailController.isLoading == false
-                        ? Center(
-                            child: Heading3Text(
-                              postDeletedString.tr,
-                              weight: TextWeight.bold,
-                              color: AppColorConstants.themeColor,
-                            ),
-                          )
-                        : singlePostDetailController.isLoading == false
-                            ? PostCard(
-                                model: singlePostDetailController.post.value!,
-                                removePostHandler: () {
-                                  Get.back();
-                                },
-                                blockUserHandler: () {
-                                  Get.back();
-                                }
-                                // mediaTapHandler: (post) {
-                                //   Get.to(() => PostMediaFullScreen(post: post));
-                                // },
-                                )
-                            : Container();
-                  }),
-            ),
-          ),
         ],
       ),
     );

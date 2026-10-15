@@ -5,10 +5,10 @@ class StoryImage extends StatefulWidget {
   final String imageUrl;
   final bool? isAsset;
   const StoryImage({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.isAsset = false,
-  }) : super(key: key);
+  }) ;
 
   factory StoryImage.url(String url, {bool? isAsset = false}) {
     return StoryImage(imageUrl: url, isAsset: isAsset);
@@ -21,7 +21,7 @@ class StoryImage extends StatefulWidget {
 class _StoryImageState extends State<StoryImage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: widget.isAsset == true

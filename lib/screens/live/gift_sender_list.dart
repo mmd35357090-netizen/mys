@@ -10,8 +10,8 @@ class GiftSenders extends StatelessWidget {
   final int liveId;
   final int? battleId;
 
-  GiftSenders({Key? key, required this.liveId, this.battleId})
-      : super(key: key);
+  GiftSenders({super.key, required this.liveId, this.battleId})
+      ;
 
   @override
   Widget build(BuildContext context) {

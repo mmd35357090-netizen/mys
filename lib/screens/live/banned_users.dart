@@ -3,7 +3,7 @@ import 'package:foap/helper/imports/live_imports.dart';
 import '../../components/user_card.dart';
 
 class BannedUsers extends StatefulWidget {
-  const BannedUsers({Key? key}) : super(key: key);
+  const BannedUsers({super.key}) ;
 
   @override
   State<BannedUsers> createState() => _BannedUsersState();
@@ -72,15 +72,14 @@ class _BannedUsersState extends State<BannedUsers> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(
                             height: 55,
                             width: double.infinity,
                             child: BodyLargeText('Remove Ban'))
                         .ripple(() {
-                      print('Remove Ban');
                       unbanUser(user);
                     }),
-                    Container(
+                    SizedBox(
                             height: 55,
                             width: double.infinity,
                             child: BodyLargeText(cancelString.tr))

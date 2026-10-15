@@ -6,7 +6,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class SearchInput extends StatefulWidget {
   final ValueChanged<String> onSearchInput;
 
-  const SearchInput(this.onSearchInput, {Key? key}) : super(key: key);
+  const SearchInput(this.onSearchInput, {super.key}) ;
 
   @override
   State<StatefulWidget> createState() => SearchInputState();

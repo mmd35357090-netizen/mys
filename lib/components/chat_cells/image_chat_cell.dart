@@ -4,7 +4,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class ImageChatTile extends StatelessWidget {
   final ChatMessageModel message;
 
-  const ImageChatTile({Key? key, required this.message}) : super(key: key);
+  const ImageChatTile({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
 
 class PhoneLoginScreen extends StatefulWidget {
-  const PhoneLoginScreen({Key? key}) : super(key: key);
+  const PhoneLoginScreen({super.key});
 
   @override
   PhoneLoginScreenState createState() => PhoneLoginScreenState();
@@ -22,7 +22,7 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: GestureDetector(
@@ -47,16 +47,18 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
                     SizedBox(
                       height: Get.height * 0.1,
                     ),
-                    AppMobileTextField(
-                      controller: phone,
-                      // showDivider: true,
-                      hintText: phoneNumberString.tr,
-                      // cornerRadius: 5,
-                      countryCodeText: '+${controller.phoneCountryCode.value}',
-                      countryCodeValueChanged: (String value) {
-                        controller.phoneCodeSelected(value);
-                      },
-                    ),
+                    Obx(() => AppMobileTextField(
+                          controller: phone,
+                          // showDivider: true,
+                          hintText: phoneNumberString.tr,
+                          // cornerRadius: 5,
+                          countryCodeText:
+                              '+${controller.phoneCountryCode.value}',
+                          onChanged: (String value) {},
+                          countryCodeValueChanged: (String value) {
+                            controller.phoneCodeSelected(value);
+                          },
+                        )),
 
                     SizedBox(
                       height: Get.height * 0.04,

@@ -3,6 +3,7 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../manager/db_manager_realm.dart';
 import '../../manager/socket_manager.dart';
 
 class ChatRoomDetailController extends GetxController {
@@ -96,7 +97,7 @@ class ChatRoomDetailController extends GetxController {
     // remove member from current viewing group
     if (currentRoom.value != null) {
       currentRoom.value!.roomMembers.removeWhere((element) =>
-      element.userDetail.id == userProfileManager.user.value!.id);
+          element.userDetail.id == userProfileManager.user.value!.id);
       currentRoom.refresh();
     }
 
@@ -125,7 +126,7 @@ class ChatRoomDetailController extends GetxController {
   }
 
   deleteGroup(ChatRoomModel chatRoom) {
-    getIt<DBManager>().deleteRooms([chatRoom]);
+    getIt<RealmDBManager>().deleteRooms([chatRoom]);
     _chatDetailController.getUpdatedChatRoomDetail(
         room: chatRoom,
         callback: () {
@@ -135,7 +136,7 @@ class ChatRoomDetailController extends GetxController {
 
   getStarredMessages(ChatRoomModel room) async {
     starredMessages.value =
-    await getIt<DBManager>().getStarredMessages(roomId: room.id);
+        await getIt<RealmDBManager>().getStarredMessages(roomId: room.id);
     update();
   }
 
@@ -176,7 +177,7 @@ class ChatRoomDetailController extends GetxController {
       await Directory(mediaFolderPath).create();
     }
     List messages =
-    await getIt<DBManager>().getAllMessages(roomId: roomId, offset: 0);
+        await getIt<RealmDBManager>().getAllMessages(roomId: roomId, offset: 0);
 
     File chatTextFile = File('${chatMediaDirectory.path}/chat.text');
     if (chatTextFile.existsSync()) {
@@ -190,7 +191,7 @@ class ChatRoomDetailController extends GetxController {
           message.isDateSeparator == false) {
         messagesString += '\n';
         messagesString +=
-        '[${message.messageTime}] ${message.isMineMessage ? 'Me' : message.userName}: ${message.isDeleted == true ? thisMessageIsDeletedString.tr : message.messageContent}';
+            '[${message.messageTime}] ${message.isMineMessage ? 'Me' : message.userName}: ${message.isDeleted == true ? thisMessageIsDeletedString.tr : message.messageContent}';
       }
     }
 
@@ -219,18 +220,18 @@ class ChatRoomDetailController extends GetxController {
   }
 
   loadImageMessages(int roomId) async {
-    photos.value = await getIt<DBManager>()
+    photos.value = await getIt<RealmDBManager>()
         .getMessages(roomId: roomId, contentType: MessageContentType.photo);
     update();
   }
 
   loadVideoMessages(int roomId) async {
-    videos.value = await getIt<DBManager>()
+    videos.value = await getIt<RealmDBManager>()
         .getMessages(roomId: roomId, contentType: MessageContentType.video);
     update();
   }
 
   deleteRoomChat(ChatRoomModel chatRoom) {
-    getIt<DBManager>().deleteMessagesInRoom(chatRoom);
+    getIt<RealmDBManager>().deleteMessagesInRoom(chatRoom);
   }
 }

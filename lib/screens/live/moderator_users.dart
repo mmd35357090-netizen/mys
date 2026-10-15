@@ -5,7 +5,7 @@ import 'package:foap/helper/imports/live_imports.dart';
 import 'moderator_detail_popup.dart';
 
 class ModeratorUsers extends StatefulWidget {
-  const ModeratorUsers({Key? key}) : super(key: key);
+  const ModeratorUsers({super.key}) ;
 
   @override
   State<ModeratorUsers> createState() => _ModeratorUsersState();
@@ -31,7 +31,8 @@ class _ModeratorUsersState extends State<ModeratorUsers> {
             user: user,
             size: 25,
           ).ripple(() {
-            _profileController.getOtherUserDetail(userId: user.id);
+            _profileController.getOtherUserDetail(
+                userId: user.id, completionBlock: (user) {});
             showModalBottomSheet<void>(
                 backgroundColor: Colors.transparent,
                 context: context,

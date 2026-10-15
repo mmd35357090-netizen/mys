@@ -5,45 +5,31 @@ import '../../model/chat_message_model.dart';
 class MessagesInLive extends StatelessWidget {
   final AgoraLiveController _agoraLiveController = Get.find();
 
-  MessagesInLive({Key? key}) : super(key: key);
+  MessagesInLive({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // height: Get.height / 3,
-      // decoration: BoxDecoration(
-      //   gradient: LinearGradient(
-      //     begin: Alignment.topCenter,
-      //     end: Alignment.bottomCenter,
-      //     colors: <Color>[
-      //       Colors.transparent,
-      //       Colors.black.withOpacity(0.4),
-      //       Colors.black.withOpacity(0.7)
-      //     ],
-      //   ),
-      // ),
-      child: GetBuilder<AgoraLiveController>(
-          init: _agoraLiveController,
-          builder: (ctx) {
-            return ListView.separated(
-                padding: const EdgeInsets.only(
-                    top: 10, bottom: 50, left: 10, right: 70),
-                itemCount: _agoraLiveController.messages.length,
-                itemBuilder: (ctx, index) {
-                  ChatMessageModel message =
-                      _agoraLiveController.messages[index];
-                  if (message.messageContentType == MessageContentType.gift) {
-                    return giftMessageTile(message);
-                  }
-                  return textMessageTile(message);
-                },
-                separatorBuilder: (ctx, index) {
-                  return const SizedBox(
-                    height: 10,
-                  );
-                });
-          }),
-    );
+    return GetBuilder<AgoraLiveController>(
+        init: _agoraLiveController,
+        builder: (ctx) {
+          return ListView.separated(
+              padding: const EdgeInsets.only(
+                  top: 10, bottom: 50, left: 10, right: 70),
+              itemCount: _agoraLiveController.messages.length,
+              itemBuilder: (ctx, index) {
+                ChatMessageModel message =
+                    _agoraLiveController.messages[index];
+                if (message.messageContentType == MessageContentType.gift) {
+                  return giftMessageTile(message);
+                }
+                return textMessageTile(message);
+              },
+              separatorBuilder: (ctx, index) {
+                return const SizedBox(
+                  height: 10,
+                );
+              });
+        });
   }
 
   Widget giftMessageTile(ChatMessageModel message) {

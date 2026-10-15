@@ -1,7 +1,6 @@
-import 'package:foap/helper/imports/club_imports.dart';
-import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/reuseable_widgets/club_listing.dart';
-
+import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/club_imports.dart';
 import '../../components/actionSheets/action_sheet1.dart';
 import '../../model/category_model.dart';
 import '../../model/generic_item.dart';
@@ -11,8 +10,8 @@ import '../../segmentAndMenu/horizontal_menu.dart';
 class CategoryClubsListing extends StatefulWidget {
   final CategoryModel category;
 
-  const CategoryClubsListing({Key? key, required this.category})
-      : super(key: key);
+  const CategoryClubsListing({super.key, required this.category})
+      ;
 
   @override
   CategoryClubsListingState createState() => CategoryClubsListingState();
@@ -38,7 +37,7 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -51,7 +50,7 @@ class CategoryClubsListingState extends State<CategoryClubsListing> {
                     height: 20,
                   ),
                   HorizontalMenuBar(
-                      padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
+                      padding: EdgeInsets.only(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
                       onSegmentChange: (segment) {
                         _clubsController.selectedSegmentIndex(
                           index: segment,

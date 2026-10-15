@@ -6,7 +6,7 @@ import '../profile/password_changed_popup.dart';
 class ResetPasswordScreen extends StatefulWidget {
   final String token;
 
-  const ResetPasswordScreen({Key? key, required this.token}) : super(key: key);
+  const ResetPasswordScreen({super.key, required this.token});
 
   @override
   ResetPasswordScreenState createState() => ResetPasswordScreenState();
@@ -35,7 +35,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: GestureDetector(
         onTap: () {

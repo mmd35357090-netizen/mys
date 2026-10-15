@@ -5,7 +5,7 @@ class RichSuggestion extends StatelessWidget {
   final VoidCallback onTap;
   final AutoCompleteItem autoCompleteItem;
 
-  const RichSuggestion(this.autoCompleteItem, this.onTap, {Key? key}) : super(key: key);
+  const RichSuggestion(this.autoCompleteItem, this.onTap, {super.key}) ;
 
   @override
   Widget build(BuildContext context) {

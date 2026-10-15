@@ -1,32 +1,28 @@
-import 'dart:async';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/models.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../../components/comment_card.dart';
+import '../../components/post_card/comment_card.dart';
 import '../../components/smart_text_field.dart';
 import '../../controllers/misc/users_controller.dart';
 import '../../controllers/post/comments_controller.dart';
-import '../../model/comment_model.dart';
-import '../../model/post_model.dart';
 import '../post/tag_hashtag_view.dart';
 import '../post/tag_users_view.dart';
 
 class CommentsScreen extends StatefulWidget {
-  final PostModel? post;
+  final PostModel? model;
   final int? postId;
   final bool? isPopup;
   final VoidCallback? handler;
   final VoidCallback commentPostedCallback;
-  final VoidCallback commentDeletedCallback;
 
   const CommentsScreen(
       {super.key,
-      this.post,
+      this.model,
       this.postId,
       this.handler,
       this.isPopup,
-      required this.commentPostedCallback,
-      required this.commentDeletedCallback});
+      required this.commentPostedCallback});
 
   @override
   CommentsScreenState createState() => CommentsScreenState();
@@ -34,7 +30,6 @@ class CommentsScreen extends StatefulWidget {
 
 class CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentInputField = TextEditingController();
-  final ScrollController _controller = ScrollController();
   final CommentsController _commentsController = CommentsController();
   final UsersController _usersController = Get.find();
   final SmartTextFieldController _smartTextFieldController = Get.find();
@@ -56,7 +51,7 @@ class CommentsScreenState extends State<CommentsScreen> {
   }
 
   loadData() {
-    _commentsController.getComments(widget.postId ?? widget.post!.id, () {
+    _commentsController.getComments(widget.postId ?? widget.model!.id, () {
       _commentsRefreshController.loadComplete();
     });
   }
@@ -79,7 +74,7 @@ class CommentsScreenState extends State<CommentsScreen> {
                               // height: 500,
                               width: double.infinity,
                               color: AppColorConstants.disabledColor
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               child: _smartTextFieldController
                                       .currentHashtag.isNotEmpty
                                   ? TagHashtagView()
@@ -87,7 +82,8 @@ class CommentsScreenState extends State<CommentsScreen> {
                                           .currentUserTag.isNotEmpty
                                       ? TagUsersView()
                                       : Container().ripple(() {
-                                          FocusManager.instance.primaryFocus
+                                          FocusManager
+                                              .instance.primaryFocus
                                               ?.unfocus();
                                         }),
                             )
@@ -99,27 +95,25 @@ class CommentsScreenState extends State<CommentsScreen> {
                         init: _commentsController,
                         builder: (ctx) {
                           return ListView.separated(
+                            controller: _commentsController.controller,
                             padding: EdgeInsets.only(
                                 top: 20,
                                 left: DesignConstants.horizontalPadding,
                                 right: DesignConstants.horizontalPadding),
                             itemCount: _commentsController.comments.length,
-                            // reverse: true,
-                            controller: _controller,
                             itemBuilder: (context, index) {
                               CommentModel comment =
                                   _commentsController.comments[index];
                               return CommentTile(
                                 model: comment,
-                                post: widget.post!,
                                 replyActionHandler: (comment) {
-                                  _commentsController.setReplyComment(comment);
+                                  _commentsController
+                                      .setReplyComment(comment);
                                 },
                                 deleteActionHandler: (comment) {
                                   _commentsController.deleteComment(
                                     comment: comment,
                                   );
-                                  widget.commentDeletedCallback();
                                 },
                                 favActionHandler: (isFav) {
                                   _commentsController.favUnfavComment(
@@ -131,10 +125,12 @@ class CommentsScreenState extends State<CommentsScreen> {
                                     commentId: comment.id,
                                   );
                                 },
-                                loadMoreChildCommentsActionHandler: (comment) {
+                                loadMoreChildCommentsActionHandler:
+                                    (comment) {
                                   _commentsController.getChildComments(
                                     page: comment.currentPageForReplies,
-                                    postId: widget.postId ?? widget.post!.id,
+                                    postId:
+                                        widget.postId ?? widget.model!.id,
                                     parentId: comment.id,
                                   );
                                 },
@@ -146,7 +142,8 @@ class CommentsScreenState extends State<CommentsScreen> {
                               );
                             },
                           ).addPullToRefresh(
-                              refreshController: _commentsRefreshController,
+                              refreshController:
+                                  _commentsRefreshController,
                               onRefresh: () {},
                               onLoading: () {
                                 loadData();
@@ -189,7 +186,7 @@ class CommentsScreenState extends State<CommentsScreen> {
         children: <Widget>[
           Expanded(
             child: Container(
-              color: AppColorConstants.cardColor.withOpacity(0.5),
+              color: AppColorConstants.cardColor.withValues(alpha: 0.5),
               child: Row(children: <Widget>[
                 Expanded(
                   child: SizedBox(
@@ -197,15 +194,17 @@ class CommentsScreenState extends State<CommentsScreen> {
                     child: Obx(() {
                       commentInputField.value = TextEditingValue(
                           text: _smartTextFieldController.searchText.value,
-                          selection: TextSelection.fromPosition(TextPosition(
-                              offset:
-                                  _smartTextFieldController.position.value)));
+                          selection: TextSelection.fromPosition(
+                              TextPosition(
+                                  offset: _smartTextFieldController
+                                      .position.value)));
 
                       return SmartTextField(
                           maxLine: 1,
                           controller: commentInputField,
                           onTextChangeActionHandler: (text, offset) {
-                            _smartTextFieldController.textChanged(text, offset);
+                            _smartTextFieldController.textChanged(
+                                text, offset);
                           },
                           onFocusChangeActionHandler: (status) {
                             if (status == true) {
@@ -220,18 +219,15 @@ class CommentsScreenState extends State<CommentsScreen> {
                 ThemeIconWidget(
                   ThemeIcon.camera,
                   color: AppColorConstants.mainTextColor,
-                ).rP8.ripple(() => _commentsController.selectPhoto(handler: () {
-                      _commentsController.postMediaCommentsApiCall(
-                          type: CommentType.image,
-                          postId: widget.postId ?? widget.post!.id,
-                          commentPosted: () {
-                            widget.commentPostedCallback();
-                          });
-                      Timer(
-                          const Duration(milliseconds: 500),
-                          () => _controller
-                              .jumpTo(_controller.position.maxScrollExtent));
-                    })),
+                ).rP8.ripple(
+                    () => _commentsController.selectPhoto(handler: () {
+                          _commentsController.postMediaCommentsApiCall(
+                              type: CommentType.image,
+                              postId: widget.postId ?? widget.model!.id,
+                              commentPosted: () {
+                                widget.commentPostedCallback();
+                              });
+                        })),
                 ThemeIconWidget(
                   ThemeIcon.gif,
                   color: AppColorConstants.mainTextColor,
@@ -240,14 +236,10 @@ class CommentsScreenState extends State<CommentsScreen> {
                   _commentsController.openGify(() {
                     _commentsController.postMediaCommentsApiCall(
                         type: CommentType.gif,
-                        postId: widget.postId ?? widget.post!.id,
+                        postId: widget.postId ?? widget.model!.id,
                         commentPosted: () {
                           widget.commentPostedCallback();
                         });
-                    Timer(
-                        const Duration(milliseconds: 500),
-                        () => _controller
-                            .jumpTo(_controller.position.maxScrollExtent));
                   });
                 }),
               ]).hP8,
@@ -276,22 +268,18 @@ class CommentsScreenState extends State<CommentsScreen> {
       final filter = ProfanityFilter();
       bool hasProfanity = filter.hasProfanity(commentInputField.text);
       if (hasProfanity) {
-        AppUtil.showToast(message: notAllowedMessageString.tr, isSuccess: true);
+        AppUtil.showToast(
+            message: notAllowedMessageString.tr, isSuccess: true);
         return;
       }
 
       _commentsController.postCommentsApiCall(
           comment: commentInputField.text.trim(),
-          postId: widget.postId ?? widget.post!.id,
+          postId: widget.postId ?? widget.model!.id,
           commentPosted: () {
             widget.commentPostedCallback();
           });
       commentInputField.text = '';
-
-      if (_commentsController.replyingComment.value == null) {
-        Timer(const Duration(milliseconds: 500),
-            () => _controller.jumpTo(_controller.position.maxScrollExtent));
-      }
     }
   }
 }

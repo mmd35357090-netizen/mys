@@ -23,8 +23,8 @@ class StoryIndicator extends StatefulWidget {
   // Padding of indicator
   final EdgeInsets? indicatorPadding;
 
-  StoryIndicator({
-    Key? key,
+  const StoryIndicator({
+    super.key,
     required this.storyItemsLen,
     required this.currentItemIndex,
     this.progress,
@@ -32,7 +32,7 @@ class StoryIndicator extends StatefulWidget {
     this.indicatorColor,
     this.indicatorValueColor,
     this.indicatorPadding = const EdgeInsets.only(top: 40.0),
-  }) : super(key: key);
+  }) ;
 
   @override
   State<StoryIndicator> createState() => _StoryIndicatorState();

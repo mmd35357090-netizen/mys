@@ -1,10 +1,11 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/profile_imports.dart';
+import 'package:foap/screens/add_on/ui/dating/profile/add_interests.dart';
 import 'package:foap/screens/login_sign_up/set_profile_category_type.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UpdateProfile extends StatefulWidget {
-  const UpdateProfile({Key? key}) : super(key: key);
+  const UpdateProfile({super.key});
 
   @override
   UpdateProfileState createState() => UpdateProfileState();
@@ -30,19 +31,20 @@ class UpdateProfileState extends State<UpdateProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          addProfileView(),
-          const SizedBox(
-            height: 40,
-          ),
+          backNavigationBar(title: ''),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  addProfileView(),
+                  const SizedBox(
+                    height: 40,
+                  ),
                   Row(
                     children: [
                       BodyLargeText(
@@ -62,13 +64,13 @@ class UpdateProfileState extends State<UpdateProfile> {
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
                         size: 15,
-                      ).ripple(() {
-                        Get.to(() => const ChangeUserName())!.then((value) {
-                          reloadData();
-                        });
-                      })
+                      )
                     ],
-                  ),
+                  ).ripple(() {
+                    Get.to(() => const ChangeUserName())!.then((value) {
+                      reloadData();
+                    });
+                  }),
                   divider().vP16,
                   Row(
                     children: [
@@ -90,46 +92,45 @@ class UpdateProfileState extends State<UpdateProfile> {
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
                         size: 15,
-                      ).ripple(() {
-                        Get.to(() => const SetProfileCategoryType(
-                                  isFromSignup: false,
-                                ))!
-                            .then((value) {
-                          reloadData();
-                        });
-                      })
+                      )
                     ],
-                  ),
+                  ).ripple(() {
+                    Get.to(() => const SetProfileCategoryType(
+                              isFromSignup: false,
+                            ))!
+                        .then((value) {
+                      reloadData();
+                    });
+                  }),
                   divider().vP16,
                   if (profileController.user.value!.accountCreatedWith == 1)
-                      Column(
-                        children:[
-                          Row(
-                            children: [
-                              BodyLargeText(
-                                passwordString.tr,
-                                weight: TextWeight.medium,
-                              ),
-                              const Spacer(),
-                              const BodyMediumText(
-                                '********',
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              ThemeIconWidget(
-                                ThemeIcon.edit,
-                                color: AppColorConstants.iconColor,
-                                size: 15,
-                              ).ripple(() {
-                                Get.to(() => const ChangePassword());
-                              })
-                            ],
-                          ),
-                          divider().vP16,
-                        ]
-                      ),
-
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            BodyLargeText(
+                              passwordString.tr,
+                              weight: TextWeight.medium,
+                            ),
+                            const Spacer(),
+                            const BodyMediumText(
+                              '********',
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            ThemeIconWidget(
+                              ThemeIcon.edit,
+                              color: AppColorConstants.iconColor,
+                              size: 15,
+                            )
+                          ],
+                        ).ripple(() {
+                          Get.to(() => const ChangePassword());
+                        }),
+                        divider().vP16
+                      ],
+                    ),
                   Row(
                     children: [
                       BodyLargeText(
@@ -149,13 +150,13 @@ class UpdateProfileState extends State<UpdateProfile> {
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
                         size: 15,
-                      ).ripple(() {
-                        Get.to(() => const ChangePhoneNumber())!.then((value) {
-                          reloadData();
-                        });
-                      })
+                      )
                     ],
-                  ),
+                  ).ripple(() {
+                    Get.to(() => const ChangePhoneNumber())!.then((value) {
+                      reloadData();
+                    });
+                  }),
                   divider().vP16,
                   Row(
                     children: [
@@ -174,13 +175,13 @@ class UpdateProfileState extends State<UpdateProfile> {
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
                         size: 15,
-                      ).ripple(() {
-                        Get.to(() => const ChangePaypalId())!.then((value) {
-                          reloadData();
-                        });
-                      })
+                      )
                     ],
-                  ),
+                  ).ripple(() {
+                    Get.to(() => const ChangePaypalId())!.then((value) {
+                      reloadData();
+                    });
+                  }),
                   divider().vP16,
                   Row(
                     children: [
@@ -197,13 +198,147 @@ class UpdateProfileState extends State<UpdateProfile> {
                         ThemeIcon.edit,
                         color: AppColorConstants.iconColor,
                         size: 15,
-                      ).ripple(() {
-                        Get.to(() => const ChangeLocation())!.then((value) {
-                          reloadData();
-                        });
-                      })
+                      )
                     ],
-                  ),
+                  ).ripple(() {
+                    Get.to(() => const ChangeLocation())!.then((value) {
+                      reloadData();
+                    });
+                  }),
+                  divider().vP16,
+                  Row(
+                    children: [
+                      BodyLargeText(nameString.tr, weight: TextWeight.medium),
+                      const Spacer(),
+                      Obx(() => BodyMediumText(
+                            profileController.user.value?.name ?? '',
+                          )),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      ThemeIconWidget(
+                        ThemeIcon.edit,
+                        color: AppColorConstants.iconColor,
+                        size: 15,
+                      )
+                    ],
+                  ).ripple(() {
+                    Get.to(() => const AddName(isSettingProfile: false))!
+                        .then((value) {
+                      reloadData();
+                    });
+                  }),
+                  divider().vP16,
+                  Row(
+                    children: [
+                      BodyLargeText(dateOfBirthString.tr,
+                          weight: TextWeight.medium),
+                      const Spacer(),
+                      Obx(() => BodyMediumText(
+                            profileController.user.value?.dob ?? '',
+                          )),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      ThemeIconWidget(
+                        ThemeIcon.edit,
+                        color: AppColorConstants.iconColor,
+                        size: 15,
+                      )
+                    ],
+                  ).ripple(() {
+                    Get.to(() => const SetDateOfBirth(isSettingProfile: false))!
+                        .then((value) {
+                      reloadData();
+                    });
+                  }),
+                  divider().vP16,
+                  Row(
+                    children: [
+                      BodyLargeText(genderString.tr, weight: TextWeight.medium),
+                      const Spacer(),
+                      Obx(() => BodyMediumText(
+                            profileController.user.value?.genderType ==
+                                    GenderType.male
+                                ? maleString.tr
+                                : profileController.user.value?.genderType ==
+                                        GenderType.female
+                                    ? femaleString.tr
+                                    : otherString.tr,
+                          )),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      ThemeIconWidget(
+                        ThemeIcon.edit,
+                        color: AppColorConstants.iconColor,
+                        size: 15,
+                      )
+                    ],
+                  ).ripple(() {
+                    Get.to(() => const SetYourGender(isSettingProfile: false))!
+                        .then((value) {
+                      reloadData();
+                    });
+                  }),
+                  divider().vP16,
+                  Row(
+                    children: [
+                      BodyLargeText(personalDetailsString.tr,
+                          weight: TextWeight.medium),
+                      const Spacer(),
+                      ThemeIconWidget(
+                        ThemeIcon.edit,
+                        color: AppColorConstants.iconColor,
+                        size: 15,
+                      )
+                    ],
+                  ).ripple(() {
+                    Get.to(() =>
+                            const AddPersonalInfo(isSettingProfile: false))!
+                        .then((value) {
+                      reloadData();
+                    });
+                  }),
+                  divider().vP16,
+                  Row(
+                    children: [
+                      BodyLargeText(interestsString.tr,
+                          weight: TextWeight.medium),
+                      const Spacer(),
+                      ThemeIconWidget(
+                        ThemeIcon.edit,
+                        color: AppColorConstants.iconColor,
+                        size: 15,
+                      )
+                    ],
+                  ).ripple(() {
+                    Get.to(() => const AddInterests(
+                              isSettingProfile: false,
+                            ))!
+                        .then((value) {
+                      reloadData();
+                    });
+                  }),
+                  divider().vP16,
+                  Row(
+                    children: [
+                      BodyLargeText(professionalDetailString.tr,
+                          weight: TextWeight.medium),
+                      const Spacer(),
+                      ThemeIconWidget(
+                        ThemeIcon.edit,
+                        color: AppColorConstants.iconColor,
+                        size: 15,
+                      )
+                    ],
+                  ).ripple(() {
+                    Get.to(() => const AddProfessionalDetails(
+                            isSettingProfile: false))!
+                        .then((value) {
+                      reloadData();
+                    });
+                  }),
                   divider().vP16,
                 ],
               ).hp(DesignConstants.horizontalPadding),
@@ -219,96 +354,57 @@ class UpdateProfileState extends State<UpdateProfile> {
         init: profileController,
         builder: (ctx) {
           return SizedBox(
-            height: 320,
+            height: 225,
             child: profileController.user.value != null
-                ? Stack(
-                    children: [
-                      Stack(
+                ? SizedBox(
+                    width: Get.width,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            child:
-                                profileController.user.value!.coverImage != null
-                                    ? CachedNetworkImage(
-                                            width: Get.width,
-                                            height: 320,
-                                            fit: BoxFit.cover,
-                                            imageUrl: profileController
-                                                .user.value!.coverImage!)
-                                        .overlay(Colors.black26)
-                                        .bottomRounded(40)
-                                    : Container(
-                                        width: Get.width,
-                                        height: 320,
-                                        color: AppColorConstants.themeColor
-                                            .withOpacity(0.2),
-                                      ).bottomRounded(40),
+                          const SizedBox(
+                            height: 20,
                           ),
-                          Positioned(
-                              bottom: 10,
-                              right: DesignConstants.horizontalPadding,
-                              child: Container(
-                                color: AppColorConstants.cardColor,
-                                child: BodyLargeText(editProfileCoverString.tr)
-                                    .setPadding(
-                                        left: 10, right: 10, top: 8, bottom: 8),
-                              ).circular.ripple(() {
-                                openImagePickingPopup(isCoverImage: true);
-                              })),
-                        ],
-                      ),
-                      SizedBox(
-                        width: Get.width,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const SizedBox(
-                                height: 100,
-                              ),
-                              UserAvatarView(
-                                      user: profileController.user.value!,
-                                      size: 85,
-                                      onTapHandler: () {})
-                                  .ripple(() {
-                                openImagePickingPopup(isCoverImage: false);
-                              }),
-                              BodyMediumText(
-                                editProfilePictureString.tr,
-                                color: Colors.white,
-                              ).vP4.ripple(() {
-                                openImagePickingPopup(isCoverImage: false);
-                              }),
-                              Heading5Text(
-                                profileController.user.value!.userName,
-                                weight: TextWeight.medium,
-                                color: Colors.white,
-                              ).setPadding(bottom: 4),
-                              profileController.user.value?.email != null
-                                  ? BodyMediumText(
-                                      '${profileController.user.value!.email}',
-                                      color: Colors.white70,
-                                    )
-                                  : Container(),
-                              profileController.user.value?.country != null
-                                  ? BodyMediumText(
-                                      '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
-                                      color: Colors.white70,
-                                    ).vP4
-                                  : Container(),
-                            ]).p8,
-                      ),
-                      Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: backNavigationBar(title: ''))
-                    ],
+                          UserAvatarView(
+                                  user: profileController.user.value!,
+                                  size: 85,
+                                  onTapHandler: () {})
+                              .ripple(() {
+                            openImagePickingPopup();
+                          }),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          BodySmallText(
+                            editProfilePictureString.tr,
+                          ).vP4.ripple(() {
+                            openImagePickingPopup();
+                          }),
+                          Heading6Text(
+                            profileController.user.value!.userName,
+                            weight: TextWeight.bold,
+                          ).setPadding(bottom: 4),
+                          profileController.user.value?.email != null
+                              ? BodyMediumText(
+                                  '${profileController.user.value!.email}',
+                                  color: AppColorConstants.mainTextColor,
+                                  weight: TextWeight.regular,
+                                )
+                              : Container(),
+                          profileController.user.value?.country != null
+                              ? BodyMediumText(
+                                  '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
+                                  color: AppColorConstants.mainTextColor,
+                                  weight: TextWeight.regular,
+                                ).vP4
+                              : Container(),
+                        ]).p8,
                   )
                 : Container(),
           );
         });
   }
 
-  void openImagePickingPopup({required bool isCoverImage}) {
+  void openImagePickingPopup() {
     showModalBottomSheet(
         context: context,
         backgroundColor: Colors.transparent,
@@ -333,8 +429,8 @@ class UpdateProfileState extends State<UpdateProfile> {
                             .pickImage(source: ImageSource.camera)
                             .then((pickedFile) {
                           if (pickedFile != null) {
-                            profileController.editProfileImageAction(
-                                pickedFile, isCoverImage);
+                            profileController
+                                .editProfileImageAction(pickedFile);
                           } else {}
                         });
                       }),
@@ -349,8 +445,8 @@ class UpdateProfileState extends State<UpdateProfile> {
                             .pickImage(source: ImageSource.gallery)
                             .then((pickedFile) {
                           if (pickedFile != null) {
-                            profileController.editProfileImageAction(
-                                pickedFile, isCoverImage);
+                            profileController
+                                .editProfileImageAction(pickedFile);
                           } else {}
                         });
                       }),

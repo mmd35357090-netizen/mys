@@ -8,7 +8,7 @@
 // import 'package:vs_story_designer/src/presentation/widgets/animated_onTap_button.dart';
 
 // class AnimationSelector extends StatelessWidget {
-//   const AnimationSelector({Key? key}) : super(key: key);
+//   const AnimationSelector({super.key}) ;
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@
 //                   decoration: BoxDecoration(
 //                       color: index == editorNotifier.fontAnimationIndex
 //                           ? Colors.white
-//                           : Colors.black.withOpacity(0.4),
+//                           : Colors.black.withValues(alpha: 0.4),
 //                       shape: BoxShape.circle,
 //                       border: Border.all(color: Colors.white)),
 //                   child: DefaultTextStyle(

@@ -4,7 +4,7 @@ export 'package:foap/screens/club/choose_club_photo.dart';
 export 'package:foap/screens/club/create_club.dart';
 export 'package:foap/screens/club/club_description.dart';
 export 'package:foap/screens/club/club_detail.dart';
-export 'package:foap/screens/club/clubs_listing.dart';
+export 'package:foap/screens/club/explore_clubs.dart';
 export 'package:foap/screens/club/club_members.dart';
 export 'package:foap/screens/club/search_club.dart';
 export 'package:foap/screens/club/category_club_listing.dart';

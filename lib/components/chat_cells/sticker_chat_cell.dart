@@ -4,7 +4,7 @@ import 'package:foap/helper/imports/common_import.dart';
 class StickerChatTile extends StatelessWidget {
   final ChatMessageModel message;
 
-  const StickerChatTile({Key? key, required this.message}) : super(key: key);
+  const StickerChatTile({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {

@@ -59,14 +59,15 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCySU4h66tkg3OujTVtkOH3T3DGrslTjxc',
-    appId: '1:258656413911:ios:ba8fa463ce215c3a626892',
-    messagingSenderId: '258656413911',
-    projectId: 'socialified-23223',
-    databaseURL: 'https://socialified-23223-default-rtdb.firebaseio.com',
-    storageBucket: 'socialified-23223.appspot.com',
-    androidClientId: '258656413911-2remp44bce4418rojsebhda5o26v5k44.apps.googleusercontent.com',
-    iosClientId: '258656413911-6kjfjodfh56v2otkjqs5htfpmnl4m8qr.apps.googleusercontent.com',
-    iosBundleId: 'com.baljit.apptesting',
+    apiKey: 'AIzaSyCsekV6f6sI0jV-oW1SPS_dfj9bbsxJ5bg',
+    appId: '1:787780064793:ios:cc0450f243ec4f84c33c88',
+    messagingSenderId: '787780064793',
+    projectId: 'sayhi-7baeb',
+    databaseURL: 'https://sayhi-7baeb-default-rtdb.firebaseio.com',
+    storageBucket: 'sayhi-7baeb.firebasestorage.app',
+    androidClientId: '787780064793-u5uv6equan95fncr65s83afff07l5rbe.apps.googleusercontent.com',
+    iosClientId: '787780064793-nqjbtv3f2no80jm578dmnaefgtf0cnbp.apps.googleusercontent.com',
+    iosBundleId: 'com.jasspj.sayhi',
   );
+
 }

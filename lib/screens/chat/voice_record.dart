@@ -11,8 +11,8 @@ import 'package:record/record.dart';
 class VoiceRecord extends StatefulWidget {
   final Function(Media) recordingCallback;
 
-  const VoiceRecord({Key? key, required this.recordingCallback})
-      : super(key: key);
+  const VoiceRecord({super.key, required this.recordingCallback})
+      ;
 
   @override
   State<VoiceRecord> createState() => _VoiceRecordState();
@@ -46,15 +46,11 @@ class _VoiceRecordState extends State<VoiceRecord> {
       audioFile.createSync();
     }
 
-    // Map<Permission, PermissionStatus> statuses =
-    //     await [Permission.microphone].request();
-
     if (await record.hasPermission()) {
       await record.start(
         const RecordConfig(bitRate: 128000, encoder: AudioEncoder.aacLc),
         path: recordingPath!, // by default
       );
-
       _startTimer();
     } else {
       AppUtil.showToast(
@@ -65,11 +61,11 @@ class _VoiceRecordState extends State<VoiceRecord> {
     await session.configure(AudioSessionConfiguration(
       avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
       avAudioSessionCategoryOptions:
-      AVAudioSessionCategoryOptions.allowBluetooth |
-      AVAudioSessionCategoryOptions.defaultToSpeaker,
+          AVAudioSessionCategoryOptions.allowBluetooth |
+              AVAudioSessionCategoryOptions.defaultToSpeaker,
       avAudioSessionMode: AVAudioSessionMode.spokenAudio,
       avAudioSessionRouteSharingPolicy:
-      AVAudioSessionRouteSharingPolicy.defaultPolicy,
+          AVAudioSessionRouteSharingPolicy.defaultPolicy,
       avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
       androidAudioAttributes: const AndroidAudioAttributes(
         contentType: AndroidAudioContentType.speech,
@@ -215,6 +211,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
         filePath: recordingPath!,
         fileSize: data.length,
         mainFileBytes: data,
+        duration: _seconds,
         id: randomId(),
         creationTime: DateTime.now(),
         mediaType: GalleryMediaType.audio,

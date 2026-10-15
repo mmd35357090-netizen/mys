@@ -1,17 +1,54 @@
 import 'package:foap/helper/imports/common_import.dart';
 
-int postTypeValueFrom(PostType postType) {
+int postTypeValueFrom(PostCategory postType) {
   switch (postType) {
-    case PostType.basic:
+    case PostCategory.basic:
       return 1;
-    case PostType.competition:
+    case PostCategory.competition:
       return 2;
-    case PostType.club:
+    case PostCategory.club:
       return 3;
-    case PostType.reel:
+    case PostCategory.reel:
       return 4;
-    case PostType.reshare:
+    case PostCategory.reshare:
       return 5;
+    case PostCategory.event:
+      return 6;
+    case PostCategory.fundRaising:
+      return 7;
+  }
+}
+
+int postContentTypeIdFrom(PostContentType contentType) {
+  switch (contentType) {
+    case PostContentType.text:
+      return 1;
+    case PostContentType.media:
+      return 2;
+    case PostContentType.location:
+      return 3;
+    case PostContentType.poll:
+      return 4;
+    case PostContentType.competitionAdded:
+      return 5;
+    case PostContentType.event:
+      return 6;
+    case PostContentType.fundRaising:
+      return 7;
+    case PostContentType.job:
+      return 8;
+    case PostContentType.competitionResultDeclared:
+      return 9;
+    case PostContentType.offer:
+      return 10;
+    case PostContentType.donation:
+      return 11;
+    case PostContentType.classified:
+      return 12;
+    case PostContentType.club:
+      return 13;
+    case PostContentType.openGroup:
+      return 14;
   }
 }
 
@@ -27,38 +64,26 @@ PostContentType postContentTypeValueFrom(int contentType) {
       return PostContentType.poll;
     case 5:
       return PostContentType.competitionAdded;
-
+    case 6:
+      return PostContentType.event;
+    case 7:
+      return PostContentType.fundRaising;
+    case 8:
+      return PostContentType.job;
     case 9:
       return PostContentType.competitionResultDeclared;
+    case 10:
+      return PostContentType.offer;
+    case 11:
+      return PostContentType.donation;
+    case 12:
+      return PostContentType.classified;
     case 13:
       return PostContentType.club;
     case 14:
       return PostContentType.openGroup;
   }
   return PostContentType.text;
-}
-
-int postContentTypeIdFrom(PostContentType contentType) {
-  switch (contentType) {
-    case PostContentType.text:
-      return 1;
-    case PostContentType.media:
-      return 2;
-    case PostContentType.location:
-      return 3;
-    case PostContentType.poll:
-      return 4;
-    case PostContentType.competitionAdded:
-      return 5;
-
-    case PostContentType.competitionResultDeclared:
-      return 9;
-
-    case PostContentType.club:
-      return 13;
-    case PostContentType.openGroup:
-      return 14;
-  }
 }
 
 int mediaTypeIdFromMediaType(GalleryMediaType type) {
@@ -98,25 +123,78 @@ int userViewSourceTypeToId(UserViewSourceType source) {
 
 PaymentType paymentTypeFromId(int id) {
   switch (id) {
+    case 1:
+      return PaymentType.package;
+    case 2:
+      return PaymentType.award;
     case 3:
       return PaymentType.withdrawal;
-
+    case 4:
+      return PaymentType.withdrawalRefund;
+    case 5:
+      return PaymentType.liveTvSubscribe;
     case 6:
-      return PaymentType.gift;
+      return PaymentType.giftSent;
     case 7:
       return PaymentType.redeemCoin;
+    case 8:
+      return PaymentType.eventTicket;
+    case 9:
+      return PaymentType.eventTicketRefund;
+    case 10:
+      return PaymentType.datingSubscription;
+    case 11:
+      return PaymentType.promotion;
+    case 12:
+      return PaymentType.promotionRefund;
+    case 15:
+      return PaymentType.fundRaising;
+    case 16:
+      return PaymentType.featureAd;
+    case 17:
+      return PaymentType.bannerAd;
+    case 20:
+      return PaymentType.subscription;
   }
-  return PaymentType.gift;
+  return PaymentType.package;
 }
 
 String paymentTypeStringFromId(PaymentType type) {
   switch (type) {
+    case PaymentType.package:
+      return boughtCoinsString.tr;
+    case PaymentType.award:
+      return awardedString.tr;
     case PaymentType.withdrawal:
       return withdrawalString.tr;
-    case PaymentType.gift:
+    case PaymentType.withdrawalRefund:
+      return withdrawalRefundString.tr;
+    case PaymentType.liveTvSubscribe:
+      return subscribedTvString.tr;
+    case PaymentType.giftSent:
+      return giftSentString.tr;
+    case PaymentType.giftReceived:
       return giftsReceivedString.tr;
     case PaymentType.redeemCoin:
       return redeemString.tr;
+    case PaymentType.eventTicket:
+      return evenTicketString.tr;
+    case PaymentType.eventTicketRefund:
+      return evenTicketRefundString.tr;
+    case PaymentType.datingSubscription:
+      return datingSubscriptionString.tr;
+    case PaymentType.promotion:
+      return postPromotionString.tr;
+    case PaymentType.promotionRefund:
+      return postPromotionRefundString.tr;
+    case PaymentType.fundRaising:
+      return donationString.tr;
+    case PaymentType.featureAd:
+      return promotedAdString.tr;
+    case PaymentType.bannerAd:
+      return promotedAdString.tr;
+    case PaymentType.subscription:
+      return subscriptionString.tr;
   }
 }
 
@@ -143,6 +221,13 @@ TransactionType transactionTypeFromId(int id) {
     return TransactionType.credit;
   }
   return TransactionType.debit;
+}
+
+TransactionMedium transactionMediumTypeFromId(int id) {
+  if (id == 1) {
+    return TransactionMedium.money;
+  }
+  return TransactionMedium.coin;
 }
 
 int messageTypeId(MessageContentType type) {
@@ -192,6 +277,8 @@ int messageTypeId(MessageContentType type) {
 
 int uploadMediaTypeId(UploadMediaType type) {
   switch (type) {
+    case UploadMediaType.shop:
+      return 1;
     case UploadMediaType.storyOrHighlights:
       return 3;
     case UploadMediaType.chat:
@@ -202,8 +289,11 @@ int uploadMediaTypeId(UploadMediaType type) {
       return 7;
     case UploadMediaType.verification:
       return 12;
+    case UploadMediaType.event:
+      return 13;
+    case UploadMediaType.uploadResume:
+      return 28;
   }
-  return 1;
 }
 
 int liveViewerRole(LiveUserRole role) {
@@ -216,7 +306,6 @@ int liveViewerRole(LiveUserRole role) {
       return 1;
   }
 }
-
 
 SMSGateway smsGatewayType(int id) {
   switch (id) {
@@ -243,8 +332,6 @@ SubscribedStatus subscribedStatusType(int id) {
       return SubscribedStatus.notSubscribed;
   }
 }
-
-
 
 int pinContentTypeId(PinContentType type) {
   switch (type) {
@@ -285,3 +372,86 @@ int collaborationStatusTypeId(CollaborationStatusType type) {
   }
 }
 
+int eventStatusToId(EventStatus status) {
+  switch (status) {
+    case EventStatus.upcoming:
+      return 1;
+    case EventStatus.active:
+      return 2;
+    case EventStatus.completed:
+      return 3;
+    case EventStatus.cancelled:
+      return 9;
+  }
+}
+
+EventStatus eventStatusType(int id) {
+  switch (id) {
+    case 1:
+      return EventStatus.upcoming;
+    case 2:
+      return EventStatus.active;
+    case 3:
+      return EventStatus.completed;
+    default:
+      return EventStatus.cancelled;
+  }
+}
+
+UserRole userRoleType(int id) {
+  switch (id) {
+    case 3:
+      return UserRole.user;
+
+    default:
+      return UserRole.user;
+  }
+}
+
+GiftSource giftSourceType(int id) {
+  switch (id) {
+    case 1:
+      return GiftSource.live;
+    case 2:
+      return GiftSource.profile;
+    case 3:
+      return GiftSource.post;
+    default:
+      return GiftSource.profile;
+  }
+}
+
+int giftSourceId(GiftSource type) {
+  switch (type) {
+    case GiftSource.live:
+      return 1;
+    case GiftSource.profile:
+      return 2;
+    case GiftSource.post:
+      return 3;
+  }
+}
+
+ReactionOnEvent reactionOnEventType(int id) {
+  switch (id) {
+    case 0:
+      return ReactionOnEvent.none;
+    case 1:
+      return ReactionOnEvent.interested;
+    case 2:
+      return ReactionOnEvent.notInterested;
+    default:
+      return ReactionOnEvent.none;
+  }
+}
+
+int reactionOnEventTypeId(ReactionOnEvent type) {
+  switch (type) {
+    case ReactionOnEvent.none:
+      return 0;
+    case ReactionOnEvent.interested:
+      return 1;
+    case ReactionOnEvent.notInterested:
+      return 2;
+  }
+}

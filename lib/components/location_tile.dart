@@ -7,10 +7,10 @@ class LocationTile extends StatelessWidget {
   final VoidCallback onItemCallback;
 
   const LocationTile({
-    Key? key,
+    super.key,
     required this.location,
     required this.onItemCallback,
-  }) : super(key: key);
+  }) ;
 
   @override
   Widget build(BuildContext context) {

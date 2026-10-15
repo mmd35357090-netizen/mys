@@ -1,26 +1,25 @@
-import 'dart:ui';
 import 'package:foap/api_handler/api_wrapper.dart';
+import 'package:foap/helper/enum_linking.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import '../../model/api_meta_data.dart';
 import '../../model/category_model.dart';
 import '../../model/gift_model.dart';
-import '../../model/post_gift_model.dart';
-import '../../model/post_timeline_gift_response.dart';
-import '../../model/user_model.dart';
 
 class GiftApi {
   static getReceivedStickerGifts(
       {required int page,
-      required int sendOnType,
-      required int? postId,
-      required int? liveId,
+      GiftSource? giftSource,
+      int? postId,
+      int? liveId,
       required Function(List<ReceivedGiftModel>, APIMetaData)
           resultCallback}) async {
     var url = NetworkConstantsUtil.giftsReceived;
-    url = url.replaceAll('{{send_on_type}}', sendOnType.toString());
+    url = url.replaceAll('{{send_on_type}}',
+        liveId == null ? '' : giftSourceId(giftSource!).toString());
     url = url.replaceAll(
         '{{live_call_id}}', liveId == null ? '' : liveId.toString());
-    url =
-        url.replaceAll('{{post_id}}', postId == null ? '' : postId.toString());
+    url = url.replaceAll(
+        '{{post_id}}', postId == null ? '' : postId.toString());
 
     url = '$url&page=$page';
 
@@ -40,10 +39,11 @@ class GiftApi {
       {required int page,
       required int liveId,
       required int? battleId,
-      required Function(
-              List<ReceivedGiftModel>, List<LiveCallHostUser>, APIMetaData?)
+      required Function(List<ReceivedGiftModel>, List<LiveCallHostUser>,
+              APIMetaData?)
           resultCallback}) async {
-    var url = '${NetworkConstantsUtil.liveGiftsReceived}live_call_id=$liveId';
+    var url =
+        '${NetworkConstantsUtil.liveGiftsReceived}live_call_id=$liveId';
     if (battleId != null) {
       url = '$url&battle_id=$battleId';
     }
@@ -51,8 +51,9 @@ class GiftApi {
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
-        var giftsItems =
-            result!.data['gift'] == null ? [] : result.data['gift']['items'];
+        var giftsItems = result!.data['gift'] == null
+            ? []
+            : result.data['gift']['items'];
         var users = result.data['battleUser'];
 
         resultCallback(
@@ -121,73 +122,12 @@ class GiftApi {
       "gift_id": gift.id.toString(),
       'reciever_id': receiverId.toString(),
       'send_on_type': liveId != null
-          ? 1
+          ? giftSourceId(GiftSource.live)
           : postId != null
-              ? 3
-              : 2,
+              ? giftSourceId(GiftSource.post)
+              : giftSourceId(GiftSource.profile),
       'live_call_id': liveId == null ? '' : liveId.toString(),
       'post_id': postId == null ? '' : postId.toString()
-    }).then((result) {
-      if (result?.success == true) {
-        resultCallback();
-      }
-    });
-  }
-
-  static getTimelineReceivedTextGifts(
-      {required int page,
-      required int sendOnType,
-      required int postId,
-      required Function(List<TimelineGift>, APIMetaData)
-          resultCallback}) async {
-    var url = NetworkConstantsUtil.postGifts;
-
-    url = url.replaceAll('{{send_on_type}}', sendOnType.toString());
-    url = url.replaceAll('{{post_id}}', postId.toString());
-
-    url = '$url&page=$page';
-
-    await ApiWrapper().getApi(url: url).then((result) {
-      if (result?.success == true) {
-        List items = result!.data['timeline_gift']['items'];
-
-        resultCallback(items.map((e) => TimelineGift.fromJson(e)).toList(),
-            APIMetaData.fromJson(result.data['timeline_gift']['_meta']));
-      }
-    });
-  }
-
-  static getTimelineTextGifts(
-      {required int page,
-      required Function(List<PostGiftModel>, APIMetaData)
-          resultCallback}) async {
-    var url = NetworkConstantsUtil.timelineGifts;
-    url = '$url?page=$page';
-
-    await ApiWrapper().getApi(url: url).then((result) {
-      if (result?.success == true) {
-        final timelineGiftData = result!.data['timelineGift']['items'];
-        resultCallback(List<PostGiftModel>.from(timelineGiftData.map((value) {
-          final postGift = PostGiftModel.fromJson(value);
-          return postGift;
-        })), APIMetaData.fromJson(result.data['timelineGift']['_meta']));
-      }
-    });
-  }
-
-  static sendTimelineTextGift(
-      {required PostGiftModel gift,
-      required int? receiverId,
-      required int? postId,
-      required VoidCallback resultCallback}) async {
-    var url = NetworkConstantsUtil.sendPostGifts;
-
-    await ApiWrapper().postApi(url: url, param: {
-      "gift_id": gift.id!.toString(),
-      "reciever_id": receiverId.toString(),
-      "send_on_type": 3,
-      "post_type": 2,
-      "post_id": postId.toString()
     }).then((result) {
       if (result?.success == true) {
         resultCallback();

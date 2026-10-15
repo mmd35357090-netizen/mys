@@ -44,7 +44,7 @@ class StoryReplyChatTile extends StatelessWidget {
                               color: message.isMineMessage
                                   ? AppColorConstants.disabledColor
                                   : AppColorConstants.themeColor
-                                      .withOpacity(0.2),
+                                      .withValues(alpha: 0.2),
                               child: SizedBox(
                                 height: double.infinity,
                                 child: CachedNetworkImage(
@@ -79,7 +79,7 @@ class StoryReplyChatTile extends StatelessWidget {
                           Container(
                             color: message.isMineMessage
                                 ? AppColorConstants.disabledColor
-                                : AppColorConstants.themeColor.withOpacity(0.2),
+                                : AppColorConstants.themeColor.withValues(alpha: 0.2),
                             child: SizedBox(
                               height: 150,
                               child: CachedNetworkImage(

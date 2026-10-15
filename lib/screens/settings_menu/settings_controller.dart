@@ -1,11 +1,12 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:foap/api_handler/apis/auth_api.dart';
 import 'package:foap/api_handler/apis/misc_api.dart';
+import 'package:foap/api_handler/apis/profile_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
-import '../../api_handler/apis/profile_api.dart';
 import '../../manager/location_manager.dart';
 import '../../util/shared_prefs.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
@@ -62,7 +63,7 @@ class SettingsController extends GetxController {
     bioMetricAuthStatus.value =
         await SharedPrefs().getBioMetricAuthStatus();
     shareLocation.value = _userProfileManager.user.value!.latitude != null;
-    isPrivateAccount.value = _userProfileManager.user.value!.isPrivate;
+    isPrivateAccount.value = _userProfileManager.user.value!.isPrivateProfile;
     isShareOnlineStatus.value =
         _userProfileManager.user.value!.isShareOnlineStatus;
     setDarkMode(isDarkTheme);
@@ -99,6 +100,13 @@ class SettingsController extends GetxController {
           AppConfigConstants.currentVersion) {
         forceUpdate.value = true;
         forceUpdate.value = false;
+      }
+
+      if (setting.value!.stripePublishableKey?.isNotEmpty == true) {
+        Stripe.publishableKey = setting.value!.stripePublishableKey!;
+        Stripe.merchantIdentifier = 'merchant.com.socialified';
+        Stripe.urlScheme = 'socialifiedstripe';
+        await Stripe.instance.applySettings();
       }
 
       update();
@@ -161,12 +169,11 @@ class SettingsController extends GetxController {
 
   void toggleShowOnlineStatusSetting(bool showOnlineStatus) async {
     isShareOnlineStatus.value = showOnlineStatus;
-    await updateShowOnlineStatusSetting(showOnlineStatus);
-    _userProfileManager.refreshProfile();
+    updateShowOnlineStatusSetting(showOnlineStatus);
   }
 
-  Future updateShowOnlineStatusSetting(bool showOnlineStatus) async {
-    await ProfileApi.updateOnlineStatusSetting(
+  updateShowOnlineStatusSetting(bool showOnlineStatus) {
+    ProfileApi.updateOnlineStatusSetting(
         status: showOnlineStatus ? 1 : 0, resultCallback: () {});
   }
 }

@@ -1,4 +1,4 @@
-import 'package:lottie/lottie.dart';
+// import 'package:lottie/lottie.dart';
 import '../../../controllers/post/add_post_controller.dart';
 import '../../../helper/imports/common_import.dart';
 import 'invite_users_to_club.dart';
@@ -17,7 +17,7 @@ class ClubCreatedSuccess extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.asset('assets/lottie/success.json'),
+          // Lottie.asset('assets/lottie/success.json'),
           const SizedBox(
             height: 40,
           ),
@@ -45,7 +45,7 @@ class ClubCreatedSuccess extends StatelessWidget {
             height: 10,
           ),
           BodyLargeText(
-            inviteFriendString.tr,
+            inviteFriendString,
             weight: TextWeight.semiBold,
           ).ripple(() {
             Get.to(() => InviteUsersToClub(clubId: clubId));

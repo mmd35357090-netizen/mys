@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../controllers/misc/rating_controller.dart';
@@ -8,7 +7,7 @@ import 'package:foap/model/live_tv_model.dart';
 import 'package:foap/helper/imports/tv_imports.dart';
 
 class TvListHome extends StatefulWidget {
-  const TvListHome({Key? key}) : super(key: key);
+  const TvListHome({super.key});
 
   @override
   State<TvListHome> createState() => _TvListHomeState();
@@ -16,7 +15,8 @@ class TvListHome extends StatefulWidget {
 
 class _TvListHomeState extends State<TvListHome> {
   final TvStreamingController _tvStreamingController = Get.find();
-  final CarouselSliderController _controller = CarouselSliderController();
+  final WKCarouselSliderController _controller =
+      WKCarouselSliderController();
   int _current = 0;
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -44,13 +44,12 @@ class _TvListHomeState extends State<TvListHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             backNavigationBar(title: tvsString.tr),
-            const SizedBox(height: 8,),
             Expanded(
                 child: GetBuilder<TvStreamingController>(
                     init: _tvStreamingController,
@@ -64,14 +63,18 @@ class _TvListHomeState extends State<TvListHome> {
                             if (_tvStreamingController.tvs.isNotEmpty)
                               currentlyLiveTv(),
                             ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: const EdgeInsets.only(bottom: 100),
+                                physics:
+                                    const NeverScrollableScrollPhysics(),
+                                padding:
+                                    const EdgeInsets.only(bottom: 100),
                                 shrinkWrap: true,
-                                itemCount:
-                                    _tvStreamingController.categories.length,
-                                itemBuilder: (BuildContext context, int index) {
+                                itemCount: _tvStreamingController
+                                    .categories.length,
+                                itemBuilder:
+                                    (BuildContext context, int index) {
                                   return tvChannelsByCategory(
-                                      _tvStreamingController.categories[index]);
+                                      _tvStreamingController
+                                          .categories[index]);
                                 })
                           ]))
                         ],
@@ -84,7 +87,8 @@ class _TvListHomeState extends State<TvListHome> {
   banner() {
     return _tvStreamingController.banners.length == 1
         ? CachedNetworkImage(
-            imageUrl: _tvStreamingController.banners.first.coverImageUrl ?? "",
+            imageUrl:
+                _tvStreamingController.banners.first.coverImageUrl ?? "",
             fit: BoxFit.cover,
             width: Get.width,
             height: 200,
@@ -95,9 +99,10 @@ class _TvListHomeState extends State<TvListHome> {
             bannerClickAction(_tvStreamingController.banners.first);
           })
         : Stack(children: [
-            CarouselSlider(
+            WKCarouselSlider(
               items: [
-                for (TVBannersModel banner in _tvStreamingController.banners)
+                for (TVBannersModel banner
+                    in _tvStreamingController.banners)
                   CachedNetworkImage(
                     imageUrl: banner.coverImageUrl ?? "",
                     fit: BoxFit.cover,
@@ -110,25 +115,25 @@ class _TvListHomeState extends State<TvListHome> {
                     bannerClickAction(banner);
                   })
               ],
-              options: CarouselOptions(
-                autoPlayInterval: const Duration(seconds: 4),
-                autoPlay: true,
-                enlargeCenterPage: false,
-                enableInfiniteScroll: true,
-                height: 200,
-                viewportFraction: 1,
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    _current = index;
-                  });
-                },
-              ),
+              autoPlayInterval: const Duration(seconds: 4),
+              autoPlay: true,
+              enlargeCenterPage: false,
+              enableInfiniteScroll: true,
+              height: 200,
+              viewportFraction: 1,
+              onPageChanged: (index) {
+                setState(() {
+                  _current = index;
+                });
+              },
             ),
             Positioned.fill(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children:
-                    _tvStreamingController.banners.asMap().entries.map((entry) {
+                children: _tvStreamingController.banners
+                    .asMap()
+                    .entries
+                    .map((entry) {
                   return Container(
                     width: 12.0,
                     height: 12.0,
@@ -136,10 +141,12 @@ class _TvListHomeState extends State<TvListHome> {
                         vertical: 8.0, horizontal: 4.0),
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: (Theme.of(context).brightness == Brightness.dark
+                        color: (Theme.of(context).brightness ==
+                                    Brightness.dark
                                 ? AppColorConstants.themeColor
                                 : Colors.grey)
-                            .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                            .withValues(
+                                alpha: _current == entry.key ? 0.9 : 0.4)),
                   ).ripple(() {
                     _controller.animateToPage(entry.key);
                   });
@@ -150,7 +157,7 @@ class _TvListHomeState extends State<TvListHome> {
   }
 
   currentlyLiveTv() {
-    return CarouselSlider(
+    return WKCarouselSlider(
       items: [
         for (TvModel tv in _tvStreamingController.tvs)
           Stack(
@@ -175,19 +182,17 @@ class _TvListHomeState extends State<TvListHome> {
             ],
           )
       ],
-      options: CarouselOptions(
-        autoPlayInterval: const Duration(seconds: 4),
-        autoPlay: _tvStreamingController.tvs.length > 1,
-        enlargeCenterPage: false,
-        enableInfiniteScroll: _tvStreamingController.tvs.length > 1,
-        height: 200,
-        viewportFraction: _tvStreamingController.tvs.length > 1 ? 0.8 : 1,
-        onPageChanged: (index, reason) {
-          setState(() {
-            _current = index;
-          });
-        },
-      ),
+      autoPlayInterval: const Duration(seconds: 4),
+      autoPlay: _tvStreamingController.tvs.length > 1,
+      enlargeCenterPage: false,
+      enableInfiniteScroll: _tvStreamingController.tvs.length > 1,
+      height: 200,
+      viewportFraction: _tvStreamingController.tvs.length > 1 ? 0.8 : 1,
+      onPageChanged: (index) {
+        setState(() {
+          _current = index;
+        });
+      },
     );
   }
 
@@ -195,10 +200,13 @@ class _TvListHomeState extends State<TvListHome> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         children: [
-          Heading6Text(model.name, weight: TextWeight.medium)
-              .setPadding(top: 20, bottom: 8, left: DesignConstants.horizontalPadding, right: 0),
+          Heading6Text(model.name, weight: TextWeight.medium).setPadding(
+              top: 20,
+              bottom: 8,
+              left: DesignConstants.horizontalPadding,
+              right: 0),
           const Spacer(),
-          const ThemeIconWidget(
+          ThemeIconWidget(
             ThemeIcon.nextArrow,
             size: 15,
           ).rP16.ripple(() {
@@ -214,7 +222,8 @@ class _TvListHomeState extends State<TvListHome> {
           physics: const ClampingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemCount: model.tvs.length,
-          itemBuilder: (BuildContext context, int index) => CachedNetworkImage(
+          itemBuilder: (BuildContext context, int index) =>
+              CachedNetworkImage(
             imageUrl: model.tvs[index].image,
             fit: BoxFit.cover,
             height: 170,

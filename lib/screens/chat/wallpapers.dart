@@ -5,8 +5,8 @@ import '../../util/shared_prefs.dart';
 class WallpaperForChatBackground extends StatefulWidget {
   final int roomId;
 
-  const WallpaperForChatBackground({Key? key, required this.roomId})
-      : super(key: key);
+  const WallpaperForChatBackground({super.key, required this.roomId})
+      ;
 
   @override
   State<WallpaperForChatBackground> createState() =>
@@ -47,7 +47,7 @@ class _WallpaperForChatBackgroundState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -79,7 +79,7 @@ class _WallpaperForChatBackgroundState
                               height: double.infinity,
                               width: double.infinity,
                               color: Colors.black38,
-                              child: const ThemeIconWidget(
+                              child: ThemeIconWidget(
                                 ThemeIcon.checkMark,
                                 size: 50,
                                 color: Colors.white,

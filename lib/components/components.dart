@@ -3,8 +3,8 @@ import 'package:foap/helper/imports/common_import.dart';
 class ProfilePictureWithName extends StatelessWidget {
   final UserModel user;
 
-  const ProfilePictureWithName({Key? key, required this.user})
-      : super(key: key);
+  const ProfilePictureWithName({super.key, required this.user})
+      ;
 
   @override
   Widget build(BuildContext context) {

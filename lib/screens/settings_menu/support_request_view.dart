@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import '../../model/support_request_response.dart';
 
 class SupportRequestView extends StatefulWidget {
-  const SupportRequestView({Key? key}) : super(key: key);
+  const SupportRequestView({super.key});
 
   @override
   State<SupportRequestView> createState() => _SupportRequestViewState();
@@ -13,13 +13,15 @@ class _SupportRequestViewState extends State<SupportRequestView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
           backNavigationBar(
                title: supportRequestsString.tr),
+
           SingleChildScrollView(
             child: GestureDetector(
               onTap: () {

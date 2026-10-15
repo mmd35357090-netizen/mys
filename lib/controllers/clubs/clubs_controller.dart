@@ -1,12 +1,11 @@
 import 'package:foap/api_handler/apis/club_api.dart';
 import 'package:foap/helper/imports/club_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/model/data_wrapper.dart';
 import '../../model/category_model.dart';
 import 'package:foap/helper/list_extension.dart';
 
 class ClubsController extends GetxController {
-  final UserProfileManager _userProfileManager = Get.find();
-
   RxList<ClubModel> clubs = <ClubModel>[].obs;
   RxList<ClubModel> topClubs = <ClubModel>[].obs;
   RxList<ClubModel> trendingClubs = <ClubModel>[].obs;
@@ -17,27 +16,15 @@ class ClubsController extends GetxController {
 
   RxBool isLoadingCategories = false.obs;
 
-  int clubsPage = 1;
-  bool canLoadMoreClubs = true;
-  RxBool isLoadingClubs = false.obs;
-
-  int topClubsPage = 1;
-  bool canLoadMoreTopClubs = true;
-  RxBool isLoadingTopClubs = false.obs;
-
-  int trendingClubsPage = 1;
-  bool canLoadMoreTrendingClubs = true;
-  RxBool isLoadingTrendingClubs = false.obs;
-
-  int invitationsPage = 1;
-  bool canLoadMoreInvitations = true;
-  RxBool isLoadingInvitations = false.obs;
-
-  int membersPage = 1;
-  bool canLoadMoreMembers = true;
-  bool isLoadingMembers = false;
+  DataWrapper clubsDataWrapper = DataWrapper();
+  DataWrapper topClubsDataWrapper = DataWrapper();
+  DataWrapper invitationsDataWrapper = DataWrapper();
+  DataWrapper trendingClubDataWrapper = DataWrapper();
+  DataWrapper membersDataWrapper = DataWrapper();
+  DataWrapper postDataWrapper = DataWrapper();
 
   RxInt segmentIndex = (0).obs;
+  RxInt currentSliderIndex = (0).obs;
 
   String? _name;
   int? _categoryId;
@@ -45,40 +32,31 @@ class ClubsController extends GetxController {
   int? _isJoined;
 
   clear() {
-    isLoadingClubs.value = false;
+    clubsDataWrapper = DataWrapper();
     clubs.clear();
-    clubsPage = 1;
-    canLoadMoreClubs = true;
 
-    invitationsPage = 1;
-    canLoadMoreInvitations = true;
-    isLoadingInvitations.value = false;
+    invitationsDataWrapper = DataWrapper();
     invitations.clear();
 
-    topClubsPage = 1;
-    canLoadMoreTopClubs = true;
-    isLoadingTopClubs.value = false;
-    topClubs.clear();
-
-    trendingClubsPage = 1;
-    canLoadMoreTrendingClubs = true;
-    isLoadingTrendingClubs.value = false;
+    trendingClubDataWrapper = DataWrapper();
     trendingClubs.clear();
 
     segmentIndex.value = 0;
+    currentSliderIndex.value = 0;
 
     _name = null;
     _categoryId = null;
     _userId = null;
     _isJoined = null;
-
   }
 
   clearMembers() {
-    isLoadingMembers = false;
     members.value = [];
-    membersPage = 1;
-    canLoadMoreMembers = true;
+    membersDataWrapper = DataWrapper();
+  }
+
+  updateSlider(int index) {
+    currentSliderIndex.value = index;
   }
 
   refreshClubs() {
@@ -112,7 +90,7 @@ class ClubsController extends GetxController {
   }
 
   selectedSegmentIndex({required int index}) {
-    if (isLoadingClubs.value == true) {
+    if (clubsDataWrapper.isLoading.value == true) {
       return;
     }
     update();
@@ -123,8 +101,10 @@ class ClubsController extends GetxController {
       clear();
       setIsJoined(1);
     } else if (index == 2 && (segmentIndex.value != index)) {
+      final UserProfileManager userProfileManager = Get.find();
+
       clear();
-      setUserId(_userProfileManager.user.value!.id);
+      setUserId(userProfileManager.user.value!.id);
     } else if (index == 3 && (segmentIndex.value != index)) {
       getClubInvitations();
     }
@@ -133,77 +113,75 @@ class ClubsController extends GetxController {
   }
 
   getClubs() {
-    if (canLoadMoreClubs) {
+    if (clubsDataWrapper.haveMoreData.value) {
       ClubApi.getClubs(
           name: _name,
           categoryId: _categoryId,
           userId: _userId,
           isJoined: _isJoined,
-          page: clubsPage,
+          page: clubsDataWrapper.page,
           resultCallback: (result, metadata) {
             clubs.addAll(result);
             clubs.unique((e) => e.id);
-            isLoadingClubs.value = false;
+            clubsDataWrapper.processCompletedWithData(metadata);
 
-            canLoadMoreClubs = result.length >= metadata.perPage;
-
-            clubsPage += 1;
             update();
           });
     }
   }
 
   getTopClubs() {
-    if (canLoadMoreTopClubs) {
+    if (topClubsDataWrapper.haveMoreData.value) {
       ClubApi.getTopClubs(
-          page: topClubsPage,
-          resultCallback: (result, metadata) {
+          page: topClubsDataWrapper.page,
+          resultCallback: (result) {
             topClubs.addAll(result);
             topClubs.unique((e) => e.id);
-            isLoadingTopClubs.value = false;
+            // topClubsDataWrapper.processCompletedWithData(metaData);
 
-            canLoadMoreTopClubs = result.length >= metadata.perPage;
-
-            topClubsPage += 1;
             update();
           });
     }
   }
 
   getTrendingClubs() {
-    if (canLoadMoreTrendingClubs) {
+    if (trendingClubDataWrapper.haveMoreData.value) {
+      trendingClubDataWrapper.isLoading.value = true;
       ClubApi.getTrendingClubs(
-          page: trendingClubsPage,
+          page: trendingClubDataWrapper.page,
           resultCallback: (result, metadata) {
             trendingClubs.addAll(result);
             trendingClubs.unique((e) => e.id);
-            isLoadingTrendingClubs.value = false;
+            trendingClubDataWrapper.processCompletedWithData(metadata);
 
-            canLoadMoreTrendingClubs = result.length >= metadata.perPage;
-
-            trendingClubsPage += 1;
             update();
           });
     }
   }
 
   getClubInvitations() {
-    if (canLoadMoreInvitations) {
-      isLoadingInvitations.value = true;
+    if (invitationsDataWrapper.haveMoreData.value) {
+      invitationsDataWrapper.isLoading.value = true;
       ClubApi.getClubInvitations(
-          page: invitationsPage,
+          page: invitationsDataWrapper.page,
           resultCallback: (result, metadata) {
             invitations.addAll(result);
             invitations.unique((e) => e.id);
 
-            isLoadingInvitations.value = false;
-
-            invitationsPage += 1;
-            canLoadMoreInvitations = result.length >= metadata.perPage;
+            invitationsDataWrapper.processCompletedWithData(metadata);
 
             update();
           });
     }
+  }
+
+  getClubDetail(int clubId, Function(ClubModel) callback) {
+    ClubApi.getClubDetail(
+      clubId: clubId,
+      resultCallback: (result) {
+        callback(result);
+      },
+    );
   }
 
   clubDeleted(ClubModel club) {
@@ -212,19 +190,16 @@ class ClubsController extends GetxController {
   }
 
   getMembers({int? clubId}) {
-    if (canLoadMoreMembers) {
-      isLoadingMembers = true;
+    if (membersDataWrapper.haveMoreData.value) {
+      membersDataWrapper.isLoading.value = true;
       ClubApi.getClubMembers(
           clubId: clubId,
-          page: membersPage,
+          page: membersDataWrapper.page,
           resultCallback: (result, metadata) {
             members.addAll(result);
             members.unique((e) => e.id);
 
-            isLoadingMembers = false;
-
-            membersPage += 1;
-            canLoadMoreMembers = result.length >= metadata.perPage;
+            membersDataWrapper.processCompletedWithData(metadata);
 
             update();
           });
@@ -306,16 +281,5 @@ class ClubsController extends GetxController {
     );
     Get.back();
     callback();
-
-  }
-
-
-  getClubDetail(int clubId, Function(ClubModel) callback) {
-    ClubApi.getClubDetail(
-      clubId: clubId,
-      resultCallback: (result) {
-        callback(result);
-      },
-    );
   }
 }

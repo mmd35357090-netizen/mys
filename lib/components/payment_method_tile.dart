@@ -2,13 +2,13 @@ import 'package:foap/helper/imports/common_import.dart';
 
 class PaymentMethodTile extends StatelessWidget {
   const PaymentMethodTile({
-    Key? key,
+    super.key,
     required this.text,
     required this.price,
     required this.icon,
     required this.isSelected,
     this.press,
-  }) : super(key: key);
+  }) ;
 
   final String text, price, icon;
   final VoidCallback? press;

@@ -1,14 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:foap/helper/enum.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-
 import '../screens/chat/media.dart';
 import '../util/constant_util.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 extension FileCompressor on File {
   Future<Uint8List> compress(
@@ -27,49 +24,59 @@ extension FileCompressor on File {
 
 extension FileExtension on File {
   GalleryMediaType get mediaType {
-    final mimeType = lookupMimeType(path)!.toLowerCase();
+    // Extract file extension
+    final String extension = path.split('.').last.toLowerCase();
 
-    switch (mimeType) {
-      case 'image/png':
-        return GalleryMediaType.photo;
-      case 'image/jpg':
-        return GalleryMediaType.photo;
-      case 'image/jpeg':
+    switch (extension) {
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
         return GalleryMediaType.photo;
 
-      case 'video/mp4':
-        return GalleryMediaType.video;
-      case 'video/mpeg':
+      case 'mp4':
+      case 'mpeg':
         return GalleryMediaType.video;
 
-      case 'audio/mpeg':
+      case 'mp3':
+      case 'wav':
+      case 'aac':
         return GalleryMediaType.audio;
 
-      case 'application/pdf':
+      case 'pdf':
         return GalleryMediaType.pdf;
 
-      case 'application/msword':
-        return GalleryMediaType.doc;
-      case 'application/vnd.openxmlformats-officedocument.wordprocessingml.template':
-        return GalleryMediaType.doc;
-      case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      case 'doc':
+      case 'dot':
+      case 'docx':
+      case 'dotx':
         return GalleryMediaType.doc;
 
-      case 'application/vnd.ms-excel':
+      case 'xls':
+      case 'xlsx':
+      case 'csv':
         return GalleryMediaType.xls;
 
-      case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-        return GalleryMediaType.xls;
-
-      case 'application/vnd.ms-powerpoint':
-        return GalleryMediaType.ppt;
-      case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+      case 'ppt':
+      case 'pptx':
         return GalleryMediaType.ppt;
 
-      case 'text/plain':
+      case 'txt':
         return GalleryMediaType.txt;
+
+      default:
+        return GalleryMediaType.photo; // Default to photo if unknown
     }
-    return GalleryMediaType.photo;
+  }
+
+  String get extension {
+    final path = this.path;
+    final index = path.lastIndexOf('.');
+
+    if (index == -1 || index == path.length - 1) {
+      return ''; // No extension found or dot is last character
+    }
+
+    return path.substring(index + 1).toLowerCase();
   }
 }
 
@@ -85,7 +92,6 @@ extension XFileExtension on XFile {
         video: path,
         imageFormat: ImageFormat.JPEG,
         maxWidth: 500,
-        // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
         quality: 25,
       );
     }

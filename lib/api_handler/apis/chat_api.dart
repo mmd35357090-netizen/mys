@@ -18,51 +18,29 @@ class ChatApi {
     });
   }
 
-static Future<void> createGroupChatRoom({
-  String? image,
-  String? description,
-  required bool isPublicGroup,
-  required String title,
-  required Function(int) resultCallback,
-  Function()? errorCallback,
-}) async {
-  try {
-    final url = NetworkConstantsUtil.createChatRoom;
-
-    final param = {
+  static createGroupChatRoom(
+      {String? image,
+      String? description,
+      required String title,
+      required bool isPublicGroup,
+      required Function(int) resultCallback}) async {
+    var url = NetworkConstantsUtil.createChatRoom;
+    dynamic param = {
       "type": isPublicGroup ? '3' : '2',
       'receiver_id': '',
       'title': title,
       'image': image ?? '',
-      'description': description ?? '',
+      'description': description ?? ''
     };
 
-    final result =
-        await ApiWrapper().postApi(url: url, param: param);
-
-    if (result?.success == true) {
-      final roomId = result?.data?['room_id'];
-      final parsedRoomId = roomId is int
-          ? roomId
-          : int.tryParse(roomId?.toString() ?? '');
-
-      if (parsedRoomId != null && parsedRoomId > 0) {
-        resultCallback(parsedRoomId);
-        return;
-      }
-    }
-
-    errorCallback?.call();
-  } catch (e) {
-    errorCallback?.call();
+    await ApiWrapper().postApi(url: url, param: param).then((result) {
+      resultCallback(result!.data['room_id']);
+    });
   }
-}
 
-
-  static Future updateGroupChatRoom(int groupId, String title,
-      String? image, String? description, String? groupAccess) async {
-    var url =
-        NetworkConstantsUtil.updateGroupChatRoom + groupId.toString();
+  static Future updateGroupChatRoom(int groupId, String title, String? image,
+      String? description, String? groupAccess) async {
+    var url = NetworkConstantsUtil.updateGroupChatRoom + groupId.toString();
 
     Map<String, String> param = {};
 
@@ -88,59 +66,52 @@ static Future<void> createGroupChatRoom({
   }
 
   static deleteChatRoomMessages(int roomId) async {
-    var url =
-        NetworkConstantsUtil.deleteChatRoomMessages + roomId.toString();
+    var url = NetworkConstantsUtil.deleteChatRoomMessages + roomId.toString();
 
     await ApiWrapper().postApi(
         url: url, param: {'room_id': roomId.toString()}).then((result) {});
   }
 
-  static getChatRooms(
-      {required Function(List<ChatRoomModel>) resultCallback}) async {
-    var url = NetworkConstantsUtil.getChatRooms;
+  static getPublicChatRooms(
+      {required int page,
+      required Function(List<ChatRoomModel>, APIMetaData)
+          resultCallback}) async {
+    var url = '${NetworkConstantsUtil.getPublicChatRooms}&page=$page';
+
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
-        var room = result!.data['room'] as List<dynamic>;
-        room = room.toList();
-        resultCallback(List<ChatRoomModel>.from(
-            room.map((x) => ChatRoomModel.fromJson(x))));
+        var room = result!.data['room']['items'] as List<dynamic>?;
+        if (room != null) {
+          room = room.toList();
+          resultCallback(
+              List<ChatRoomModel>.from(
+                  room.map((x) => ChatRoomModel.fromJson(x))),
+              APIMetaData.fromJson(result.data['room']['_meta']));
+        }
       }
     });
   }
 
+  static getChatRooms(
+      {required Function(List<ChatRoomModel>) resultCallback}) async {
+    var url = NetworkConstantsUtil.getChatRooms;
 
-static Future<void> getPublicChatRooms({
-  required int page,
-  required Function(List<ChatRoomModel>, APIMetaData)
-      resultCallback,
-  Function()? errorCallback,
-}) async {
-  try {
-    final url =
-        '${NetworkConstantsUtil.getPublicChatRooms}&page=$page';
-
-    final result = await ApiWrapper().getApi(url: url);
-
-    if (result?.success == true) {
-      final roomData = result!.data['room'];
-      final items = roomData['items'] as List<dynamic>;
-      final metaData =
-          APIMetaData.fromJson(roomData['_meta']);
-
-      final rooms = List<ChatRoomModel>.from(
-        items.map((item) => ChatRoomModel.fromJson(item)),
-      );
-
-      resultCallback(rooms, metaData);
-      return;
-    }
-
-    errorCallback?.call();
-  } catch (e) {
-    errorCallback?.call();
+    await ApiWrapper().getApi(url: url).then((result) {
+      if (result?.success == true) {
+        var room = result!.data['room'] as List<dynamic>?;
+        if (room != null) {
+          room = room
+              // .where((element) =>
+              //     (element['chatRoomUser'] as List<dynamic>).length > 1)
+              .toList();
+          resultCallback(
+            List<ChatRoomModel>.from(
+                room.map((x) => ChatRoomModel.fromJson(x))),
+          );
+        }
+      }
+    });
   }
-}
-
 
   static getChatRoomDetail(int roomId,
       {required Function(ChatRoomModel) resultCallback}) async {
@@ -160,7 +131,8 @@ static Future<void> getPublicChatRooms({
   static getChatHistory(
       {required int roomId,
       required int lastMessageId,
-      required Function(List<ChatMessageModel>) resultCallback}) async {
+      required Function(List<ChatMessageModel>, APIMetaData)
+          resultCallback}) async {
     var url = NetworkConstantsUtil.chatHistory;
     url = url
         .replaceAll('{{room_id}}', roomId.toString())
@@ -169,8 +141,10 @@ static Future<void> getPublicChatRooms({
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var items = result!.data['chatMessage']['items'];
-        resultCallback(List<ChatMessageModel>.from(
-            items.map((x) => ChatMessageModel.fromJson(x))));
+        resultCallback(
+            List<ChatMessageModel>.from(
+                items.map((x) => ChatMessageModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['chatMessage']['_meta']));
       }
     });
   }
@@ -184,29 +158,12 @@ static Future<void> getPublicChatRooms({
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var callHistory = result!.data['callHistory'];
-        var items = (callHistory['items'] as List)
-            .where((e) => e['receiverDetail'] != null);
+        var items = callHistory['items'];
 
-        print('test');
         resultCallback(
             List<CallHistoryModel>.from(
                 items.map((x) => CallHistoryModel.fromJson(x))),
             APIMetaData.fromJson(result.data['callHistory']['_meta']));
-        print('test1');
-      }
-    });
-  }
-
-  static getCallDetail(
-      {required int callId,
-      required Function(CallHistoryModel) resultCallback}) async {
-    var url = NetworkConstantsUtil.callDetail
-        .replaceAll('{{call_id}}', callId.toString());
-
-    await ApiWrapper().getApi(url: url).then((result) {
-      if (result?.success == true) {
-        var callHistory = result!.data['call'];
-        resultCallback(CallHistoryModel.fromJson(callHistory));
       }
     });
   }
@@ -226,8 +183,8 @@ static Future<void> getPublicChatRooms({
           getRandomOnlineUsers(profileCategoryType,
               resultCallback: resultCallback);
         } else {
-          resultCallback(List<UserModel>.from(
-              items.map((x) => UserModel.fromJson(x))));
+          resultCallback(
+              List<UserModel>.from(items.map((x) => UserModel.fromJson(x))));
         }
       }
     });

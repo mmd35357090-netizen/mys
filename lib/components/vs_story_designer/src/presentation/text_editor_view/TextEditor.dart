@@ -52,7 +52,7 @@ class _TextEditorState extends State<TextEditor> {
                 onTap: () => _onTap(context, controlNotifier, editorNotifier),
                 child: Container(
                     decoration:
-                        BoxDecoration(color: Colors.black.withOpacity(0.5)),
+                        BoxDecoration(color: Colors.black.withValues(alpha: 0.5)),
                     height: _size.height,
                     width: _size.width,
                     child: Stack(

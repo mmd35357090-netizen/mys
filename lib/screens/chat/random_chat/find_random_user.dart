@@ -1,6 +1,5 @@
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:ripple_wave/ripple_wave.dart';
 
 class FindRandomUser extends StatefulWidget {
@@ -8,8 +7,8 @@ class FindRandomUser extends StatefulWidget {
   final int? profileCategoryType;
 
   const FindRandomUser(
-      {Key? key, required this.isCalling, this.profileCategoryType})
-      : super(key: key);
+      {super.key, required this.isCalling, this.profileCategoryType})
+      ;
 
   @override
   State<FindRandomUser> createState() => _FindRandomUserState();
@@ -34,12 +33,11 @@ class _FindRandomUserState extends State<FindRandomUser> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar( title: findingString),
-          const SizedBox(height: 8,),
+          backNavigationBar( title: 'Finding...'),
           const Spacer(),
           Obx(() => _randomChatAndCallController.randomOnlineUser.value == null
               ? Column(
@@ -91,14 +89,14 @@ class _FindRandomUserState extends State<FindRandomUser> {
                             child: AppThemeButton(
                                 text: chatString.tr,
                                 onPress: () {
-                                  EasyLoading.show(
+                                  Loader.show(
                                       status: loadingString.tr);
 
                                   _chatDetailController.getChatRoomWithUser(
                                       userId: _randomChatAndCallController
                                           .randomOnlineUser.value!.id,
                                       callback: (room) {
-                                        EasyLoading.dismiss();
+                                        Loader.dismiss();
 
                                         Get.back();
                                         Get.to(() => ChatDetail(
@@ -123,7 +121,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
         Container(
           child: Column(
             children: [
-              const ThemeIconWidget(
+              ThemeIconWidget(
                 ThemeIcon.mobile,
                 size: 20,
               ),
@@ -145,7 +143,7 @@ class _FindRandomUserState extends State<FindRandomUser> {
         Container(
           child: Column(
             children: [
-              const ThemeIconWidget(
+              ThemeIconWidget(
                 ThemeIcon.videoCamera,
                 size: 20,
               ),

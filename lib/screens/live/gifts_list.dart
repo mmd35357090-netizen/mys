@@ -8,8 +8,8 @@ import '../settings_menu/coin_packages_widget.dart';
 class GiftsPageView extends StatefulWidget {
   final Function(GiftModel) giftSelectedCompletion;
 
-  const GiftsPageView({Key? key, required this.giftSelectedCompletion})
-      : super(key: key);
+  const GiftsPageView({super.key, required this.giftSelectedCompletion})
+      ;
 
   @override
   State<GiftsPageView> createState() => _GiftsPageViewState();
@@ -104,8 +104,8 @@ class _GiftsPageViewState extends State<GiftsPageView> {
 class GiftsListing extends StatefulWidget {
   final Function(GiftModel) giftSelectedCompletion;
 
-  const GiftsListing({Key? key, required this.giftSelectedCompletion})
-      : super(key: key);
+  const GiftsListing({super.key, required this.giftSelectedCompletion})
+      ;
 
   @override
   State<GiftsListing> createState() => _GiftsListingState();

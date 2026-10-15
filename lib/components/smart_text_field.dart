@@ -164,13 +164,13 @@ class SmartTextField extends StatelessWidget {
   final int? maxChar;
 
   const SmartTextField(
-      {Key? key,
+      {super.key,
         required this.controller,
         this.maxLine,
         this.maxChar,
         required this.onTextChangeActionHandler,
         required this.onFocusChangeActionHandler})
-      : super(key: key);
+      ;
 
   @override
   Widget build(BuildContext context) {

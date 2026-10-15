@@ -7,7 +7,7 @@ import '../../model/category_model.dart';
 class TvListByCategory extends StatefulWidget {
   final TvCategoryModel category;
 
-  const TvListByCategory({Key? key, required this.category}) : super(key: key);
+  const TvListByCategory({super.key, required this.category}) ;
 
   @override
   State<TvListByCategory> createState() => _TvListByCategoryState();
@@ -36,7 +36,7 @@ class _TvListByCategoryState extends State<TvListByCategory> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [

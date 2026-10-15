@@ -4,7 +4,6 @@ import '../../controllers/profile/profile_controller.dart';
 import '../../helper/imports/common_import.dart';
 import '../../model/notification_modal.dart';
 import '../competitions/competition_detail_screen.dart';
-import '../home_feed/comments_screen.dart';
 import '../post/single_post_detail.dart';
 import '../profile/follow_requests.dart';
 import '../profile/other_user_profile.dart';
@@ -17,8 +16,7 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final NotificationController _notificationController =
-      NotificationController();
+  final NotificationController _notificationController = Get.find();
   final ProfileController _profileController = Get.find();
 
   @override
@@ -48,11 +46,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ? Container()
                 : Container(
                     height: 80,
-                    color: AppColorConstants.themeColor.withOpacity(0.1),
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.1),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const ThemeIconWidget(
+                        ThemeIconWidget(
                           ThemeIcon.request,
                           size: 20,
                         ),
@@ -78,69 +76,77 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         const SizedBox(
                           width: 10,
                         ),
-                        const ThemeIconWidget(ThemeIcon.nextArrow),
+                        ThemeIconWidget(ThemeIcon.nextArrow),
                       ],
                     ).hp(DesignConstants.horizontalPadding),
                   ).round(20).ripple(() {
                     Get.to(() => const FollowRequestList());
                   }).p(DesignConstants.horizontalPadding)),
             Expanded(
-              child: Obx(() => _notificationController
-                      .groupedNotifications.keys.isNotEmpty
-                  ? ListView.separated(
-                      padding: EdgeInsets.only(
-                          top: 20,
-                          left: 0,
-                          right: 0,
-                          bottom: 50),
-                      itemCount: _notificationController
-                          .groupedNotifications.keys.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        String key = _notificationController
-                            .groupedNotifications.keys
-                            .toList()[index];
-                        List<NotificationModel> notifications =
-                            _notificationController
-                                    .groupedNotifications[key] ??
-                                [];
+              child: GetBuilder<NotificationController>(
+                  init: _notificationController,
+                  builder: (ctx) {
+                    return _notificationController
+                            .groupedNotifications.keys.isNotEmpty
+                        ? ListView.separated(
+                            padding:
+                                const EdgeInsets.only(top: 20, bottom: 50),
+                            itemCount: _notificationController
+                                .groupedNotifications.keys.length,
+                            itemBuilder:
+                                (BuildContext context, int index) {
+                              String key = _notificationController
+                                  .groupedNotifications.keys
+                                  .toList()[index];
+                              List<NotificationModel> notifications =
+                                  _notificationController
+                                          .groupedNotifications[key] ??
+                                      [];
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Heading5Text(
-                              key,
-                              weight: TextWeight.bold,
-                            ).hp(DesignConstants.horizontalPadding),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            for (NotificationModel notification
-                                in notifications)
-                              Column(
+                              return Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                 children: [
-                                  NotificationTile(
-                                    notification: notification,
-                                    followBackUserHandler: () {
-                                      _profileController.followUser(
-                                          notification.actionBy!);
-                                      _notificationController
-                                          .getNotifications();
-                                    },
-                                  ).ripple(() {
-                                    handleNotificationTap(notification);
-                                  }),
+                                  Heading5Text(
+                                    key,
+                                    weight: TextWeight.bold,
+                                  ).hp(DesignConstants.horizontalPadding),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  for (NotificationModel notification
+                                      in notifications)
+                                    Column(
+                                      children: [
+                                        NotificationTile(
+                                          notification: notification,
+                                          followBackUserHandler: () {
+                                            _profileController.followUser(
+                                                notification.actionBy!);
+                                            _notificationController
+                                                .getNotifications();
+                                          },
+                                        ).ripple(() {
+                                          handleNotificationTap(
+                                              notification);
+                                        }),
+                                        divider(height: 0.5)
+                                      ],
+                                    ),
                                 ],
-                              ),
-                          ],
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return divider(height: 0.2).bP16;
-                      })
-                  : emptyData(
-                      title: noNotificationFoundString.tr,
-                      subTitle: '',
-                    )),
+                              );
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return const SizedBox(
+                                height: 20,
+                              );
+                            })
+                        : emptyData(
+                            title: noNotificationFoundString,
+                            subTitle: '',
+                          );
+                  }),
             ),
           ],
         ));
@@ -207,7 +213,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       BodyLargeText(
-                        followsString.tr,
+                        followsString,
                         weight: TextWeight.regular,
                       ),
                       ThemeIconWidget(_notificationController
@@ -291,7 +297,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Get.back();
                   })
             ],
-          ).hp16,
+          ).hP16,
         ],
       ),
     ).topRounded(40));
@@ -299,21 +305,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   handleNotificationTap(NotificationModel notification) {
     _notificationController.markNotificationAsRead(notification.id);
-
     if (notification.type == SMNotificationType.follow) {
       int userId = notification.actionBy!.id;
       Get.to(() => OtherUserProfile(userId: userId));
     } else if (notification.type == SMNotificationType.comment) {
       int postId = notification.post!.id;
-      Get.to(() => CommentsScreen(
-            postId: postId,
-            isPopup: false,
-            handler: () {},
-            commentPostedCallback: () {},
-            commentDeletedCallback: () {},
-          ));
+      Get.to(() => SinglePostDetail(postId: postId));
     } else if (notification.type == SMNotificationType.like) {
       Get.to(() => SinglePostDetail(postId: notification.post!.id));
+    } else if (notification.type == SMNotificationType.collaborate) {
+      Get.to(() =>
+          SinglePostDetail(postId: notification.collaboration!.refId));
     } else if (notification.type == SMNotificationType.competitionAdded) {
       int competitionId = notification.competition!.id;
       Get.to(() => CompetitionDetailScreen(

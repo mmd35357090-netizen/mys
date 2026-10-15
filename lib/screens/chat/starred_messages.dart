@@ -1,7 +1,5 @@
 import 'package:flutter_contacts/contact.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:map_launcher/map_launcher.dart';
 import '../competitions/video_player_screen.dart';
@@ -12,7 +10,7 @@ import '../story/story_viewer.dart';
 class StarredMessages extends StatefulWidget {
   final ChatRoomModel? chatRoom;
 
-  const StarredMessages({Key? key, required this.chatRoom}) : super(key: key);
+  const StarredMessages({super.key, required this.chatRoom}) ;
 
   @override
   State<StarredMessages> createState() => _StarredMessagesState();
@@ -37,7 +35,7 @@ class _StarredMessagesState extends State<StarredMessages> {
     return SafeArea(
       bottom: false,
       top: false,
-      child: Scaffold(
+      child: AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
@@ -45,7 +43,6 @@ class _StarredMessagesState extends State<StarredMessages> {
               height: 50,
             ),
             appBar(),
-            const SizedBox(height: 8,),
             Expanded(child: messagesListView()),
             Obx(() {
               return _chatDetailController.actionMode.value ==
@@ -74,10 +71,9 @@ class _StarredMessagesState extends State<StarredMessages> {
               Get.back();
             }),
             const Spacer(),
-            BodyLargeText(
-              editString.tr,
-                weight: TextWeight.medium
-            ).p8.ripple(() {
+            BodyLargeText(editString.tr, weight: TextWeight.medium)
+                .p8
+                .ripple(() {
               _chatDetailController.setToActionMode(
                   mode: ChatMessageActionMode.edit);
             }),
@@ -102,30 +98,18 @@ class _StarredMessagesState extends State<StarredMessages> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          BodyLargeText(
-            deleteString.tr,
-              weight: TextWeight.bold
-          ).ripple(() {
+          BodyLargeText(deleteString.tr, weight: TextWeight.bold).ripple(() {
             deleteMessageActionPopup();
           }),
-          BodyLargeText(
-            forwardString.tr,
-              weight: TextWeight.bold
-          ).ripple(() {
+          BodyLargeText(forwardString.tr, weight: TextWeight.bold).ripple(() {
             selectUserForMessageForward();
           }),
-          BodyLargeText(
-            unStarString.tr,
-              weight: TextWeight.bold
-          ).ripple(() {
+          BodyLargeText(unStarString.tr, weight: TextWeight.bold).ripple(() {
             _chatRoomDetailController.unStarMessages();
             _chatDetailController.setToActionMode(
                 mode: ChatMessageActionMode.none);
           }),
-          BodyLargeText(
-            cancelString.tr,
-              weight: TextWeight.bold
-          ).ripple(() {
+          BodyLargeText(cancelString.tr, weight: TextWeight.bold).ripple(() {
             _chatDetailController.setToActionMode(
                 mode: ChatMessageActionMode.none);
           })
@@ -145,8 +129,11 @@ class _StarredMessagesState extends State<StarredMessages> {
               ),
             ),
       child: Obx(() => ListView.builder(
-            padding:
-                 EdgeInsets.only(top: 10, bottom: 50, left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding),
+            padding: EdgeInsets.only(
+                top: 10,
+                bottom: 50,
+                left: DesignConstants.horizontalPadding,
+                right: DesignConstants.horizontalPadding),
             itemCount: _chatRoomDetailController.starredMessages.length,
             itemBuilder: (ctx, index) {
               return messageTile(index);
@@ -202,13 +189,8 @@ class _StarredMessagesState extends State<StarredMessages> {
       Get.to(() => SinglePostDetail(
             postId: model.postContent.postId,
           ));
-    } else if (model.messageContentType == MessageContentType.contact) {
-      openActionPopupForContact(model.mediaContent.contact!);
-    } else if (model.messageContentType == MessageContentType.profile) {
-      Get.to(() => OtherUserProfile(
-            userId: model.profileContent.userId,
-          ));
-    } else if (model.messageContentType == MessageContentType.story) {
+    }
+    else if (model.messageContentType == MessageContentType.story) {
       Get.to(() => StoryViewer(
         story: model.storyContent,
         storyDeleted: () {},
@@ -219,6 +201,12 @@ class _StarredMessagesState extends State<StarredMessages> {
         story: model.repliedOnStory,
         storyDeleted: () {},
       ));
+    }  else if (model.messageContentType == MessageContentType.contact) {
+      openActionPopupForContact(model.mediaContent.contact!);
+    } else if (model.messageContentType == MessageContentType.profile) {
+      Get.to(() => OtherUserProfile(
+            userId: model.profileContent.userId,
+          ));
     } else if (model.messageContentType == MessageContentType.location) {
       try {
         final coords = Coords(model.mediaContent.location!.latitude,
@@ -242,11 +230,11 @@ class _StarredMessagesState extends State<StarredMessages> {
                         title: Heading5Text(
                           '${openInString.tr} ${map.mapName}',
                         ),
-                        leading: SvgPicture.asset(
-                          map.icon,
-                          height: 30.0,
-                          width: 30.0,
-                        ),
+                        // leading: SvgPicture.asset(
+                        //   map.icon,
+                        //   height: 30.0,
+                        //   width: 30.0,
+                        // ),
                       ),
                   ],
                 ),
@@ -263,15 +251,12 @@ class _StarredMessagesState extends State<StarredMessages> {
   void openActionPopupForContact(Contact contact) {
     showModalBottomSheet(
         context: context,
-
         builder: (context) => Wrap(
               children: [
                 ListTile(
                     title: Center(
-                        child: Heading5Text(
-                      contact.displayName,
-                            weight: TextWeight.bold
-                    )),
+                        child: Heading5Text(contact.displayName,
+                            weight: TextWeight.bold)),
                     onTap: () async {}),
                 divider(),
                 ListTile(
@@ -280,8 +265,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                       Get.back();
                       _chatDetailController.addNewContact(contact);
                       AppUtil.showToast(
-                          message: contactSavedString.tr,
-                          isSuccess: false);
+                          message: contactSavedString.tr, isSuccess: false);
                     }),
                 divider(),
                 ListTile(
@@ -295,16 +279,14 @@ class _StarredMessagesState extends State<StarredMessages> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-
         builder: (context) =>
             SelectFollowingUserForMessageSending(sendToUserCallback: (user) {
               _chatDetailController.getChatRoomWithUser(
-                  userId:user.id,
+                  userId: user.id,
                   callback: (room) {
-                        _chatDetailController.forwardSelectedMessages(
-                            room: room);
-                        Get.back();
-                      });
+                    _chatDetailController.forwardSelectedMessages(room: room);
+                    Get.back();
+                  });
             })).then((value) {
       _chatDetailController.setToActionMode(mode: ChatMessageActionMode.none);
     });
@@ -317,12 +299,10 @@ class _StarredMessagesState extends State<StarredMessages> {
 
     showModalBottomSheet(
         context: context,
-
         builder: (context) => Wrap(
               children: [
                 ListTile(
-                    title: Center(
-                        child: BodyLargeText(deleteMessageForMeString.tr)),
+                    title: Center(child: Text(deleteMessageForMeString.tr)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.deleteMessage(deleteScope: 1);
@@ -332,8 +312,7 @@ class _StarredMessagesState extends State<StarredMessages> {
                 ifAnyMessageByOpponent == false
                     ? ListTile(
                         title: Center(
-                            child:
-                            BodyLargeText(deleteMessageForAllString.tr)),
+                            child: BodyLargeText(deleteMessageForAllString.tr)),
                         onTap: () async {
                           Get.back();
                           _chatDetailController.deleteMessage(deleteScope: 2);

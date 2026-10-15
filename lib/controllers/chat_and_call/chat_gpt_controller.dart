@@ -35,18 +35,12 @@ class ChatGPTController extends GetxController {
   final JsonDecoder _decoder = const JsonDecoder();
 
   sendMessage(String messageText) {
-    ChatGPTMessage message = ChatGPTMessage(content: messageText, isSent: true);
+    ChatGPTMessage message =
+        ChatGPTMessage(content: messageText, isSent: true);
 
     messages.add(message);
-
-    // ChatGPTMessage message1 = ChatGPTMessage(
-    //     content: 'message from chatgpt', isSent: false);
-    // messages.add(message1);
-    //
-    // return;
-
     var param = json.encode({
-      "model": "gpt-3.5-turbo",
+      "model": "gpt-4o",
       "messages": [
         {"role": "user", "content": messageText}
       ],
@@ -56,19 +50,21 @@ class ChatGPTController extends GetxController {
       'presence_penalty': 0.0,
     });
 
-    return http.post(Uri.parse('https://api.openai.com/v1/chat/completions'),
+    return http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
         body: param,
         headers: {
-          "Authorization": "Bearer ${_settingsController.setting.value!.chatGPTKey}",
+          "Authorization":
+              "Bearer ${_settingsController.setting.value!.chatGPTKey}",
           'Content-Type': 'application/json'
         }).then((http.Response response) async {
       dynamic data = _decoder.convert(utf8.decode(response.bodyBytes));
       if (data['status'] == 401 && data['data'] == null) {
       } else {
         ChatGPTApiResponse response = ChatGPTApiResponse.fromJson(data);
-
         ChatGPTMessage message = ChatGPTMessage(
-            content: response.data[0]['message']['content'], isSent: false);
+            content: response.data[0]['message']['content'],
+            isSent: false);
         messages.add(message);
 
         return;

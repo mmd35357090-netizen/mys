@@ -10,12 +10,85 @@ import '../../manager/file_manager.dart';
 import '../../model/chat_message_model.dart';
 import '../../model/post_gallery.dart';
 
+// class VideoPlayerScreen extends StatefulWidget {
+//   final PostGallery? media;
+//   final ChatMessageModel? chatMessage;
+//
+//   const VideoPlayerScreen({super.key, this.media, this.chatMessage})
+//       ;
+//
+//   @override
+//   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
+// }
+//
+// class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+//   late VideoPlayerController _controller;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     String videoPath = '';
+//     if (widget.media != null) {
+//       videoPath = widget.media!.filePath;
+//     } else {
+//       videoPath = widget.chatMessage!.mediaContent.video!;
+//     }
+//
+//     _controller = VideoPlayerController.network(videoPath)
+//       ..initialize().then((_) {
+//         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+//         setState(() {});
+//       });
+//   }
+//
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return AppScaffold(
+//         backgroundColor: ColorConstants.backgroundColor,
+//         body: Column(
+//           children: [
+//             const SizedBox(
+//               height: 50,
+//             ),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 ThemeIconWidget(
+//                   ThemeIcon.backArrow,
+//                   size: 20,
+//                 ).ripple(() {
+//                   Get.back();
+//                 }),
+//               ],
+//             ).hp(DesignConstants.horizontalPadding),
+//             divider().vP8,
+//             Expanded(
+//               child: Center(
+//                 child: _controller.value.isInitialized
+//                     ? AspectRatio(
+//                         aspectRatio: _controller.value.aspectRatio,
+//                         child: VideoPlayer(_controller),
+//                       )
+//                     : Container(),
+//               ),
+//             ),
+//           ],
+//         ));
+//   }
+// }
+
 class PlayVideoController extends StatefulWidget {
   final PostGallery? media;
   final ChatMessageModel? chatMessage;
 
-  const PlayVideoController({Key? key, this.media, this.chatMessage})
-      : super(key: key);
+  const PlayVideoController({super.key, this.media, this.chatMessage})
+      ;
 
   @override
   State<PlayVideoController> createState() => _PlayVideoControllerState();
@@ -31,6 +104,18 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
   @override
   void initState() {
     super.initState();
+
+    // if (widget.media != null) {
+    //   videoPath = widget.media!.filePath;
+    // } else {
+    //   videoPath = widget.chatMessage!.mediaContent.video!;
+    // }
+    //
+    // _controller = VideoPlayerController.network(videoPath)
+    //   ..initialize().then((_) {
+    //     // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+    //     setState(() {});
+    //   });
 
     loadVideo();
   }
@@ -68,14 +153,12 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar(title: ''),
-          const SizedBox(
-            height: 16,
-          ),
+          backNavigationBar( title: ''),
+          divider().tP16,
           Expanded(
             child: Center(
               child: Stack(
@@ -107,9 +190,10 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
                                   // from a non-existent URL
                                   errorBuilder: (context, errorMessage) {
                                     return Center(
-                                      child: BodyLargeText(
+                                      child: Text(
                                         errorMessage,
-                                        color: Colors.white,
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       ),
                                     );
                                   },
@@ -138,7 +222,7 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
                                     videoPlayerController!.value.aspectRatio,
                                 Get.height * 0.5),
                             color: Colors.black38,
-                            child: const ThemeIconWidget(
+                            child: ThemeIconWidget(
                               ThemeIcon.play,
                               size: 50,
                               color: Colors.white,
@@ -154,7 +238,7 @@ class _PlayVideoControllerState extends State<PlayVideoController> {
                   //       height: 25,
                   //       width: 25,
                   //       color: Colors.black38,
-                  //       child: const ThemeIconWidget(
+                  //       child: ThemeIconWidget(
                   //         ThemeIcon.fullScreen,
                   //         size: 15,
                   //         color: Colors.white,

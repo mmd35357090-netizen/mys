@@ -1,5 +1,4 @@
-import 'package:easy_audience_network/easy_audience_network.dart'
-as fb_audience;
+import 'package:easy_audience_network/easy_audience_network.dart' as fb_audience;
 
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -34,7 +33,7 @@ class RewardedInterstitialAds {
           adUnitId: AdmobKeys().rewardInterstitialAdUnitId,
           request: const AdRequest(),
           rewardedInterstitialAdLoadCallback:
-          RewardedInterstitialAdLoadCallback(
+              RewardedInterstitialAdLoadCallback(
             onAdLoaded: (RewardedInterstitialAd ad) {
               // Keep a reference to the ad so you can show it later.
               _rewardedInterstitialAd = ad;
@@ -67,7 +66,6 @@ class InterstitialAds {
         },
         onDismissed: () {
           interstitialAd.destroy();
-          print('Interstitial dismissed');
         },
       );
       interstitialAd.load();

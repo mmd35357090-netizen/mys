@@ -2,7 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import '../../controllers/profile/profile_controller.dart';
 
 class ChangePhoneNumber extends StatefulWidget {
-  const ChangePhoneNumber({Key? key}) : super(key: key);
+  const ChangePhoneNumber({super.key});
 
   @override
   ChangePhoneNumberState createState() => ChangePhoneNumberState();
@@ -24,7 +24,7 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: GestureDetector(
           onTap: () {
@@ -36,6 +36,7 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
               height: 55,
             ),
             profileScreensNavigationBar(
+                
                 title: changePhoneNumberString.tr,
                 rightBtnTitle: doneString.tr,
                 completion: () {

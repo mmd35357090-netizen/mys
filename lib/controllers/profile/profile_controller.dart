@@ -1,32 +1,40 @@
 import 'package:camera/camera.dart';
-import 'package:foap/api_handler/apis/gift_api.dart';
 import 'package:foap/api_handler/apis/profile_api.dart';
 import 'package:foap/api_handler/apis/wallet_api.dart';
+import 'package:foap/helper/enum_linking.dart';
 import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/list_extension.dart';
+import 'package:foap/model/data_wrapper.dart';
 import '../../api_handler/apis/auth_api.dart';
 import '../../api_handler/apis/post_api.dart';
 import '../../api_handler/apis/users_api.dart';
+import '../../screens/profile/verify_otp_for_phone_number.dart';
 import '../../util/shared_prefs.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:async';
 import 'package:foap/manager/location_manager.dart';
 import 'package:foap/util/form_validator.dart';
-import 'package:foap/controllers/auth/login_controller.dart';
 import 'package:foap/controllers/post/post_controller.dart';
 import 'package:foap/model/payment_model.dart';
 import 'package:foap/model/gift_model.dart';
 import 'package:foap/model/post_model.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
-import 'package:foap/screens/profile/verify_otp_for_phone_number.dart';
 import 'package:foap/screens/login_sign_up/login_screen.dart';
 import 'package:foap/screens/login_sign_up/set_profile_category_type.dart';
 
 class ProfileController extends GetxController {
   final PostController postController = Get.find<PostController>();
   final UserProfileManager _userProfileManager = Get.find();
+
+  // RxList<UserModel> linkedAccounts = <UserModel>[].obs;
+
+  DataWrapper transactionsDataWrapper = DataWrapper();
+  DataWrapper postDataWrapper = DataWrapper();
+  DataWrapper reelsDataWrapper = DataWrapper();
+  DataWrapper mentionedPostDataWrapper = DataWrapper();
+  DataWrapper collaborationsDataWrapper = DataWrapper();
 
   Rx<UserModel?> user = Rx<UserModel?>(null);
 
@@ -35,52 +43,35 @@ class ProfileController extends GetxController {
   RxInt userNameCheckStatus = (-1).obs;
   RxBool isLoading = true.obs;
 
-  RxList<PaymentModel> payments = <PaymentModel>[].obs;
+  RxList<TransactionModel> transactions = <TransactionModel>[].obs;
   RxInt selectedSegment = 0.obs;
 
   RxBool noDataFound = false.obs;
 
-  bool isLoadingPosts = false;
-  int postsCurrentPage = 1;
-  bool canLoadMorePosts = true;
-
-  bool isLoadingReels = false;
-  int reelsCurrentPage = 1;
-  bool canLoadMoreReels = true;
-
   RxList<PostModel> posts = <PostModel>[].obs;
   RxList<PostModel> mentions = <PostModel>[].obs;
   RxList<PostModel> reels = <PostModel>[].obs;
+  RxList<PostModel> collaborations = <PostModel>[].obs;
 
-  int mentionsPostPage = 1;
-  bool canLoadMoreMentionsPosts = true;
-  bool mentionsPostsIsLoading = false;
+  Rx<GiftModel?> sendingGift = Rx<GiftModel?>(null);
 
   clear() {
     selectedSegment.value = 0;
 
-    isLoadingPosts = false;
-    postsCurrentPage = 1;
-    canLoadMorePosts = true;
-
-    isLoadingReels = false;
-    reelsCurrentPage = 1;
-    canLoadMoreReels = true;
-
-    mentionsPostPage = 1;
-    canLoadMoreMentionsPosts = true;
-    mentionsPostsIsLoading = false;
+    postDataWrapper = DataWrapper();
+    reelsDataWrapper = DataWrapper();
+    mentionedPostDataWrapper = DataWrapper();
+    collaborationsDataWrapper = DataWrapper();
 
     totalPages = 100;
 
     posts.clear();
     mentions.clear();
     reels.clear();
+    collaborations.clear();
   }
 
   getMyProfile() async {
-    // user.value = _userProfileManager.user.value!;
-    // update();
     await _userProfileManager.refreshProfile();
     user.value = _userProfileManager.user.value!;
     update();
@@ -102,17 +93,19 @@ class ProfileController extends GetxController {
     required String city,
   }) {
     if (FormValidator().isTextEmpty(country)) {
-      AppUtil.showToast(message: pleaseEnterCountryString.tr, isSuccess: false);
+      AppUtil.showToast(
+          message: pleaseEnterCountryString.tr, isSuccess: false);
     } else if (FormValidator().isTextEmpty(city)) {
-      AppUtil.showToast(message: pleaseEnterCityString.tr, isSuccess: false);
+      AppUtil.showToast(
+          message: pleaseEnterCityString.tr, isSuccess: false);
     } else {
-      EasyLoading.show(status: loadingString.tr);
+      Loader.show(status: loadingString.tr);
 
       ProfileApi.updateCountryCity(
           country: country,
           city: city,
           resultCallback: () {
-            EasyLoading.dismiss();
+            Loader.dismiss();
             AppUtil.showToast(
                 message: profileUpdatedString.tr, isSuccess: true);
             _userProfileManager.refreshProfile();
@@ -133,9 +126,11 @@ class ProfileController extends GetxController {
     required String confirmPassword,
   }) {
     if (FormValidator().isTextEmpty(oldPassword)) {
-      AppUtil.showToast(message: enterOldPasswordString.tr, isSuccess: false);
+      AppUtil.showToast(
+          message: enterOldPasswordString.tr, isSuccess: false);
     } else if (FormValidator().isTextEmpty(newPassword)) {
-      AppUtil.showToast(message: enterNewPasswordString.tr, isSuccess: false);
+      AppUtil.showToast(
+          message: enterNewPasswordString.tr, isSuccess: false);
     } else if (FormValidator().isTextEmpty(confirmPassword)) {
       AppUtil.showToast(
           message: enterConfirmPasswordString.tr, isSuccess: false);
@@ -143,13 +138,13 @@ class ProfileController extends GetxController {
       AppUtil.showToast(
           message: passwordsDoesNotMatchedString.tr, isSuccess: false);
     } else {
-      EasyLoading.show(status: loadingString.tr);
+      Loader.show(status: loadingString.tr);
 
       ProfileApi.changePassword(
           oldPassword: oldPassword,
           newPassword: newPassword,
           resultCallback: () {
-            EasyLoading.dismiss();
+            Loader.dismiss();
             _userProfileManager.refreshProfile();
             Future.delayed(const Duration(milliseconds: 500), () {
               Get.to(() => const LoginScreen());
@@ -182,15 +177,16 @@ class ProfileController extends GetxController {
     required String phoneNumber,
   }) {
     if (FormValidator().isTextEmpty(phoneNumber)) {
-      AppUtil.showToast(message: enterPhoneNumberString.tr, isSuccess: false);
+      AppUtil.showToast(
+          message: enterPhoneNumberString.tr, isSuccess: false);
     } else {
-      EasyLoading.show(status: loadingString.tr);
+      Loader.show(status: loadingString.tr);
 
       ProfileApi.updatePhone(
           countryCode: countryCode,
           phone: phoneNumber,
           resultCallback: (token) {
-            EasyLoading.dismiss();
+            Loader.dismiss();
             _userProfileManager.refreshProfile();
             Get.to(() => VerifyOTPPhoneNumberChange(
                   token: token,
@@ -210,28 +206,24 @@ class ProfileController extends GetxController {
       AppUtil.showToast(
           message: pleaseEnterValidUserNameString.tr, isSuccess: false);
     } else {
-      AppUtil.checkInternet().then((value) {
-        if (value) {
-          EasyLoading.show(status: loadingString.tr);
-          ProfileApi.updateUserName(
-              userName: userName,
-              resultCallback: () {
-                EasyLoading.dismiss();
-                AppUtil.showToast(
-                    message: userNameIsUpdatedString.tr, isSuccess: true);
-                getMyProfile();
-                if (isSigningUp == true) {
-                  Get.to(() => SetProfileCategoryType(
-                        isFromSignup: isSigningUp,
-                      ));
-                } else {
-                  Future.delayed(const Duration(milliseconds: 1200), () {
-                    Get.back();
-                  });
-                }
+      Loader.show(status: loadingString.tr);
+      ProfileApi.updateUserName(
+          userName: userName,
+          resultCallback: () {
+            Loader.dismiss();
+            AppUtil.showToast(
+                message: userNameIsUpdatedString.tr, isSuccess: true);
+            getMyProfile();
+            if (isSigningUp == true) {
+              Get.to(() => const SetProfileCategoryType(
+                    isFromSignup: true,
+                  ));
+            } else {
+              Future.delayed(const Duration(milliseconds: 1200), () {
+                Get.back();
               });
-        }
-      });
+            }
+          });
     }
   }
 
@@ -239,17 +231,16 @@ class ProfileController extends GetxController {
     required int profileCategoryType,
     required isSigningUp,
   }) {
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
 
     ProfileApi.updateProfileCategoryType(
         categoryType: profileCategoryType,
         resultCallback: () {
-          EasyLoading.dismiss();
+          Loader.dismiss();
           AppUtil.showToast(
               message: categoryTypeUpdatedString.tr, isSuccess: true);
           getMyProfile();
           if (isSigningUp == true) {
-            isLoginFirstTime = false;
             getIt<LocationManager>().postLocation();
             Get.offAll(() => const DashboardScreen());
           } else {
@@ -273,57 +264,50 @@ class ProfileController extends GetxController {
         });
   }
 
-  void editProfileImageAction(XFile pickedFile, bool isCoverImage) async {
-    if (isCoverImage) {
-      Uint8List compressedData = await File(pickedFile.path)
-          .compress(minHeight: 800, minWidth: 800, byQuality: 50);
+  void editProfileImageAction(XFile pickedFile) async {
+    Uint8List compressedData = await File(pickedFile.path)
+        .compress(minHeight: 1000, minWidth: 1000, byQuality: 50);
 
-      ProfileApi.uploadProfileCoverImage(compressedData, resultCallback: () {
-        _userProfileManager.refreshProfile().then((value) {
-          user.value = _userProfileManager.user.value;
-          update();
-        });
+    ProfileApi.uploadProfileImage(compressedData, resultCallback: () {
+      _userProfileManager.refreshProfile().then((value) {
+        user.value = _userProfileManager.user.value;
+        update();
       });
-    } else {
-      Uint8List compressedData = await File(pickedFile.path)
-          .compress(minHeight: 1000, minWidth: 1000, byQuality: 50);
-
-      ProfileApi.uploadProfileImage(compressedData, resultCallback: () {
-        _userProfileManager.refreshProfile().then((value) {
-          user.value = _userProfileManager.user.value;
-          update();
-        });
-      });
-    }
+    });
   }
 
-  updateBioMetricSetting(bool value, BuildContext context) {
+  updateBioMetricSetting(bool value) {
     user.value!.isBioMetricLoginEnabled = value == true ? 1 : 0;
     SharedPrefs().setBioMetricAuthStatus(value);
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
 
     ProfileApi.updateBiometricSetting(
         setting: user.value!.isBioMetricLoginEnabled ?? 0,
         resultCallback: () {
           _userProfileManager.refreshProfile();
-          EasyLoading.dismiss();
-          AppUtil.showToast(message: profileUpdatedString.tr, isSuccess: true);
+          Loader.dismiss();
+          AppUtil.showToast(
+              message: profileUpdatedString.tr, isSuccess: true);
         });
   }
 
   //////////////********** other user profile **************/////////////////
 
-  void getOtherUserDetail({required int userId}) {
+  void getOtherUserDetail(
+      {required int userId,
+      required Function(UserModel) completionBlock}) {
     UsersApi.getOtherUser(
         userId: userId,
         resultCallback: (result) {
           user.value = result;
+          completionBlock(result);
+
           update();
         });
   }
 
   void followUnFollowUser({required UserModel user}) {
-    if (user.isPrivate &&
+    if (user.isPrivateProfile &&
         user.followingStatus == FollowingStatus.notFollowing) {
       this.user.value!.followingStatus = FollowingStatus.requested;
     } else if (user.followingStatus == FollowingStatus.notFollowing) {
@@ -332,27 +316,29 @@ class ProfileController extends GetxController {
       this.user.value!.followingStatus = FollowingStatus.notFollowing;
     }
 
+    this.user.refresh();
     update();
 
     UsersApi.followUnfollowUser(
-            isFollowing:
-                this.user.value!.followingStatus == FollowingStatus.notFollowing
-                    ? false
-                    : true,
+            isFollowing: this.user.value!.followingStatus ==
+                    FollowingStatus.notFollowing
+                ? false
+                : true,
             user: user)
         .then((value) {
+      this.user.refresh();
       update();
     });
   }
 
-  void reportUser(BuildContext context) {
+  void reportUser() {
     user.value!.isReported = true;
     update();
 
     UsersApi.reportUser(userId: user.value!.id, resultCallback: () {});
   }
 
-  void blockUser(BuildContext context) {
+  void blockUser() {
     user.value!.isReported = true;
     update();
 
@@ -372,17 +358,35 @@ class ProfileController extends GetxController {
     callback();
   }
 
-  void getWithdrawHistory() {
-    WalletApi.getWithdrawHistory(resultCallback: (result) {
-      payments.value = result;
-      update();
-    });
+  loadMore(VoidCallback callback) {
+    if (transactionsDataWrapper.haveMoreData.value) {
+      getTransactionHistory(callback);
+    } else {
+      callback();
+    }
+  }
+
+  void getTransactionHistory(VoidCallback callback) {
+    WalletApi.getTransactionHistory(
+        page: transactionsDataWrapper.page,
+        resultCallback: (result, metadata) {
+          transactions.addAll(result);
+          transactions.unique((e) => e.id);
+
+          transactionsDataWrapper.processCompletedWithData(metadata);
+
+          callback();
+          update();
+        });
   }
 
   followUser(UserModel user) {
-    user.followingStatus = FollowingStatus.following;
+    user.followingStatus = user.isPrivateProfile
+        ? FollowingStatus.requested
+        : FollowingStatus.following;
     update();
-    UsersApi.followUnfollowUser(isFollowing: true, user: user).then((value) {
+    UsersApi.followUnfollowUser(isFollowing: true, user: user)
+        .then((value) {
       update();
     });
   }
@@ -391,108 +395,114 @@ class ProfileController extends GetxController {
     user.followingStatus = FollowingStatus.notFollowing;
 
     update();
-    UsersApi.followUnfollowUser(isFollowing: false, user: user).then((value) {
+    UsersApi.followUnfollowUser(isFollowing: false, user: user)
+        .then((value) {
       update();
     });
   }
 
   //******************** Posts ****************//
+  removePostFromList(PostModel post) {
+    posts.removeWhere((element) => element.id == post.id);
+    mentions.removeWhere((element) => element.id == post.id);
+    reels.removeWhere((element) => element.id == post.id);
+    collaborations.removeWhere((element) => element.id == post.id);
 
-  // void getPosts(int userId) async {
-  //   if (canLoadMorePosts == true && totalPages > postsCurrentPage) {
-  //     isLoadingPosts = true;
-  //
-  //     PostApi.getPosts(
-  //         userId: userId,
-  //         page: postsCurrentPage,
-  //         resultCallback: (result, metadata) {
-  //           posts.addAll(
-  //               result.where((element) => element.gallery.isNotEmpty).toList());
-  //           posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
-  //           posts.unique((e) => e.id);
-  //
-  //           isLoadingPosts = false;
-  //
-  //           if (postsCurrentPage >= metadata.pageCount) {
-  //             canLoadMorePosts = false;
-  //           } else {
-  //             canLoadMorePosts = true;
-  //           }
-  //           postsCurrentPage += 1;
-  //           totalPages = metadata.pageCount;
-  //
-  //           update();
-  //         });
-  //   }
-  // }
+    posts.refresh();
+    mentions.refresh();
+    reels.refresh();
+    collaborations.refresh();
+  }
 
-  void getReels(int userId) async {
-    if (canLoadMoreReels == true) {
-      isLoadingReels = true;
+  removeUsersAllPostFromList(PostModel post) {
+    posts.removeWhere((element) => element.user.id == post.user.id);
+    mentions.removeWhere((element) => element.user.id == post.user.id);
+    reels.removeWhere((element) => element.user.id == post.user.id);
+    collaborations
+        .removeWhere((element) => element.user.id == post.user.id);
+
+    posts.refresh();
+    mentions.refresh();
+    reels.refresh();
+    collaborations.refresh();
+  }
+
+  void getPosts(
+      {required int userId, required VoidCallback callback}) async {
+    if (postDataWrapper.haveMoreData.value == true &&
+        totalPages > postDataWrapper.page) {
+      if (postDataWrapper.page == 1) {
+        postDataWrapper.isLoading.value = true;
+      }
+
       PostApi.getPosts(
           userId: userId,
-          page: reelsCurrentPage,
+          page: postDataWrapper.page,
           resultCallback: (result, metadata) {
-            posts.addAll(
-                result.where((element) => element.gallery.isNotEmpty).toList());
-            posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
+            posts.addAll(result);
             posts.unique((e) => e.id);
+            postDataWrapper.processCompletedWithData(metadata);
 
-            isLoadingReels = false;
+            callback();
+            update();
+          });
+    } else {
+      callback();
+    }
+  }
 
-            if (postsCurrentPage >= metadata.pageCount) {
-              canLoadMoreReels = false;
-            } else {
-              canLoadMoreReels = true;
-            }
-            reelsCurrentPage += 1;
-            // totalPages = metadata.pageCount;
-
+  void getReels(int userId) async {
+    if (reelsDataWrapper.haveMoreData.value == true) {
+      reelsDataWrapper.isLoading.value = true;
+      PostApi.getPosts(
+          userId: userId,
+          postType: PostCategory.reel,
+          page: reelsDataWrapper.page,
+          resultCallback: (result, metadata) {
+            reels.addAll(result);
+            reels.unique((e) => e.id);
+            reelsDataWrapper.processCompletedWithData(metadata);
             update();
           });
     }
   }
 
   void getMentionPosts(int userId) {
-    if (canLoadMoreMentionsPosts && totalPages > mentionsPostPage) {
-      mentionsPostsIsLoading = true;
+    if (mentionedPostDataWrapper.haveMoreData.value) {
+      mentionedPostDataWrapper.isLoading.value = true;
 
       PostApi.getMentionedPosts(
           userId: userId,
-          resultCallback: (result, metaData) {
-            mentionsPostsIsLoading = false;
-
+          page: mentionedPostDataWrapper.page,
+          resultCallback: (result, metadata) {
             mentions.addAll(result.reversed.toList());
             mentions.unique((e) => e.id);
-
-            mentionsPostPage += 1;
-            if (result.length == metaData.perPage) {
-              canLoadMoreMentionsPosts = true;
-              totalPages = metaData.pageCount;
-            } else {
-              canLoadMoreMentionsPosts = false;
-            }
+            mentionedPostDataWrapper.processCompletedWithData(metadata);
             update();
           });
     }
   }
 
-  sendGift(GiftModel gift) {
-    if (_userProfileManager.user.value!.coins > gift.coins) {
-      GiftApi.sendStickerGift(
-          gift: gift,
-          liveId: null,
-          postId: null,
-          receiverId: user.value!.id,
-          resultCallback: () {
-            // refresh profile to get updated wallet info
-            _userProfileManager.refreshProfile();
-            AppUtil.showToast(message: giftSentString.tr, isSuccess: true);
+  void getCollaborationsPosts() {
+    if (collaborationsDataWrapper.haveMoreData.value) {
+      collaborationsDataWrapper.isLoading.value = true;
+
+      PostApi.getPosts(
+          isCollaboration: 1,
+          page: collaborationsDataWrapper.page,
+          resultCallback: (result, metadata) {
+            collaborations.addAll(result.reversed.toList());
+            collaborations.unique((e) => e.id);
+            collaborationsDataWrapper.processCompletedWithData(metadata);
+            update();
           });
-    } else {}
+    }
   }
 
-  otherUserProfileView({required int refId, required int sourceType}) {
-    UsersApi.otherUserProfileView(refId: refId, sourceType: sourceType);
+
+  otherUserProfileView(
+      {required int refId, required UserViewSourceType viewSource}) {
+    UsersApi.otherUserProfileView(
+        refId: refId, sourceType: userViewSourceTypeToId(viewSource));
   }
 }

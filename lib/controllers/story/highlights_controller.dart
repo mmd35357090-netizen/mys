@@ -3,13 +3,12 @@ import 'dart:typed_data';
 import 'package:foap/api_handler/apis/highlights_api.dart';
 import 'package:foap/api_handler/apis/misc_api.dart';
 import 'package:foap/api_handler/apis/story_api.dart';
-import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/highlights_imports.dart';
+import 'package:foap/util/constant_util.dart';
 import '../../model/story_model.dart';
+import 'package:foap/helper/file_extension.dart';
 import 'package:path_provider/path_provider.dart';
-
-import '../../util/constant_util.dart';
 
 class HighlightsController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
@@ -20,6 +19,7 @@ class HighlightsController extends GetxController {
 
   Rx<HighlightMediaModel?> storyMediaModel = Rx<HighlightMediaModel?>(null);
   Rx<HighlightsModel?> currentHighlight = Rx<HighlightsModel?>(null);
+  List<HighlightMediaModel> currentHighlightStories = [];
 
   String coverImage = '';
   String coverImageName = '';
@@ -36,6 +36,7 @@ class HighlightsController extends GetxController {
 
   setCurrentHighlight(HighlightsModel highlight) {
     currentHighlight.value = highlight;
+    currentHighlightStories.addAll(highlight.medias);
   }
 
   setCurrentStoryMedia(HighlightMediaModel storyMedia) {
@@ -45,7 +46,6 @@ class HighlightsController extends GetxController {
 
   updateCoverImage(File? image) {
     pickedImage.value = image;
-    update();
   }
 
   updateCoverImagePath() {
@@ -109,13 +109,16 @@ class HighlightsController extends GetxController {
         mediaType: GalleryMediaType.photo,
         type: UploadMediaType.storyOrHighlights,
         resultCallback: (fileName, filePath) {
-          coverImageName = fileName;
-        });
+      coverImageName = fileName;
+    });
   }
 
   deleteStoryFromHighlight() async {
+    currentHighlightStories
+        .removeWhere((element) => element.id == storyMediaModel.value!.id);
     await HighlightsApi.deleteStoryFromHighlights(storyMediaModel.value!.id);
-    if (currentHighlight.value!.medias.length == 1) {
+
+    if (currentHighlightStories.isEmpty) {
       await HighlightsApi.deleteHighlight(currentHighlight.value!.id);
     }
   }

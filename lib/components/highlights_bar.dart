@@ -4,26 +4,28 @@ import '../model/highlights.dart';
 
 class HighlightsBar extends StatelessWidget {
   final List<HighlightsModel> highlights;
-  final VoidCallback addHighlightCallback;
+  final VoidCallback? addHighlightCallback;
   final Function(HighlightsModel) viewHighlightCallback;
 
   const HighlightsBar(
-      {Key? key,
+      {super.key,
       required this.highlights,
-      required this.addHighlightCallback,
+      this.addHighlightCallback,
       required this.viewHighlightCallback})
-      : super(key: key);
+      ;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 85,
       child: ListView.separated(
-          padding:  EdgeInsets.only(left: DesignConstants.horizontalPadding,right: DesignConstants.horizontalPadding),
+          padding: EdgeInsets.only(
+              left: DesignConstants.horizontalPadding,
+              right: DesignConstants.horizontalPadding),
           scrollDirection: Axis.horizontal,
-          itemCount: highlights.length + 1,
+          itemCount: highlights.length + (addHighlightCallback != null ? 1 : 0),
           itemBuilder: (BuildContext ctx, int index) {
-            if (index == 0) {
+            if (index == 0 && addHighlightCallback != null) {
               return SizedBox(
                 width: 70,
                 child: Column(
@@ -32,17 +34,16 @@ class HighlightsBar extends StatelessWidget {
                       height: 60,
                       width: 60,
                       child: ThemeIconWidget(
-                        ThemeIcon.plus,
+                        ThemeIcon.plusSymbol,
                         size: 25,
                         color: AppColorConstants.iconColor,
                       ),
-                    ).borderWithRadius( value: 2, radius: 20),
+                    ).borderWithRadius(value: 2, radius: 50),
                     const Spacer(),
-                    BodySmallText(addString.tr,
-                        weight:TextWeight.medium),
+                    BodySmallText(addString.tr, weight: TextWeight.medium),
                   ],
                 ).ripple(() {
-                  addHighlightCallback();
+                  addHighlightCallback!();
                 }),
               );
             } else {
@@ -55,15 +56,19 @@ class HighlightsBar extends StatelessWidget {
                       height: 60,
                       width: 60,
                       child: AvatarView(
-                        url: highlights[index - 1].coverImage,
+                        url: highlights[
+                                index - (addHighlightCallback != null ? 1 : 0)]
+                            .coverImage,
                       ).ripple(() {
-                        viewHighlightCallback(highlights[index - 1]);
+                        viewHighlightCallback(highlights[
+                            index - (addHighlightCallback != null ? 1 : 0)]);
                       }),
                     ),
                     const Spacer(),
                     BodySmallText(
-                      highlights[index - 1].name,
-                      weight:TextWeight.medium,
+                      highlights[index - (addHighlightCallback != null ? 1 : 0)]
+                          .name,
+                      weight: TextWeight.medium,
                       maxLines: 1,
                       textAlign: TextAlign.center,
                     ).hP4

@@ -1,4 +1,4 @@
-import 'package:auto_orientation/auto_orientation.dart';
+// import 'package:foap/components/auto_orientation/auto_orientation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -16,8 +16,8 @@ class TVShowDetail extends StatefulWidget {
   final TvModel tvModel;
   final TVShowModel showModel;
 
-  const TVShowDetail({Key? key, required this.tvModel, required this.showModel})
-      : super(key: key);
+  const TVShowDetail({super.key, required this.tvModel, required this.showModel})
+      ;
 
   @override
   State<TVShowDetail> createState() => _TVShowDetailState();
@@ -31,7 +31,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
   TextEditingController reviewTE = TextEditingController();
   double rating = 5;
 
-  final List<String> tabs = [aboutString.tr, ratingsString.tr];
+  final List<String> tabs = [aboutString, ratingsString];
 
   @override
   void initState() {
@@ -44,11 +44,11 @@ class _TVShowDetailState extends State<TVShowDetail> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Add Your Code here.
-      if (MediaQuery.of(context).orientation == Orientation.portrait) {
-        AutoOrientation.portraitAutoMode();
-      } else {
-        AutoOrientation.landscapeAutoMode();
-      }
+      // if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      //   AutoOrientation.portraitAutoMode();
+      // } else {
+      //   AutoOrientation.landscapeAutoMode();
+      // }
 
       _ratingController.getRatings(type: 1, refId: widget.showModel.id!);
       _liveTvStreamingController.getTvShowEpisodes(showId: widget.showModel.id);
@@ -57,7 +57,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
 
   @override
   void dispose() {
-    AutoOrientation.portraitAutoMode();
+    // AutoOrientation.portraitAutoMode();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -68,56 +68,58 @@ class _TVShowDetailState extends State<TVShowDetail> {
   @override
   Widget build(BuildContext context) {
     return OrientationBuilder(builder: (context, orientation) {
-      if (orientation == Orientation.portrait) {
-        AutoOrientation.portraitAutoMode();
-      } else {
-        AutoOrientation.landscapeAutoMode();
-      }
+      // if (orientation == Orientation.portrait) {
+      //   AutoOrientation.portraitAutoMode();
+      // } else {
+      //   AutoOrientation.landscapeAutoMode();
+      // }
       return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
-        return Scaffold(
+        return AppScaffold(
           backgroundColor: AppColorConstants.backgroundColor,
-          body: Column(
-            children: [
-              if (orientation == Orientation.portrait)
-                Column(
-                  children: [
-                    backNavigationBar(
-                      title: widget.showModel.name!,
-                    ),
-                    const SizedBox(height: 8,),
-                  ],
-                ),
-              Obx(() {
-                return _liveTvStreamingController.selectedEpisode.value != null
-                    ? SocialifiedVideoPlayer(
-                        tvModel: widget.tvModel,
-                        url: _liveTvStreamingController
-                            .selectedEpisode.value!.videoUrl!,
-                        play: false,
-                        orientation: orientation,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                if (orientation == Orientation.portrait)
+                  Column(
+                    children: [
+                      backNavigationBar(
+                        title: widget.showModel.name!,
+                      ),
+                    ],
+                  ),
+                Obx(() {
+                  return _liveTvStreamingController.selectedEpisode.value !=
+                          null
+                      ? SocialifiedVideoPlayer(
+                          tvModel: widget.tvModel,
+                          url: _liveTvStreamingController
+                              .selectedEpisode.value!.videoUrl!,
+                          play: false,
+                          orientation: orientation,
 
-                        // showMinimumHeight: isKeyboardVisible,
-                      )
-                    : Container();
-              }),
-              if (orientation == Orientation.portrait)
-                DefaultTabController(
-                    length: tabs.length,
-                    initialIndex: 0,
-                    child: Column(
-                      children: [
-                        SMTabBar(tabs: tabs,canScroll: false),
-                        divider(),
-                        SizedBox(
-                          height: Get.height * 0.5,
-                          child: TabBarView(children: [
-                            Expanded(child: detailView()),
-                            ReviewsList()
-                          ]),
-                        ),
-                      ],
-                    )),
-            ],
+                          // showMinimumHeight: isKeyboardVisible,
+                        )
+                      : Container();
+                }),
+                if (orientation == Orientation.portrait)
+                  DefaultTabController(
+                      length: tabs.length,
+                      initialIndex: 0,
+                      child: Column(
+                        children: [
+                          SMTabBar(tabs: tabs, canScroll: false),
+                          divider(),
+                          SizedBox(
+                            height: Get.height * 0.5,
+                            child: TabBarView(children: [
+                              Expanded(child: detailView()),
+                              ReviewsList()
+                            ]),
+                          ),
+                        ],
+                      )),
+              ],
+            ),
           ),
         );
       });
@@ -139,6 +141,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
 
   episodeTile(TVShowEpisodeModel episode) {
     return Card(
+      color: AppColorConstants.cardColor,
       child: ListTile(
         contentPadding: const EdgeInsets.all(6),
         leading: Stack(
@@ -157,7 +160,12 @@ class _TVShowDetailState extends State<TVShowDetail> {
       ).ripple(() {
         _liveTvStreamingController.playEpisode(episode);
       }),
-    ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 5).round(10);
+    )
+        .setPadding(
+            left: DesignConstants.horizontalPadding,
+            right: DesignConstants.horizontalPadding,
+            bottom: 5)
+        .round(10);
   }
 
   Widget episodeInfo() {
@@ -168,13 +176,13 @@ class _TVShowDetailState extends State<TVShowDetail> {
           children: [
             Container(
                     color: AppColorConstants.themeColor,
-                    child: BodyLargeText(widget.showModel.ageGroup ?? "")
+                    child: Text(widget.showModel.ageGroup ?? "")
                         .setPadding(left: 10, right: 10, top: 5, bottom: 5))
                 .round(10),
             const SizedBox(width: 10),
             Container(
                     color: AppColorConstants.themeColor,
-                    child: BodyLargeText(widget.showModel.language ?? "")
+                    child: Text(widget.showModel.language ?? "")
                         .setPadding(left: 10, right: 10, top: 5, bottom: 5))
                 .round(10),
           ],
@@ -191,7 +199,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
                 const SizedBox(
                   height: 10,
                 ),
-                BodyLargeText(
+                BodySmallText(
                     '${widget.showModel.totalRatings.toString()} $ratingsString',
                     color: AppColorConstants.themeColor,
                     weight: TextWeight.bold),
@@ -205,14 +213,14 @@ class _TVShowDetailState extends State<TVShowDetail> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.thumbsUp,
                   size: 25,
                 ),
                 const SizedBox(
                   height: 10,
                 ),
-                BodyLargeText(
+                BodySmallText(
                   rateString,
                   color: AppColorConstants.themeColor,
                   weight: TextWeight.bold,
@@ -265,14 +273,17 @@ class _TVShowDetailState extends State<TVShowDetail> {
           color: AppColorConstants.backgroundColor,
           child: Container(
             height: 430,
-            color: AppColorConstants.themeColor.withOpacity(0.1),
+            color: AppColorConstants.themeColor.withValues(alpha: 0.1),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Heading5Text(
                   '$rateString ${widget.showModel.name}',
-                ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 16),
+                ).setPadding(
+                    left: DesignConstants.horizontalPadding,
+                    right: DesignConstants.horizontalPadding,
+                    bottom: 16),
                 ratingView(),
                 reviewView(),
                 AppThemeButton(

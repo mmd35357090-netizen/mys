@@ -10,11 +10,11 @@ class PackageTile extends StatelessWidget {
   final VoidCallback buyPackageHandler;
 
   PackageTile(
-      {Key? key,
+      {super.key,
       required this.package,
       required this.index,
       required this.buyPackageHandler})
-      : super(key: key);
+      ;
 
   @override
   Widget build(BuildContext context) {

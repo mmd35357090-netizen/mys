@@ -4,8 +4,8 @@ import 'package:foap/helper/string_extension.dart';
 
 class PublicGroupDetail extends StatefulWidget {
   const PublicGroupDetail({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  }) ;
 
   @override
   PublicGroupDetailState createState() => PublicGroupDetailState();
@@ -28,7 +28,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Stack(
         children: [
@@ -60,7 +60,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                     ),
                     Row(
                       children: [
-                        const ThemeIconWidget(ThemeIcon.userGroup),
+                        ThemeIconWidget(ThemeIcon.userGroup),
                         const SizedBox(
                           width: 5,
                         ),
@@ -68,7 +68,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                           publicGroupString.tr,
                           weight: TextWeight.medium,
                         ),
-                        // const ThemeIconWidget(
+                        // ThemeIconWidget(
                         //   ThemeIcon.circle,
                         //   size: 8,
                         // ).hP8,
@@ -108,7 +108,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
               Container(
                       // width: 40,
                       height: 30,
-                      color: AppColorConstants.themeColor.withOpacity(0.2),
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.2),
                       child: Row(
                         children: [
                           Icon(
@@ -146,7 +146,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
               Container(
                       // width: 40,
                       height: 30,
-                      color: AppColorConstants.themeColor.withOpacity(0.2),
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.2),
                       child: Row(
                         children: [
                           Icon(
@@ -173,7 +173,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
     return Positioned(
       child: Container(
         height: 150.0,
-        width: MediaQuery.of(context).size.width,
+        width: Get.width,
         decoration: BoxDecoration(
             color: Colors.white,
             gradient: LinearGradient(
@@ -181,8 +181,8 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                 end: FractionalOffset.bottomCenter,
                 colors: [
                   Colors.black,
-                  Colors.black.withOpacity(0.5),
-                  Colors.grey.withOpacity(0.0),
+                  Colors.black.withValues(alpha: 0.5),
+                  Colors.grey.withValues(alpha: 0.0),
                 ],
                 stops: const [
                   0.0,
@@ -192,7 +192,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const ThemeIconWidget(
+            ThemeIconWidget(
               ThemeIcon.backArrow,
               size: 20,
               color: Colors.white,
@@ -203,7 +203,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                 ? Row(
                     children: [
                       const SizedBox(width: 10),
-                      const ThemeIconWidget(
+                      ThemeIconWidget(
                         ThemeIcon.setting,
                         size: 20,
                         color: Colors.white,

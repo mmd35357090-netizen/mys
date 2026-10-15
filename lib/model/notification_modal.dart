@@ -1,13 +1,9 @@
 import 'package:foap/helper/date_extension.dart';
+import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_model.dart';
-import 'package:foap/model/user_model.dart';
-// import 'package:timeago/timeago.dart' as timeago;
-
-import '../helper/enum.dart';
-import '../helper/localization_strings.dart';
 import 'club_model.dart';
+import 'collaboration_model.dart';
 import 'competition_model.dart';
-import 'package:get/get.dart';
 
 class NotificationModel {
   int id;
@@ -23,18 +19,20 @@ class NotificationModel {
   SMNotificationType type;
   String notificationDate = earlierString.tr;
   bool readStatus;
+  CollaborationModel? collaboration;
 
   NotificationModel(
       {required this.id,
-        required this.title,
-        required this.message,
-        required this.date,
-        required this.type,
-        this.readStatus = false,
-        this.actionBy,
-        this.competition,
-        this.post,
-        this.club});
+      required this.title,
+      required this.message,
+      required this.date,
+      required this.type,
+      this.readStatus = false,
+      this.actionBy,
+      this.competition,
+      this.post,
+      this.club,
+      this.collaboration});
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       NotificationModel(
@@ -42,8 +40,7 @@ class NotificationModel {
         title: json["title"],
         message: json["message"],
         date:
-        DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
-            .toUtc(),
+        AppUtil.convertToDateTime(json['created_at']),
         type: getType(json["type"]),
         actionBy: json["createdByUser"] == null
             ? null
@@ -53,12 +50,13 @@ class NotificationModel {
             : null,
         post: json["type"] == 2 || json["type"] == 3 || json["type"] == 7
             ? json["refrenceDetails"] == null
-            ? null
-            : PostModel.fromJson(json["refrenceDetails"])
+                ? null
+                : PostModel.fromJson(json["refrenceDetails"])
+            : null,
+        collaboration: json["type"] == 40
+            ? CollaborationModel.fromJson(json["refrenceDetails"])
             : null,
         readStatus: json["read_status"] == 1,
-
-        // club: json["type"] == 11 ? ClubModel.fromJson(json["reference"]) : null,
       );
 
   String get notificationTime {
@@ -98,6 +96,9 @@ class NotificationModel {
     }
     if (type == 33) {
       return SMNotificationType.subscribed;
+    }
+    if (type == 40) {
+      return SMNotificationType.collaborate;
     }
     return SMNotificationType.none;
   }

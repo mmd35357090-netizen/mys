@@ -6,10 +6,10 @@ class StoryText extends StatefulWidget {
   final VideoPlayerController? controller;
 
   const StoryText({
-    Key? key,
+    super.key,
     required this.text,
     this.controller,
-  }) : super(key: key);
+  }) ;
 
   factory StoryText.url(String text) {
     return StoryText(text: text);

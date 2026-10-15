@@ -7,8 +7,8 @@ import 'package:foap/helper/string_extension.dart';
 class ChatGroupActionCell extends StatelessWidget {
   final ChatMessageModel message;
 
-  const ChatGroupActionCell({Key? key, required this.message})
-      : super(key: key);
+  const ChatGroupActionCell({super.key, required this.message})
+      ;
 
   @override
   Widget build(BuildContext context) {

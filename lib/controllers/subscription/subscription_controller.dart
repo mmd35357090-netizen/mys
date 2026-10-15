@@ -1,7 +1,7 @@
 import 'package:foap/api_handler/apis/subscription_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/data_wrapper.dart';
-import 'package:foap/model/subscription_plan.dart';
+import 'package:foap/model/subscription_plan_model.dart';
 
 class UserSubscriptionController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
@@ -88,7 +88,6 @@ class UserSubscriptionController extends GetxController {
     SubscriptionApi.getMySubscriptions(
         id: id,
         resultCallback: (result, metadata) {
-          print('subscriptions: ${subscriptions.length}');
           subscriptions.value = result;
           subscriptionsDataWrapper.processCompletedWithData(metadata);
           callback();

@@ -2,11 +2,12 @@ import 'package:flutter/services.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:lottie/lottie.dart';
+// import 'package:lottie/lottie.dart';
+
 import '../../controllers/chat_and_call/chat_gpt_controller.dart';
 
 class ChatGPT extends StatefulWidget {
-  const ChatGPT({Key? key}) : super(key: key);
+  const ChatGPT({super.key}) ;
 
   @override
   State<ChatGPT> createState() => _ChatGPTState();
@@ -25,7 +26,7 @@ class _ChatGPTState extends State<ChatGPT> {
         children: [
           backNavigationBar(title: chatGPT.tr),
           Obx(() => Expanded(
-                  child: ListView.separated(
+              child: ListView.separated(
                 padding: EdgeInsets.only(
                     top: 50,
                     bottom: 50,
@@ -44,7 +45,7 @@ class _ChatGPTState extends State<ChatGPT> {
                     menuBoxDecoration: BoxDecoration(
                         color: AppColorConstants.backgroundColor,
                         borderRadius:
-                            const BorderRadius.all(Radius.circular(15.0))),
+                        const BorderRadius.all(Radius.circular(15.0))),
                     duration: const Duration(milliseconds: 100),
                     animateMenuItems: false,
                     blurBackgroundColor: Colors.black54,
@@ -66,6 +67,7 @@ class _ChatGPTState extends State<ChatGPT> {
                             color: AppColorConstants.iconColor,
                           ),
                           onPressed: () async {
+                            AppUtil.showToast(message: copiedString.tr, isSuccess: true);
                             await Clipboard.setData(
                                 ClipboardData(text: message.content));
                           }),
@@ -100,9 +102,9 @@ class _ChatGPTState extends State<ChatGPT> {
               ))),
           Obx(() => _chatGPTController.messages.isNotEmpty
               ? _chatGPTController.messages.last.isSent
-                  ? Lottie.asset('assets/lottie/typing.json')
-                      .hp(DesignConstants.horizontalPadding)
-                  : Container()
+              ? ThemeIconWidget(ThemeIcon.more)
+              .hp(DesignConstants.horizontalPadding)
+              : Container()
               : Container()),
           messageComposerView()
         ],
@@ -140,7 +142,7 @@ class _ChatGPTState extends State<ChatGPT> {
                               maxLines: 50,
                               decoration: InputDecoration(
                                   floatingLabelBehavior:
-                                      FloatingLabelBehavior.never,
+                                  FloatingLabelBehavior.never,
                                   border: InputBorder.none,
                                   contentPadding: const EdgeInsets.only(
                                       left: 10, right: 10, top: 5),

@@ -1,7 +1,6 @@
 import 'dart:ui';
-
 import 'package:foap/api_handler/api_wrapper.dart';
-
+import '../../model/api_meta_data.dart';
 import '../../model/package_model.dart';
 import '../../model/payment_model.dart';
 
@@ -37,14 +36,19 @@ class WalletApi {
     });
   }
 
-  static getWithdrawHistory(
-      {required Function(List<PaymentModel>) resultCallback}) async {
-    var url = NetworkConstantsUtil.withdrawHistory;
+  static getTransactionHistory(
+      {required int page,
+      required Function(List<TransactionModel>, APIMetaData)
+          resultCallback}) async {
+    var url = NetworkConstantsUtil.transactionHistory;
+    url = '${url}month=2000-08,2050-09&page=$page';
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
-        resultCallback(List<PaymentModel>.from(
-            result!.data['payment'].map((x) => PaymentModel.fromJson(x))));
+        resultCallback(
+            List<TransactionModel>.from(result!.data['payment']['items']
+                .map((x) => TransactionModel.fromJson(x))),
+            APIMetaData.fromJson(result.data['payment']['_meta']));
       }
     });
   }

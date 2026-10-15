@@ -39,14 +39,14 @@ class TopTextTools extends StatelessWidget {
                         scale: !editorNotifier.isFontFamily ? 0.8 : 1.3,
                         child: !editorNotifier.isFontFamily
                             ? const ImageIcon(
-                                AssetImage('assets/icons/text.png',
-                                    package: 'vs_story_designer'),
+                                AssetImage('assets/story/assets/icons/text.png',
+                                    ),
                                 size: 20,
                                 color: Colors.white,
                               )
                             : Image.asset(
-                                'assets/icons/circular_gradient.png',
-                                package: 'vs_story_designer',
+                                'assets/story/assets/icons/circular_gradient.png',
+
                               )),
                   ),
 
@@ -70,7 +70,7 @@ class TopTextTools extends StatelessWidget {
                     onTap: editorNotifier.onBackGroundChange,
                     backGroundColor:
                         editorNotifier.backGroundColor != Colors.transparent
-                            ? Colors.white.withOpacity(0.9)
+                            ? Colors.white.withValues(alpha: 0.9)
                             : Colors.black12,
                     child: Transform.scale(
                         scale: 0.7,

@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:foap/controllers/chat_and_call/agora_call_controller.dart';
@@ -16,11 +15,11 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
 import 'package:foap/helper/socket_constants.dart';
 import 'package:foap/helper/string_extension.dart';
-import 'package:foap/manager/db_manager.dart';
 import 'package:foap/manager/socket_manager.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/util/constant_util.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'db_manager_realm.dart';
 export 'package:foap/helper/socket_constants.dart';
 
 class CachedRequest {
@@ -44,11 +43,10 @@ class SocketManager {
   final HomeController _homeController = Get.find();
   final TvStreamingController _liveTvStreamingController = Get.find();
   final UserProfileManager _userProfileManager = Get.find();
-  final VoipController _voipController = Get.find();
 
   StreamSubscription<FGBGType>? subscription;
 
-  disconnect() {
+  logout() {
     _socketInstance?.disconnect();
     _socketInstance = null;
   }
@@ -65,7 +63,7 @@ class SocketManager {
         ],
       },
     );
-    _voipController.listenerSetup();
+    getIt<VoipController>().listenerSetup();
 
     // if(_socketInstance!.connected == false){
     _socketInstance?.connect();
@@ -85,17 +83,16 @@ class SocketManager {
 //Socket Global Listener Events
   dynamic socketGlobalListeners() {
     _socketInstance?.onAny((event, data) {
+
       // Handle the incoming event and data here
     });
     _socketInstance?.on(SocketConstants.eventConnect, onConnect);
     _socketInstance?.on(SocketConstants.eventDisconnect, onDisconnect);
     _socketInstance?.on(SocketConstants.onSocketError, onConnectError);
-    _socketInstance?.on(
-        SocketConstants.eventConnectTimeout, onConnectError);
+    _socketInstance?.on(SocketConstants.eventConnectTimeout, onConnectError);
 
     // call end points handlers
-    _socketInstance?.on(
-        SocketConstants.incomingCall, handleOnCallReceived);
+    _socketInstance?.on(SocketConstants.incomingCall, handleOnCallReceived);
 
     _socketInstance?.on(
         SocketConstants.onCallRequestConfirm, handleOnCallConfirmation);
@@ -106,14 +103,17 @@ class SocketManager {
     _socketInstance?.on(SocketConstants.sendMessage, onReceiveMessage);
     _socketInstance?.on(
         SocketConstants.updateMessageStatus, updateMessageStatus);
+    _socketInstance?.on(SocketConstants.updateMessageCurrentStatusUser,
+        updateMessageCurrentStatusUser);
     _socketInstance?.on(SocketConstants.deleteMessage, onDeleteMessage);
     _socketInstance?.on(SocketConstants.addUserInChatRoom, addedInRoom);
 
     _socketInstance?.on(SocketConstants.typing, onReceiveTyping);
+    // _socketInstance?.on(SocketConstants.readMessage, readMessage);
+
     _socketInstance?.on(
         SocketConstants.offlineStatusEvent, onOfflineStatusEvent);
-    _socketInstance?.on(
-        SocketConstants.onlineStatusEvent, onOnlineStatusEvent);
+    _socketInstance?.on(SocketConstants.onlineStatusEvent, onOnlineStatusEvent);
 
     _socketInstance?.on(SocketConstants.leaveGroupChat, leaveGroupChat);
     _socketInstance?.on(SocketConstants.removeUserAdmin, removeUserAdmin);
@@ -126,32 +126,30 @@ class SocketManager {
     // live end point handlers
     _socketInstance?.on(SocketConstants.joinLive, liveJoinedByUser);
 
+    // _socketInstance?.on(SocketConstants.sendMessageInLive, onOnlineStatusEvent);
     _socketInstance?.on(
         SocketConstants.liveCreatedConfirmation, liveCreatedConfirmation);
     _socketInstance?.on(SocketConstants.leaveLive, onUserLeaveLive);
     _socketInstance?.on(SocketConstants.endLive, onLiveEnd);
+    _socketInstance?.on(SocketConstants.sendMessageInLive, newMessageInLive);
     _socketInstance?.on(
-        SocketConstants.sendMessageInLive, newMessageInLive);
-    _socketInstance?.on(SocketConstants.newGiftReceivedInLiveCall,
-        newGiftReceivedInLiveCall);
+        SocketConstants.newGiftReceivedInLiveCall, newGiftReceivedInLiveCall);
 
     _socketInstance?.on(SocketConstants.invitedInLive, invitedInLive);
     _socketInstance?.on(
         SocketConstants.replyInvitationInLive, repliedInvitationInLive);
-    _socketInstance?.on(SocketConstants.inviteInLiveConfirmation,
-        invitedInLiveConfirmation);
+    _socketInstance?.on(
+        SocketConstants.inviteInLiveConfirmation, invitedInLiveConfirmation);
     _socketInstance?.on(
         SocketConstants.liveBattleStatusUpdated, liveBattleStatusUpdated);
     _socketInstance?.on(
         SocketConstants.liveBattleHostUpdated, liveBattleHostUpdated);
     _socketInstance?.on(SocketConstants.endLiveBattle, endLiveBattle);
-    _socketInstance?.on(SocketConstants.userRoleChangeUpdateInLive,
-        userRoleChangeUpdateInLive);
     _socketInstance?.on(
-        SocketConstants.userRoleChangeUpdateConfirmationInLive,
+        SocketConstants.userRoleChangeUpdateInLive, userRoleChangeUpdateInLive);
+    _socketInstance?.on(SocketConstants.userRoleChangeUpdateConfirmationInLive,
         userRoleChangeUpdateConfirmationInLive);
-    _socketInstance?.on(
-        SocketConstants.cantJoinLiveCall, cantJoinLiveCall);
+    _socketInstance?.on(SocketConstants.cantJoinLiveCall, cantJoinLiveCall);
     // live tv
     _socketInstance?.on(
         SocketConstants.sendMessageInLiveTv, onReceiveMessageInLiveTv);
@@ -184,12 +182,12 @@ class SocketManager {
     cachedRequests.clear();
   }
 
-  //Get This Event After Connection Lost To Socket Due To Network Or Any Other Reason
+//Get This Event After Connection Lost To Socket Due To Network Or Any Other Reason
   dynamic onDisconnect(_) {
     // print("===> Socket Disconnected....................");
   }
 
-  //Get This Event After Connection Error To Socket With Error
+//Get This Event After Connection Error To Socket With Error
   dynamic onConnectError(error) {
     // print("===> ConnectError socket.................... $error");
   }
@@ -199,7 +197,7 @@ class SocketManager {
     _agoraCallController.outgoingCallConfirmationReceived(response);
   }
 
-  //Get This Event When you Received Call From Other User
+//Get This Event When you Received Call From Other User
   void handleOnCallReceived(dynamic response) {
     // voipController.incomingCall();
     // agoraCallController.incomingCallReceived(response);
@@ -231,14 +229,10 @@ class SocketManager {
 
       message.sender = user;
 
-      // ChatMessageModel message = ChatMessageModel.fromJson(response);
-
-      await getIt<DBManager>().newMessageReceived(message);
-      // await _chatDetailController.newMessageReceived(message);
-      // _chatController.newMessageReceived(message);
+      await getIt<RealmDBManager>().newMessageReceived(message);
 
       int roomsWithUnreadMessageCount =
-          await getIt<DBManager>().roomsWithUnreadMessages();
+          await getIt<RealmDBManager>().roomsWithUnreadMessages();
 
       _dashboardController
           .updateUnreadMessageCount(roomsWithUnreadMessageCount);
@@ -267,6 +261,10 @@ class SocketManager {
   }
 
   void updateMessageStatus(dynamic response) {
+    _chatDetailController.messageSendConfirmationReceived(response);
+  }
+
+  void updateMessageCurrentStatusUser(dynamic response) {
     _chatDetailController.messageUpdateReceived(response);
   }
 
@@ -303,7 +301,7 @@ class SocketManager {
 
       ChatMessageModel message = ChatMessageModel.fromJson(chatMessage);
 
-      getIt<DBManager>().newMessageReceived(message);
+      getIt<RealmDBManager>().newMessageReceived(message);
     }
   }
 
@@ -322,7 +320,7 @@ class SocketManager {
 
     ChatMessageModel message = ChatMessageModel.fromJson(chatMessage);
 
-    getIt<DBManager>().newMessageReceived(message);
+    getIt<RealmDBManager>().newMessageReceived(message);
   }
 
   removeUserAdmin(dynamic response) {
@@ -340,7 +338,7 @@ class SocketManager {
     ChatMessageModel message = ChatMessageModel.fromJson(chatMessage);
     // _chatController.newMessageReceived(message);
     // _chatDetailController.newMessageReceived(message);
-    getIt<DBManager>().newMessageReceived(message);
+    getIt<RealmDBManager>().newMessageReceived(message);
   }
 
   removeUserFromGroupChat(dynamic response) {
@@ -358,7 +356,7 @@ class SocketManager {
     ChatMessageModel message = ChatMessageModel.fromJson(chatMessage);
     // _chatController.newMessageReceived(message);
     // _chatDetailController.newMessageReceived(message);
-    getIt<DBManager>().newMessageReceived(message);
+    getIt<RealmDBManager>().newMessageReceived(message);
   }
 
   makeUserAdmin(dynamic response) {
@@ -374,9 +372,7 @@ class SocketManager {
     chatMessage['created_at'] = response['created_at'];
 
     ChatMessageModel message = ChatMessageModel.fromJson(chatMessage);
-    // _chatController.newMessageReceived(message);
-    // _chatDetailController.newMessageReceived(message);
-    getIt<DBManager>().newMessageReceived(message);
+    getIt<RealmDBManager>().newMessageReceived(message);
   }
 
   updateChatAccessGroup(dynamic response) {
@@ -395,8 +391,7 @@ class SocketManager {
     UsersApi.getOtherUser(
         userId: userId,
         resultCallback: (result) {
-          _agoraLiveController.onNewUserJoined(
-              result, liveCallId, totalUser);
+          _agoraLiveController.onNewUserJoined(result, liveCallId, totalUser);
         });
   }
 
@@ -432,9 +427,9 @@ class SocketManager {
     LiveModel live = LiveModel();
     live.channelName = response['channelName'];
     live.mainHostUserDetail = host;
+    // battleUsers: [],
     live.token = response['token'];
     live.id = response['liveCallId'];
-
     live.battleDetail =
         BattleDetail.fromJson(response['battleInfo']['battleDetail']);
     _agoraLiveController.invitedForLiveBattle(live);
@@ -486,8 +481,7 @@ class SocketManager {
     int liveId = response['liveCallId'];
     int battleId = response['battleId'];
 
-    _agoraLiveController.liveBattleEnded(
-        liveId: liveId, battleId: battleId);
+    _agoraLiveController.liveBattleEnded(liveId: liveId, battleId: battleId);
   }
 
   void newGiftReceivedInLiveCall(dynamic response) async {
@@ -507,8 +501,8 @@ class SocketManager {
     sentBy.userName = senderName;
     sentBy.picture = senderImage;
 
-    GiftModel gift = GiftModel(
-        id: giftId, name: giftName, logo: giftUrl, coins: giftCoins);
+    GiftModel gift =
+        GiftModel(id: giftId, name: giftName, logo: giftUrl, coins: giftCoins);
 
     List<LiveCallHostUser> hostUsers = [];
 
@@ -519,23 +513,20 @@ class SocketManager {
           resultCallback: (user) {
             hostUsers.add(LiveCallHostUser(
                 userDetail: user,
-                totalCoins: host['totalCoin'] == null ||
-                        host['totalCoin'] == 'null'
-                    ? 0
-                    : double.parse(host['totalCoin'].toString()).toInt(),
-                totalGifts: host['totalGift'] == null ||
-                        host['totalGift'] == 'null'
-                    ? 0
-                    : int.parse(host['totalGift'].toString()),
+                totalCoins:
+                    host['totalCoin'] == null || host['totalCoin'] == 'null'
+                        ? 0
+                        : double.parse(host['totalCoin'].toString()).toInt(),
+                totalGifts:
+                    host['totalGift'] == null || host['totalGift'] == 'null'
+                        ? 0
+                        : int.parse(host['totalGift'].toString()),
                 isMainHost: host['isSuperHost'] == 1));
           });
     }
 
     _agoraLiveController.onGiftReceived(
-        liveId: liveId,
-        gift: gift,
-        sentBy: sentBy,
-        sentToUserId: receiverId);
+        liveId: liveId, gift: gift, sentBy: sentBy, sentToUserId: receiverId);
     _agoraLiveController.liveCallHostsUpdated(
         liveId: liveId,
         hosts: hostUsers,
@@ -552,7 +543,6 @@ class SocketManager {
         : response['role'] == 3
             ? LiveUserRole.moderator
             : LiveUserRole.viewer;
-    print('userRoleChangeUpdateInLive == $response');
 
     _agoraLiveController.userRoleChange(
         actionOnUserId: actionOnUserId, liveId: liveId, role: role);
@@ -567,14 +557,12 @@ class SocketManager {
             ? LiveUserRole.moderator
             : LiveUserRole.viewer;
 
-    print('userRoleChangeUpdateConfirmationInLive == $response');
     _agoraLiveController.userRoleChange(
         actionOnUserId: actionOnUserId, liveId: liveId, role: role);
   }
 
   void cantJoinLiveCall(dynamic response) {
-    AppUtil.showToast(
-        message: notAllowedToJoinLiveString.tr, isSuccess: false);
+    AppUtil.showToast(message: notAllowedToJoinLiveString.tr, isSuccess: false);
   }
 
   // live tv

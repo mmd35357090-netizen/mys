@@ -28,7 +28,7 @@ class RandomChatAndCallController extends GetxController {
           _chatDetailController.getChatRoomWithUser(
               userId: result.first.id,
               callback: (room) {
-                EasyLoading.dismiss();
+                Loader.dismiss();
 
                 Get.close(1);
                 Get.to(() => ChatDetail(

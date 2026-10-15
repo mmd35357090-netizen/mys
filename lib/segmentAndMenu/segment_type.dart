@@ -24,7 +24,7 @@ class SegmentTab extends StatefulWidget {
   final Color? borderColor;
 
   const SegmentTab({
-    Key? key,
+    super.key,
     this.icon,
     this.image,
     this.type,
@@ -38,7 +38,7 @@ class SegmentTab extends StatefulWidget {
     this.inActiveTextStyle,
     this.activeTextStyle,
     this.borderColor,
-  }) : super(key: key);
+  }) ;
 
   @override
   State<SegmentTab> createState() => _SegmentTabState();

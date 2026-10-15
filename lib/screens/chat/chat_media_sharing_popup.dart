@@ -8,12 +8,10 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/chat/drawing_screen.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:image_picker/image_picker.dart';
-// import 'package:giphy_get/giphy_get.dart';
-
-import '../../components/giphy/giphy_get.dart';
 import '../../model/location.dart';
 import '../../util/constant_util.dart';
 import '../settings_menu/settings_controller.dart';
+import 'package:giphy_get/giphy_get.dart';
 
 class SharingMediaType {
   ThemeIcon icon;
@@ -25,7 +23,7 @@ class SharingMediaType {
 }
 
 class ChatMediaSharingOptionPopup extends StatefulWidget {
-  const ChatMediaSharingOptionPopup({Key? key}) : super(key: key);
+  const ChatMediaSharingOptionPopup({super.key});
 
   @override
   State<ChatMediaSharingOptionPopup> createState() =>
@@ -116,72 +114,39 @@ class _ChatMediaSharingOptionPopupState
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Container(
-            color: AppColorConstants.backgroundColor,
-            child: GridView.builder(
-                itemCount: mediaTypes.length,
-                padding: EdgeInsets.only(
-                    top: 20,
-                    left: DesignConstants.horizontalPadding,
-                    right: DesignConstants.horizontalPadding),
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 5.0,
-                    mainAxisSpacing: 5.0,
-                    childAspectRatio: 0.8),
-                itemBuilder: (ctx, index) {
-                  return Column(
-                    children: [
-                      Container(
-                          height: 40,
-                          width: 40,
-                          color: AppColorConstants.cardColor.darken(),
-                          child: ThemeIconWidget(
-                            mediaTypes[index].icon,
-                            size: 18,
-                          )).circular,
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      BodyMediumText(
-                        mediaTypes[index].text,
-                      )
-                    ],
-                  ).ripple(() {
-                    handleAction(mediaTypes[index]);
-                  });
-                }),
-          ).round(20).p16,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: Container(
-            height: 50,
-            width: 50,
-            color: AppColorConstants.backgroundColor,
-            child: Center(
-              child: ThemeIconWidget(
-                ThemeIcon.close,
-                color: AppColorConstants.iconColor,
-                size: 25,
-              ),
-            ),
-          ).circular.ripple(() {
-            Get.back();
-          }),
-        ),
-        const SizedBox(
-          height: 40,
-        ),
-      ],
-    );
+    return Container(
+      color: AppColorConstants.backgroundColor,
+      child: ListView.separated(
+        itemCount: mediaTypes.length,
+        padding: EdgeInsets.all(DesignConstants.horizontalPadding),
+        // physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (ctx, index) {
+          return SizedBox(
+            height: 40,
+            child: Row(
+              children: [
+                ThemeIconWidget(
+                  mediaTypes[index].icon,
+                  size: 18,
+                  color: AppColorConstants.iconColor,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                BodyMediumText(
+                  mediaTypes[index].text,
+                )
+              ],
+            ).ripple(() {
+              handleAction(mediaTypes[index]);
+            }),
+          );
+        },
+        separatorBuilder: (ctx, index) {
+          return divider().vP8;
+        },
+      ),
+    ).round(20);
   }
 
   handleAction(SharingMediaType mediaType) {
@@ -219,6 +184,53 @@ class _ChatMediaSharingOptionPopupState
       openGroups();
     } else if (mediaType.contentType == MessageContentType.file) {
       openFilePicker();
+    }
+  }
+
+  void openCamera() async {
+    XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    if (photo != null) {
+      Media media = await photo.toMedia(GalleryMediaType.photo);
+
+      _chatDetailController.sendImageMessage(
+          media: media,
+          mode: _chatDetailController.actionMode.value,
+          room: _chatDetailController.chatRoom.value!);
+    }
+  }
+
+  void openPhotoPicker() async {
+    List<XFile> images = await _picker.pickMultiImage();
+    List<Media> medias = [];
+    for (XFile image in images) {
+      Media media = await image.toMedia(GalleryMediaType.photo);
+      medias.add(media);
+    }
+
+    for (Media media in medias) {
+      if (media.mediaType == GalleryMediaType.photo) {
+        _chatDetailController.sendImageMessage(
+            media: media,
+            mode: _chatDetailController.actionMode.value,
+            room: _chatDetailController.chatRoom.value!);
+      } else {
+        _chatDetailController.sendVideoMessage(
+            media: media,
+            mode: _chatDetailController.actionMode.value,
+            room: _chatDetailController.chatRoom.value!);
+      }
+    }
+  }
+
+  void openVideoPicker() async {
+    XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      Media media = await video.toMedia(GalleryMediaType.video);
+
+      _chatDetailController.sendVideoMessage(
+          media: media,
+          mode: _chatDetailController.actionMode.value,
+          room: _chatDetailController.chatRoom.value!);
     }
   }
 
@@ -316,53 +328,6 @@ class _ChatMediaSharingOptionPopupState
         enableDrag: false,
         builder: (context) => const FractionallySizedBox(
             heightFactor: 0.9, child: DrawingScreen()));
-  }
-
-  void openCamera() async {
-    XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      Media media = await photo.toMedia(GalleryMediaType.photo);
-
-      _chatDetailController.sendImageMessage(
-          media: media,
-          mode: _chatDetailController.actionMode.value,
-          room: _chatDetailController.chatRoom.value!);
-    }
-  }
-
-  void openPhotoPicker() async {
-    List<XFile> images = await _picker.pickMultiImage();
-    List<Media> medias = [];
-    for (XFile image in images) {
-      Media media = await image.toMedia(GalleryMediaType.photo);
-      medias.add(media);
-    }
-
-    for (Media media in medias) {
-      if (media.mediaType == GalleryMediaType.photo) {
-        _chatDetailController.sendImageMessage(
-            media: media,
-            mode: _chatDetailController.actionMode.value,
-            room: _chatDetailController.chatRoom.value!);
-      } else {
-        _chatDetailController.sendVideoMessage(
-            media: media,
-            mode: _chatDetailController.actionMode.value,
-            room: _chatDetailController.chatRoom.value!);
-      }
-    }
-  }
-
-  void openVideoPicker() async {
-    XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      Media media = await video.toMedia(GalleryMediaType.video);
-
-      _chatDetailController.sendVideoMessage(
-          media: media,
-          mode: _chatDetailController.actionMode.value,
-          room: _chatDetailController.chatRoom.value!);
-    }
   }
 
   void openUsersList() {

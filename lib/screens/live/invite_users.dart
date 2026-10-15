@@ -1,13 +1,12 @@
 import 'package:foap/helper/imports/common_import.dart';
-import '../../components/search_bar.dart';
 import '../../components/user_card.dart';
 import '../../controllers/misc/users_controller.dart';
 
 class InviteUsers extends StatefulWidget {
   final Function(UserModel) userSelectedHandler;
 
-  const InviteUsers({Key? key, required this.userSelectedHandler})
-      : super(key: key);
+  const InviteUsers({super.key, required this.userSelectedHandler})
+      ;
 
   @override
   State<InviteUsers> createState() => _InviteUsersState();

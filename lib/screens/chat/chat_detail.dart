@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_contacts/contact.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:foap/controllers/profile/profile_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
@@ -31,19 +29,15 @@ class _ChatDetailState extends State<ChatDetail> {
       RefreshController(initialRefresh: false);
   final SettingsController _settingsController = Get.find();
   final UserProfileManager _userProfileManager = Get.find();
-  final ProfileController profileController = Get.find();
 
   @override
   void initState() {
     loadChat();
-    profileController.getOtherUserDetail(
-        userId: widget.chatRoom.opponent.userDetail.id);
     super.initState();
   }
 
   loadChat() {
     _chatDetailController.loadChat(widget.chatRoom, () {});
-    _chatDetailController.loadWallpaper(widget.chatRoom.id);
   }
 
   refreshData() {
@@ -63,7 +57,7 @@ class _ChatDetailState extends State<ChatDetail> {
     return SafeArea(
       bottom: false,
       top: false,
-      child: Scaffold(
+      child: AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
@@ -71,18 +65,15 @@ class _ChatDetailState extends State<ChatDetail> {
               height: 50,
             ),
             appBar(),
-            const SizedBox(
-              height: 8,
-            ),
             Expanded(child: messagesListView()),
             Obx(() {
               return Column(
                 children: [
                   SizedBox(
-                    height: _chatDetailController
-                            .smartReplySuggestions.isNotEmpty
-                        ? 50
-                        : 0,
+                    height:
+                        _chatDetailController.smartReplySuggestions.isNotEmpty
+                            ? 50
+                            : 0,
                     child: ListView.separated(
                         padding: EdgeInsets.only(
                             left: DesignConstants.horizontalPadding,
@@ -100,16 +91,12 @@ class _ChatDetailState extends State<ChatDetail> {
                                       weight: TextWeight.medium)
                                   .hP8,
                             ),
-                          )
-                              .borderWithRadius(value: 1, radius: 10)
-                              .ripple(() {
+                          ).borderWithRadius(value: 1, radius: 10).ripple(() {
                             _chatDetailController.sendTextMessage(
                                 messageText: _chatDetailController
                                     .smartReplySuggestions[index],
-                                mode:
-                                    _chatDetailController.actionMode.value,
-                                room:
-                                    _chatDetailController.chatRoom.value!);
+                                mode: _chatDetailController.actionMode.value,
+                                room: _chatDetailController.chatRoom.value!);
                           });
                         },
                         separatorBuilder: (ctx, index) {
@@ -117,15 +104,14 @@ class _ChatDetailState extends State<ChatDetail> {
                             width: 10,
                           );
                         },
-                        itemCount: _chatDetailController
-                            .smartReplySuggestions.length),
+                        itemCount:
+                            _chatDetailController.smartReplySuggestions.length),
                   ),
                 ],
               );
             }),
             Obx(() {
-              return _chatDetailController.chatRoom.value?.amIMember ==
-                      true
+              return _chatDetailController.chatRoom.value?.amIMember == true
                   ? _chatDetailController.actionMode.value ==
                               ChatMessageActionMode.none ||
                           _chatDetailController.actionMode.value ==
@@ -143,13 +129,6 @@ class _ChatDetailState extends State<ChatDetail> {
   }
 
   Widget appBar() {
-
-    print(
-        'status 1 === ${profileController.user.value?.isShareOnlineStatus}');
-
-    print(
-        'status 2 = ${_userProfileManager.user.value!.isShareOnlineStatus}');
-
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
@@ -166,31 +145,28 @@ class _ChatDetailState extends State<ChatDetail> {
               });
               Get.back();
             }),
-            Obx(() =>
-                _chatDetailController.chatRoom.value?.isGroupChat == false
-                    ? Row(
-                        children: [
-                          if (_settingsController
-                              .setting.value!.enableAudioCalling)
-                            ThemeIconWidget(
-                              ThemeIcon.mobile,
-                              color: AppColorConstants.iconColor,
-                              size: 25,
-                            ).p4.ripple(() {
-                              audioCall();
-                            }).rp(20),
-                          if (_settingsController
-                              .setting.value!.enableVideoCalling)
-                            ThemeIconWidget(
-                              ThemeIcon.videoCamera,
-                              color: AppColorConstants.iconColor,
-                              size: 25,
-                            ).p4.ripple(() {
-                              videoCall();
-                            })
-                        ],
-                      )
-                    : Container()),
+            Obx(() => _chatDetailController.chatRoom.value?.isGroupChat == false
+                ? Row(
+                    children: [
+                      if (_settingsController.setting.value!.enableAudioCalling)
+                        ThemeIconWidget(
+                          ThemeIcon.mobile,
+                          color: AppColorConstants.iconColor,
+                          size: 25,
+                        ).p4.ripple(() {
+                          audioCall();
+                        }).rp(20),
+                      if (_settingsController.setting.value!.enableVideoCalling)
+                        ThemeIconWidget(
+                          ThemeIcon.videoCamera,
+                          color: AppColorConstants.iconColor,
+                          size: 25,
+                        ).p4.ripple(() {
+                          videoCall();
+                        })
+                    ],
+                  )
+                : Container()),
           ],
         ).hp(DesignConstants.horizontalPadding),
         Positioned(
@@ -221,31 +197,34 @@ class _ChatDetailState extends State<ChatDetail> {
                                           : _chatDetailController
                                               .chatRoom
                                               .value!
-                                              .opponent
+                                              .opponent!
                                               .userDetail
                                               .userName,
                                       weight: TextWeight.bold),
                                   const SizedBox(width: 5),
-                                  _chatDetailController.chatRoom.value!
-                                              .isGroupChat ==
+                                  _chatDetailController
+                                              .chatRoom.value!.isGroupChat ==
                                           false
-                                      ? profileController.user.value
-                                                      ?.isShareOnlineStatus ==
+                                      ? _chatDetailController
+                                                      .chatRoom
+                                                      .value!
+                                                      .opponent!
+                                                      .userDetail
+                                                      .isShareOnlineStatus ==
                                                   true &&
-                                              _userProfileManager
-                                                  .user
-                                                  .value!
+                                              _userProfileManager.user.value!
                                                   .isShareOnlineStatus
                                           ? Container(
                                               height: 8,
                                               width: 8,
-                                              color: profileController
-                                                          .user
-                                                          .value
-                                                          ?.isOnline ==
+                                              color: _chatDetailController
+                                                          .chatRoom
+                                                          .value!
+                                                          .opponent!
+                                                          .userDetail
+                                                          .isOnline ==
                                                       true
-                                                  ? AppColorConstants
-                                                      .themeColor
+                                                  ? AppColorConstants.themeColor
                                                   : AppColorConstants
                                                       .disabledColor,
                                             ).circular
@@ -260,23 +239,29 @@ class _ChatDetailState extends State<ChatDetail> {
                                               _chatDetailController
                                                   .chatRoom
                                                   .value!
-                                                  .opponent
+                                                  .opponent!
                                                   .userDetail
                                                   .userName] ==
                                           true
                                       ? BodyMediumText(
                                           typingString.tr,
                                         )
-                                      : profileController.user.value
-                                                      ?.isShareOnlineStatus ==
+                                      : _chatDetailController
+                                                      .chatRoom
+                                                      .value!
+                                                      .opponent!
+                                                      .userDetail
+                                                      .isShareOnlineStatus ==
                                                   true &&
-                                              _userProfileManager
-                                                  .user
-                                                  .value!
+                                              _userProfileManager.user.value!
                                                   .isShareOnlineStatus
                                           ? BodyMediumText(
-                                              profileController.user.value
-                                                          ?.isOnline ==
+                                              _chatDetailController
+                                                          .chatRoom
+                                                          .value!
+                                                          .opponent!
+                                                          .userDetail
+                                                          .isOnline ==
                                                       true
                                                   ? onlineString.tr
                                                   : _chatDetailController
@@ -293,15 +278,12 @@ class _ChatDetailState extends State<ChatDetail> {
                                                 .whoIsTyping.isNotEmpty
                                             ? '${_chatDetailController.whoIsTyping.join(',')} ${typingString.tr}'
                                             : _chatDetailController
-                                                .chatRoom
-                                                .value!
-                                                .roomMembers
+                                                .chatRoom.value!.roomMembers
                                                 .map((e) {
                                                   if (e.userDetail.isMe) {
                                                     return youString.tr;
                                                   }
-                                                  return e
-                                                      .userDetail.userName;
+                                                  return e.userDetail.userName;
                                                 })
                                                 .toList()
                                                 .join(','),
@@ -313,8 +295,7 @@ class _ChatDetailState extends State<ChatDetail> {
                           );
                   }).ripple(() {
                     Get.to(() => ChatRoomDetail(
-                            chatRoom:
-                                _chatDetailController.chatRoom.value!))!
+                            chatRoom: _chatDetailController.chatRoom.value!))!
                         .then((value) {
                       loadChat();
                     });
@@ -367,13 +348,11 @@ class _ChatDetailState extends State<ChatDetail> {
   }
 
   Widget replyMessageView() {
-    return Obx(() =>
-        _chatDetailController.selectedMessage.value!.messageContentType ==
-                MessageContentType.text
-            ? replyTextMessageView(
-                _chatDetailController.selectedMessage.value!)
-            : replyMediaMessageView(
-                _chatDetailController.selectedMessage.value!));
+    return Obx(() => _chatDetailController
+                .selectedMessage.value!.messageContentType ==
+            MessageContentType.text
+        ? replyTextMessageView(_chatDetailController.selectedMessage.value!)
+        : replyMediaMessageView(_chatDetailController.selectedMessage.value!));
   }
 
   Widget replyTextMessageView(ChatMessageModel message) {
@@ -459,13 +438,12 @@ class _ChatDetailState extends State<ChatDetail> {
   Widget messageComposerView() {
     return Column(
       children: [
-        _chatDetailController.actionMode.value ==
-                ChatMessageActionMode.reply
+        _chatDetailController.actionMode.value == ChatMessageActionMode.reply
             ? replyMessageView()
             : Container(),
         Container(
           color: AppColorConstants.backgroundColor.darken(0.02),
-          height: 70,
+          // height: 70,
           child: Column(
             children: [
               const SizedBox(
@@ -479,17 +457,17 @@ class _ChatDetailState extends State<ChatDetail> {
                       children: [
                         Expanded(
                           child: SizedBox(
-                            height: 40,
+                            // height: 40,
                             child: Obx(() => TextField(
-                                  controller: _chatDetailController
-                                      .messageTf.value,
+                                  controller:
+                                      _chatDetailController.messageTf.value,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                       fontSize: FontSizes.h5,
                                       fontWeight: TextWeight.regular,
-                                      color:
-                                          AppColorConstants.mainTextColor),
-                                  maxLines: 50,
+                                      color: AppColorConstants.mainTextColor),
+                                  maxLines: 5,
+                                  minLines: 1,
                                   onChanged: (text) {
                                     _chatDetailController.messageChanges();
                                   },
@@ -497,21 +475,17 @@ class _ChatDetailState extends State<ChatDetail> {
                                       floatingLabelBehavior:
                                           FloatingLabelBehavior.never,
                                       border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.only(
-                                              left: 10, right: 10, top: 5),
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 10, right: 10, top: 5),
                                       labelStyle: TextStyle(
                                           fontSize: FontSizes.b2,
                                           fontWeight: TextWeight.medium,
-                                          color: AppColorConstants
-                                              .themeColor),
+                                          color: AppColorConstants.themeColor),
                                       hintStyle: TextStyle(
                                           fontSize: FontSizes.h6,
                                           fontWeight: TextWeight.regular,
-                                          color: AppColorConstants
-                                              .themeColor),
-                                      hintText:
-                                          pleaseEnterMessageString.tr),
+                                          color: AppColorConstants.themeColor),
+                                      hintText: pleaseEnterMessageString.tr),
                                 )),
                           ),
                         ),
@@ -533,8 +507,8 @@ class _ChatDetailState extends State<ChatDetail> {
                                   width: 30,
                                   color: AppColorConstants.themeColor,
                                   child: ThemeIconWidget(
-                                    ThemeIcon.plus,
-                                    color: AppColorConstants.iconColor,
+                                    ThemeIcon.plusSymbol,
+                                    color: Colors.white,
                                   ),
                                 ).circular.ripple(() {
                                   openMediaSharingOptionView();
@@ -574,15 +548,14 @@ class _ChatDetailState extends State<ChatDetail> {
         init: _chatDetailController,
         builder: (ctx) {
           return Container(
-            decoration: _chatDetailController.wallpaper.value.isEmpty
-                ? null
-                : BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                          _chatDetailController.wallpaper.value),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+            // decoration: _chatDetailController.wallpaper.value.isEmpty
+            //     ? null
+            //     : BoxDecoration(
+            //         image: DecorationImage(
+            //           image: AssetImage(_chatDetailController.wallpaper.value),
+            //           fit: BoxFit.cover,
+            //         ),
+            //       ),
             child: _chatDetailController.messages.isEmpty
                 ? Container()
                 : Container(
@@ -601,13 +574,13 @@ class _ChatDetailState extends State<ChatDetail> {
                               ChatMessageModel? lastMessage;
 
                               if (index > 0) {
-                                lastMessage = _chatDetailController
-                                    .messages[index - 1];
+                                lastMessage =
+                                    _chatDetailController.messages[index - 1];
                               }
 
-                              String dateTimeStr = message.date;
+                              String dateTimeStr = message.dateString;
                               bool addDateSeparator = false;
-                              if (dateTimeStr != lastMessage?.date &&
+                              if (dateTimeStr != lastMessage?.dateString &&
                                   message.isDateSeparator == false) {
                                 addDateSeparator = true;
                               }
@@ -619,8 +592,7 @@ class _ChatDetailState extends State<ChatDetail> {
                                   message.isDeleted == true ||
                                           message.isDateSeparator ||
                                           message.messageContentType ==
-                                              MessageContentType
-                                                  .groupAction
+                                              MessageContentType.groupAction
                                       ? messageTile(message)
                                       : chatMessageFocusMenu(message),
                                 ],
@@ -663,7 +635,8 @@ class _ChatDetailState extends State<ChatDetail> {
       bottomOffsetHeight: 80.0,
       // Offset height to consider, for showing the menu item ( for example bottom navigation bar), so that the popup menu will be shown on top of selected item.
       menuItems: [
-        if (message.copyContent != null)
+        if (message.copyContent != null &&
+            message.messageContentType == MessageContentType.text)
           FocusedMenuItem(
               backgroundColor: AppColorConstants.backgroundColor,
               title: BodyLargeText(
@@ -672,7 +645,7 @@ class _ChatDetailState extends State<ChatDetail> {
               trailingIcon: const Icon(Icons.file_copy, size: 18),
               onPressed: () async {
                 await Clipboard.setData(
-                    ClipboardData(text: message.decrypt));
+                    ClipboardData(text: message.textMessage));
               }),
         if (_chatDetailController.chatRoom.value?.canIChat == true &&
             _settingsController.setting.value!.enableReplyInChat)
@@ -757,17 +730,16 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget dateSeparatorWidget(ChatMessageModel chatMessage) {
     return Container(
-      color: AppColorConstants.themeColor.lighten(0.2).withOpacity(0.5),
+      color: AppColorConstants.themeColor.lighten(0.2).withValues(alpha: 0.5),
       width: 120,
       child: Center(
-        child: BodySmallText(chatMessage.date)
+        child: BodySmallText(chatMessage.dateString)
             .setPadding(left: 8, right: 8, top: 4, bottom: 4),
       ),
     ).round(15).bP25;
   }
 
   void messageTapped(ChatMessageModel model) async {
-    print('model.messageContentType ${model.messageContentType}');
     if (model.messageContentType == MessageContentType.forward) {
       messageTapped(model.originalMessage);
     }
@@ -793,6 +765,18 @@ class _ChatDetailState extends State<ChatDetail> {
                 postId: model.postContent.postId,
               ))!
           .then((value) => loadChat());
+    } else if (model.messageContentType == MessageContentType.story) {
+      Get.to(() => StoryViewer(
+            story: model.storyContent,
+            storyDeleted: () {},
+          ));
+    } else if (model.messageContentType == MessageContentType.reactedOnStory ||
+        model.messageContentType == MessageContentType.textReplyOnStory) {
+      Get.to(() => StoryViewer(
+            story: model.repliedOnStory,
+            storyDeleted: () {},
+
+          ));
     } else if (model.messageContentType == MessageContentType.contact) {
       openActionPopupForContact(model.mediaContent.contact!);
     } else if (model.messageContentType == MessageContentType.profile) {
@@ -823,11 +807,11 @@ class _ChatDetailState extends State<ChatDetail> {
                         title: Heading5Text(
                           '${openInString.tr} ${map.mapName}',
                         ),
-                        leading: SvgPicture.asset(
-                          map.icon,
-                          height: 30.0,
-                          width: 30.0,
-                        ),
+                        // leading: SvgPicture.asset(
+                        //   map.icon,
+                        //   height: 30.0,
+                        //   width: 30.0,
+                        // ),
                       ),
                   ],
                 ),
@@ -839,24 +823,11 @@ class _ChatDetailState extends State<ChatDetail> {
         // print(e);
       }
     } else if (model.messageContentType == MessageContentType.file) {
-      String? path =
-          await getIt<FileManager>().localFilePathForMessage(model);
+      String? path = await getIt<FileManager>().localFilePathForMessage(model);
 
       if (path != null) {
         OpenFilex.open(path);
       }
-    } else if (model.messageContentType == MessageContentType.story) {
-      Get.to(() => StoryViewer(
-            story: model.storyContent,
-            storyDeleted: () {},
-          ));
-    } else if (model.messageContentType ==
-            MessageContentType.reactedOnStory ||
-        model.messageContentType == MessageContentType.textReplyOnStory) {
-      Get.to(() => StoryViewer(
-            story: model.repliedOnStory,
-            storyDeleted: () {},
-          ));
     }
   }
 
@@ -872,14 +843,12 @@ class _ChatDetailState extends State<ChatDetail> {
                     onTap: () async {}),
                 divider(),
                 ListTile(
-                    title:
-                        Center(child: BodyLargeText(saveContactString.tr)),
+                    title: Center(child: BodyLargeText(saveContactString.tr)),
                     onTap: () async {
                       Get.back();
                       _chatDetailController.addNewContact(contact);
                       AppUtil.showToast(
-                          message: contactSavedString.tr,
-                          isSuccess: false);
+                          message: contactSavedString.tr, isSuccess: false);
                     }),
                 divider(),
                 ListTile(
@@ -901,6 +870,18 @@ class _ChatDetailState extends State<ChatDetail> {
         element.localMessageId == model.originalMessage.localMessageId);
     if (index != -1) {
       Scrollable.ensureVisible(model.globalKey!.currentContext!);
+      // _controller.jumpTo(
+      //   _controller.position.maxScrollExtent,
+      //   duration: const Duration(milliseconds: 250),
+      //   curve: Curves.fastOutSlowIn,
+      // );
+
+      // Timer(const Duration(milliseconds: 1), () {
+      //
+      //   _itemScrollController.jumpTo(
+      //     index: index,
+      //   );
+      // });
     }
   }
 
@@ -916,18 +897,16 @@ class _ChatDetailState extends State<ChatDetail> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-        builder: (context) => SelectFollowingUserForMessageSending(
-                sendToUserCallback: (user) {
+        builder: (context) =>
+            SelectFollowingUserForMessageSending(sendToUserCallback: (user) {
               _chatDetailController.getChatRoomWithUser(
                   userId: user.id,
                   callback: (room) {
-                    _chatDetailController.forwardSelectedMessages(
-                        room: room);
+                    _chatDetailController.forwardSelectedMessages(room: room);
                     Get.back();
                   });
             })).then((value) {
-      _chatDetailController.setToActionMode(
-          mode: ChatMessageActionMode.none);
+      _chatDetailController.setToActionMode(mode: ChatMessageActionMode.none);
     });
   }
 
@@ -937,7 +916,7 @@ class _ChatDetailState extends State<ChatDetail> {
         context: context,
         isScrollControlled: true,
         builder: (context) => const FractionallySizedBox(
-            heightFactor: 0.55, child: ChatMediaSharingOptionPopup()));
+            heightFactor: 0.5, child: ChatMediaSharingOptionPopup()));
   }
 
   void deleteMessageActionPopup() {
@@ -959,16 +938,13 @@ class _ChatDetailState extends State<ChatDetail> {
                     }),
                 divider(),
                 ifAnyMessageByOpponent == false &&
-                        _chatDetailController.chatRoom.value?.canIChat ==
-                            true
+                        _chatDetailController.chatRoom.value?.canIChat == true
                     ? ListTile(
                         title: Center(
-                            child: BodyLargeText(
-                                deleteMessageForAllString.tr)),
+                            child: BodyLargeText(deleteMessageForAllString.tr)),
                         onTap: () async {
                           Get.back();
-                          _chatDetailController.deleteMessage(
-                              deleteScope: 2);
+                          _chatDetailController.deleteMessage(deleteScope: 2);
                           // postCardController.blockUser(widget.model.user.id);
                         })
                     : Container(),

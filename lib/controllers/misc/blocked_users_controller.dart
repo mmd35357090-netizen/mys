@@ -24,7 +24,7 @@ class BlockedUsersController extends GetxController {
           page: blockedUserPage,
           resultCallback: (result, metadata) {
             isLoading = false;
-            EasyLoading.dismiss();
+            // Loader.dismiss();
             usersList.addAll(result);
             usersList.unique((e)=> e.id);
 

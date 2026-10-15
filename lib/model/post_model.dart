@@ -1,15 +1,17 @@
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/model/post_gallery.dart';
+import 'package:foap/helper/imports/models.dart';
+import 'package:foap/model/fund_raising_campaign.dart';
+import 'package:foap/model/offer_model.dart';
+import 'package:foap/model/post_promotion_model.dart';
+import 'package:foap/model/shop_model/ad_model.dart';
 import '../helper/enum_linking.dart';
-import '../screens/add_on/model/reel_music_model.dart';
-import 'club_model.dart';
 import 'collaboration_model.dart';
-import 'competition_model.dart';
+import 'job_model.dart';
 
 class PostModel {
   int id = 0;
-  String title = '';
+  String? title;
 
   late UserModel user;
   int? competitionId = 0;
@@ -22,7 +24,6 @@ class PostModel {
   bool isLike = false;
   bool isSaved = false;
   bool commentsEnabled = true;
-  int type = 1;
 
   bool isReported = false;
   bool isSharePost = false;
@@ -33,16 +34,27 @@ class PostModel {
 
   ReelMusicModel? audio;
   ClubModel? postedInClub;
-  CompetitionModel? competition;
-  ClubModel? createdClub;
+  String shareLink = '';
 
   String postTime = '';
   DateTime? createDate;
   PostModel? sharedPost;
-  String shareLink = '';
-  PostContentType contentType = PostContentType.text;
+  PostPromotionModel? postPromotionData;
+
+  EventModel? event;
+  CompetitionModel? competition;
+  FundRaisingCampaign? fundRaisingCampaign;
+  JobModel? job;
+  OfferModel? offer;
+  AdModel? product;
+  ClubModel? createdClub;
+  PollModel? poll;
+  int? displayToUserType = 1;
   List<CollaborationModel> collaborations = [];
 
+  PostContentType contentType = PostContentType.text;
+
+  Map? contentRefrence;
   int? pinId;
 
   bool isPinned = false;
@@ -52,11 +64,10 @@ class PostModel {
   factory PostModel.fromJson(dynamic json) {
     PostModel model = PostModel();
     model.id = json['id'];
-    model.title = json['title'] ?? 'No title';
-    model.type = json['type'];
-
-    model.user =
-        json['user'] == null ? UserModel() : UserModel.fromJson(json['user']);
+    model.title = json['title'];
+    model.user = json['user'] == null
+        ? UserModel()
+        : UserModel.fromJson(json['user']);
     model.competitionId = json['competition_id'];
     model.totalView = json['total_view'] ?? 0;
     model.totalLike = json['total_like'] ?? 0;
@@ -69,20 +80,49 @@ class PostModel {
     model.isSharePost = json['is_share_post'] == 1;
     model.isSaved = json['isFavorite'] == 1;
     model.commentsEnabled = json['is_comment_enable'] == 1;
-    model.shareLink = json['share_link'] ?? '';
+    model.shareLink = json['share_link'];
     model.contentType = json['post_content_type'] == null
         ? PostContentType.text
         : postContentTypeValueFrom(json['post_content_type']);
+    model.contentRefrence = json['contentReferenceDetail'];
 
-    if (model.contentType == PostContentType.competitionAdded ||
-        model.contentType == PostContentType.competitionResultDeclared) {
-      model.competition =
-          CompetitionModel.fromJson(json['contentReferenceDetail']);
+    if (model.contentRefrence != null) {
+      if (model.contentType == PostContentType.event) {
+        model.event = EventModel.fromJson(json['contentReferenceDetail']);
+      }
+      if (model.contentType == PostContentType.competitionAdded ||
+          model.contentType == PostContentType.competitionResultDeclared) {
+        model.competition =
+            CompetitionModel.fromJson(json['contentReferenceDetail']);
+      }
+      if (model.contentType == PostContentType.fundRaising ||
+          model.contentType == PostContentType.donation) {
+        model.fundRaisingCampaign =
+            FundRaisingCampaign.fromJson(json['contentReferenceDetail']);
+      }
+      if (model.contentType == PostContentType.job) {
+        model.job = JobModel.fromJson(json['contentReferenceDetail']);
+      }
+      if (model.contentType == PostContentType.offer) {
+        model.offer = OfferModel.fromJson(json['contentReferenceDetail']);
+      }
+      if (model.contentType == PostContentType.classified) {
+        json['contentReferenceDetail']['user'] = json['user'];
+        model.product = AdModel.fromJson(json['contentReferenceDetail']);
+      }
+      if (model.contentType == PostContentType.club) {
+        json['contentReferenceDetail']['createdByUser'] = json['user'];
+        model.createdClub =
+            ClubModel.fromJson(json['contentReferenceDetail']);
+      }
+      if (model.contentType == PostContentType.poll) {
+        model.poll = PollModel.fromJson(json['contentReferenceDetail']);
+      }
     }
-    if (model.contentType == PostContentType.club) {
-      json['contentReferenceDetail']['createdByUser'] = json['user'];
-      model.createdClub = ClubModel.fromJson(json['contentReferenceDetail']);
-    }
+
+    model.postedInClub = json['clubDetail'] == null
+        ? null
+        : ClubModel.fromJson(json['clubDetail']);
     model.tags = [];
     if (json['hashtags'] != null && json['hashtags'].length > 0) {
       model.tags = List<String>.from(json['hashtags'].map((x) => '#$x'));
@@ -93,32 +133,38 @@ class PostModel {
           json['postGallary'].map((x) => PostGallery.fromJson(x)));
     }
 
-    if (json['mentionUsers'] != null && json['mentionUsers'].length > 0) {
-      model.mentionedUsers = List<MentionedUsers>.from(
-          json['mentionUsers'].map((x) => MentionedUsers.fromJson(x)));
-    }
     if (json['collaborate'] != null && json['collaborate'].length > 0) {
       model.collaborations = List<CollaborationModel>.from(
           json['collaborate'].map((x) => CollaborationModel.fromJson(x)));
     }
+    if (json['mentionUsers'] != null && json['mentionUsers'].length > 0) {
+      model.mentionedUsers = List<MentionedUsers>.from(
+          json['mentionUsers'].map((x) => MentionedUsers.fromJson(x)));
+    }
+
     model.createDate = json['created_at'] == null
         ? null
-        : DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
-            .toUtc();
+        : AppUtil.convertToDateTime(json['created_at']);
 
     model.postTime = model.createDate != null
         ? model.createDate!.getTimeAgo
         : justNowString.tr;
-    model.audio =
-        json['audio'] == null ? null : ReelMusicModel.fromJson(json['audio']);
-    model.postedInClub = json['clubDetail'] == null
+    model.audio = json['audio'] == null
         ? null
-        : ClubModel.fromJson(json['clubDetail']);
+        : ReelMusicModel.fromJson(json['audio']);
+
     model.sharedPost = json['originPost'] == null
         ? null
         : PostModel.fromJson(json['originPost']);
+    if (json['postPromotionData'] != null) {
+      model.postPromotionData =
+          PostPromotionModel.fromJson(json['postPromotionData']);
+    }
+
+    model.displayToUserType = json['display_whose'] ?? 1;
     model.pinId = json['isPin'] == null ? null : json['isPin']['id'];
     model.isPinned = json['isPin'] != null;
+
     return model;
   }
 
@@ -132,15 +178,10 @@ class PostModel {
     return user.id == userProfileManager.user.value!.id;
   }
 
-  bool get isReel {
-    return type == 4;
-  }
-
-
   bool get amICollaborator {
     return collaborations
         .where((e) =>
-    e.user!.isMe && e.status == CollaborationStatusType.accepted)
+            e.user!.isMe && e.status == CollaborationStatusType.accepted)
         .isNotEmpty;
   }
 
@@ -179,16 +220,43 @@ class PostModel {
     matchedCollaboration.status = CollaborationStatusType.cancelled;
   }
 
+  bool get isLocked {
+    if (user.isMe) {
+      return false;
+    }
+    if (displayToUserType == 2) {
+      return user.subscribedStatus != SubscribedStatus.subscribed &&
+          user.subscriptionPlans.isNotEmpty;
+    }
+    return false;
+  }
 
   String get postTitle {
     if (contentType == PostContentType.text ||
         contentType == PostContentType.media ||
         contentType == PostContentType.location ||
         contentType == PostContentType.poll) {
-      return title;
-    } else if (contentType == PostContentType.competitionAdded) {
+      return title ?? '';
+    } else if (contentType == PostContentType.event && event != null) {
+      return '${user.name!} ${addedNewEventString.tr} : ${event!.name}';
+    } else if (contentType == PostContentType.competitionAdded &&
+        competition != null) {
       return '${user.name!} ${addedNewCompetitionString.tr} ${competition!.title}';
-    } else if (contentType == PostContentType.club) {
+    } else if (contentType == PostContentType.fundRaising &&
+        fundRaisingCampaign != null) {
+      return '${user.name!} ${addedNewFundRaisingCampaignString.tr} ${fundRaisingCampaign!.title}';
+    } else if (contentType == PostContentType.job && job != null) {
+      return '${user.name!} ${addedNewJobOpeningString.tr} ${job!.title}';
+    } else if (contentType == PostContentType.offer && offer != null) {
+      return '${user.name!} ${addedNewOfferString.tr} ${offer!.name} , ${couponCodeString.tr} : ${offer!.code}';
+    } else if (contentType == PostContentType.classified &&
+        product != null) {
+      return '${user.name!} ${addedNewProductString.tr} ${product!.title!}';
+    } else if (contentType == PostContentType.donation &&
+        fundRaisingCampaign != null) {
+      return '${user.name!} ${donatedToString.tr} ${fundRaisingCampaign!.title}';
+    } else if (contentType == PostContentType.club &&
+        createdClub != null) {
       return '${user.name!} ${createdAClubString.tr} ${createdClub!.name!}';
     }
     return '';

@@ -8,8 +8,6 @@ import '../../screens/competitions/video_player_screen.dart';
 import '../../screens/home_feed/enlarge_image_view.dart';
 import 'package:foap/helper/list_extension.dart';
 
-import '../post/select_media.dart';
-
 class CompetitionController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
 
@@ -90,6 +88,7 @@ class CompetitionController extends GetxController {
         id: id,
         resultCallback: (result) {
           competition.value = result;
+
           update();
         });
   }
@@ -130,15 +129,17 @@ class CompetitionController extends GetxController {
   submitMedia(CompetitionModel competition) async {
     if (competition.competitionMediaType == 1) {
       Get.to(() => AddPostScreen(
-            postType: PostType.competition,
+            postType: PostCategory.competition,
             // mediaType: PostMediaType.photo,
-            competition: competition, postCompletionHandler: () {},
+            competition: competition,
+            postCompletionHandler: () {},
           ));
     } else {
       Get.to(() => AddPostScreen(
-            postType: PostType.competition,
+            postType: PostCategory.competition,
             // mediaType: PostMediaType.video,
-            competition: competition, postCompletionHandler: () {},
+            competition: competition,
+            postCompletionHandler: () {},
           ));
     }
   }

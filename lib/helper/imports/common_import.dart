@@ -7,7 +7,6 @@ export 'package:foap/helper/enum.dart';
 export 'package:foap/helper/localization_strings.dart';
 export 'package:foap/util/app_util.dart';
 export 'package:foap/helper/common_components.dart';
-export 'package:flutter_easyloading/flutter_easyloading.dart';
 export 'package:foap/components/top_navigation_bar.dart';
 export 'package:foap/components/empty_states.dart';
 export 'package:foap/components/shimmer_widgets.dart';
@@ -19,5 +18,14 @@ export 'package:foap/helper/user_profile_manager.dart';
 export 'package:foap/manager/service_locator.dart';
 export 'package:get/get.dart';
 export 'package:foap/components/app_text_field.dart';
+export 'package:foap/components/loader.dart';
 export 'package:foap/components/app_scaffold.dart';
+export 'package:foap/components/carousel_slider/carousel_slider.dart';
+export 'package:foap/components/search_bar.dart';
+export 'package:foap/components/page_indicator1.dart';
+export 'package:foap/components/static_map_widget/static_map_controller.dart';
+export 'package:foap/components/static_map_widget/static_map_widget.dart';
+export 'package:foap/components/switch1.dart';
+
+
 

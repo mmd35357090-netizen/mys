@@ -9,7 +9,7 @@ class RatingApi {
     required int refId,
     required double rating,
     required String review,
-  }) async{
+  })async  {
     var url = NetworkConstantsUtil.postRating;
 
     await ApiWrapper().postApi(url: url, param: {
@@ -26,15 +26,15 @@ class RatingApi {
       {required int page,
       required int type,
       required int refId,
-      required Function(List<RatingModel>, APIMetaData) resultCallback}) async{
+      required Function(List<RatingModel>, APIMetaData) resultCallback})async  {
     var url = NetworkConstantsUtil.ratingList;
     url = url.replaceAll('type', type.toString());
     url = url.replaceAll('reference_id', refId.toString());
     url = '$url&page=$page';
 
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
     await ApiWrapper().getApi(url: url).then((result) {
-      EasyLoading.dismiss();
+      Loader.dismiss();
       if (result?.success == true) {
         var items = result!.data['rating']['items'];
         resultCallback(

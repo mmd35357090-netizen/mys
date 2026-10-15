@@ -2,10 +2,9 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/user_card.dart';
 import '../../controllers/notification/notifications_controller.dart';
-import 'other_user_profile.dart';
 
 class FollowRequestList extends StatefulWidget {
-  const FollowRequestList({Key? key}) : super(key: key);
+  const FollowRequestList({super.key});
 
   @override
   FollowRequestListState createState() => FollowRequestListState();
@@ -13,14 +12,14 @@ class FollowRequestList extends StatefulWidget {
 
 class FollowRequestListState extends State<FollowRequestList> {
   final NotificationController _notificationController =
-      NotificationController();
+      Get.find();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     super.initState();
-    _notificationController.refreshFollowRequests(() {});
+    _notificationController.getFollowRequests(() {});
   }
 
   @override

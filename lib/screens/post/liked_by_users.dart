@@ -8,7 +8,7 @@ import '../profile/other_user_profile.dart';
 class LikedByUsers extends StatefulWidget {
   final int postId;
 
-  const LikedByUsers({Key? key, required this.postId}) : super(key: key);
+  const LikedByUsers({super.key, required this.postId}) ;
 
   @override
   LikedByUsersState createState() => LikedByUsersState();
@@ -42,7 +42,7 @@ class LikedByUsersState extends State<LikedByUsers> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
@@ -84,6 +84,7 @@ class LikedByUsersState extends State<LikedByUsers> {
                                               Get.to(() => OtherUserProfile(
                                                         userId:
                                                             usersList[index].id,
+                                                        user: usersList[index],
                                                       ))!
                                                   .then(
                                                       (value) => {loadData()});

@@ -1,75 +1,79 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-
-import 'package:auto_orientation/auto_orientation.dart';
-import 'package:camera/camera.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:overlay_support/overlay_support.dart';
-
 import 'package:foap/api_handler/apis/auth_api.dart';
 
-import 'package:foap/controllers/auth/login_controller.dart';
-import 'package:foap/controllers/chat_and_call/agora_call_controller.dart';
-import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
-import 'package:foap/controllers/chat_and_call/chat_history_controller.dart';
-import 'package:foap/controllers/chat_and_call/chat_room_detail_controller.dart';
-import 'package:foap/controllers/chat_and_call/select_user_group_chat_controller.dart';
-import 'package:foap/controllers/chat_and_call/voip_controller.dart';
-import 'package:foap/controllers/clubs/clubs_controller.dart';
-import 'package:foap/controllers/home/home_controller.dart';
-import 'package:foap/controllers/live/agora_live_controller.dart';
-import 'package:foap/controllers/live/live_history_controller.dart';
-import 'package:foap/controllers/live/live_users_controller.dart';
-import 'package:foap/controllers/misc/faq_controller.dart';
-import 'package:foap/controllers/misc/gift_controller.dart';
-import 'package:foap/controllers/misc/map_screen_controller.dart';
-import 'package:foap/controllers/misc/misc_controller.dart';
-import 'package:foap/controllers/misc/request_verification_controller.dart';
-import 'package:foap/controllers/misc/subscription_packages_controller.dart';
-import 'package:foap/controllers/misc/users_controller.dart';
-import 'package:foap/controllers/notification/notifications_controller.dart';
-import 'package:foap/controllers/podcast/podcast_streaming_controller.dart';
-import 'package:foap/controllers/post/add_post_controller.dart';
-import 'package:foap/controllers/post/post_controller.dart';
-import 'package:foap/controllers/profile/profile_controller.dart';
+// import 'package:foap/components/auto_orientation/auto_orientation.dart';
+import 'package:foap/controllers/fund_raising/fund_raising_controller.dart';
+import 'package:foap/controllers/job/job_controller.dart';
+import 'package:foap/controllers/shop/shop_controller.dart';
 import 'package:foap/controllers/story/highlights_controller.dart';
-import 'package:foap/controllers/story/story_controller.dart';
-import 'package:foap/controllers/tv/live_tv_streaming_controller.dart';
-
 import 'package:foap/helper/device_info.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/helper/imports/reel_imports.dart';
-import 'package:foap/helper/languages.dart';
-
-import 'package:foap/manager/db_manager.dart';
-import 'package:foap/manager/location_manager.dart';
-import 'package:foap/manager/notification_manager.dart';
-import 'package:foap/manager/player_manager.dart';
-import 'package:foap/manager/socket_manager.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
+import 'package:foap/screens/add_on/controller/event/checkout_controller.dart';
+import 'package:foap/screens/add_on/controller/event/create_event/add_event_controller.dart';
+import 'package:foap/screens/add_on/controller/event/create_event/my_event_detail_controller.dart';
+import 'package:foap/screens/add_on/controller/event/create_event/my_events_controller.dart';
+import 'package:foap/screens/add_on/controller/event/event_controller.dart';
+import 'package:foap/controllers/live/live_users_controller.dart';
+import 'package:foap/screens/content_creator_view.dart';
 import 'package:foap/screens/dashboard/loading.dart';
-import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/screens/login_sign_up/ask_to_follow.dart';
-import 'package:foap/screens/post/content_creator_view.dart';
+import 'package:foap/screens/popups/ask_location_permission.dart';
 import 'package:foap/screens/settings_menu/help_support_contorller.dart';
-import 'package:foap/screens/settings_menu/mercadopago_payment_controller.dart';
+import 'package:giphy_get/l10n.dart';
+import 'components/smart_text_field.dart';
+import 'controllers/notification/notifications_controller.dart';
+import 'controllers/clubs/clubs_controller.dart';
+import 'controllers/coupons/near_by_offers.dart';
+import 'controllers/misc/faq_controller.dart';
+import 'package:foap/screens/add_on/controller/reel/create_reel_controller.dart';
+import 'package:foap/screens/add_on/controller/reel/reels_controller.dart';
+import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
-
 import 'package:foap/util/constant_util.dart';
 import 'package:foap/util/shared_prefs.dart';
+import 'package:camera/camera.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:overlay_support/overlay_support.dart';
 
-import 'components/giphy/src/l10n/l10n.dart';
 import 'components/post_card_controller.dart';
-import 'components/reply_chat_cells/post_gift_controller.dart';
-import 'components/smart_text_field.dart';
-
+import 'controllers/misc/gift_controller.dart';
+import 'controllers/misc/misc_controller.dart';
+import 'controllers/misc/users_controller.dart';
+import 'controllers/post/add_post_controller.dart';
+import 'controllers/chat_and_call/agora_call_controller.dart';
+import 'controllers/live/agora_live_controller.dart';
+import 'controllers/chat_and_call/chat_detail_controller.dart';
+import 'controllers/chat_and_call/chat_history_controller.dart';
+import 'controllers/chat_and_call/chat_room_detail_controller.dart';
+import 'controllers/chat_and_call/select_user_group_chat_controller.dart';
+import 'controllers/home/home_controller.dart';
+import 'controllers/live/live_history_controller.dart';
+import 'controllers/post/promotion_controller.dart';
+import 'controllers/post/saved_post_controller.dart';
+import 'controllers/profile/other_user_profile_controller.dart';
+import 'controllers/story/story_controller.dart';
+import 'controllers/subscription/subscription_controller.dart';
+import 'controllers/tv/live_tv_streaming_controller.dart';
+import 'controllers/auth/login_controller.dart';
+import 'controllers/misc/map_screen_controller.dart';
+import 'controllers/podcast/podcast_streaming_controller.dart';
+import 'controllers/post/post_controller.dart';
+import 'controllers/profile/profile_controller.dart';
+import 'controllers/misc/request_verification_controller.dart';
+import 'controllers/misc/subscription_packages_controller.dart';
+import 'helper/languages.dart';
+import 'manager/db_manager_realm.dart';
+import 'manager/deep_link_manager.dart';
+import 'manager/location_manager.dart';
+import 'manager/notification_manager.dart';
+import 'manager/player_manager.dart';
+import 'manager/socket_manager.dart';
 import 'firebase_options.dart';
 
 class MyHttpOverrides extends HttpOverrides {
@@ -82,104 +86,47 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 late List<CameraDescription> cameras;
-
 bool isLaunchedFromCallNotification = false;
 bool isAnyPageInStack = false;
+bool isPermissionsAsked = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-   HttpOverrides.global = MyHttpOverrides();
-
-  // ----------------------------------------------------------
-  // Camera
-  // ----------------------------------------------------------
-
-  
-cameras = <CameraDescription>[];
-
-try {
-  cameras = await availableCameras().timeout(
-    const Duration(seconds: 5),
-  );
-  debugPrint('Available cameras: ${cameras.length}');
-} on TimeoutException {
-  debugPrint('Camera discovery timed out. Continuing startup.');
-} catch (e, stackTrace) {
-  debugPrint('Camera discovery failed: $e');
-  debugPrint('$stackTrace');
-}
-
-
-  // ----------------------------------------------------------
-  // Firebase
-  // ----------------------------------------------------------
+  cameras = await availableCameras();
+  HttpOverrides.global = MyHttpOverrides();
 
   await Firebase.initializeApp(
     name: AppConfigConstants.appName,
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   FirebaseMessaging.onBackgroundMessage(
-    _firebaseMessagingBackgroundHandler,
-  );
-
-  // ----------------------------------------------------------
-  // Device information
-  // ----------------------------------------------------------
+      _firebaseMessagingBackgroundHandler);
 
   DeviceInfoManager.collectDeviceInfo();
-// ----------------------------------------------------------
-// VoIP token
-// ----------------------------------------------------------
 
-try {
-  final token =
-      await FlutterCallkitIncoming.getDevicePushTokenVoIP();
-
-  if (token != null && token.isNotEmpty) {
+  String? token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+  if (token != null) {
     SharedPrefs().setVoipToken(token);
   }
-} catch (e) {
-  debugPrint('VoIP token error: $e');
-}
-  // ----------------------------------------------------------
-  // Orientation
-  // ----------------------------------------------------------
 
-  AutoOrientation.portraitAutoMode();
+  isPermissionsAsked = await SharedPrefs().getTutorialSeen();
 
-  // ----------------------------------------------------------
-  // Theme
-  // ----------------------------------------------------------
+  DeepLinkManager.init();
 
-  try {
-    isDarkMode = await SharedPrefs().isDarkMode();
-
-    Get.changeThemeMode(
-      isDarkMode ? ThemeMode.dark : ThemeMode.light,
-    );
-  } catch (e) {
-    debugPrint('Theme initialization failed: $e');
-  }
-
-  // ----------------------------------------------------------
-  // Controllers
-  // ----------------------------------------------------------
-
+  isDarkMode = await SharedPrefs().isDarkMode();
+  Get.changeThemeMode(isDarkMode ? ThemeMode.dark : ThemeMode.light);
   Get.put(PlayerManager());
   Get.put(UsersController());
+  Get.put(EventsController());
+  Get.put(ClubsController());
   Get.put(GiftController());
   Get.put(MiscController());
   Get.put(DashboardController());
   Get.put(UserProfileManager());
-  Get.put(ClubsController());
-
+  Get.put(PlayerManager());
   Get.put(SettingsController());
   Get.put(SubscriptionPackageController());
   Get.put(AgoraCallController());
-  Get.put(VoipController());
-
   Get.put(AgoraLiveController());
   Get.put(LoginController());
   Get.put(HomeController());
@@ -188,6 +135,7 @@ try {
   Get.put(AddPostController());
   Get.put(ChatDetailController());
   Get.put(ProfileController());
+  Get.put(OtherUserProfileController());
   Get.put(ChatHistoryController());
   Get.put(ChatRoomDetailController());
   Get.put(TvStreamingController());
@@ -196,134 +144,130 @@ try {
   Get.put(LiveHistoryController());
   Get.put(RequestVerificationController());
   Get.put(FAQController());
+  Get.put(DatingController());
   Get.put(LiveUserController());
-  Get.put(PostGiftController());
-  Get.put(MercadappagoPaymentController());
   Get.put(HelpSupportController());
   Get.put(PodcastStreamingController());
-  Get.put(SelectUserForGroupChatController());
-  Get.put(AppStoryController());
-  Get.put(SmartTextFieldController());
   Get.put(ReelsController());
   Get.put(CreateReelController());
+  Get.put(SelectUserForGroupChatController());
+  Get.put(FundRaisingController());
+  Get.put(NearByOffersController());
+  Get.put(PromotionController());
+  Get.put(AppStoryController());
+  Get.put(SavedPostController());
+  Get.put(ShopController());
+  Get.put(JobController());
+  Get.put(SmartTextFieldController());
+  Get.put(CheckoutController());
   Get.put(CameraControllerService());
   Get.put(HighlightsController());
   Get.put(NotificationController());
-
-  // ----------------------------------------------------------
-  // Service locator
-  // ----------------------------------------------------------
+  Get.put(UserSubscriptionController());
+  Get.put(MyEventsController());
+  Get.put(AddEventController());
+  Get.put(MyEventDetailController());
 
   setupServiceLocator();
 
-  // ----------------------------------------------------------
-  // Notification manager
-  // ----------------------------------------------------------
+  final UserProfileManager userProfileManager = Get.find();
+  await userProfileManager.refreshProfile();
+
+  final SettingsController settingsController = Get.find();
+  await settingsController.getSettings();
+
+  await getIt<RealmDBManager>().openDatabase();
 
   NotificationManager().initialize();
+  if (userProfileManager.isLogin == true) {
+    AuthApi.updateFcmToken();
+    final NotificationController notificationController = Get.find();
+    notificationController.getNotificationInfo();
+  }
 
-  // ----------------------------------------------------------
-  // IMPORTANT:
-  // Do NOT refresh profile here.
-  // Do NOT load settings here.
-  // Do NOT create database here.
-  //
-  // LoadingScreen will handle those operations.
-  // ----------------------------------------------------------
+  dynamic data = await SharedPrefs().getCallNotificationData();
 
-  runApp(
-    Phoenix(
-      child: const SocialifiedApp(
-        startScreen: LoadingScreen(),
-      ),
-    ),
-  );
+  if (data != null && userProfileManager.user.value != null) {
+    isLaunchedFromCallNotification = true;
+    getIt<SocketManager>().connect();
+    performActionOnCallNotificationBanner(data, true, true);
+  } else {
+    runApp(Phoenix(
+        child: SocialifiedApp(
+      startScreen: AppConfigConstants.askForFollow
+          ? AskToFollow()
+          : isPermissionsAsked == false
+              ? const AskLocationPermission()
+              : const LoadingScreen(),
+    )));
+  }
 }
 
 class SocialifiedApp extends StatefulWidget {
   final Widget startScreen;
 
-  const SocialifiedApp({
-    Key? key,
-    required this.startScreen,
-  }) : super(key: key);
+  const SocialifiedApp({super.key, required this.startScreen});
 
   @override
   State<SocialifiedApp> createState() => _SocialifiedAppState();
 }
 
-
 class _SocialifiedAppState extends State<SocialifiedApp> {
-  late final Future<Locale> _localeFuture;
-
   @override
   void initState() {
     super.initState();
-
-    _localeFuture = _loadLocaleSafely();
-
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
   }
 
-  Future<Locale> _loadLocaleSafely() async {
-    try {
-      return await SharedPrefs().getLocale().timeout(
-        const Duration(seconds: 3),
-      );
-    } catch (e) {
-      debugPrint('Locale loading failed: $e');
-      return const Locale('en', 'US');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return OverlaySupport.global(
-      child: FutureBuilder<Locale>(
-        future: _localeFuture,
-        builder: (context, snapshot) {
-          final locale = snapshot.data ?? const Locale('en', 'US');
-
-          return GetMaterialApp(
-            translations: Languages(),
-            locale: locale,
-            fallbackLocale: const Locale('en', 'US'),
-            debugShowCheckedModeBanner: false,
-            home: widget.startScreen,
-            builder: EasyLoading.init(),
-            themeMode: ThemeMode.dark,
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GiphyGetUILocalizations.delegate,
-            ],
-            supportedLocales: const <Locale>[
-              Locale('en', 'US'),
-              Locale('hi', 'US'),
-              Locale('en', 'SA'),
-              Locale('ar', 'SA'),
-              Locale('tr', 'SA'),
-              Locale('ru', 'SA'),
-              Locale('es', 'SA'),
-              Locale('fr', 'SA'),
-              Locale('pt', 'BR'),
-            ],
-          );
-        },
-      ),
-    );
+        child: FutureBuilder<Locale>(
+            future: SharedPrefs().getLocale(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return GetMaterialApp(
+                  translations: Languages(),
+                  builder: EasyLoading.init(),
+                  locale: snapshot.data!,
+                  fallbackLocale: const Locale('en', 'US'),
+                  debugShowCheckedModeBanner: false,
+                  home: widget.startScreen,
+                  themeMode: ThemeMode.dark,
+                  localizationsDelegates: [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    // Add this line
+                    GiphyGetUILocalizations.delegate,
+                  ],
+                  supportedLocales: const <Locale>[
+                    Locale('hi', 'US'),
+                    Locale('en', 'SA'),
+                    Locale('ar', 'SA'),
+                    Locale('tr', 'SA'),
+                    Locale('ru', 'SA'),
+                    Locale('es', 'SA'),
+                    Locale('fr', 'SA'),
+                    Locale('pt', 'BR')
+                  ],
+                );
+              } else {
+                return Container();
+              }
+            }));
   }
 }
-
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(
     RemoteMessage message) async {
-  debugPrint('message.data ${message.data}');
-
-  NotificationManager().parseNotificationMessage(
-    message.data,
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  NotificationManager().parseForegroundNotificationMessage(message.data);
 }

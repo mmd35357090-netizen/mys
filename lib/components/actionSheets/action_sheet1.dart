@@ -7,8 +7,7 @@ class ActionSheet1 extends StatelessWidget {
   final Function(GenericItem) itemCallBack;
 
   const ActionSheet1(
-      {Key? key, required this.items, required this.itemCallBack})
-      : super(key: key);
+      {super.key, required this.items, required this.itemCallBack});
 
   @override
   Widget build(BuildContext context) {

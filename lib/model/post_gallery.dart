@@ -9,16 +9,18 @@ class PostGallery {
   int currentIndexOfMediaToShow = 0;
   double height;
   double width;
+  int? audioDuration;
 
   PostGallery(
       {required this.id,
-        required this.fileName,
-        required this.filePath,
-        required this.postId,
-        required this.mediaType,
-        required this.height,
-        required this.width,
-        this.videoThumbnail});
+      required this.fileName,
+      required this.filePath,
+      required this.postId,
+      required this.mediaType,
+      required this.height,
+      required this.width,
+      this.videoThumbnail,
+      this.audioDuration});
 
   factory PostGallery.fromJson(dynamic json) {
     PostGallery galleryPost = PostGallery(
@@ -27,14 +29,13 @@ class PostGallery {
         filePath: json['filenameUrl'] ?? "",
         postId: json['post_id'],
         mediaType: json['media_type'],
+        audioDuration: json['audio_time'],
         height: json['height'] == null
             ? 0.0
             : double.parse(json['height'].toString()),
         width: json['width'] == null
             ? 0.0
             : double.parse(json['width'].toString()),
-
-        // type: json['type'],
         videoThumbnail: json['videoThumbUrl']);
 
     return galleryPost;

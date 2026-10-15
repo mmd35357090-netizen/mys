@@ -1,7 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/screens/add_on/ui/dating/dating_card.dart';
 
 class HomeScreenShimmer extends StatelessWidget {
-  const HomeScreenShimmer({Key? key}) : super(key: key);
+  const HomeScreenShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class HomeScreenShimmer extends StatelessWidget {
 }
 
 class ClubsCategoriesScreenShimmer extends StatelessWidget {
-  const ClubsCategoriesScreenShimmer({Key? key}) : super(key: key);
+  const ClubsCategoriesScreenShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +66,7 @@ class ClubsCategoriesScreenShimmer extends StatelessWidget {
 }
 
 class ClubsScreenShimmer extends StatelessWidget {
-  const ClubsScreenShimmer({Key? key}) : super(key: key);
+  const ClubsScreenShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +128,7 @@ class ClubsScreenShimmer extends StatelessWidget {
 }
 
 class EventCategoriesScreenShimmer extends StatelessWidget {
-  const EventCategoriesScreenShimmer({Key? key}) : super(key: key);
+  const EventCategoriesScreenShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +162,7 @@ class EventCategoriesScreenShimmer extends StatelessWidget {
 }
 
 class EventsScreenShimmer extends StatelessWidget {
-  const EventsScreenShimmer({Key? key}) : super(key: key);
+  const EventsScreenShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +234,7 @@ class EventsScreenShimmer extends StatelessWidget {
 }
 
 class PostCardShimmer extends StatelessWidget {
-  const PostCardShimmer({Key? key}) : super(key: key);
+  const PostCardShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -258,14 +259,10 @@ class PostCardShimmer extends StatelessWidget {
       const SizedBox(
         height: 10,
       ),
-      SizedBox(
+      const SizedBox(
         height: 280,
         width: double.infinity,
-        child: Image.asset(
-          'assets/tutorial1.jpg',
-          fit: BoxFit.cover,
-        ).addShimmer(),
-      ).round(20),
+      ).round(20).addShimmer(),
       Row(mainAxisAlignment: MainAxisAlignment.start, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           ThemeIconWidget(
@@ -306,7 +303,7 @@ class PostCardShimmer extends StatelessWidget {
 }
 
 class StoryAndHighlightsShimmer extends StatelessWidget {
-  const StoryAndHighlightsShimmer({Key? key}) : super(key: key);
+  const StoryAndHighlightsShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +320,11 @@ class StoryAndHighlightsShimmer extends StatelessWidget {
                   height: 60,
                   width: 60,
                   color: AppColorConstants.backgroundColor,
-                ).circular,
+                ).round(10),
+                const SizedBox(
+                  height: 5,
+                ),
+                const BodyLargeText('Adam')
               ],
             ).addShimmer();
           },
@@ -335,16 +336,12 @@ class StoryAndHighlightsShimmer extends StatelessWidget {
 }
 
 class ShimmerUsers extends StatelessWidget {
-  const ShimmerUsers({Key? key}) : super(key: key);
+  const ShimmerUsers({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: EdgeInsets.only(
-          left: DesignConstants.horizontalPadding,
-          right: DesignConstants.horizontalPadding,
-          top: 20,
-          bottom: 100),
+      padding: const EdgeInsets.only(top: 20, bottom: 100),
       itemCount: 20,
       itemBuilder: (ctx, index) {
         return Row(
@@ -396,7 +393,7 @@ class ShimmerUsers extends StatelessWidget {
 }
 
 class ShimmerHashtag extends StatelessWidget {
-  const ShimmerHashtag({Key? key}) : super(key: key);
+  const ShimmerHashtag({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -432,11 +429,11 @@ class ShimmerHashtag extends StatelessWidget {
 }
 
 class PostBoxShimmer extends StatelessWidget {
-  const PostBoxShimmer({Key? key}) : super(key: key);
+  const PostBoxShimmer({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       itemCount: 50,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -452,12 +449,15 @@ class PostBoxShimmer extends StatelessWidget {
           color: AppColorConstants.red,
         ).round(10).addShimmer(),
       ),
+      separatorBuilder: (ctx, index) => const SizedBox(
+        height: 20,
+      ),
     ).hp(DesignConstants.horizontalPadding);
   }
 }
 
 class StoriesShimmerWidget extends StatelessWidget {
-  const StoriesShimmerWidget({Key? key}) : super(key: key);
+  const StoriesShimmerWidget({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -480,7 +480,7 @@ class StoriesShimmerWidget extends StatelessWidget {
 }
 
 class EventBookingShimmerWidget extends StatefulWidget {
-  const EventBookingShimmerWidget({Key? key}) : super(key: key);
+  const EventBookingShimmerWidget({super.key});
 
   @override
   State<EventBookingShimmerWidget> createState() =>
@@ -513,7 +513,6 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
                   ).round(10)
                 ],
               ).p16,
-              divider().vP8,
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -584,8 +583,99 @@ class _EventBookingShimmerWidgetState extends State<EventBookingShimmerWidget> {
   }
 }
 
+class CardsStackShimmerWidget extends StatefulWidget {
+  const CardsStackShimmerWidget({super.key});
+
+  @override
+  State<CardsStackShimmerWidget> createState() =>
+      _CardsStackShimmerWidgetState();
+}
+
+class _CardsStackShimmerWidgetState extends State<CardsStackShimmerWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        SizedBox(
+          height: Get.height - 270,
+          width: Get.width - 40,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/avatar_1.jpg',
+                  fit: BoxFit.cover,
+                ).round(10),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  height: 80,
+                  width: Get.width - 40,
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    shadows: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Heading3Text(
+                        'David',
+                        color: AppColorConstants.mainTextColor,
+                      ),
+                      Heading5Text(
+                        '101 Km',
+                        color: AppColorConstants.subHeadingTextColor,
+                      ),
+                    ],
+                  ).setPadding(left: 20),
+                ),
+              ),
+            ],
+          ),
+        ).round(10),
+        Positioned(
+          bottom: 10,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ActionButtonWidget(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(width: 20),
+              ActionButtonWidget(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.favorite,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).addShimmer();
+  }
+}
+
 class ShimmerMatchedList extends StatelessWidget {
-  const ShimmerMatchedList({Key? key}) : super(key: key);
+  const ShimmerMatchedList({super.key}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -602,14 +692,14 @@ class ShimmerMatchedList extends StatelessWidget {
           return Container(
                   color: AppColorConstants.cardColor,
                   height: 210,
-                  width: (MediaQuery.of(context).size.width - 75) / 2)
+                  width: (Get.width - 75) / 2)
               .round(10);
         }).addShimmer();
   }
 }
 
 class ShimmerLikeList extends StatelessWidget {
-  const ShimmerLikeList({Key? key}) : super(key: key);
+  const ShimmerLikeList({super.key}) ;
 
   @override
   Widget build(BuildContext context) {

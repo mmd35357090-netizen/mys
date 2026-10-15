@@ -1,11 +1,9 @@
-
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/club_imports.dart';
-import '../../components/search_bar.dart';
 import '../reuseable_widgets/club_listing.dart';
 
 class SearchClubsListing extends StatefulWidget {
-  const SearchClubsListing({Key? key}) : super(key: key);
+  const SearchClubsListing({super.key}) ;
 
   @override
   SearchClubsListingState createState() => SearchClubsListingState();
@@ -26,7 +24,7 @@ class SearchClubsListingState extends State<SearchClubsListing> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -35,7 +33,7 @@ class SearchClubsListingState extends State<SearchClubsListing> {
           ),
           Row(
             children: [
-              const ThemeIconWidget(
+              ThemeIconWidget(
                 ThemeIcon.backArrow,
                 size: 25,
               ).ripple(() {
@@ -59,7 +57,7 @@ class SearchClubsListingState extends State<SearchClubsListing> {
               ),
             ],
           ).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, top: 25),
-          const SizedBox(height: 8,),
+          divider().tP8,
           Expanded(
             child: ClubListing(),
           ),

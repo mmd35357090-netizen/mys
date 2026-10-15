@@ -2,13 +2,12 @@ import 'package:foap/helper/imports/common_import.dart';
 import '../../api_handler/apis/users_api.dart';
 import 'package:foap/helper/list_extension.dart';
 
+import '../../model/data_wrapper.dart';
 import '../../model/search_model.dart';
 
 class UsersController extends GetxController {
   RxList<UserModel> searchedUsers = <UserModel>[].obs;
-  int accountsPage = 1;
-  bool canLoadMoreAccounts = true;
-  RxBool accountsIsLoading = false.obs;
+  DataWrapper dataWrapper = DataWrapper();
   String searchText = '';
 
   UserSearchModel searchModel = UserSearchModel();
@@ -17,6 +16,7 @@ class UsersController extends GetxController {
     searchModel = UserSearchModel();
     clearPagingInfo();
     searchText = '';
+    dataWrapper = DataWrapper();
   }
 
   setIsOnlineFilter() {
@@ -46,25 +46,34 @@ class UsersController extends GetxController {
 
   clearPagingInfo() {
     searchedUsers.clear();
-    accountsPage = 1;
-    canLoadMoreAccounts = true;
-    accountsIsLoading.value = false;
+    dataWrapper = DataWrapper();
+  }
+
+  loadSuggestedUsers() {
+    UsersApi.getSuggestedUsers(
+        page: 1,
+        resultCallback: (result) {
+          searchedUsers.addAll(result);
+          searchedUsers.unique((e) => e.id);
+
+          // update();
+        });
   }
 
   loadUsers(VoidCallback callback) {
-    if (canLoadMoreAccounts) {
-      accountsIsLoading.value = true;
+    if (dataWrapper.haveMoreData.value) {
+      if (dataWrapper.page == 1) {
+        dataWrapper.isLoading.value = true;
+      }
 
       UsersApi.searchUsers(
           searchModel: searchModel,
-          page: accountsPage,
+          page: dataWrapper.page,
           resultCallback: (result, metadata) {
-            accountsIsLoading.value = false;
             searchedUsers.addAll(result);
             searchedUsers.unique((e) => e.id);
 
-            canLoadMoreAccounts = result.length >= metadata.perPage;
-            accountsPage += 1;
+            dataWrapper.processCompletedWithData(metadata);
             callback();
 
             update();
@@ -75,16 +84,14 @@ class UsersController extends GetxController {
   }
 
   followUser(UserModel user) {
-    user.followingStatus =
-    user.isPrivate ? FollowingStatus.requested : FollowingStatus.following;
+    user.followingStatus = user.isPrivateProfile
+        ? FollowingStatus.requested
+        : FollowingStatus.following;
     if (searchedUsers.where((e) => e.id == user.id).isNotEmpty) {
-      searchedUsers[
-      searchedUsers.indexWhere((element) => element.id == user.id)] = user;
+      searchedUsers[searchedUsers
+          .indexWhere((element) => element.id == user.id)] = user;
     }
-    // if (suggestedUsers.where((e) => e.id == user.id).isNotEmpty) {
-    //   suggestedUsers[
-    //   suggestedUsers.indexWhere((element) => element.id == user.id)] = user;
-    // }
+
     update();
 
     UsersApi.followUnfollowUser(isFollowing: true, user: user);
@@ -93,13 +100,10 @@ class UsersController extends GetxController {
   unFollowUser(UserModel user) {
     user.followingStatus = FollowingStatus.notFollowing;
     if (searchedUsers.where((e) => e.id == user.id).isNotEmpty) {
-      searchedUsers[
-      searchedUsers.indexWhere((element) => element.id == user.id)] = user;
+      searchedUsers[searchedUsers
+          .indexWhere((element) => element.id == user.id)] = user;
     }
-    // if (suggestedUsers.where((e) => e.id == user.id).isNotEmpty) {
-    //   suggestedUsers[
-    //   suggestedUsers.indexWhere((element) => element.id == user.id)] = user;
-    // }
+
     update();
     UsersApi.followUnfollowUser(isFollowing: false, user: user);
   }

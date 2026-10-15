@@ -55,17 +55,17 @@ class _StoryViewerState extends State<StoryViewer> {
                   for (StoryMediaModel media in widget.story.media.reversed)
                     media.isVideoPost() == true
                         ? StoryItem(
-                            url: media.video!,
-                            type: StoryItemType.video,
-                            viewers: [],
-                            duration: media.videoDuration != null
-                                ? media.videoDuration! ~/ 1000
-                                : null)
+                        url: media.video!,
+                        type: StoryItemType.video,
+                        viewers: [],
+                        duration: media.videoDuration != null
+                            ? media.videoDuration! ~/ 1000
+                            : null)
                         : StoryItem(
-                            url: media.image!,
-                            type: StoryItemType.image,
-                            viewers: [],
-                          )
+                      url: media.image!,
+                      type: StoryItemType.image,
+                      viewers: [],
+                    )
                 ],
                 onPageChanged: (s) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -78,22 +78,22 @@ class _StoryViewerState extends State<StoryViewer> {
               ),
               Positioned(top: 70, left: 20, right: 0, child: userProfileView()),
               Obx(() => (storyController.currentStoryMediaModel.value?.userId ==
-                      _userProfileManager.user.value!.id)
+                  _userProfileManager.user.value!.id)
                   ? Positioned(
-                      bottom: 20, left: 0, right: 0, child: storyViewCounter())
+                  bottom: 20, left: 0, right: 0, child: storyViewCounter())
                   : Container()),
               Obx(() => (storyController.showEmoticons.value == true)
                   ? Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      top: 0,
-                      child: StoryReactionOptions(
-                        reactionCallbackHandler: (emoji) {
-                          storyController.sendReactionMessage(
-                              emoji, widget.story);
-                        },
-                      ))
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  child: StoryReactionOptions(
+                    reactionCallbackHandler: (emoji) {
+                      storyController.sendReactionMessage(
+                          emoji, widget.story);
+                    },
+                  ))
                   : Container()),
             ],
           ),
@@ -106,59 +106,59 @@ class _StoryViewerState extends State<StoryViewer> {
   Widget replyWidget() {
     return FooterLayout(
       footer: storyController.currentStoryMediaModel.value?.userId ==
-              _userProfileManager.user.value!.id
+          _userProfileManager.user.value!.id
           ? null
           : KeyboardAttachable(
-              child: Container(
-                height: 80,
-                color: AppColorConstants.cardColor.darken(),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AppTextField(
-                        hintText: replyString.tr,
-                        controller: replyController,
-                        maxLength: 80,
-                        onChanged: (value) {
-                          storyController.showHideEmoticons(value.isEmpty);
-                          storyController.replyTextChanged(value);
-                        },
-                        focusStatusChangeHandler: (status) {
-                          storyController.showHideEmoticons(status);
-                          if (status == true) {
-                            controller.pause();
-                          } else {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            controller.resume();
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Obx(() => storyController.replyText.isNotEmpty
-                        ? BodyLargeText(sendString.tr).ripple(() {
-                            storyController.sendTextMessage(
-                                replyController.text, widget.story);
-                          })
-                        : ThemeIconWidget(ThemeIcon.share).ripple(() {
-                            controller.pause();
-
-                            showModalBottomSheet(
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (context) => FractionallySizedBox(
-                                    heightFactor: 0.5,
-                                    child: shareStory())).then((value) {
-                              controller.resume();
-                            });
-                          })),
-                  ],
-                ).p16,
+        child: Container(
+          height: 80,
+          color: AppColorConstants.cardColor.darken(),
+          child: Row(
+            children: [
+              Expanded(
+                child: AppTextField(
+                  hintText: replyString.tr,
+                  controller: replyController,
+                  maxLength: 80,
+                  onChanged: (value) {
+                    storyController.showHideEmoticons(value.isEmpty);
+                    storyController.replyTextChanged(value);
+                  },
+                  focusStatusChangeHandler: (status) {
+                    storyController.showHideEmoticons(status);
+                    if (status == true) {
+                      controller.pause();
+                    } else {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      controller.resume();
+                    }
+                  },
+                ),
               ),
-            ),
+              const SizedBox(
+                width: 10,
+              ),
+              Obx(() => storyController.replyText.isNotEmpty
+                  ? BodyLargeText(sendString.tr).ripple(() {
+                storyController.sendTextMessage(
+                    replyController.text, widget.story);
+              })
+                  : ThemeIconWidget(ThemeIcon.share).ripple(() {
+                controller.pause();
+
+                showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => FractionallySizedBox(
+                        heightFactor: 0.5,
+                        child: shareStory())).then((value) {
+                  controller.resume();
+                });
+              })),
+            ],
+          ).p16,
+        ),
+      ),
       child: storyWidget(),
     );
   }
@@ -183,10 +183,10 @@ class _StoryViewerState extends State<StoryViewer> {
                     weight: TextWeight.medium, color: Colors.white),
                 Obx(() => storyController.currentStoryMediaModel.value != null
                     ? BodyMediumText(
-                        storyController.currentStoryMediaModel.value!.createdAt,
-                        color: Colors.white
-                        // color: AppColorConstants.subHeadingTextColor,
-                        )
+                    storyController.currentStoryMediaModel.value!.createdAt,
+                    color: Colors.white
+                  // color: AppColorConstants.subHeadingTextColor,
+                )
                     : Container())
               ],
             ),
@@ -197,8 +197,8 @@ class _StoryViewerState extends State<StoryViewer> {
             Get.to(() => const MyProfile(showBack: true));
           } else {
             Get.to(() => OtherUserProfile(
-                  userId: userId,
-                ));
+              userId: userId,
+            ));
           }
         }),
         const SizedBox(
@@ -242,29 +242,29 @@ class _StoryViewerState extends State<StoryViewer> {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
-              color: AppColorConstants.cardColor,
-              child: Wrap(
-                children: [
-                  ListTile(
-                      title: Center(child: BodyLargeText(deleteStoryString.tr)),
-                      onTap: () async {
-                        Get.back();
-                        controller.resume();
+          color: AppColorConstants.cardColor,
+          child: Wrap(
+            children: [
+              ListTile(
+                  title: Center(child: BodyLargeText(deleteStoryString.tr)),
+                  onTap: () async {
+                    Get.back();
+                    controller.resume();
 
-                        storyController.deleteStory(() {
-                          widget.storyDeleted();
-                        });
-                      }),
-                  divider(),
-                  ListTile(
-                      title: Center(child: BodyLargeText(cancelString.tr)),
-                      onTap: () {
-                        controller.resume();
-                        Get.back();
-                      }),
-                ],
-              ),
-            )).then((value) {
+                    storyController.deleteStory(() {
+                      widget.storyDeleted();
+                    });
+                  }),
+              divider(),
+              ListTile(
+                  title: Center(child: BodyLargeText(cancelString.tr)),
+                  onTap: () {
+                    controller.resume();
+                    Get.back();
+                  }),
+            ],
+          ),
+        )).then((value) {
       controller.resume();
     });
   }
@@ -272,25 +272,25 @@ class _StoryViewerState extends State<StoryViewer> {
   Widget storyViewCounter() {
     return Obx(() => storyController.currentStoryMediaModel.value != null
         ? Column(
-            children: [
-              ThemeIconWidget(
-                ThemeIcon.arrowUp,
-                color: Colors.white,
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              BodyLargeText(
-                '${storyController.currentStoryMediaModel.value!.totalView}',
-                color: Colors.white,
-              ),
-            ],
-          ).ripple(() {
-            controller.pause();
-            Get.bottomSheet(StoryViewUsers()).then((value) {
-              controller.resume();
-            });
-          })
+      children: [
+        ThemeIconWidget(
+          ThemeIcon.arrowUp,
+          color: Colors.white,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        BodyLargeText(
+          '${storyController.currentStoryMediaModel.value!.totalView}',
+          color: Colors.white,
+        ),
+      ],
+    ).ripple(() {
+      controller.pause();
+      Get.bottomSheet(StoryViewUsers()).then((value) {
+        controller.resume();
+      });
+    })
         : Container());
   }
 
@@ -304,12 +304,13 @@ class _StoryViewerState extends State<StoryViewer> {
             weight: TextWeight.semiBold,
           ),
           Expanded(child: SelectFollowingUserForMessageSending(
-              // post: widget.model,
+            // post: widget.model,
               sendToUserCallback: (user) {
-            storyController.sendStoryAsMessage(user.id, widget.story);
-          })),
+                storyController.sendStoryAsMessage(user.id, widget.story);
+              })),
         ],
       ).p(DesignConstants.horizontalPadding),
     ).topRounded(40);
   }
 }
+

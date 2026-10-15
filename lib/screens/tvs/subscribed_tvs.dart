@@ -5,14 +5,14 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../controllers/tv/live_tv_streaming_controller.dart';
 
 class SubscribedTvList extends StatefulWidget {
-  const SubscribedTvList({Key? key}) : super(key: key);
+  const SubscribedTvList({super.key}) ;
 
   @override
   State<SubscribedTvList> createState() => _SubscribedTvListState();
 }
 
 class _SubscribedTvListState extends State<SubscribedTvList> {
-  final TvStreamingController _tvStreamingController = TvStreamingController();
+  final TvStreamingController _tvStreamingController = Get.find();
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -38,11 +38,12 @@ class _SubscribedTvListState extends State<SubscribedTvList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
-            backNavigationBar(title: subscribedString.tr),
+
+            backNavigationBar(title: subscribedString),
             Expanded(child: tvList()),
           ],
         ));

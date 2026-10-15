@@ -1,5 +1,5 @@
-import '../helper/user_profile_manager.dart';
-import 'package:get/get.dart';
+import 'package:foap/helper/enum_linking.dart';
+import 'package:foap/helper/imports/common_import.dart';
 
 class FeatureModel {
   String? featureKey;
@@ -75,6 +75,8 @@ class SettingModel {
   String? iosAppLink;
   String? androidAppLink;
 
+  SMSGateway smsGateway;
+
   SettingModel(
       {required this.email,
       required this.phone,
@@ -104,7 +106,6 @@ class SettingModel {
       required this.termsOfServiceUrl,
       required this.giphyApiKey,
       required this.agoraApiKey,
-// required this.googleMapApiKey,
       required this.interstitialAdUnitIdForAndroid,
       required this.interstitialAdUnitIdForiOS,
       required this.rewardInterstitlAdUnitIdForAndroid,
@@ -129,7 +130,8 @@ class SettingModel {
       required this.textColorForDarkTheme,
       required this.features,
       this.iosAppLink,
-      this.androidAppLink});
+      this.androidAppLink,
+      required this.smsGateway});
 
   factory SettingModel.fromJson(Map<String, dynamic> json) => SettingModel(
       email: json["email"],
@@ -172,7 +174,8 @@ class SettingModel {
       bannerAdUnitIdForiOS: json["banner_ad_unit_id_for_IOS"],
       fbInterstitialAdUnitIdForAndroid:
           json["fb_interstitial_ad_unit_id_for_android"],
-      fbInterstitialAdUnitIdForiOS: json["fb_interstitial_ad_unit_id_for_IOS"],
+      fbInterstitialAdUnitIdForiOS:
+          json["fb_interstitial_ad_unit_id_for_IOS"],
       fbRewardInterstitialAdUnitIdForAndroid:
           json["fb_reward_interstitial_ad_unit_id_for_android"],
       fbRewardInterstitialAdUnitIdForiOS:
@@ -182,12 +185,14 @@ class SettingModel {
       stripePublishableKey: json["stripe_publishable_key"],
       razorpayKey: json["razorpay_api_key"],
       themeColor: json["theme_color"] ?? '4169e1',
-      bgColorForLightTheme: json["theme_light_background_color"] ?? 'FFFFFF',
+      bgColorForLightTheme:
+          json["theme_light_background_color"] ?? 'FFFFFF',
       bgColorForDarkTheme: json["theme_dark_background_color"] ?? '000000',
       textColorForLightTheme: json["theme_light_text_color"] ?? '000000',
       textColorForDarkTheme: json["theme_dark_text_color"] ?? 'FFFFFF',
       font: json["theme_font"],
       chatGPTKey: json["chat_gpt_key"],
+      smsGateway: smsGatewayType(json["sms_gateway"]),
       imglyApiKey: json["imgly_key"],
       iosAppLink: json["iosAppLink"] ?? 'ios app link',
       androidAppLink: json["androidAppLink"] ?? 'android app ink',
@@ -202,8 +207,9 @@ class SettingModel {
       return false;
     }
 
-    List<FeatureModel> matchedFeatures =
-        features.where((element) => element.featureKey == featureName).toList();
+    List<FeatureModel> matchedFeatures = features
+        .where((element) => element.featureKey == featureName)
+        .toList();
 
     if (matchedFeatures.isEmpty) {
       return false;
@@ -300,17 +306,17 @@ class SettingModel {
 
   bool get enableAudioCalling {
     return getFeatureAvailabilityStatus('enable_audio_calling') &&
-        (agoraApiKey?.trim().isNotEmpty ?? false);
+        (agoraApiKey ?? '').isNotEmpty;
   }
 
   bool get enableVideoCalling {
     return getFeatureAvailabilityStatus('enable_video_calling') &&
-        (agoraApiKey?.trim().isNotEmpty ?? false);
+        (agoraApiKey ?? '').isNotEmpty;
   }
 
   bool get enableLive {
     return getFeatureAvailabilityStatus('enable_live') &&
-        (agoraApiKey?.trim().isNotEmpty ?? false);
+        (agoraApiKey ?? '').isNotEmpty;
   }
 
   bool get enableClubs {
@@ -334,7 +340,8 @@ class SettingModel {
   }
 
   bool get enableDarkLightModeSwitch {
-    return getFeatureAvailabilityStatus('enable_dark_light_mode_switching');
+    return getFeatureAvailabilityStatus(
+        'enable_dark_light_mode_switching');
   }
 
   bool get enableWatchTv {

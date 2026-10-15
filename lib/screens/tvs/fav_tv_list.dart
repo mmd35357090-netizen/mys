@@ -5,14 +5,14 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../controllers/tv/live_tv_streaming_controller.dart';
 
 class FavTvList extends StatefulWidget {
-  const FavTvList({Key? key}) : super(key: key);
+  const FavTvList({super.key}) ;
 
   @override
   State<FavTvList> createState() => _FavTvListState();
 }
 
 class _FavTvListState extends State<FavTvList> {
-  final TvStreamingController _tvStreamingController = TvStreamingController();
+  final TvStreamingController _tvStreamingController = Get.find();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -37,7 +37,7 @@ class _FavTvListState extends State<FavTvList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [

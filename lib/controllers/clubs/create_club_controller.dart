@@ -31,36 +31,35 @@ class CreateClubController extends GetxController {
   }
 
   createClub(ClubModel club, Function(int) callback) async {
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
 
     await MiscApi.uploadFile(imageFile.value!.path,
         mediaType: GalleryMediaType.photo,
         type: UploadMediaType.club, resultCallback: (filename, filepath) {
-          ClubApi.createClub(
-              categoryId: club.categoryId!,
-              isOnRequestType: privacyType.value == 3 ? 1 : 0,
-              privacyMode: privacyType.value == 2 ? 2 : 1,
-              enableChatRoom: club.enableChat!,
-              name: club.name!,
-              image: filename,
-              description: club.desc!,
-              resultCallback: (clubId) {
-                EasyLoading.dismiss();
-                _clubsController.refreshClubs();
-                callback(clubId);
-                clear();
-              });
-        });
+      ClubApi.createClub(
+          categoryId: club.categoryId!,
+          isOnRequestType: club.privacyType == 3 ? 1 : 0,
+          privacyMode: club.privacyType == 2 ? 2 : 1,
+          enableChatRoom: club.enableChat!,
+          name: club.name!,
+          image: filename,
+          description: club.desc!,
+          resultCallback: (clubId) {
+            Loader.dismiss();
+            _clubsController.refreshClubs();
+            callback(clubId);
+            clear();
+          });
+    });
   }
 
-  void editClubImageAction(XFile pickedFile, BuildContext context) async {
+  void editClubImageAction(XFile pickedFile) async {
     imageFile.value = File(pickedFile.path);
     imageFile.refresh();
   }
 
-  updateClubImage(ClubModel club, BuildContext context,
-      Function(ClubModel) callback) async {
-    EasyLoading.show(status: loadingString.tr);
+  updateClubImage(ClubModel club, Function(ClubModel) callback) async {
+    Loader.show(status: loadingString.tr);
 
     await MiscApi.uploadFile(imageFile.value!.path,
         mediaType: GalleryMediaType.photo,
@@ -77,7 +76,7 @@ class CreateClubController extends GetxController {
   }
 
   updateClubInfo({required ClubModel club, required VoidCallback callback}) {
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
 
     ClubApi.updateClub(
         clubId: club.id!,
@@ -86,7 +85,7 @@ class CreateClubController extends GetxController {
         name: club.name!,
         image: club.imageName!,
         description: club.desc!);
-    EasyLoading.dismiss();
+    Loader.dismiss();
     Get.back();
     callback();
   }

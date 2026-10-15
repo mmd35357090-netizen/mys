@@ -1,36 +1,49 @@
+import 'package:foap/components/user_card.dart';
 import 'package:foap/controllers/clubs/clubs_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
+import 'package:foap/model/collaboration_model.dart';
 import '../../controllers/misc/misc_controller.dart';
 import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/profile/profile_controller.dart';
-import '../../model/collaboration_model.dart';
 import '../../screens/club/club_detail.dart';
 import '../../screens/post/edit_post.dart';
 import '../../screens/profile/my_profile.dart';
 import '../../screens/profile/other_user_profile.dart';
 import '../post_card_controller.dart';
-import '../user_card.dart';
 
 class PostUserInfo extends StatefulWidget {
   final PostModel post;
+  final bool isSponsored;
   final VoidCallback removePostHandler;
   final VoidCallback blockUserHandler;
   final bool isResharedPost;
 
-  const PostUserInfo(
-      {super.key,
-      required this.post,
-      required this.removePostHandler,
-      required this.blockUserHandler,
-      required this.isResharedPost});
+  const PostUserInfo({
+    super.key,
+    required this.post,
+    required this.isSponsored,
+    required this.removePostHandler,
+    required this.blockUserHandler,
+    required this.isResharedPost,
+
+  });
 
   @override
   State<PostUserInfo> createState() => _PostUserInfoState();
 }
 
 class _PostUserInfoState extends State<PostUserInfo> {
+  final ProfileController _profileController = Get.find();
   final PostCardController postCardController = Get.find();
+  final UserFollowUnfollowBtnController _userFollowUnfollowBtnController =
+      UserFollowUnfollowBtnController();
+
+  @override
+  void initState() {
+    _userFollowUnfollowBtnController.setUser(widget.post.user);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +92,31 @@ class _PostUserInfoState extends State<PostUserInfo> {
                   )
               ],
             ),
-
+            const SizedBox(
+              height: 2,
+            ),
+            widget.isSponsored == true
+                ? BodyExtraSmallText(sponsoredString.tr)
+                : Row(
+                    children: [
+                      ThemeIconWidget(ThemeIcon.clock, size: 12),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      BodyExtraSmallText(widget.post.postTime.tr),
+                    ],
+                  ),
           ],
         )),
+        if (widget.post.user.followingStatus ==
+            FollowingStatus.notFollowing)
+          UserFollowUnfollowButton(
+            isSmallSized: true,
+            controller: _userFollowUnfollowBtnController,
+          ),
+        const SizedBox(
+          width: 5,
+        ),
         if (!widget.isResharedPost)
           Row(
             children: [
@@ -148,27 +183,6 @@ class _PostUserInfoState extends State<PostUserInfo> {
     );
   }
 
-  void openProfile(UserModel user) async {
-    if (user.isMe) {
-      Get.to(() => const MyProfile(
-            showBack: true,
-          ));
-    } else {
-      Get.to(() => OtherUserProfile(userId: user.id));
-    }
-  }
-
-  void openClubDetail() async {
-    ClubsController clubsController = Get.find();
-
-    clubsController.getClubDetail(widget.post.postedInClub!.id!, (club) {
-      Get.to(() => ClubDetail(
-          club: club,
-          needRefreshCallback: () {},
-          deleteCallback: (club) {}));
-    });
-  }
-
   Widget userInfo(UserModel user) {
     return Row(
       children: [
@@ -190,7 +204,7 @@ class _PostUserInfoState extends State<PostUserInfo> {
         widget.post.activeCollaborations.length == 1) {
       return Row(
         children: [
-          BodyMediumText(
+          BodySmallText(
             andString.tr,
             weight: TextWeight.medium,
           ),
@@ -200,7 +214,7 @@ class _PostUserInfoState extends State<PostUserInfo> {
     } else {
       return Row(
         children: [
-          BodyMediumText(
+          BodySmallText(
             andString.tr,
             weight: TextWeight.medium,
           ),
@@ -277,6 +291,29 @@ class _PostUserInfoState extends State<PostUserInfo> {
         ],
       );
     }
+  }
+
+  void openProfile(UserModel user) async {
+    if (user.isMe) {
+      Get.to(() => const MyProfile(
+            showBack: true,
+          ));
+    } else {
+      _profileController.otherUserProfileView(
+          refId: user.id, viewSource: UserViewSourceType.post);
+      Get.to(() => OtherUserProfile(userId: user.id, user: user));
+    }
+  }
+
+  void openClubDetail() async {
+    ClubsController clubsController = Get.find();
+
+    clubsController.getClubDetail(widget.post.postedInClub!.id!, (club) {
+      Get.to(() => ClubDetail(
+          club: club,
+          needRefreshCallback: () {},
+          deleteCallback: (club) {}));
+    });
   }
 
   void openActionPopup() {

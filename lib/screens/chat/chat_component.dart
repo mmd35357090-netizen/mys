@@ -25,7 +25,7 @@ Widget messageTypeShortInfoFromType({
       : type == MessageContentType.photo
           ? Row(
               children: [
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.camera,
                   size: 12,
                 ).rP4,
@@ -36,7 +36,7 @@ Widget messageTypeShortInfoFromType({
           : type == MessageContentType.video
               ? Row(
                   children: [
-                    const ThemeIconWidget(ThemeIcon.videoPost, size: 15).rP4,
+                    ThemeIconWidget(ThemeIcon.videoPost, size: 15).rP4,
                     BodyMediumText(videoString.tr,
                         maxLines: 1, weight: TextWeight.regular),
                   ],
@@ -45,7 +45,7 @@ Widget messageTypeShortInfoFromType({
                       type == MessageContentType.sticker
                   ? Row(
                       children: [
-                        const ThemeIconWidget(ThemeIcon.gif, size: 15).rP4,
+                        ThemeIconWidget(ThemeIcon.gif, size: 15).rP4,
                         BodyMediumText(gifString.tr,
                             maxLines: 1, weight: TextWeight.regular),
                       ],
@@ -53,7 +53,7 @@ Widget messageTypeShortInfoFromType({
                   : type == MessageContentType.post
                       ? Row(
                           children: [
-                            const ThemeIconWidget(
+                            ThemeIconWidget(
                               ThemeIcon.camera,
                               size: 15,
                             ).rP4,
@@ -64,8 +64,7 @@ Widget messageTypeShortInfoFromType({
                       : type == MessageContentType.audio
                           ? Row(
                               children: [
-                                const ThemeIconWidget(ThemeIcon.mic, size: 15)
-                                    .rP4,
+                                ThemeIconWidget(ThemeIcon.mic, size: 15).rP4,
                                 BodyMediumText(audioString.tr,
                                     maxLines: 1, weight: TextWeight.regular),
                               ],
@@ -73,7 +72,7 @@ Widget messageTypeShortInfoFromType({
                           : type == MessageContentType.contact
                               ? Row(
                                   children: [
-                                    const ThemeIconWidget(ThemeIcon.contacts,
+                                    ThemeIconWidget(ThemeIcon.contacts,
                                             size: 15)
                                         .rP4,
                                     BodyMediumText(
@@ -86,8 +85,7 @@ Widget messageTypeShortInfoFromType({
                               : type == MessageContentType.location
                                   ? Row(
                                       children: [
-                                        const ThemeIconWidget(
-                                                ThemeIcon.location,
+                                        ThemeIconWidget(ThemeIcon.location,
                                                 size: 15)
                                             .rP4,
                                         BodyMediumText(locationString.tr,
@@ -98,8 +96,7 @@ Widget messageTypeShortInfoFromType({
                                   : type == MessageContentType.file
                                       ? Row(
                                           children: [
-                                            const ThemeIconWidget(
-                                                    ThemeIcon.files,
+                                            ThemeIconWidget(ThemeIcon.files,
                                                     size: 15)
                                                 .rP4,
                                             BodyMediumText(fileString.tr,
@@ -110,7 +107,7 @@ Widget messageTypeShortInfoFromType({
                                       : type == MessageContentType.profile
                                           ? Row(
                                               children: [
-                                                const ThemeIconWidget(
+                                                ThemeIconWidget(
                                                         ThemeIcon.account,
                                                         size: 15)
                                                     .rP4,

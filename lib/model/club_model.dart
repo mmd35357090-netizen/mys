@@ -1,3 +1,4 @@
+import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 
 enum AccessLevel { private, public, request }
@@ -21,6 +22,7 @@ class ClubModel {
 
   String? image;
   String? imageName;
+  String? creationTime = '';
 
   UserModel? createdByUser;
 
@@ -41,28 +43,31 @@ class ClubModel {
     this.createdBy,
     this.createdByUser,
     this.totalMembers,
+    this.creationTime,
   });
 
   factory ClubModel.fromJson(Map<String, dynamic> json) => ClubModel(
-        id: json["id"],
-        userId: json["user_id"],
-        categoryId: json["category_id"],
-        privacyType: json["privacy_type"],
-        isRequestBased: json["is_request_based"] == 1,
-        name: json["name"],
-        chatRoomId: json["chat_room_id"],
-        enableChat: json["is_chat_room"],
-        image: json["imageUrl"],
-        imageName: json["image"],
-        desc: json["description"],
-        isJoined: json["is_joined"] == 1,
-        isRequested: json["is_join_requested"] == 1,
-        createdBy: json["created_by"],
-        totalMembers: json["totalJoinedUser"],
-        createdByUser: json["createdByUser"] == null
-            ? null
-            : UserModel.fromJson(json["createdByUser"]),
-      );
+      id: json["id"],
+      userId: json["user_id"],
+      categoryId: json["category_id"],
+      privacyType: json["privacy_type"],
+      isRequestBased: json["is_request_based"] == 1,
+      name: json["name"],
+      chatRoomId: json["chat_room_id"],
+      enableChat: json["is_chat_room"],
+      image: json["imageUrl"],
+      imageName: json["image"],
+      desc: json["description"],
+      isJoined: json["is_joined"] == 1,
+      isRequested: json["is_join_requested"] == 1,
+      createdBy: json["created_by"],
+      totalMembers: json["totalJoinedUser"],
+      createdByUser: json["createdByUser"] == null
+          ? null
+          : UserModel.fromJson(json["createdByUser"]),
+      creationTime:
+          DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
+              .getTimeAgo);
 
   bool get amIAdmin {
     return createdByUser!.isMe;

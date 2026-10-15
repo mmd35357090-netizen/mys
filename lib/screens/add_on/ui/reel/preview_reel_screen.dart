@@ -15,12 +15,12 @@ class PreviewReelsScreen extends StatefulWidget {
   final double? audioEndTime;
 
   const PreviewReelsScreen(
-      {Key? key,
+      {super.key,
       required this.reel,
       this.audioId,
       this.audioStartTime,
       this.audioEndTime})
-      : super(key: key);
+      ;
 
   @override
   State<StatefulWidget> createState() {
@@ -67,54 +67,59 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
       bottom: false,
       child: AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
-        body: Column(children: [
-          chewieController == null
-              ? Container()
-              : Expanded(
-                  // height: (Get.width) /
-                  //     videoPlayerController!.value.aspectRatio,
-                  child: Chewie(
-                    controller: chewieController!,
-                  ),
-                ),
-          const SizedBox(
-            height: 25,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: Column(
+            // alignment: Alignment.topCenter,
             children: [
-              const ThemeIconWidget(
-                ThemeIcon.backArrow,
-                size: 25,
-              ).circular.ripple(() {
-                Get.back();
-              }),
-              Container(
-                      color: AppColorConstants.themeColor,
-                      child: Text(
-                        nextString.tr,
-                        style: TextStyle(fontSize: FontSizes.b2),
-                      ).setPadding(
-                          left: DesignConstants.horizontalPadding,
-                          right: DesignConstants.horizontalPadding,
-                          bottom: 8,
-                          top: 8))
-                  .circular
-                  .ripple(() {
-                submitReel();
-              }),
-            ],
-          ).hp(DesignConstants.horizontalPadding),
-          const SizedBox(
-            height: 20,
-          )
-        ]),
+              const SizedBox(
+                height: 50,
+              ),
+              chewieController == null
+                  ? Container()
+                  : SizedBox(
+                      height: (Get.width - 32) /
+                          videoPlayerController!.value.aspectRatio,
+                      child: Chewie(
+                        controller: chewieController!,
+                      ),
+                    ).round(20),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ThemeIconWidget(
+                    ThemeIcon.backArrow,
+                    size: 25,
+                  ).circular.ripple(() {
+                    Get.back();
+                  }),
+                  Container(
+                          color: AppColorConstants.themeColor,
+                          child: Text(
+                            nextString.tr,
+                            style: TextStyle(fontSize: FontSizes.b2),
+                          ).setPadding(
+                              left: DesignConstants.horizontalPadding,
+                              right: DesignConstants.horizontalPadding,
+                              bottom: 8,
+                              top: 8))
+                      .circular
+                      .ripple(() {
+                    submitReel();
+                  }),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              )
+            ]).hp(DesignConstants.horizontalPadding),
       ),
     );
   }
 
   submitReel() async {
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
     final thumbnail = await VideoThumbnail.thumbnailData(
       video: widget.reel.path,
       imageFormat: ImageFormat.JPEG,
@@ -123,21 +128,25 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
       quality: 25,
     );
 
-    MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-      widget.reel.path,
-      quality: VideoQuality.DefaultQuality,
-      deleteOrigin: false, // It's false by default
-    );
+    // MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+    //   widget.reel.path,
+    //   quality: VideoQuality.DefaultQuality,
+    //   deleteOrigin: false, // It's false by default
+    // );
 
-    EasyLoading.dismiss();
+    final videoInfo = await VideoCompress.getMediaInfo(widget.reel.path);
+    Loader.dismiss();
     Media media = Media();
     media.id = randomId();
-    media.file = File(mediaInfo!.path!);
+    media.file = File(widget.reel.path);
     media.thumbnail = thumbnail;
-    media.size = null;
+    media.size =
+        Size(videoInfo.width!.toDouble(), videoInfo.height!.toDouble());
     media.creationTime = DateTime.now();
     media.title = null;
     media.mediaType = GalleryMediaType.video;
+
+    // _selectPostMediaController.mediaSelected([media]);
 
     chewieController?.pause();
 
@@ -147,8 +156,12 @@ class _PreviewReelsState extends State<PreviewReelsScreen> {
           audioId: widget.audioId,
           audioStartTime: widget.audioStartTime,
           audioEndTime: widget.audioEndTime,
-          postType: PostType.reel,
-          postCompletionHandler: () {},
+          postType: PostCategory.reel,
+          postCompletionHandler: () {
+            Get.close(2);
+          },
+
+          // postType: PostType.reel,
         ));
   }
 }

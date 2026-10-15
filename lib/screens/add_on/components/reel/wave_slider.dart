@@ -16,7 +16,7 @@ class WaveSlider extends StatefulWidget {
   final CallbackSelection callbackEnd;
   final double cutterDuration;
   const WaveSlider({
-    Key? key,
+    super.key,
     required this.duration,
     required this.callbackStart,
     required this.callbackEnd,
@@ -27,7 +27,7 @@ class WaveSlider extends StatefulWidget {
     this.sliderColor = Colors.red,
     this.backgroundColor = Colors.grey,
     this.positionTextColor = Colors.black,this.cutterDuration=15.0,
-  }) : super(key: key);
+  }) ;
 
   @override
   State<StatefulWidget> createState() => WaveSliderState();
@@ -195,8 +195,8 @@ class CenterBar extends StatelessWidget {
   final GestureDragUpdateCallback callback;
   final GestureDragEndCallback? callbackEnd;
 
-  const CenterBar({Key? key, required this.position, required this.width, required this.callback, required this.callbackEnd})
-      : super(key: key);
+  const CenterBar({super.key, required this.position, required this.width, required this.callback, required this.callbackEnd})
+      ;
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +230,8 @@ class Bar extends StatelessWidget {
   final GestureDragEndCallback? callbackEnd;
 
   const Bar(
-      {Key? key, required this.position, required this.width, required this.callback, required this.callbackEnd, this.colorBG})
-      : super(key: key);
+      {super.key, required this.position, required this.width, required this.callback, required this.callbackEnd, this.colorBG})
+      ;
 
   @override
   Widget build(BuildContext context) {

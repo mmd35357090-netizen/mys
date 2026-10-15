@@ -10,8 +10,8 @@ import '../settings_menu/settings_controller.dart';
 class CompletedCompetitionDetail extends StatefulWidget {
   final int competitionId;
 
-  const CompletedCompetitionDetail({Key? key, required this.competitionId})
-      : super(key: key);
+  const CompletedCompetitionDetail({super.key, required this.competitionId})
+      ;
 
   @override
   CompletedCompetitionDetailState createState() =>
@@ -27,32 +27,33 @@ class CompletedCompetitionDetailState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // if (widget.competition != null) {
+      //   competitionController.setCompetition(widget.competition!);
+      // } else {
       competitionController.loadCompetitionDetail(id: widget.competitionId);
+      // }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBarWithIcon(
-              icon: ThemeIcon.privacyPolicy,
-              title: competitionString.tr,
-              iconBtnClicked: () async {
-                if (await canLaunchUrl(Uri.parse(
-                    settingsController.setting.value!.disclaimerUrl!))) {
-                  await launchUrl(Uri.parse(
-                      settingsController.setting.value!.disclaimerUrl!));
-                } else {
-                  // throw 'Could not launch $url';
-                }
-                // Get.to(() => WebViewScreen(
-                //     header: disclaimerString.tr,
-                //     url: ));
-              }),
-
+          backNavigationBarWithTrailingWidget(
+            widget: ThemeIconWidget(ThemeIcon.privacyPolicy).ripple(() async {
+              if (await canLaunchUrl(Uri.parse(
+                  settingsController.setting.value!.disclaimerUrl!))) {
+                await launchUrl(Uri.parse(
+                    settingsController.setting.value!.disclaimerUrl!));
+              } else {
+                // throw 'Could not launch $url';
+              }
+            }),
+            title: competitionString.tr,
+          ),
+          // divider().tP16,
           Expanded(
             child: Stack(children: [
               Obx(() {
@@ -186,7 +187,7 @@ class CompletedCompetitionDetailState
                           weight: TextWeight.bold,
                           color: AppColorConstants.themeColor)
                       .ripple(() {
-                    Get.to(() => OtherUserProfile(userId: winner.id));
+                    Get.to(() => OtherUserProfile(userId: winner.id,user: winner,));
                   }),
                 ],
               ).bP8,
@@ -265,7 +266,7 @@ class CompletedCompetitionDetailState
               // staggeredTileBuilder: (int index) => new StaggeredTile.count(1, 1),
             )
           : Container(),
-      const SizedBox(height: 65)
+      const SizedBox(height: 150)
     ]);
   }
 
@@ -278,7 +279,7 @@ class CompletedCompetitionDetailState
               begin: FractionalOffset.bottomCenter,
               end: FractionalOffset.topCenter,
               colors: [
-                Colors.black.withOpacity(0.6),
+                Colors.black.withValues(alpha: 0.6),
                 Colors.transparent,
               ],
               stops: const [

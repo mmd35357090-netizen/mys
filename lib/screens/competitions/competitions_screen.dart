@@ -1,9 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/competition_imports.dart';
 
-
 class CompetitionsScreen extends StatefulWidget {
-  const CompetitionsScreen({Key? key}) : super(key: key);
+  const CompetitionsScreen({super.key}) ;
 
   @override
   CompetitionsState createState() => CompetitionsState();
@@ -44,14 +43,12 @@ class CompetitionsState extends State<CompetitionsScreen> {
     return DefaultTabController(
       length: competitionsArr.length,
       initialIndex: 0,
-      child: Scaffold(
+      child: AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(children: <Widget>[
-
           backNavigationBar(
             title: competitionString.tr,
           ),
-          divider().vP8,
           TabBar(
             labelColor: AppColorConstants.themeColor,
             unselectedLabelColor: AppColorConstants.mainTextColor,

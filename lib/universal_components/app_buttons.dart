@@ -2,7 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:foap/helper/extension.dart';
 
 import '../components/custom_texts.dart';
+import '../theme/theme_icon.dart';
 import '../util/app_config_constants.dart';
+import 'package:get/get.dart';
+
+class AppThemeBackButton extends StatelessWidget {
+  const AppThemeBackButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      width: 40,
+      color: AppColorConstants.cardColor,
+      child: ThemeIconWidget(ThemeIcon.backArrow).lP8,
+    ).round(10).shadowWithBorder(borderWidth: 0).ripple(() {
+      Get.back();
+    });
+  }
+}
+
+class AppThemeCloseButton extends StatelessWidget {
+  const AppThemeCloseButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      width: 40,
+      color: AppColorConstants.cardColor,
+      child: ThemeIconWidget(ThemeIcon.close),
+    ).round(10).shadowWithBorder(borderWidth: 0).ripple(() {
+      Get.back();
+    });
+  }
+}
 
 class AppThemeButton extends StatelessWidget {
   final String? text;
@@ -16,7 +54,7 @@ class AppThemeButton extends StatelessWidget {
   final VoidCallback? onPress;
 
   const AppThemeButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPress,
     this.height,
@@ -25,31 +63,28 @@ class AppThemeButton extends StatelessWidget {
     this.leading,
     this.trailing,
     this.backgroundColor,
-  }) : super(key: key);
+  }) ;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: height ?? 50,
-      color: backgroundColor ?? AppColorConstants.themeColor,
+      height: height ?? 45,
+      color: backgroundColor ?? AppColorConstants.themeColor.darken(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           leading != null ? leading!.hP8 : Container(),
           Center(
-            child: Text(
+            child: BodyMediumText(
               text!,
-              style: TextStyle(
-                  fontSize: FontSizes.b4,
-                  fontWeight: TextWeight.medium,
-                  color: Colors.white),
-            ).hP8,
+              color: Colors.white,
+            ).hP16,
           ),
           trailing != null ? trailing!.hP4 : Container()
         ],
       ),
-    ).round(10).ripple(() {
+    ).round(cornerRadius ?? 15).ripple(() {
       onPress!();
     });
   }
@@ -66,7 +101,7 @@ class AppThemeBorderButton extends StatelessWidget {
   final double? width;
 
   const AppThemeBorderButton(
-      {Key? key,
+      {super.key,
       required this.text,
       required this.onPress,
       this.height,
@@ -75,13 +110,13 @@ class AppThemeBorderButton extends StatelessWidget {
       this.borderColor,
       this.backgroundColor,
       this.textStyle})
-      : super(key: key);
+      ;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: height ?? 50,
+      height: height ?? 45,
       color: backgroundColor,
       child: Center(
         child: Text(
@@ -96,7 +131,7 @@ class AppThemeBorderButton extends StatelessWidget {
     )
         .borderWithRadius(
             value: 1,
-            radius: 10,
+            radius: 15,
             color: borderColor ?? AppColorConstants.dividerColor)
         .ripple(onPress!);
   }

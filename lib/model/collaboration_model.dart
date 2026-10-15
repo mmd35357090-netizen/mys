@@ -31,7 +31,6 @@ class CollaborationModel {
             ? null
             : UserModel.fromJson(json["collaboratorDetail"]),
         createdAt:
-            DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
-                .toUtc(),
+        AppUtil.convertToDateTime(json['created_at']),
       );
 }

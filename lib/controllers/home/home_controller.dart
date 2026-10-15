@@ -1,4 +1,3 @@
-import 'package:flutter/rendering.dart';
 import 'package:foap/api_handler/apis/gift_api.dart';
 import 'package:foap/api_handler/apis/live_streaming_api.dart';
 import 'package:foap/api_handler/apis/post_api.dart';
@@ -6,18 +5,16 @@ import 'package:foap/api_handler/apis/story_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/data_wrapper.dart';
 import '../../api_handler/apis/misc_api.dart';
+import '../../manager/db_manager_realm.dart';
 import '../../model/gift_model.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../../model/polls_model.dart';
+import '../../screens/add_on/model/polls_model.dart';
 import '../../model/post_model.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import 'dart:async';
-import 'package:foap/manager/db_manager.dart';
 import 'package:foap/model/story_model.dart';
 import 'package:foap/model/post_gallery.dart';
 import 'package:foap/model/post_search_query.dart';
-import 'package:foap/screens/dashboard/posts.dart';
-import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:foap/screens/home_feed/quick_links.dart';
 import 'package:foap/helper/list_extension.dart';
 
@@ -26,24 +23,29 @@ class HomeController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
 
   RxList<PostModel> posts = <PostModel>[].obs;
-  RxList<PollsModel> polls = <PollsModel>[].obs;
+  RxList<PollModel> polls = <PollModel>[].obs;
   RxList<StoryModel> stories = <StoryModel>[].obs;
   RxList<UserModel> liveUsers = <UserModel>[].obs;
   RxList<GiftModel> timelineGift = <GiftModel>[].obs;
+  RxList<int> positions = <int>[].obs;
+  RxList<PostModel> sponsoredPosts = <PostModel>[].obs;
 
   RxList<BannerAd> bannerAds = <BannerAd>[].obs;
 
   RxInt currentVisibleVideoId = 0.obs;
-  Map<int, double> mediaVisibilityInfo = {};
+  final Map<int, double> _mediaVisibilityInfo = {};
   PostSearchQuery postSearchQuery = PostSearchQuery();
+
   RxBool isRefreshingPosts = false.obs;
   RxBool isRefreshingStories = false.obs;
-  RxInt categoryIndex = 0.obs;
-  RxBool openQuickLinks = false.obs;
-  RxList<QuickLink> quickLinks = <QuickLink>[].obs;
-  ScrollDirection? lastScrollDirection;
 
-  DataWrapper dataWrapper = DataWrapper();
+  RxInt categoryIndex = 0.obs;
+  RxInt selectedSegment = 0.obs;
+
+  DataWrapper postsDataWrapper = DataWrapper();
+  RxBool openQuickLinks = false.obs;
+
+  RxList<QuickLink> quickLinks = <QuickLink>[].obs;
 
   clear() {
     stories.clear();
@@ -51,7 +53,8 @@ class HomeController extends GetxController {
   }
 
   clearPosts() {
-    dataWrapper = DataWrapper();
+    postsDataWrapper = DataWrapper();
+    sponsoredPosts.clear();
     posts.clear();
   }
 
@@ -68,6 +71,19 @@ class HomeController extends GetxController {
     }
   }
 
+  selectSegment(int index) {
+    if (selectedSegment.value != index) {
+      selectedSegment.value = index;
+      if (index == 0) {
+        postSearchQuery.isFollowing = 0;
+      } else {
+        postSearchQuery.isFollowing = 1;
+      }
+      clearPosts();
+      getPosts(callback: () {});
+    }
+  }
+
   closeQuickLinks() {
     openQuickLinks.value = false;
   }
@@ -76,105 +92,115 @@ class HomeController extends GetxController {
     quickLinks.clear();
     if (_settingsController.setting.value!.enableStories) {
       quickLinks.add(QuickLink(
-          icon: 'assets/stories.png',
+          icon: 'assets/explore/story.png',
           heading: storyString.tr,
           subHeading: storyString.tr,
           linkType: QuickLinkType.story));
     }
     if (_settingsController.setting.value!.enableHighlights) {
       quickLinks.add(QuickLink(
-          icon: 'assets/highlights.png',
+          icon: 'assets/explore/highlight.png',
           heading: highlightsString.tr,
           subHeading: highlightsString.tr,
           linkType: QuickLinkType.highlights));
     }
-
-    // if(_settingsController.setting.value!.enableLiveUser){
-    quickLinks.add(QuickLink(
-        icon: 'assets/live_users.png',
-        heading: liveUsersString.tr,
-        subHeading: liveUsersString.tr,
-        linkType: QuickLinkType.liveUsers));
-    // }
-
-    // if (_settingsController.setting.value!.enableReel) {
-    //   quickLinks.add(QuickLink(
-    //       icon: 'assets/reel.png',
-    //       heading: reelsString.tr,
-    //       subHeading: reelsString.tr,
-    //       linkType: QuickLinkType.reel));
-    // }
-    // if (_settingsController.setting.value!.enableLive) {
-    //   quickLinks.add(QuickLink(
-    //       icon: 'assets/live.png',
-    //       heading: goLiveString.tr,
-    //       subHeading: goLiveString.tr,
-    //       linkType: QuickLinkType.goLive));
-    // }
+    if (_settingsController.setting.value!.enableLiveUserListing) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/live_users.png',
+          heading: liveUsersString.tr,
+          subHeading: liveUsersString.tr,
+          linkType: QuickLinkType.liveUsers));
+    }
     if (_settingsController.setting.value!.enableCompetitions) {
       quickLinks.add(QuickLink(
-          icon: 'assets/competitions.png',
+          icon: 'assets/explore/competition.png',
           heading: competitionString.tr,
           subHeading: joinCompetitionsToEarnString.tr,
           linkType: QuickLinkType.competition));
     }
     if (_settingsController.setting.value!.enableClubs) {
       quickLinks.add(QuickLink(
-          icon: 'assets/club_colored.png',
+          icon: 'assets/explore/group.png',
           heading: clubsString.tr,
           subHeading: placeForPeopleOfCommonInterestString.tr,
           linkType: QuickLinkType.clubs));
     }
-
     if (_settingsController.setting.value!.enableStrangerChat) {
       quickLinks.add(QuickLink(
-          icon: 'assets/chat_colored.png',
+          icon: 'assets/explore/chat_colored.png',
           heading: strangerChatString.tr,
           subHeading: haveFunByRandomChattingString.tr,
           linkType: QuickLinkType.randomChat));
     }
-
     if (_settingsController.setting.value!.enableWatchTv) {
       quickLinks.add(QuickLink(
-          icon: 'assets/television.png',
+          icon: 'assets/explore/movie.png',
           heading: tvsString.tr,
           subHeading: tvsString.tr,
           linkType: QuickLinkType.tv));
     }
     if (_settingsController.setting.value!.enablePodcasts) {
       quickLinks.add(QuickLink(
-          icon: 'assets/podcast.png',
+          icon: 'assets/explore/podcast.png',
           heading: podcastString.tr,
           subHeading: podcastString.tr,
           linkType: QuickLinkType.podcast));
     }
-
-    if (_settingsController.setting.value!.enableChatGPT) {
+    if (_settingsController.setting.value!.enableReel) {
       quickLinks.add(QuickLink(
-          icon: 'assets/ai.png',
+          icon: 'assets/explore/reel.png',
+          heading: reelString.tr,
+          subHeading: reelString.tr,
+          linkType: QuickLinkType.reel));
+    }
+    if (_settingsController.setting.value!.enableEvents) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/event.png',
+          heading: eventString.tr,
+          subHeading: eventString.tr,
+          linkType: QuickLinkType.event));
+    }
+    if (_settingsController.setting.value!.enableDating) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/dating.png',
+          heading: datingString.tr,
+          subHeading: datingString.tr,
+          linkType: QuickLinkType.dating));
+    }
+    if (!_settingsController.setting.value!.enableChatGPT) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/chatGPT.png',
           heading: chatGPT.tr,
           subHeading: eventString.tr,
           linkType: QuickLinkType.chatGPT));
     }
-  }
-
-  categoryIndexChanged(
-      {required int index, required VoidCallback callback}) {
-    if (index != categoryIndex.value) {
-      categoryIndex.value = index;
-      clearPosts();
-      postSearchQuery = PostSearchQuery();
-
-      if (index == 1) {
-        postSearchQuery.isFollowing = 1;
-        postSearchQuery.isRecent = 1;
-      } else if (index == 2) {
-        postSearchQuery.isVideo = 1;
-      } else {
-        postSearchQuery.isRecent = 1;
-      }
-
-      getPosts(isRecent: false, callback: callback);
+    if (_settingsController.setting.value!.enableFundRaising) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/donation.png',
+          heading: fundRaisingString.tr,
+          subHeading: fundRaisingString.tr,
+          linkType: QuickLinkType.fundRaising));
+    }
+    if (_settingsController.setting.value!.enableOffers) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/offers.png',
+          heading: offers.tr,
+          subHeading: offers.tr,
+          linkType: QuickLinkType.offers));
+    }
+    if (_settingsController.setting.value!.enableShop) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/shop.png',
+          heading: shopString.tr,
+          subHeading: shopString.tr,
+          linkType: QuickLinkType.shop));
+    }
+    if (_settingsController.setting.value!.enableJobs) {
+      quickLinks.add(QuickLink(
+          icon: 'assets/explore/job.png',
+          heading: jobsString.tr,
+          subHeading: jobsString.tr,
+          linkType: QuickLinkType.job));
     }
   }
 
@@ -210,37 +236,30 @@ class HomeController extends GetxController {
         });
   }
 
-  void getPosts(
-      {required bool? isRecent, required VoidCallback callback}) async {
-    if (dataWrapper.haveMoreData.value == true) {
-      if (isRecent == true) {
-        postSearchQuery.isRecent = 1;
-      }
+  setSourceFilter(int isFollowing) {
+    postSearchQuery.isFollowing = isFollowing;
+  }
 
-      if (dataWrapper.page == 1) {
+  void getPosts({required VoidCallback callback}) async {
+    if (postsDataWrapper.haveMoreData.value == true) {
+      postSearchQuery.isRecent = 1;
+      postSearchQuery.isMine = 1;
+
+      if (postsDataWrapper.page == 1) {
         isRefreshingPosts.value = true;
       }
 
       PostApi.getPosts(
-          userId: postSearchQuery.userId,
-          isPopular: postSearchQuery.isPopular,
           isFollowing: postSearchQuery.isFollowing,
-          isSold: postSearchQuery.isSold,
-          isMine: postSearchQuery.isMine,
           isRecent: postSearchQuery.isRecent,
-          title: postSearchQuery.title,
-          hashtag: postSearchQuery.hashTag,
-          clubId: postSearchQuery.clubId,
-          isVideo: postSearchQuery.isVideo,
-          page: dataWrapper.page,
+          page: postsDataWrapper.page,
           resultCallback: (result, metadata) {
-            print('resultCallback ${posts.length}');
             posts.addAll(result);
             posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
             posts.unique((e) => e.id);
 
             isRefreshingPosts.value = false;
-            dataWrapper.processCompletedWithData(metadata);
+            postsDataWrapper.processCompletedWithData(metadata);
 
             callback();
             update();
@@ -250,15 +269,34 @@ class HomeController extends GetxController {
     }
   }
 
+  postEdited(PostModel post) {
+    int oldPostIndex =
+        posts.indexWhere((element) => element.id == post.id);
+    posts.removeAt(oldPostIndex);
+    posts.insert(oldPostIndex, post);
+    posts.refresh();
+  }
+
+  void getPromotionalPosts() async {
+    PostApi.getPromotionalPosts(
+        page: 0,
+        resultCallback: (result, metadata) {
+          sponsoredPosts.addAll(result);
+          sponsoredPosts.unique((e) => e.id);
+
+          update();
+        });
+  }
+
   setCurrentVisibleVideo(
       {required PostGallery media, required double visibility}) {
-    mediaVisibilityInfo[media.id] = visibility;
+    _mediaVisibilityInfo[media.id] = visibility;
     double maxVisibility =
-        mediaVisibilityInfo[mediaVisibilityInfo.keys.first] ?? 0;
-    int maxVisibilityMediaId = mediaVisibilityInfo.keys.first;
+        _mediaVisibilityInfo[_mediaVisibilityInfo.keys.first] ?? 0;
+    int maxVisibilityMediaId = _mediaVisibilityInfo.keys.first;
 
-    for (int key in mediaVisibilityInfo.keys) {
-      double visibility = mediaVisibilityInfo[key] ?? 0;
+    for (int key in _mediaVisibilityInfo.keys) {
+      double visibility = _mediaVisibilityInfo[key] ?? 0;
 
       if (visibility >= maxVisibility && visibility > 20) {
         maxVisibility = visibility;
@@ -283,49 +321,14 @@ class HomeController extends GetxController {
         });
   }
 
-  postEdited(PostModel post) {
-    int oldPostIndex =
-        posts.indexWhere((element) => element.id == post.id);
-    posts.removeAt(oldPostIndex);
-    posts.insert(oldPostIndex, post);
-    posts.refresh();
-  }
-
-  postTextTapHandler({required PostModel post, required String text}) {
-    if (text.startsWith('#')) {
-      Get.to(() => Posts(
-                hashTag: text.replaceAll('#', ''),
-              ))!
-          .then((value) {
-        getPosts(isRecent: false, callback: () {});
-        getStories();
-      });
-    } else {
-      String userTag = text.replaceAll('@', '');
-      if (post.mentionedUsers
-          .where((element) => element.userName == userTag)
-          .isNotEmpty) {
-        int mentionedUserId = post.mentionedUsers
-            .where((element) => element.userName == userTag)
-            .first
-            .id;
-        Get.to(() => OtherUserProfile(userId: mentionedUserId))!
-            .then((value) {
-          getPosts(isRecent: false, callback: () {});
-          getStories();
-        });
-      }
-    }
-  }
-
-// stories
-
+  // stories
   void getStories() async {
     isRefreshingStories.value = true;
     update();
 
     var responses = await Future.wait([
       getCurrentActiveStories(),
+      getLiveUsers(),
       getFollowersStories(),
     ]).whenComplete(() {});
     stories.clear();
@@ -334,17 +337,42 @@ class HomeController extends GetxController {
         id: 1,
         name: '',
         userName: _userProfileManager.user.value!.userName,
-        // email: '',
         userImage: _userProfileManager.user.value!.picture,
         media: responses[0] as List<StoryMediaModel>);
 
+    List<StoryModel> liveUserStories =
+        (responses[1] as List<UserModel>).map((e) {
+      StoryModel story = StoryModel(
+          id: 1,
+          name: '',
+          userName: _userProfileManager.user.value!.userName,
+          userImage: _userProfileManager.user.value!.picture,
+          media: responses[0] as List<StoryMediaModel>);
+      story.isLive = true;
+      story.user = e;
+      return story;
+    }).toList();
+
     if ((responses[0] as List<StoryMediaModel>).isNotEmpty) {
       stories.add(story);
-      stories.addAll(responses[1] as List<StoryModel>);
+      stories.addAll(liveUserStories);
+      stories.addAll(responses[2] as List<StoryModel>);
     } else {
-      stories.addAll(responses[1] as List<StoryModel>);
+      stories.addAll(liveUserStories);
+      stories.addAll(responses[2] as List<StoryModel>);
     }
-    stories.unique((e) => e.id);
+    // Remove duplicates, keeping the version where isLive = true
+    stories.value = stories
+        .fold<Map<int, StoryModel>>({}, (map, item) {
+          // If the user id is not in the map or if the current item has isLive = true,
+          // replace the entry in the map for that user id
+          if (!map.containsKey(item.id) || item.isLive == true) {
+            map[item.id] = item;
+          }
+          return map;
+        })
+        .values
+        .toList();
     isRefreshingStories.value = false;
     update();
   }
@@ -363,7 +391,7 @@ class HomeController extends GetxController {
     List<StoryModel> notViewedStories = [];
 
     List<int> viewedStoryIds =
-        await getIt<DBManager>().getAllViewedStories();
+        await getIt<RealmDBManager>().getAllViewedStories();
 
     await StoryApi.getStories(resultCallback: (result) {
       for (var story in result) {
@@ -406,7 +434,8 @@ class HomeController extends GetxController {
         receiverId: receiverId,
         resultCallback: () {
           // refresh profile to get updated wallet info
-          AppUtil.showToast(message: giftSentString.tr, isSuccess: true);
+          AppUtil.showToast(
+              message: giftSentSuccessfullyString.tr, isSuccess: true);
           _userProfileManager.refreshProfile();
         });
   }

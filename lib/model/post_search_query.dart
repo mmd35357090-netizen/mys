@@ -6,7 +6,6 @@ class PostSearchQuery {
   int? isMine;
   int? isRecent;
   int? clubId;
-  int? isVideo;
 
   String? title;
   String? hashTag;
@@ -26,11 +25,11 @@ class PostSearchQuery {
         other.isRecent == isRecent &&
         other.title == title &&
         other.clubId == clubId &&
-        other.isVideo == isVideo &&
         other.hashTag == hashTag;
   }
 
   @override
+  // TODO: implement hashCode
   int get hashCode => super.hashCode;
 }
 

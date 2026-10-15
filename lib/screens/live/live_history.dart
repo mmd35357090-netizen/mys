@@ -4,7 +4,7 @@ import '../../controllers/live/live_history_controller.dart';
 import '../../model/live_model.dart';
 
 class LiveHistory extends StatefulWidget {
-  const LiveHistory({Key? key}) : super(key: key);
+  const LiveHistory({super.key}) ;
 
   @override
   LiveHistoryState createState() => LiveHistoryState();

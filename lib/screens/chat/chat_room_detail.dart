@@ -8,7 +8,7 @@ import '../settings_menu/settings_controller.dart';
 class ChatRoomDetail extends StatefulWidget {
   final ChatRoomModel chatRoom;
 
-  const ChatRoomDetail({Key? key, required this.chatRoom}) : super(key: key);
+  const ChatRoomDetail({super.key, required this.chatRoom});
 
   @override
   State<ChatRoomDetail> createState() => _ChatRoomDetailState();
@@ -31,7 +31,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
@@ -54,7 +54,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                         _chatDetailController.chatRoom.value!.isGroupChat
                             ? _chatDetailController.chatRoom.value!.name!
                             : _chatDetailController
-                                .chatRoom.value!.opponent.userDetail.userName,
+                                .chatRoom.value!.opponent!.userDetail.userName,
                         weight: TextWeight.medium)),
                 Obx(() => _chatDetailController.chatRoom.value?.amIGroupAdmin ==
                             true &&
@@ -77,7 +77,6 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                       )),
               ],
             ).hp(DesignConstants.horizontalPadding),
-            divider().tP8,
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.only(
@@ -188,7 +187,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 children: [
                   Container(
                     color: AppColorConstants.themeColor,
-                    child: const ThemeIconWidget(
+                    child: ThemeIconWidget(
                       ThemeIcon.setting,
                       color: Colors.white,
                     ).p4,
@@ -196,7 +195,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading6Text(groupSettingsString.tr,
+                  BodyLargeText(groupSettingsString.tr,
                       weight: TextWeight.regular),
                 ],
               ),
@@ -230,7 +229,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 children: [
                   Container(
                     color: AppColorConstants.themeColor,
-                    child: const ThemeIconWidget(
+                    child: ThemeIconWidget(
                       ThemeIcon.gallery,
                       color: Colors.white,
                     ).p4,
@@ -238,7 +237,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading6Text(mediaString.tr, weight: TextWeight.regular),
+                  BodyLargeText(mediaString.tr, weight: TextWeight.regular),
                 ],
               ),
               ThemeIconWidget(
@@ -264,7 +263,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 children: [
                   Container(
                     color: AppColorConstants.themeColor,
-                    child: const ThemeIconWidget(
+                    child: ThemeIconWidget(
                       ThemeIcon.wallpaper,
                       color: Colors.white,
                     ).p4,
@@ -272,7 +271,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Heading6Text(wallpaperString.tr, weight: TextWeight.regular),
+                  BodyLargeText(wallpaperString.tr, weight: TextWeight.regular),
                 ],
               ),
               ThemeIconWidget(
@@ -300,7 +299,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                         children: [
                           Container(
                             color: AppColorConstants.themeColor,
-                            child: const ThemeIconWidget(
+                            child: ThemeIconWidget(
                               ThemeIcon.filledStar,
                               color: Colors.white,
                             ).p4,
@@ -360,7 +359,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           color: AppColorConstants.cardColor,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Heading5Text(deleteChatString.tr,
+            child: BodyLargeText(deleteChatString.tr,
                     weight: TextWeight.medium, color: AppColorConstants.red)
                 .hP8,
           ),
@@ -385,7 +384,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           color: AppColorConstants.cardColor,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Heading5Text(
+            child: BodyLargeText(
                     widget.chatRoom.amIMember
                         ? leaveGroupString.tr
                         : deleteGroupString.tr,
@@ -395,13 +394,13 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           ),
         ).ripple(() {
           if (widget.chatRoom.amIMember) {
-            // AppUtil.showConfirmationAlert(
-            //     title: leaveGroup,
-            //     subTitle: leaveGroupConfirmation,
-            //     cxt: context,
-            //     okHandler: () {
-            _chatRoomDetailController.leaveGroup(widget.chatRoom);
-            // });
+            AppUtil.showNewConfirmationAlert(
+                title: leaveGroupString.tr,
+                subTitle: leaveGroupConfirmationString.tr,
+                okHandler: () {
+                  _chatRoomDetailController.leaveGroup(widget.chatRoom);
+                },
+                cancelHandler: () {});
           } else {
             // print('test 2');
             //
@@ -430,7 +429,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Container(
             child: Column(
               children: [
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.mobile,
                   size: 20,
                 ),
@@ -451,7 +450,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
           Container(
             child: Column(
               children: [
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.videoCamera,
                   size: 20,
                 ),
@@ -497,7 +496,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
         : Column(
             children: [
               UserAvatarView(
-                user: _chatDetailController.chatRoom.value!.opponent.userDetail,
+                user: _chatDetailController.chatRoom.value!.opponent!.userDetail,
                 size: 100,
                 onTapHandler: () {
                   //open live
@@ -506,17 +505,10 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                children: [
-                  Heading6Text(
-                      _chatDetailController
-                          .chatRoom.value!.opponent.userDetail.userName,
-                      weight: TextWeight.bold),
-                  if (_chatDetailController
-                      .chatRoom.value!.opponent.userDetail.isVerified)
-                    verifiedUserTag()
-                ],
-              )
+              Heading6Text(
+                  _chatDetailController
+                      .chatRoom.value!.opponent!.userDetail.userName,
+                  weight: TextWeight.bold)
             ],
           ));
   }
@@ -586,7 +578,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                               height: 40,
                               width: 40,
                               color: AppColorConstants.themeColor.lighten(),
-                              child: const ThemeIconWidget(
+                              child: ThemeIconWidget(
                                 ThemeIcon.plus,
                                 size: 25,
                               ),
@@ -634,7 +626,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                             children: [
                               Row(
                                 children: [
-                                  Heading6Text(
+                                  BodyLargeText(
                                       member.userDetail.isMe
                                           ? youString.tr
                                           : member.userDetail.userName,
@@ -649,13 +641,14 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                                     )
                                   : Container()
                             ],
-                          ).hp(DesignConstants.horizontalPadding),
+                          ).hP8,
 
                           const Spacer(),
                           member.isAdmin == 1
-                              ? Heading6Text(adminString.tr,
-                                      weight: TextWeight.medium)
-                                  .bP4
+                              ? BodySmallText(
+                                  adminString.tr,
+                                  weight: TextWeight.bold,
+                                ).bP4
                               : Container()
                           // const Spacer(),
                         ],
@@ -728,6 +721,7 @@ class _ChatRoomDetailState extends State<ChatRoomDetail> {
                 if (item.id == '1') {
                   Get.to(() => OtherUserProfile(
                         userId: member.userDetail.id,
+                        user: member.userDetail,
                       ));
                 } else if (item.id == '2') {
                   _chatRoomDetailController.makeUserAsAdmin(

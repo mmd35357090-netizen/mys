@@ -5,8 +5,8 @@ class ContactTile extends StatelessWidget {
   final Contact contact;
   final bool isSelected;
 
-  const ContactTile({Key? key, required this.contact, required this.isSelected})
-      : super(key: key);
+  const ContactTile({super.key, required this.contact, required this.isSelected})
+      ;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class ContactTile extends StatelessWidget {
                 size: 20,
                 color: AppColorConstants.themeColor,
               )
-            : const ThemeIconWidget(
+            : ThemeIconWidget(
                 ThemeIcon.circleOutline,
                 size: 20,
               )

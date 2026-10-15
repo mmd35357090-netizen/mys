@@ -1,12 +1,11 @@
 import 'package:foap/helper/imports/common_import.dart';
 
-class PasswordChangedPopup extends StatelessWidget {
-  final UserProfileManager _userProfileManager = Get.find();
+import '../login_sign_up/login_screen.dart';
 
+class PasswordChangedPopup extends StatelessWidget {
   final VoidCallback dismissHandler;
 
-  PasswordChangedPopup({Key? key, required this.dismissHandler})
-      : super(key: key);
+  const PasswordChangedPopup({super.key, required this.dismissHandler});
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +24,17 @@ class PasswordChangedPopup extends StatelessWidget {
             left: 0,
             right: 0,
             child: Container(
-              height: 360,
+              height: 400,
               color: AppColorConstants.backgroundColor,
               child: Column(
                 children: [
-                  Heading5Text('Password changed successfully!',
-                          weight: TextWeight.bold)
+                  Heading5Text(successString.tr, weight: TextWeight.bold)
                       .bp(20),
                   SizedBox(
                     height: 92,
                     width: 92,
                     child: Container(
-                      color: AppColorConstants.themeColor.withOpacity(0.5),
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.5),
                       height: 92,
                       width: 92,
                       child: ThemeIconWidget(ThemeIcon.checkMark,
@@ -47,17 +45,18 @@ class PasswordChangedPopup extends StatelessWidget {
                           value: 1,
                           radius: 46,
                           color:
-                              AppColorConstants.disabledColor.withOpacity(0.1))
+                              AppColorConstants.disabledColor.withValues(alpha: 0.1))
                       .vP25,
                   Heading5Text(
-                    'Your password has been changed successfully',
+                    passwordChangedString.tr,
                     textAlign: TextAlign.center,
                     color: AppColorConstants.backgroundColor,
                   ).ripple(() {}).bp(10),
                   AppThemeButton(
-                    text: 'Back to login',
+                    text: signInString.tr,
                     onPress: () {
-                      _userProfileManager.logout();
+                      // _userProfileManager.logout();
+                      Get.offAll(() => const LoginScreen());
                     },
                   ).hp(DesignConstants.horizontalPadding)
                 ],

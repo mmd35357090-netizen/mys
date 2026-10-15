@@ -1,9 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:foap/helper/imports/setting_imports.dart';
 
 class PaymentAndCoins extends StatefulWidget {
-  const PaymentAndCoins({Key? key}) : super(key: key);
+  const PaymentAndCoins({super.key});
 
   @override
   State<PaymentAndCoins> createState() => _PaymentAndCoinsState();
@@ -18,35 +17,27 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
   @override
   void initState() {
     super.initState();
-    coin = _userProfileManager.user.value!.coins ;
+    coin = _userProfileManager.user.value!.coins;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar(
-               title: paymentAndCoinsString.tr),
-          const SizedBox(height: 8,),
+          backNavigationBar(title: paymentAndCoinsString.tr),
           Expanded(
             child: ListView(
-              padding:  EdgeInsets.zero,
+              padding: EdgeInsets.zero,
               children: [
                 Column(
                   children: [
-                    addTileEvent(
-                        'assets/coins.png',
-                        '${coinsString.tr} ($coin)',
-                        checkYourCoinsAndEarnMoreCoinsString.tr, () {
+                    addTileEvent('${coinsString.tr} ($coin)', () {
                       Get.to(() => const PackagesScreen());
                     }),
-                    addTileEvent(
-                        'assets/earning.png',
-                        earningsString.tr,
-                        trackEarningString.tr, () {
-                      Get.to(() => const PaymentWithdrawalScreen());
+                    addTileEvent(transactionHistoryString.tr, () {
+                      Get.to(() => const Transactions());
                     }),
                   ],
                 ),
@@ -61,34 +52,19 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
     );
   }
 
-  addTileEvent(
-      String icon, String title, String subTitle, VoidCallback action) {
+  addTileEvent(String title, VoidCallback action) {
     return InkWell(
         onTap: action,
         child: Column(
           children: [
             SizedBox(
-              height: 75,
+              height: 50,
               child: Row(children: [
-                Container(
-                        color: AppColorConstants.themeColor.withOpacity(0.2),
-                        child: Image.asset(
-                          icon,
-                          height: 20,
-                          width: 20,
-                          color: AppColorConstants.themeColor,
-                        ).p8)
-                    .circular,
-                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      BodyLargeText(title,
-                          weight: TextWeight.medium)
-
-                    ],
+                    children: [BodyLargeText(title, weight: TextWeight.medium)],
                   ),
                 ),
                 // const Spacer(),

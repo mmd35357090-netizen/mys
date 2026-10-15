@@ -2,172 +2,10 @@ import 'dart:convert';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:foap/helper/imports/models.dart';
 import 'package:foap/helper/string_extension.dart';
-import 'package:foap/model/location.dart';
-import 'package:foap/model/story_model.dart';
 import 'package:foap/screens/chat/media.dart';
 import 'package:intl/intl.dart';
-
-class ChatContentJson {
-  int originalMessageId = 0;
-
-  ChatContentJson();
-
-  factory ChatContentJson.fromJson(dynamic json) {
-    ChatContentJson model = ChatContentJson();
-    model.originalMessageId = json['originalMessageId'] as int;
-    return model;
-  }
-}
-
-class FileModel {
-  String path;
-  int type;
-  String name;
-  int size;
-
-  FileModel(
-      {required this.path,
-      required this.type,
-      required this.name,
-      required this.size});
-}
-
-class ChatMedia {
-  String? image;
-  String? gif;
-  String? video;
-  String? audio;
-  Contact? contact;
-  LocationModel? location;
-  FileModel? file;
-
-  ChatMedia();
-
-  factory ChatMedia.fromJson(Map<String, dynamic> data) {
-    ChatMedia model = ChatMedia();
-    model.image = data["image"] as String?;
-    model.gif = data["image"] as String?;
-    model.video = data["video"] as String?;
-    model.audio = data["audio"] as String?;
-    if ((data["location"] is Map<String, dynamic>)) {
-      model.location = (data["location"] as Map<String, dynamic>?) != null
-          ? LocationModel.fromJson(data["location"])
-          : null;
-    }
-
-    model.file = (data["file"] as Map<String, dynamic>?) != null
-        ? FileModel(
-            path: data["file"]["path"],
-            type: data["file"]["type"],
-            name: data["file"]["name"],
-            size: data["file"]["size"] ?? 0)
-        : null;
-    model.contact = (data["contactCard"] as String?) != null
-        ? Contact.fromVCard(data["contactCard"] as String)
-        : null;
-
-    return model;
-  }
-
-  Map<String, dynamic> toJson() => {
-        'image': image,
-        'video': video,
-        'audio': audio,
-        'location': location?.toJson(),
-      };
-}
-
-class ChatPost {
-  int postId = 0;
-  String image = "";
-  String video = "";
-  String title = "";
-  String postOwnerName = "";
-  String postOwnerImage = "";
-
-  ChatPost();
-
-  factory ChatPost.fromJson(dynamic json) {
-    ChatPost model = ChatPost();
-    model.postId = json['postId'];
-    model.title = "Title";
-    model.postOwnerName = "Adam";
-    model.postOwnerImage =
-        "https://images.unsplash.com/photo-1656528049647-c82eb8174d04?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60";
-    model.image =
-        "https://images.unsplash.com/photo-1656533819629-2e386fafb6d5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60";
-    model.video =
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-    return model;
-  }
-}
-
-class GiftContent {
-  String image = "";
-  int coins = 0;
-
-  GiftContent();
-
-  factory GiftContent.fromJson(dynamic json) {
-    GiftContent model = GiftContent();
-    model.image = json['giftImage'];
-    model.coins = int.parse(json['coins']);
-
-    return model;
-  }
-}
-
-class TextContent {
-  String message = "";
-
-  TextContent();
-
-  factory TextContent.fromJson(dynamic json) {
-    TextContent model = TextContent();
-    model.message = json['text'];
-
-    return model;
-  }
-}
-
-class ProfileMinimumContent {
-  int userId = 0;
-  String? userPicture;
-  String userName = "";
-  String location = "";
-
-  ProfileMinimumContent();
-
-  factory ProfileMinimumContent.fromJson(dynamic json) {
-    ProfileMinimumContent model = ProfileMinimumContent();
-    model.userId = json['userId'];
-    model.userPicture = json['userPicture'];
-    model.userName = json['userName'];
-    model.location = json['location'] ?? '';
-
-    return model;
-  }
-}
-
-class ChatMessageUser {
-  int id = 0;
-  int messageId = 0;
-  int userId = 0;
-  int status = 0;
-
-  ChatMessageUser();
-
-  factory ChatMessageUser.fromJson(dynamic json) {
-    ChatMessageUser model = ChatMessageUser();
-    model.id = json['id'] ?? 0;
-    model.messageId = json['chat_message_id'] ?? 0;
-    model.userId = json['user_id'] ?? 0;
-    model.status = json['status'] ?? 0;
-
-    return model;
-  }
-}
 
 class ChatMessageModel {
   int id = 0;
@@ -228,22 +66,18 @@ class ChatMessageModel {
     model.roomId =
         jsonMap['room'] ?? jsonMap['room_id'] ?? jsonMap['liveCallId'] ?? 0;
     model.liveTvId = jsonMap['liveTvId'] ?? '';
-    model.isEncrypted = jsonMap['is_encrypted'] ?? 0;
+    model.isEncrypted = jsonMap['is_encrypted'] ?? jsonMap['isEncrypted'] ?? 0;
     model.chatVersion =
         jsonMap['chat_version'] is String? ? 0 : jsonMap['chat_version'];
-    final dynamic rawMessage = jsonMap['message'];
-    model.messageContent = (rawMessage is String
-        ? rawMessage
-        : rawMessage?.toString() ?? '')
-    .replaceAll('\\', '');
-    model.repliedOnMessageContent = jsonMap['replied_on_message'];
+    model.messageContent = jsonMap['message'].replaceAll('\\', '');
+    model.repliedOnMessageContent =
+        jsonMap['replied_on_message'] ?? jsonMap['repliedOnMessage'];
     model.messageType = jsonMap['messageType'] ?? jsonMap['type'];
-    model.senderId = jsonMap['created_by'];
-    model.createdAt = jsonMap['created_at'];
-    model.viewedAt = jsonMap['viewed_at'];
-    model.deleteAfter = 
-      jsonMap['deleteAfter'] ??  userProfileManager.user.value?.chatDeleteTime ??
-    AppConfigConstants.secondsInADay;
+    model.senderId = jsonMap['created_by'] ?? jsonMap['createdBy'];
+    model.createdAt = jsonMap['created_at'] ?? jsonMap['createdAt'];
+    model.viewedAt = jsonMap['viewed_at'] ?? jsonMap['viewedAt'];
+    model.deleteAfter =
+        jsonMap['deleteAfter'] ?? userProfileManager.user.value!.chatDeleteTime;
     model.isDeleted = jsonMap['isDeleted'] == 1;
     model.isStar = jsonMap['isStar'] ?? 0;
     model.opponentId = jsonMap['opponent_id'] ?? 0;
@@ -296,8 +130,6 @@ class ChatMessageModel {
   }
 
   ChatPost get postContent {
-    // ChatMessageModel message =
-    // ChatMessageModel.fromJson(json.decode(messageContent.decrypted()));
     return ChatPost.fromJson(json.decode(messageContent.decrypted()));
   }
 
@@ -324,15 +156,52 @@ class ChatMessageModel {
     return messageContent;
   }
 
+  ChatMessageUser get myUserDataInMessage {
+    UserProfileManager userProfileManager = Get.find();
+    // print('chatMessageUser ${chatMessageUser.length} ');
+    // print('message $textMessage ');
+
+    return chatMessageUser
+        .where((element) => element.userId == userProfileManager.user.value!.id)
+        .first;
+  }
+
+  List<ChatMessageUser> get usersInMessageWithPendingRead {
+    UserProfileManager userProfileManager = Get.find();
+
+    return chatMessageUser
+        .where((element) =>
+            element.status != 3 &&
+            element.userId != userProfileManager.user.value!.id)
+        .toList();
+  }
+
+  List<ChatMessageUser> get usersInMessageWithPendingDelivery {
+    UserProfileManager userProfileManager = Get.find();
+
+    return chatMessageUser
+        .where((element) =>
+            element.status != 2 &&
+            element.userId != userProfileManager.user.value!.id)
+        .toList();
+  }
+
   MessageStatus get messageStatusType {
-    if (status == 1) {
-      return MessageStatus.sent;
-    } else if (status == 2) {
-      return MessageStatus.delivered;
-    } else if (status == 3) {
+    if (chatMessageUser.isEmpty) {
+      return MessageStatus.sending;
+    }
+    if (usersInMessageWithPendingRead.isEmpty) {
       return MessageStatus.read;
+    } else if (usersInMessageWithPendingDelivery.isEmpty) {
+      return MessageStatus.delivered;
+    } else if (myUserDataInMessage.status == 1) {
+      return MessageStatus.sent;
     }
     return MessageStatus.sending;
+  }
+
+  bool get isMessageReadyByMe {
+    return myUserDataInMessage.status == 3;
   }
 
   bool get isReply {
@@ -502,17 +371,21 @@ class ChatMessageModel {
   }
 
   int get chatDay {
-    DateTime createDate = DateTime.fromMillisecondsSinceEpoch(createdAt * 1000);
+    DateTime createDate = AppUtil.convertToDateTime(createdAt);
     return int.parse(DateFormat('d').format(createDate));
   }
 
-  String get date {
-    DateTime createDate = DateTime.fromMillisecondsSinceEpoch(createdAt * 1000);
+  String get dateString {
+    DateTime createDate = AppUtil.convertToDateTime(createdAt);
     return DateFormat('dd-MMM-yyyy').format(createDate);
   }
 
+  DateTime get date {
+    return AppUtil.convertToDateTime(createdAt);
+  }
+
   String get messageTime {
-    DateTime createDate = DateTime.fromMillisecondsSinceEpoch(createdAt * 1000);
+    DateTime createDate = AppUtil.convertToDateTime(createdAt);
 
     final difference = DateTime.now().difference(createDate).inDays;
 
@@ -609,5 +482,170 @@ class ChatMessageModel {
       return repliedOnMessageContent!.decrypted();
     }
     return repliedOnMessageContent!.decrypted();
+  }
+
+
+
+
+}
+
+class ChatContentJson {
+  int originalMessageId = 0;
+
+  ChatContentJson();
+
+  factory ChatContentJson.fromJson(dynamic json) {
+    ChatContentJson model = ChatContentJson();
+    model.originalMessageId = json['originalMessageId'] as int;
+    return model;
+  }
+}
+
+class FileModel {
+  String path;
+  int type;
+  String name;
+  int size;
+
+  FileModel(
+      {required this.path,
+      required this.type,
+      required this.name,
+      required this.size});
+}
+
+class ChatMedia {
+  String? image;
+  String? gif;
+  String? video;
+  String? audio;
+  Contact? contact;
+  LocationModel? location;
+  FileModel? file;
+
+  ChatMedia();
+
+  factory ChatMedia.fromJson(Map<String, dynamic> data) {
+    ChatMedia model = ChatMedia();
+    model.image = data["image"] as String?;
+    model.gif = data["image"] as String?;
+    model.video = data["video"] as String?;
+    model.audio = data["audio"] as String?;
+    if ((data["location"] is Map<String, dynamic>)) {
+      model.location = (data["location"] as Map<String, dynamic>?) != null
+          ? LocationModel.fromJson(data["location"])
+          : null;
+    }
+
+    model.file = (data["file"] as Map<String, dynamic>?) != null
+        ? FileModel(
+            path: data["file"]["path"],
+            type: data["file"]["type"],
+            name: data["file"]["name"],
+            size: data["file"]["size"] ?? 0)
+        : null;
+    model.contact = (data["contactCard"] as String?) != null
+        ? Contact.fromVCard(data["contactCard"] as String)
+        : null;
+
+    return model;
+  }
+
+  Map<String, dynamic> toJson() => {
+        'image': image,
+        'video': video,
+        'audio': audio,
+        'location': location?.toJson(),
+      };
+}
+
+class ChatPost {
+  int postId = 0;
+  String image = "";
+  String video = "";
+  String title = "";
+  String postOwnerName = "";
+  String postOwnerImage = "";
+
+  ChatPost();
+
+  factory ChatPost.fromJson(dynamic json) {
+    ChatPost model = ChatPost();
+    model.postId = json['postId'];
+    model.title = "Title";
+    model.postOwnerName = "Adam";
+    model.postOwnerImage =
+        "https://images.unsplash.com/photo-1656528049647-c82eb8174d04?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60";
+    model.image =
+        "https://images.unsplash.com/photo-1656533819629-2e386fafb6d5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60";
+    model.video =
+        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+    return model;
+  }
+}
+
+class GiftContent {
+  String image = "";
+  int coins = 0;
+
+  GiftContent();
+
+  factory GiftContent.fromJson(dynamic json) {
+    GiftContent model = GiftContent();
+    model.image = json['giftImage'];
+    model.coins = int.parse(json['coins']);
+
+    return model;
+  }
+}
+
+class TextContent {
+  String message = "";
+
+  TextContent();
+
+  factory TextContent.fromJson(dynamic json) {
+    TextContent model = TextContent();
+    model.message = json['text'];
+
+    return model;
+  }
+}
+
+class ProfileMinimumContent {
+  int userId = 0;
+  String? userPicture;
+  String userName = "";
+  String location = "";
+
+  ProfileMinimumContent();
+
+  factory ProfileMinimumContent.fromJson(dynamic json) {
+    ProfileMinimumContent model = ProfileMinimumContent();
+    model.userId = json['userId'];
+    model.userPicture = json['userPicture'];
+    model.userName = json['userName'];
+    model.location = json['location'] ?? '';
+
+    return model;
+  }
+}
+
+class ChatMessageUser {
+  int id = 0;
+  int messageId = 0;
+  int userId = 0;
+  int status = 0;
+
+  ChatMessageUser();
+
+  factory ChatMessageUser.fromJson(dynamic json) {
+    ChatMessageUser model = ChatMessageUser();
+    model.id = json['id'] ?? 0;
+    model.messageId = json['chat_message_id'] ?? json['chatMessageId'] ?? 0;
+    model.userId = json['user_id'] ?? json['userId'] ?? 0;
+    model.status = json['status'] ?? 0;
+
+    return model;
   }
 }

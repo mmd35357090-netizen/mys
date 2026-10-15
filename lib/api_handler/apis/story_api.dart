@@ -6,7 +6,7 @@ import '../../model/story_model.dart';
 class StoryApi {
   static postStory(
       {required List<Map<String, String>> gallery,
-        required VoidCallback successHandler}) async {
+      required VoidCallback successHandler}) async {
     var url = NetworkConstantsUtil.addStory;
 
     var param = {
@@ -70,18 +70,18 @@ class StoryApi {
     });
   }
 
-  static viewStory({required int storyId}) async{
+  static viewStory({required int storyId}) {
     var url = NetworkConstantsUtil.viewStory;
 
-    await ApiWrapper()
+    ApiWrapper()
         .postApi(url: url, param: {'story_id': storyId}).then((result) {});
   }
 
   static getStoryViewers(
       {required int storyId,
-        required int page,
-        required Function(List<StoryViewerModel>, APIMetaData)
-        resultCallback}) async {
+      required int page,
+      required Function(List<StoryViewerModel>, APIMetaData)
+          resultCallback}) async {
     var url = NetworkConstantsUtil.storyViewedByUsers;
     url = url.replaceAll('{{story_id}}', storyId.toString());
     url = '$url&page=$page';
@@ -98,7 +98,7 @@ class StoryApi {
 
   static getStoryDetail(
       {required int storyId,
-        required Function(StoryModel) resultCallback}) async {
+      required Function(StoryModel) resultCallback}) async {
     var url = '${NetworkConstantsUtil.storyDetail}$storyId';
 
     await ApiWrapper().getApi(url: url).then((result) {

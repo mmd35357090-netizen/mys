@@ -6,7 +6,7 @@ import '../profile/other_user_profile.dart';
 class ClubJoinRequests extends StatefulWidget {
   final ClubModel club;
 
-  const ClubJoinRequests({Key? key, required this.club}) : super(key: key);
+  const ClubJoinRequests({super.key, required this.club});
 
   @override
   ClubJoinRequestsState createState() => ClubJoinRequestsState();
@@ -22,14 +22,11 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
           backNavigationBar(title: joinRequestsString.tr),
-          const SizedBox(
-            height: 8,
-          ),
           Expanded(
             child: GetBuilder<ClubDetailController>(
                 init: _clubDetailController,
@@ -60,7 +57,9 @@ class ClubJoinRequestsState extends State<ClubJoinRequests> {
                           request: requestsList[index],
                           viewCallback: () {
                             Get.to(() => OtherUserProfile(
-                                userId: requestsList[index].user!.id));
+                                  userId: requestsList[index].user!.id,
+                                  user: requestsList[index].user!,
+                                ));
                           },
                           acceptBtnClicked: () {
                             _clubDetailController

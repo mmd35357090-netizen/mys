@@ -6,8 +6,8 @@ class CompetitionCard extends StatefulWidget {
   final CompetitionModel model;
   final VoidCallback handler;
 
-  const CompetitionCard({Key? key, required this.model, required this.handler})
-      : super(key: key);
+  const CompetitionCard({super.key, required this.model, required this.handler})
+      ;
 
   @override
   CompetitionCardState createState() => CompetitionCardState();
@@ -65,8 +65,8 @@ class CompetitionCardState extends State<CompetitionCard> {
 class CompetitionHighlightBar extends StatefulWidget {
   final CompetitionModel model;
 
-  const CompetitionHighlightBar({Key? key, required this.model})
-      : super(key: key);
+  const CompetitionHighlightBar({super.key, required this.model})
+      ;
 
   @override
   State<CompetitionHighlightBar> createState() =>

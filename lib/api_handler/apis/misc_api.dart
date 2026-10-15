@@ -1,19 +1,18 @@
 import 'package:foap/api_handler/api_wrapper.dart';
+import 'package:foap/helper/enum_linking.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
-
-import '../../helper/enum_linking.dart';
 import '../../model/follow_request.dart';
 import '../../model/support_request_response.dart';
 
 class MiscApi {
   static getProfileCategoryType(
-      {required Function(List<CategoryModel>) resultCallback}) async{
+      {required Function(List<CategoryModel>) resultCallback}) async {
     var url = NetworkConstantsUtil.profileCategoryTypes;
 
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
     await ApiWrapper().getApi(url: url).then((result) {
-      EasyLoading.dismiss();
+      Loader.dismiss();
       if (result?.success == true) {
         var items = result!.data['profileCategoryType'];
         resultCallback(List<CategoryModel>.from(
@@ -23,23 +22,25 @@ class MiscApi {
   }
 
   static getPolls(
-      {required Function(List<PollsModel>) resultCallback}) async{
+      {required Function(List<PollModel>) resultCallback}) async {
     var url = NetworkConstantsUtil.getPolls;
 
+    // Loader.show(status: loadingString.tr);
     await ApiWrapper().getApi(url: url).then((result) {
+      Loader.dismiss();
       if (result?.success == true) {
         var items = result!.data['poll']['items'];
-        resultCallback(List<PollsModel>.from(
-            items.map((x) => PollsModel.fromJson(x))));
+        resultCallback(
+            List<PollModel>.from(items.map((x) => PollModel.fromJson(x))));
       }
     });
   }
 
   static postPollAnswer(
       {required int pollId,
-        // required int pollQuestionId,
-        required int questionOptionId,
-        required Function(List<PollsModel>) resultCallback}) async{
+      // required int pollQuestionId,
+      required int questionOptionId,
+      required Function(List<PollModel>) resultCallback}) async {
     var url = NetworkConstantsUtil.postPoll;
 
     await ApiWrapper().postApi(url: url, param: {
@@ -52,8 +53,8 @@ class MiscApi {
         var question = result['question'].first;
         question['pollQuestionOption'] = result['questionOption'];
 
-        resultCallback(List<PollsModel>.from(
-            [question].map((x) => PollsModel.fromJson(x))));
+        resultCallback(List<PollModel>.from(
+            [question].map((x) => PollModel.fromJson(x))));
       }
     });
   }
@@ -74,6 +75,70 @@ class MiscApi {
     });
   }
 
+  static getNotificationInfo(
+      {required Function(int) resultCallback}) async {
+    var url = NetworkConstantsUtil.notificationInformation;
+
+    await ApiWrapper().getApi(url: url).then((result) {
+      if (result?.success == true) {
+        var count = result!.data['unread_notification'];
+        resultCallback(count);
+      }
+    });
+  }
+
+  static markNotificationAsRead(
+      {required int id, required Function() resultCallback}) async {
+    var url = NetworkConstantsUtil.markNotificationAsRead;
+
+    await ApiWrapper().postApi(url: url, param: {
+      "id": id,
+      "is_read_all": 0
+
+      /// for single send 0, send 1 to all as read
+    }).then((result) {
+      if (result?.success == true) {
+        resultCallback();
+      }
+    });
+  }
+
+  static getFollowRequests(
+      {required int page,
+      required Function(List<FollowRequestModel>, APIMetaData)
+          resultCallback}) async {
+    var url = '${NetworkConstantsUtil.followRequests}&page=$page';
+
+    await ApiWrapper().getApi(url: url).then((result) {
+      if (result?.success == true) {
+        var items = result!.data['followingRequest']['items'];
+        resultCallback(
+            List<FollowRequestModel>.from(
+                items.map((x) => FollowRequestModel.fromJson(x))),
+            APIMetaData.fromJson(
+                result.data['followingRequest']['_meta']));
+      }
+    });
+  }
+
+  static acceptFollowRequest(
+      {required int userId,
+      required VoidCallback completionHandler}) async {
+    var url = NetworkConstantsUtil.acceptFollowRequestString;
+
+    await ApiWrapper().postApi(
+        url: url, param: {"user_id": userId.toString()}).then((result) {
+      completionHandler();
+    });
+  }
+
+  static declineFollowRequest({required int userId}) async {
+    var url = NetworkConstantsUtil.declineFollowRequestString;
+
+    await ApiWrapper().postApi(
+        url: url, param: {"user_id": userId.toString()}).then((result) {});
+  }
+
   static updateNotificationSettings(
       {required String likesNotificationStatus,
       required String commentNotificationStatus,
@@ -87,7 +152,8 @@ class MiscApi {
     });
   }
 
-  static getSettings({required Function(SettingModel) resultCallback}) async {
+  static getSettings(
+      {required Function(SettingModel) resultCallback}) async {
     var url = NetworkConstantsUtil.getSettings;
 
     await ApiWrapper().getApiWithoutToken(url: url).then((result) {
@@ -123,15 +189,16 @@ class MiscApi {
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         List items = result!.data['supportRequest']['items'] as List;
-        resultCallback(items.map((e) => SupportRequest.fromJson(e)).toList(),
+        resultCallback(
+            items.map((e) => SupportRequest.fromJson(e)).toList(),
             APIMetaData.fromJson(result.data['supportRequest']['_meta']));
       }
     });
   }
 
   static getSupportMessageView(int id) async {
-    var url =
-        NetworkConstantsUtil.supportRequestView.replaceAll('id', id.toString());
+    var url = NetworkConstantsUtil.supportRequestView
+        .replaceAll('id', id.toString());
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {}
@@ -140,8 +207,9 @@ class MiscApi {
 
   static searchHashtag(
       {required String hashtag,
-        required int page,
-        required Function(List<Hashtag>, APIMetaData) resultCallback}) async {
+      required int page,
+      required Function(List<Hashtag>, APIMetaData)
+          resultCallback}) async {
     var url = '${NetworkConstantsUtil.searchHashtag}$hashtag&page=$page';
 
     ApiWrapper().getApi(url: url).then((result) {
@@ -167,11 +235,13 @@ class MiscApi {
     });
   }
 
-  static Future uploadFile(String filePath,
-      {required UploadMediaType type,
-      required GalleryMediaType mediaType,
-      required Function(String, String) resultCallback}) async {
-    EasyLoading.show(status: loadingString.tr);
+  static Future uploadFile(
+    String filePath, {
+    required UploadMediaType type,
+    required GalleryMediaType mediaType,
+    required Function(String, String) resultCallback,
+  }) async {
+    print('uploaded thumbnail $filePath');
 
     await ApiWrapper()
         .uploadFile(
@@ -180,12 +250,13 @@ class MiscApi {
             mediaType: mediaType,
             type: type)
         .then((result) {
-      EasyLoading.dismiss();
+      print('uploaded thumbnail result ${result!.data}');
+
       if (result?.success == true) {
         var items = result!.data['files'] as List<dynamic>;
 
+        print('uploaded thumbnail result $items');
         bool isProhabited = items.first['isProhabited'];
-
         if (isProhabited == false) {
           resultCallback(items.first['file'], items.first['fileUrl']);
         } else {
@@ -196,71 +267,10 @@ class MiscApi {
     });
   }
 
-
-  static getFollowRequests(
-      {required int page,
-        required Function(List<FollowRequestModel>, APIMetaData)
-        resultCallback}) async {
-    var url = '${NetworkConstantsUtil.followRequests}&page=$page';
-
-    await ApiWrapper().getApi(url: url).then((result) {
-      if (result?.success == true) {
-        var items = result!.data['followingRequest']['items'];
-        resultCallback(
-            List<FollowRequestModel>.from(
-                items.map((x) => FollowRequestModel.fromJson(x))),
-            APIMetaData.fromJson(result.data['followingRequest']['_meta']));
-      }
-    });
-  }
-
-  static acceptFollowRequest({required int userId}) async {
-    var url = NetworkConstantsUtil.acceptFollowRequestString;
-
-    await ApiWrapper().postApi(
-        url: url, param: {"user_id": userId.toString()}).then((result) {});
-  }
-
-  static declineFollowRequest({required int userId}) async {
-    var url = NetworkConstantsUtil.declineFollowRequestString;
-
-    await ApiWrapper().postApi(
-        url: url, param: {"user_id": userId.toString()}).then((result) {});
-  }
-
-
-  static getNotificationInfo(
-      {required Function(int) resultCallback}) async {
-    var url = NetworkConstantsUtil.notificationInformation;
-
-    await ApiWrapper().getApi(url: url).then((result) {
-      if (result?.success == true) {
-        var count = result!.data['unread_notification'];
-        resultCallback(count);
-      }
-    });
-  }
-
-  static markNotificationAsRead(
-      {required int id, required Function() resultCallback}) async {
-    var url = NetworkConstantsUtil.markNotificationAsRead;
-
-    await ApiWrapper().postApi(url: url, param: {
-      "id": id,
-      "is_read_all": 0
-
-      /// for single send 0, send 1 to all as read
-    }).then((result) {
-      if (result?.success == true) {
-        resultCallback();
-      }
-    });
-  }
-
   static pinContent(
       {required PinContentType type,
-        required int refId,
-        required Function(int) successHandler}) async {
+      required int refId,
+      required Function(int) successHandler}) async {
     var url = NetworkConstantsUtil.addPinContent;
 
     await ApiWrapper().postApi(url: url, param: {

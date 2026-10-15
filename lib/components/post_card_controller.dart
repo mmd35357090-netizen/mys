@@ -1,12 +1,10 @@
-import 'dart:io';
 import 'package:foap/api_handler/apis/post_api.dart';
 import 'package:foap/api_handler/apis/users_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:share_plus/share_plus.dart';
 import '../controllers/post/post_controller.dart';
+import '../helper/enum_linking.dart';
 import '../model/post_model.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 class PostCardController extends GetxController {
   final PostController postController = Get.find();
@@ -56,7 +54,8 @@ class PostCardController extends GetxController {
       likedPosts.remove(post);
     }
     likedPosts.refresh();
-    post.totalLike = post.isLike ? (post.totalLike) + 1 : (post.totalLike) - 1;
+    post.totalLike =
+        post.isLike ? (post.totalLike) + 1 : (post.totalLike) - 1;
 
     PostApi.likeUnlikePost(like: post.isLike, postId: post.id);
   }
@@ -77,19 +76,30 @@ class PostCardController extends GetxController {
 
   reSharePost(
       {required int postId,
-        required String comment,
-        required bool enableComments}) {
-    EasyLoading.show(status: loadingString.tr);
+      required String comment,
+      required bool enableComments}) {
+    Loader.show(status: loadingString.tr);
     PostApi.addPost(
         sharingPostId: postId,
         allowComments: enableComments,
-        postType: PostType.reshare,
+        isPaidContent: false,
+        postType: PostCategory.reshare,
         postContentType: PostContentType.text,
         gallery: [],
         title: comment,
         resultCallback: (value) {
-          EasyLoading.dismiss();
+          Loader.dismiss();
           update();
         });
+  }
+
+  postView(
+      {required int postId,
+      required ItemViewSource source,
+      int? postPromotionId}) {
+    PostApi.postView(
+        postId: postId,
+        sourceType: itemViewSourceToId(source),
+        postPromotionId: postPromotionId);
   }
 }

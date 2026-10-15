@@ -1,24 +1,24 @@
-import 'package:foap/controllers/post/post_controller.dart';
+import 'package:foap/controllers/subscription/subscription_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/screens/profile/user_post_media.dart';
+import 'package:foap/screens/profile/sliver_app_bar.dart';
+import 'package:foap/screens/profile/user_profile_stat.dart';
 import '../../components/highlights_bar.dart';
+import '../../components/post_card/post_card.dart';
 import '../../components/sm_tab_bar.dart';
 import '../../controllers/chat_and_call/chat_detail_controller.dart';
+import '../../controllers/profile/other_user_profile_controller.dart';
 import '../../controllers/story/highlights_controller.dart';
-import '../../controllers/profile/profile_controller.dart';
-import '../../model/post_search_query.dart';
+import '../../model/post_model.dart';
 import '../chat/chat_detail.dart';
-import '../highlights/choose_stories.dart';
 import '../highlights/hightlights_viewer.dart';
 import '../live/gifts_list.dart';
-import '../reuseable_widgets/post_list.dart';
 import '../settings_menu/settings_controller.dart';
-import 'follower_following_list.dart';
 
 class OtherUserProfile extends StatefulWidget {
   final int userId;
+  final UserModel? user;
 
-  const OtherUserProfile({Key? key, required this.userId}) : super(key: key);
+  const OtherUserProfile({super.key, required this.userId, this.user});
 
   @override
   OtherUserProfileState createState() => OtherUserProfileState();
@@ -26,20 +26,19 @@ class OtherUserProfile extends StatefulWidget {
 
 class OtherUserProfileState extends State<OtherUserProfile>
     with SingleTickerProviderStateMixin {
-  final ProfileController _profileController = Get.find();
+  final OtherUserProfileController _profileController = Get.find();
   final HighlightsController _highlightsController = Get.find();
   final SettingsController _settingsController = Get.find();
   final ChatDetailController _chatDetailController = Get.find();
-  final PostController _postController = Get.find();
+  final UserSubscriptionController _subscriptionController = Get.find();
 
-  List<String> tabs = [postsString, mentionsString];
+  List<String> tabs = [postsString, reelsString, mentionsString];
 
   TabController? controller;
 
   @override
   void initState() {
     super.initState();
-
     controller = TabController(vsync: this, length: tabs.length)
       ..addListener(() {});
     initialLoad();
@@ -47,7 +46,11 @@ class OtherUserProfileState extends State<OtherUserProfile>
 
   initialLoad() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // if (widget.user != null) {
+      //   _profileController.setUser(widget.user!);
+      // }
       _profileController.clear();
+
       loadData();
     });
   }
@@ -61,89 +64,159 @@ class OtherUserProfileState extends State<OtherUserProfile>
   @override
   void dispose() {
     _profileController.clear();
-    _postController.clear();
     super.dispose();
   }
 
   loadData() {
-    _profileController.getOtherUserDetail(userId: widget.userId);
-    _profileController.getMentionPosts(widget.userId);
-
-    PostSearchQuery query = PostSearchQuery();
-    query.userId = widget.userId;
-    _postController.setPostSearchQuery(query: query, callback: () {});
-    _profileController.getReels(widget.userId);
-    _highlightsController.getHighlights(userId: widget.userId);
+    _profileController.getOtherUserDetail(
+        userId: widget.userId,
+        completionBlock: (user) {
+          if (user.isPrivateProfile == false ||
+              user.followingStatus == FollowingStatus.following) {
+            _profileController.getMentionPosts(widget.userId);
+            _profileController.getReels(widget.userId);
+            _profileController.getPosts(
+                userId: widget.userId, callback: () {});
+            _highlightsController.getHighlights(userId: widget.userId);
+          }
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
+    return Obx(() => AppScaffold(
           backgroundColor: AppColorConstants.backgroundColor,
-          body: Stack(children: [
-            if (_settingsController.appearanceChanged!.value) Container(),
-            NestedScrollView(
-                headerSliverBuilder:
-                    (BuildContext context, bool innerBoxIsScrolled) {
-                  return <Widget>[
-                    SliverAppBar(
-                      leading: const SizedBox(
-                        height: 30,
-                        width: 30,
-                        // color: AppColorConstants.themeColor,
-                        child: ThemeIconWidget(ThemeIcon.backArrow),
-                      ).circular.lP25.ripple(() {
-                        Get.back();
-                      }),
-                      actions: [
-                        const SizedBox(
-                          height: 30,
-                          width: 30,
-                          // color: AppColorConstants.themeColor,
-                          child: ThemeIconWidget(ThemeIcon.more),
-                        ).circular.rP25.ripple(() {
-                          openActionPopup();
-                        }),
-                      ],
-                      backgroundColor: AppColorConstants.backgroundColor,
-                      pinned: true,
-                      expandedHeight: 550,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Column(
-                          children: [
-                            addProfileView(),
-                            addHighlightsView().tP25
-                          ],
+          body: Column(
+            children: [
+              appBar(),
+              if (_profileController.user.value != null)
+                _profileController.user.value!.isPrivateProfile &&
+                        _profileController.user.value!.followingStatus ==
+                            FollowingStatus.notFollowing
+                    ? Column(
+                        children: [header(), body()],
+                      )
+                    : Expanded(
+                        child: DefaultTabController(
+                          length: tabs.length,
+                          child: NestedScrollView(
+                            headerSliverBuilder: (BuildContext context,
+                                bool innerBoxIsScrolled) {
+                              return <Widget>[
+                                SliverAppBar(
+                                  backgroundColor:
+                                      AppColorConstants.backgroundColor,
+                                  pinned: false,
+                                  automaticallyImplyLeading: false,
+                                  expandedHeight: headerHeight(),
+                                  toolbarHeight: 0,
+                                  flexibleSpace: FlexibleSpaceBar(
+                                    background: header(),
+                                  ),
+                                ),
+                                if (_profileController.user.value!
+                                            .isPrivateProfile ==
+                                        false ||
+                                    _profileController
+                                            .user.value!.followingStatus ==
+                                        FollowingStatus.following)
+                                  SliverPersistentHeader(
+                                    delegate: SliverAppBarDelegate(
+                                        SizedBox(
+                                            height: 50,
+                                            child: SMTabBar(
+                                                tabs: tabs,
+                                                canScroll: false))),
+                                    pinned: true,
+                                    // floating: true,
+                                  )
+                              ];
+                            },
+                            body: body(),
+                          ),
                         ),
                       ),
-                    ),
-                    SliverPersistentHeader(
-                      delegate: _SliverAppBarDelegate(
-                        getTextTabBar(
-                            tabs: tabs,
-                            controller: controller,
-                            canScroll: false),
-                      ),
-                      pinned: true,
-                      // floating: true,
-                    )
-                  ];
-                },
-                body: TabBarView(
-                  controller: controller,
-                  children: [
-                    PostList(
-                      postSource: PostSource.posts,
-                    ),
-                    MentionsList(),
-                  ],
-                )),
-          ]),
+            ],
+          ),
         ));
   }
 
+  double headerHeight() {
+    double categoryPortionHt =
+        _profileController.user.value!.profileCategoryTypeId != 0 ? 20 : 0;
+    double cityNamePortionHt =
+        _profileController.user.value?.country != null ? 20 : 0;
+
+    return (_profileController.user.value!.isPrivateProfile &&
+                _profileController.user.value!.followingStatus !=
+                    FollowingStatus.following
+            ? 370
+            : _highlightsController.highlights.isNotEmpty
+                ? 415.0
+                : 390) +
+        categoryPortionHt +
+        cityNamePortionHt;
+  }
+
+  Widget header() {
+    return SizedBox(
+      height: headerHeight(),
+      child: Column(
+        children: [
+          addProfileView().bP16,
+          if (_profileController.user.value!.isPrivateProfile == false ||
+              _profileController.user.value!.followingStatus ==
+                  FollowingStatus.following)
+            addHighlightsView().bP16,
+        ],
+      ),
+    );
+  }
+
+  Widget body() {
+    return Column(
+      children: [
+        if (_settingsController.appearanceChanged!.value) Container(),
+        _profileController.user.value!.isPrivateProfile
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ThemeIconWidget(
+                    ThemeIcon.lock,
+                    size: 100,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Heading6Text(accountIsPrivateString.tr,
+                      weight: TextWeight.medium),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  BodyLargeText(
+                    followAccountToViewPostsString.tr,
+                  ),
+                ],
+              )
+            : Flexible(
+                // Use Flexible to ensure proper layout
+                child: TabBarView(
+                  children: [
+                    postsView(),
+                    reelsView(),
+                    mentionedView(),
+                  ],
+                ),
+              ),
+      ],
+    );
+  }
+
   Widget addProfileView() {
-    return GetBuilder<ProfileController>(
+    return GetBuilder<OtherUserProfileController>(
         init: _profileController,
         builder: (ctx) {
           return _profileController.user.value != null
@@ -152,14 +225,17 @@ class OtherUserProfileState extends State<OtherUserProfile>
                     Stack(
                       children: [coverImage(), imageAndNameView()],
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    statsView().hp(DesignConstants.horizontalPadding),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    buttonsView().hp(DesignConstants.horizontalPadding)
+                    Column(
+                      children: [
+                        UserProfileStatistics(
+                          user: _profileController.user.value!,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        actionButtonsView(),
+                      ],
+                    ).hp(DesignConstants.horizontalPadding)
                   ],
                 )
               : Container();
@@ -170,7 +246,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
     return Positioned(
       left: 0,
       right: 0,
-      top: 100,
+      top: 40,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -179,7 +255,7 @@ class OtherUserProfileState extends State<OtherUserProfile>
             children: [
               UserAvatarView(
                   user: _profileController.user.value!,
-                  size: 85,
+                  size: 75,
                   onTapHandler: () {
                     //open live
                   }),
@@ -189,22 +265,23 @@ class OtherUserProfileState extends State<OtherUserProfile>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Heading6Text(_profileController.user.value!.userName,
+                  BodyLargeText(_profileController.user.value!.userName,
                       weight: TextWeight.medium),
                   if (_profileController.user.value!.isVerified)
                     verifiedUserTag()
                 ],
               ).bP4,
-              if (_profileController.user.value!.profileCategoryTypeId != 0)
-                BodyLargeText(
-                        _profileController.user.value!.profileCategoryTypeName,
+              if (_profileController.user.value!.profileCategoryTypeId !=
+                  0)
+                BodyMediumText(
+                        _profileController
+                            .user.value!.profileCategoryTypeName,
                         weight: TextWeight.regular)
                     .bP4,
-              _profileController.user.value?.country != null
-                  ? BodyMediumText(
-                      '${_profileController.user.value!.country},${_profileController.user.value!.city}',
-                    )
-                  : Container(),
+              if (_profileController.user.value?.country != null)
+                BodyMediumText(
+                  '${_profileController.user.value!.country},${_profileController.user.value!.city}',
+                ),
             ],
           ),
         ],
@@ -216,29 +293,28 @@ class OtherUserProfileState extends State<OtherUserProfile>
     return _profileController.user.value!.coverImage != null
         ? CachedNetworkImage(
                 width: Get.width,
-                height: 280,
+                height: 250,
                 fit: BoxFit.cover,
                 imageUrl: _profileController.user.value!.coverImage!)
-            // .overlay(Colors.black26)
             .bottomRounded(20)
         : SizedBox(
             width: Get.width,
-            height: 280,
-            // color: AppColorConstants.themeColor.withOpacity(0.2),
+            height: 200,
           );
   }
 
-  Widget buttonsView() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: AppThemeButton(
-              height: 35,
-              backgroundColor: _profileController.user.value!.followingStatus ==
-                      FollowingStatus.following
-                  ? AppColorConstants.themeColor
-                  : AppColorConstants.cardColor.darken(),
+  Widget actionButtonsView() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Wrap(
+        runAlignment: WrapAlignment.start,
+        alignment: WrapAlignment.center,
+        runSpacing: 5,
+        spacing: 5,
+        children: [
+          IntrinsicWidth(
+            child: AppThemeButton(
+              height: 40,
               text: _profileController.user.value!.followingStatus ==
                       FollowingStatus.following
                   ? unFollowString.tr
@@ -251,119 +327,100 @@ class OtherUserProfileState extends State<OtherUserProfile>
               onPress: () {
                 _profileController.followUnFollowUser(
                     user: _profileController.user.value!);
-              }),
-        ),
-
-        if (_settingsController.setting.value!.enableChat)
-          SizedBox(
-              width: Get.width * 0.25,
+              },
+              backgroundColor:
+                  _profileController.user.value!.followingStatus ==
+                          FollowingStatus.following
+                      ? AppColorConstants.themeColor
+                      : AppColorConstants.cardColor,
+            ),
+          ),
+          if (_profileController.user.value!.isVIPUser)
+            IntrinsicWidth(
               child: AppThemeButton(
-                  height: 35,
-                  backgroundColor: AppColorConstants.cardColor.darken(0.5),
-                  text: chatString.tr,
-                  onPress: () {
-                    EasyLoading.show(status: loadingString.tr);
-                    _chatDetailController.getChatRoomWithUser(
-                        userId: _profileController.user.value!.id,
-                        callback: (room) {
-                          EasyLoading.dismiss();
-                          Get.to(() => ChatDetail(
-                                chatRoom: room,
-                              ));
-                        });
-                  })).lP8,
-        if (_settingsController.setting.value!.enableGift)
-          SizedBox(
-              width: Get.width * 0.30,
+                height: 40,
+                text: _profileController.user.value!.subscribedStatus ==
+                        SubscribedStatus.subscribed
+                    ? subscribedString.tr
+                    : '${subscribeString.tr} (${_profileController.user.value!.subscriptionPlans.first.value!})',
+                onPress: () {
+                  subscribeUser();
+                },
+              ),
+            ),
+          if (_settingsController.setting.value!.enableChat)
+            IntrinsicWidth(
               child: AppThemeButton(
-                  height: 35,
-                  backgroundColor: AppColorConstants.cardColor.darken(0.5),
-                  text: sendGiftString.tr,
-                  onPress: () {
-                    showModalBottomSheet<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return FractionallySizedBox(
-                              heightFactor: 0.8,
-                              child:
-                                  GiftsPageView(giftSelectedCompletion: (gift) {
-                                Get.back();
-                                _profileController.sendGift(gift);
-                              }));
-                        });
-                  })).lP8,
-      ],
+                height: 40,
+                text: chatString.tr,
+                onPress: () {
+                  Loader.show(status: loadingString.tr);
+                  _chatDetailController.getChatRoomWithUser(
+                      userId: _profileController.user.value!.id,
+                      callback: (room) {
+                        Loader.dismiss();
+                        Get.to(() => ChatDetail(
+                              chatRoom: room,
+                            ));
+                      });
+                },
+              ),
+            ),
+          if (_settingsController.setting.value!.enableGift)
+            IntrinsicWidth(
+              child: AppThemeButton(
+                height: 40,
+                text: sendGiftString.tr,
+                onPress: () {
+                  showModalBottomSheet<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return FractionallySizedBox(
+                            heightFactor: 0.8,
+                            child: GiftsPageView(
+                                giftSelectedCompletion: (gift) {
+                              Get.back();
+                              _profileController.sendGift(gift);
+                            }));
+                      });
+                },
+              ),
+            ),
+        ],
+      ),
     );
   }
 
-  Widget statsView() {
+  Widget appBar() {
     return Container(
+      height: 100,
       color: AppColorConstants.cardColor,
+      width: double.infinity,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Heading4Text(
-                _profileController.user.value!.totalPost.toString(),
-              ).bP8,
-              BodySmallText(
-                postsString.tr,
-              ),
-            ],
-          ),
-          // const SizedBox(
-          //   width: 20,
-          // ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Heading4Text(
-                '${_profileController.user.value!.totalFollower}',
-              ).bP8,
-              BodySmallText(
-                followersString.tr,
-              ),
-            ],
-          ).ripple(() {
-            if (_profileController.user.value!.totalFollower > 0) {
-              Get.to(() => FollowerFollowingList(
-                        isFollowersList: true,
-                        userId: widget.userId,
-                      ))!
-                  .then((value) {
-                initialLoad();
-              });
-            }
+          SizedBox(
+              width: 50,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: ThemeIconWidget(
+                  ThemeIcon.backArrow,
+                  size: 18,
+                ),
+              )).ripple(() {
+            Get.back();
           }),
-          // const SizedBox(
-          //   width: 20,
-          // ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Heading4Text(
-                '${_profileController.user.value!.totalFollowing}',
-              ).bP8,
-              BodySmallText(
-                followingString.tr,
-              ),
-            ],
+          ThemeIconWidget(
+            ThemeIcon.more,
           ).ripple(() {
-            if (_profileController.user.value!.totalFollowing > 0) {
-              Get.to(() => FollowerFollowingList(
-                        isFollowersList: false,
-                        userId: widget.userId,
-                      ))!
-                  .then((value) {
-                initialLoad();
-              });
-            }
+            openActionPopup();
           }),
         ],
-      ).p16,
-    ).round(15);
+      ).setPadding(
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
+          top: 40),
+    );
   }
 
   void openActionPopup() {
@@ -377,16 +434,14 @@ class OtherUserProfileState extends State<OtherUserProfile>
                       title: Center(child: BodyLargeText(reportString.tr)),
                       onTap: () async {
                         Get.back();
-
-                        _profileController.reportUser(context);
+                        _profileController.reportUser();
                       }),
                   divider(),
                   ListTile(
                       title: Center(child: BodyLargeText(blockString.tr)),
                       onTap: () async {
                         Get.back();
-
-                        _profileController.blockUser(context);
+                        _profileController.blockUser();
                       }),
                   divider(),
                   ListTile(
@@ -400,45 +455,175 @@ class OtherUserProfileState extends State<OtherUserProfile>
   }
 
   Widget addHighlightsView() {
-    return Obx(() => _highlightsController.isLoading.value == true
-        ? const StoryAndHighlightsShimmer()
-        : HighlightsBar(
-            highlights: _highlightsController.highlights,
-            addHighlightCallback: () {
-              Get.to(() => const ChooseStoryForHighlights());
-            },
-            viewHighlightCallback: (highlight) {
-              Get.to(() => HighlightViewer(highlight: highlight))!
-                  .then((value) {
-                loadData();
+    return GetBuilder<HighlightsController>(
+        init: _highlightsController,
+        builder: (ctx) {
+          return _highlightsController.isLoading.value == true
+              ? const StoryAndHighlightsShimmer()
+              : _highlightsController.highlights.isEmpty
+                  ? Container()
+                  : HighlightsBar(
+                      highlights: _highlightsController.highlights,
+                      viewHighlightCallback: (highlight) {
+                        Get.to(() =>
+                                HighlightViewer(highlight: highlight))!
+                            .then((value) {
+                          loadData();
+                        });
+                      },
+                    );
+        });
+  }
+
+  postsView() {
+    ScrollController scrollController = ScrollController();
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.position.pixels) {
+        _profileController.getPosts(
+            userId: widget.userId, callback: () {});
+      }
+    });
+
+    return GetBuilder<OtherUserProfileController>(
+        init: _profileController,
+        builder: (ctx) {
+          List<PostModel> posts = _profileController.posts;
+
+          return _profileController.postDataWrapper.isLoading.value
+              ? const HomeScreenShimmer()
+              : posts.isEmpty
+                  ? Center(child: BodyLargeText(noDataString.tr))
+                  : ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(top: 10, bottom: 50),
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        PostModel model = posts[index];
+                        return PostCard(
+                            model: model,
+                            removePostHandler: () {
+                              _profileController.removePostFromList(model);
+                            },
+                            blockUserHandler: () {
+                              _profileController
+                                  .removeUsersAllPostFromList(model);
+                            });
+                      },
+                      separatorBuilder: (ctx, index) {
+                        return const SizedBox(
+                          height: 15,
+                        );
+                      },
+                    );
+        });
+  }
+
+  reelsView() {
+    ScrollController scrollController = ScrollController();
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.position.pixels) {
+        _profileController.getReels(widget.userId);
+      }
+    });
+
+    return GetBuilder<OtherUserProfileController>(
+        init: _profileController,
+        builder: (ctx) {
+          List<PostModel> posts = _profileController.reels;
+
+          return _profileController.reelsDataWrapper.isLoading.value
+              ? const HomeScreenShimmer()
+              : posts.isEmpty
+                  ? Center(child: BodyLargeText(noDataString.tr))
+                  : ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(top: 10, bottom: 50),
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        PostModel model = posts[index];
+                        return PostCard(
+                            model: model,
+                            removePostHandler: () {
+                              _profileController.removePostFromList(model);
+                            },
+                            blockUserHandler: () {
+                              _profileController
+                                  .removeUsersAllPostFromList(model);
+                            });
+                      },
+                      separatorBuilder: (ctx, index) {
+                        return const SizedBox(
+                          height: 15,
+                        );
+                      },
+                    );
+        });
+  }
+
+  mentionedView() {
+    ScrollController scrollController = ScrollController();
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.position.pixels) {
+        _profileController.getMentionPosts(widget.userId);
+      }
+    });
+
+    return GetBuilder<OtherUserProfileController>(
+        init: _profileController,
+        builder: (ctx) {
+          List<PostModel> posts = _profileController.mentions;
+
+          return _profileController
+                  .mentionedPostDataWrapper.isLoading.value
+              ? const HomeScreenShimmer()
+              : posts.isEmpty
+                  ? Center(child: BodyLargeText(noDataString.tr))
+                  : ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(top: 10, bottom: 50),
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        PostModel model = posts[index];
+                        return PostCard(
+                            model: model,
+                            removePostHandler: () {
+                              _profileController.removePostFromList(model);
+                            },
+                            blockUserHandler: () {
+                              _profileController
+                                  .removeUsersAllPostFromList(model);
+                            });
+                      },
+                      separatorBuilder: (ctx, index) {
+                        return const SizedBox(
+                          height: 15,
+                        );
+                      },
+                    );
+        });
+  }
+
+  subscribeUser() {
+    AppUtil.showNewConfirmationAlert(
+        title:
+            '${subscribeString.tr} ${_profileController.user.value!.userName}',
+        subTitle:
+            '${areYouSureToSubscribeString.tr} ${_profileController.user.value!.userName}',
+        okHandler: () {
+          _subscriptionController.subscribeUser(
+              userPlanId: _profileController
+                  .user.value!.subscriptionPlans.first.id,
+              succesCalback: () {
+                _profileController.getOtherUserDetail(
+                    userId: widget.userId, completionBlock: (user) {});
               });
-            },
-          ));
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: AppColorConstants.backgroundColor,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
+        },
+        cancelHandler: () {});
   }
 }

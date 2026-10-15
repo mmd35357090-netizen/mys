@@ -14,13 +14,6 @@ class SavedPostController extends GetxController {
     update();
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    debugPrint("Hello222");
-    refreshData(() {});
-  }
-
   refreshData(VoidCallback callback) {
     clear();
     getPosts(callback);
@@ -35,7 +28,9 @@ class SavedPostController extends GetxController {
   }
 
   void getPosts(VoidCallback callback) async {
-    postDataWrapper.isLoading.value = true;
+    if(postDataWrapper.page == 1){
+      postDataWrapper.isLoading.value = true;
+    }
     PostApi.getPosts(
         isSaved: 1,
         page: postDataWrapper.page,
@@ -43,13 +38,7 @@ class SavedPostController extends GetxController {
           posts.addAll(result);
           posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
           posts.unique((e) => e.id);
-          postDataWrapper.isLoading.value = false;
-
-          postDataWrapper.totalRecords.value = metadata.totalCount;
-          postDataWrapper.haveMoreData.value =
-              metadata.pageCount >= metadata.currentPage;
-
-          postDataWrapper.page += 1;
+          postDataWrapper.processCompletedWithData(metadata);
 
           callback();
           update();

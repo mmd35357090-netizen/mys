@@ -28,6 +28,7 @@ class ResharedPostCard extends StatelessWidget {
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         PostUserInfo(
           post: model,
+          isSponsored: false,
           removePostHandler: () {},
           blockUserHandler: () {},
           isResharedPost: true,
@@ -47,7 +48,7 @@ class ResharedPostCard extends StatelessWidget {
         if (model.gallery.isNotEmpty)
           PostMediaTile(
             model: model,
-            isSharedPostMedia: true,
+            isResharedPost: true,
           ),
       ]).p(DesignConstants.horizontalPadding),
     ).borderWithRadius(value: 1, radius: 10).ripple(() {

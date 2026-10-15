@@ -30,10 +30,10 @@ class UserNetworkController extends GetxController {
           resultCallback: (result, metadata) {
             isLoading.value = false;
             followers.addAll(result);
-            followers.unique((e)=> e.id);
+            followers.unique((e) => e.id);
 
             page += 1;
-            canLoadMore =  result.length >= metadata.perPage;
+            canLoadMore = result.length >= metadata.perPage;
 
             update();
           });
@@ -50,11 +50,10 @@ class UserNetworkController extends GetxController {
           resultCallback: (result, metadata) {
             isLoading.value = false;
             following.addAll(result);
-            following.unique((e)=> e.id);
+            following.unique((e) => e.id);
 
             page += 1;
             canLoadMore = result.length >= metadata.perPage;
-
             update();
           });
     }
@@ -62,8 +61,7 @@ class UserNetworkController extends GetxController {
 
   followUser(UserModel user) {
     user.followingStatus =
-    user.isPrivate ? FollowingStatus.requested : FollowingStatus.following;
-
+        user.isPrivateProfile ? FollowingStatus.requested : FollowingStatus.following;
     if (following.where((e) => e.id == user.id).isNotEmpty) {
       following[following.indexWhere((element) => element.id == user.id)] =
           user;
@@ -72,9 +70,11 @@ class UserNetworkController extends GetxController {
       followers[followers.indexWhere((element) => element.id == user.id)] =
           user;
     }
+    following.refresh();
+    followers.refresh();
+
     update();
-    UsersApi.followUnfollowUser(isFollowing: true, user: user)
-        .then((value) {
+    UsersApi.followUnfollowUser(isFollowing: true, user: user).then((value) {
       update();
     });
   }
@@ -91,9 +91,11 @@ class UserNetworkController extends GetxController {
           followers.where((element) => element.id == user.id).first;
       matchedUser.followingStatus = FollowingStatus.notFollowing;
     }
+    following.refresh();
+    followers.refresh();
+
     update();
-    UsersApi.followUnfollowUser(isFollowing: false, user: user)
-        .then((value) {
+    UsersApi.followUnfollowUser(isFollowing: false, user: user).then((value) {
       update();
     });
   }

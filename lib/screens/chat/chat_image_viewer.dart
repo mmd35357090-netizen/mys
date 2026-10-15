@@ -1,13 +1,12 @@
 import 'package:foap/helper/imports/common_import.dart';
-
 import 'package:foap/helper/imports/chat_imports.dart';
 
 class ChatImageViewer extends StatefulWidget {
   final ChatMessageModel chatMessage;
   final VoidCallback? handler;
 
-  const ChatImageViewer({Key? key, required this.chatMessage, this.handler})
-      : super(key: key);
+  const ChatImageViewer({super.key, required this.chatMessage, this.handler})
+      ;
 
   @override
   EnlargeImageViewState createState() => EnlargeImageViewState();
@@ -21,7 +20,7 @@ class EnlargeImageViewState extends State<ChatImageViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
           children: [
@@ -31,7 +30,7 @@ class EnlargeImageViewState extends State<ChatImageViewer> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const ThemeIconWidget(
+                ThemeIconWidget(
                   ThemeIcon.backArrow,
                   size: 20,
                   color: Colors.white,
@@ -40,7 +39,6 @@ class EnlargeImageViewState extends State<ChatImageViewer> {
                 }),
               ],
             ).hp(DesignConstants.horizontalPadding),
-            divider().vP8,
             Expanded(
                 child: MessageImage(
                     message: widget.chatMessage, fitMode: BoxFit.contain)),

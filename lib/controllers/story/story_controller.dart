@@ -1,6 +1,6 @@
 import 'package:foap/api_handler/apis/misc_api.dart';
 import 'package:foap/api_handler/apis/story_api.dart';
-import 'package:foap/helper/file_extension.dart';
+import 'package:foap/controllers/chat_and_call/chat_detail_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
@@ -9,11 +9,11 @@ import 'package:foap/model/story_model.dart';
 import 'package:foap/screens/chat/media.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:flutter_video_info/flutter_video_info.dart';
-import '../../manager/db_manager.dart';
+// import 'package:flutter_video_info/flutter_video_info.dart';
+import '../../manager/db_manager_realm.dart';
 import '../../model/data_wrapper.dart';
-import '../chat_and_call/chat_detail_controller.dart';
 import '../home/home_controller.dart';
+import 'package:foap/helper/file_extension.dart';
 
 class AppStoryController extends GetxController {
   final ChatDetailController _chatDetailController = Get.find();
@@ -25,7 +25,6 @@ class AppStoryController extends GetxController {
   RxInt numberOfItems = 0.obs;
 
   Rx<StoryMediaModel?> currentStoryMediaModel = Rx<StoryMediaModel?>(null);
-  bool isLoading = false;
 
   RxBool showEmoticons = false.obs;
   RxString replyText = ''.obs;
@@ -59,10 +58,10 @@ class AppStoryController extends GetxController {
 
   setCurrentStoryMedia(StoryMediaModel storyMedia) {
     UserProfileManager userProfileManager = Get.find();
-
     clearStoryViewers();
     currentStoryMediaModel.value = storyMedia;
-    getIt<DBManager>().storyViewed(storyMedia);
+    getIt<RealmDBManager>().storyViewed(storyMedia);
+
     if (storyMedia.userId == userProfileManager.user.value!.id) {
       loadStoryViewer();
     } else {
@@ -89,7 +88,6 @@ class AppStoryController extends GetxController {
     var responses =
         await Future.wait([for (Media media in items) uploadMedia(media)])
             .whenComplete(() {});
-    print('publishAction 1');
 
     publishAction(galleryItems: responses);
   }
@@ -106,12 +104,12 @@ class AppStoryController extends GetxController {
     if (media.mediaType == GalleryMediaType.photo) {
       Uint8List mainFileData = await media.file!.compress();
       //image media
-      mainFile = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}.png')
-          .create();
+      mainFile =
+          await File('${tempDir.path}/${media.id!.replaceAll('/', '')}.${media.file!.extension}')
+              .create();
       mainFile.writeAsBytesSync(mainFileData);
     } else {
-      EasyLoading.show(status: loadingString.tr);
+      Loader.show(status: loadingString.tr);
 
       MediaInfo? mediaInfo = await VideoCompress.compressVideo(
         media.file!.path,
@@ -120,12 +118,12 @@ class AppStoryController extends GetxController {
       );
       mainFile = mediaInfo!.file!;
 
-      final videoInfo = FlutterVideoInfo();
-      var info = await videoInfo.getVideoInfo(media.file!.path);
-      videoDuration = info!.duration!.toInt();
+      // final videoInfo = FlutterVideoInfo();
+      var info = await VideoCompress.getMediaInfo(media.file!.path);
+      videoDuration = info.duration!.toInt();
 
       File videoThumbnail = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.png')
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.${media.file!.extension}')
           .create();
 
       videoThumbnail.writeAsBytesSync(media.thumbnail!);
@@ -139,13 +137,11 @@ class AppStoryController extends GetxController {
       });
     }
 
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
 
     await MiscApi.uploadFile(mainFile.path,
-        mediaType: media.mediaType!,
-        type: UploadMediaType.storyOrHighlights,
+        mediaType: media.mediaType!, type: UploadMediaType.storyOrHighlights,
         resultCallback: (fileName, filePath) async {
-      print('sdhjsevfehj');
       String mainFileUploadedPath = fileName;
       await mainFile.delete();
       gallery = {
@@ -164,15 +160,12 @@ class AppStoryController extends GetxController {
       completer.complete(gallery);
     });
 
-    print('return block');
     return completer.future;
   }
 
   void publishAction({
     required List<Map<String, String>> galleryItems,
   }) {
-    print('publishAction 2');
-
     HomeController homeController = Get.find();
     StoryApi.postStory(
         gallery: galleryItems,
@@ -182,6 +175,9 @@ class AppStoryController extends GetxController {
           AppUtil.showToast(
               message: storyPostedSuccessfullyString, isSuccess: true);
         });
+    // DashboardController dashboardController = Get.find();
+    // dashboardController.indexChanged(0);
+    // Get.offAll(() => const DashboardScreen());
   }
 
   sendTextMessage(String message, StoryModel story) {

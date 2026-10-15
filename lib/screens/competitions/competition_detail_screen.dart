@@ -9,10 +9,9 @@ class CompetitionDetailScreen extends StatefulWidget {
   final VoidCallback refreshPreviousScreen;
 
   const CompetitionDetailScreen(
-      {Key? key,
+      {super.key,
       required this.competitionId,
-      required this.refreshPreviousScreen})
-      : super(key: key);
+      required this.refreshPreviousScreen});
 
   @override
   CompetitionDetailState createState() => CompetitionDetailState();
@@ -28,13 +27,17 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // if (widget.competition != null) {
+      //   competitionController.setCompetition(widget.competition!);
+      // } else {
       competitionController.loadCompetitionDetail(id: widget.competitionId);
+      // }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
@@ -46,7 +49,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const ThemeIconWidget(
+                  ThemeIconWidget(
                     ThemeIcon.backArrow,
                     size: 20,
                   ).ripple(() {
@@ -111,12 +114,12 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Heading5Text(
+                              BodyLargeText(
                                 competitionController.competition.value!.title,
                                 weight: TextWeight.bold,
                                 color: AppColorConstants.themeColor,
                               ).bP8,
-                              Heading5Text(
+                              BodyMediumText(
                                 competitionController
                                     .competition.value!.description,
                               ),
@@ -147,10 +150,9 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       model.exampleImages.isNotEmpty
-          ? Heading4Text(exampleVideosString.tr, weight: TextWeight.bold)
+          ? Heading6Text(exampleVideosString.tr, weight: TextWeight.bold)
               .hp(DesignConstants.horizontalPadding)
           : Container(),
-      const SizedBox(height: 65)
     ]).hp(DesignConstants.horizontalPadding);
   }
 
@@ -159,14 +161,11 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       model.exampleImages.isNotEmpty
-          ? Heading3Text(
+          ? Heading6Text(
               examplePhotosString.tr,
               weight: TextWeight.medium,
             )
           : Container(),
-      const SizedBox(
-        height: 20,
-      ),
       GridView.builder(
         itemCount: model.exampleImages.length,
         physics: const NeverScrollableScrollPhysics(),
@@ -193,7 +192,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
             ).round(10)),
         // staggeredTileBuilder: (int index) => new StaggeredTile.count(1, 1),
       ),
-      const SizedBox(height: 65)
+      const SizedBox(height: 155)
     ]);
   }
 
@@ -206,7 +205,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
               begin: FractionalOffset.bottomCenter,
               end: FractionalOffset.topCenter,
               colors: [
-                Colors.black.withOpacity(0.6),
+                Colors.black.withValues(alpha: 0.6),
                 Colors.transparent,
               ],
               stops: const [
@@ -224,7 +223,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
         .where(
             (element) => element.user.id == _userProfileManager.user.value!.id)
         .toList();
-    if (model.isJoined == true) {
+    if (model.isJoined) {
       title = loggedInUserPost.isNotEmpty
           ? viewSubmissionString.tr
           : model.competitionMediaType == 1
@@ -239,7 +238,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
       bottom: 0,
       child: InkWell(
           onTap: () async {
-            if (model.isJoined == true) {
+            if (model.isJoined) {
               //Already Joined Mission
               if (loggedInUserPost.isNotEmpty) {
                 //User have already published post for this competition

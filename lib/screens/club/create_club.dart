@@ -5,7 +5,7 @@ import '../../model/generic_item.dart';
 class CreateClub extends StatefulWidget {
   final ClubModel club;
 
-  const CreateClub({Key? key, required this.club}) : super(key: key);
+  const CreateClub({super.key, required this.club});
 
   @override
   CreateClubState createState() => CreateClubState();
@@ -31,7 +31,7 @@ class CreateClubState extends State<CreateClub> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Stack(
         children: [
@@ -44,7 +44,6 @@ class CreateClubState extends State<CreateClub> {
                       ? createClubString.tr
                       : editClubInfoString.tr,
                 ),
-                const SizedBox(height: 8,),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -97,12 +96,17 @@ class CreateClubState extends State<CreateClub> {
               child: Container(
                 color: AppColorConstants.cardColor,
                 child: AppThemeButton(
-                    text: widget.club.id == null
-                        ? nextString.tr
-                        : updateString.tr,
-                    onPress: () {
-                      nextBtnClicked();
-                    }).setPadding(left: DesignConstants.horizontalPadding, right: DesignConstants.horizontalPadding, bottom: 25, top: 25),
+                        text: widget.club.id == null
+                            ? nextString.tr
+                            : updateString.tr,
+                        onPress: () {
+                          nextBtnClicked();
+                        })
+                    .setPadding(
+                        left: DesignConstants.horizontalPadding,
+                        right: DesignConstants.horizontalPadding,
+                        bottom: 25,
+                        top: 25),
               ))
         ],
       ),
@@ -241,6 +245,7 @@ class CreateClubState extends State<CreateClub> {
 
     widget.club.name = nameText.text;
     widget.club.desc = descText.text;
+    widget.club.privacyType = _createClubController.privacyType.value;
 
     if (widget.club.id == null) {
       widget.club.enableChat = _createClubController.enableChat.value ? 1 : 0;

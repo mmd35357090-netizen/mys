@@ -45,6 +45,9 @@ class ClubApi {
       if (result?.success == true) {
         resultCallback(result!.data['club_id']);
       }
+      else {
+        AppUtil.showToast(message: result!.message!, isSuccess: false);
+      }
     });
   }
 
@@ -70,10 +73,10 @@ class ClubApi {
 
   static deleteClub(int clubId) async {
     var url = NetworkConstantsUtil.deleteClub + clubId.toString();
-    EasyLoading.show(status: loadingString.tr);
+    Loader.show(status: loadingString.tr);
 
     await ApiWrapper().deleteApi(url: url).then((result) {
-      EasyLoading.dismiss();
+      Loader.dismiss();
       if (result?.success == true) {}
     });
   }
@@ -134,6 +137,22 @@ class ClubApi {
       'message': '',
     }).then((result) {
       if (result?.success == true) {}
+    });
+  }
+
+  static getClubDetail(
+      {required int clubId,
+      int page = 1,
+      required Function(ClubModel) resultCallback}) async {
+    var url = NetworkConstantsUtil.clubDetail;
+    url = url.replaceAll('{{club_id}}', clubId.toString());
+    url = '$url&page=$page';
+
+    await ApiWrapper().getApi(url: url).then((result) {
+      if (result?.success == true) {
+        var club = result!.data['club'];
+        resultCallback(ClubModel.fromJson(club));
+      }
     });
   }
 
@@ -207,7 +226,7 @@ class ClubApi {
       int? userId,
       int? isJoined,
       int page = 1,
-      required Function(List<ClubModel>, APIMetaData) resultCallback}) async {
+      required Function(List<ClubModel>) resultCallback}) async {
     var url = NetworkConstantsUtil.topClubs;
     if (userId != null) {
       url = '$url&user_id=$userId';
@@ -225,10 +244,10 @@ class ClubApi {
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
-        var items = result!.data['club']['items'];
+        var items = result!.data['trendingClub'];
         resultCallback(
-            List<ClubModel>.from(items.map((x) => ClubModel.fromJson(x))),
-            APIMetaData.fromJson(result.data['club']['_meta']));
+          List<ClubModel>.from(items.map((x) => ClubModel.fromJson(x))),
+        );
       }
     });
   }
@@ -257,10 +276,10 @@ class ClubApi {
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
-        var items = result!.data['club']['items'];
+        var items = result!.data['trendingClub']['items'];
         resultCallback(
             List<ClubModel>.from(items.map((x) => ClubModel.fromJson(x))),
-            APIMetaData.fromJson(result.data['club']['_meta']));
+            APIMetaData.fromJson(result.data['trendingClub']['_meta']));
       }
     });
   }
@@ -320,21 +339,4 @@ class ClubApi {
       if (result?.success == true) {}
     });
   }
-
-  static getClubDetail(
-      {required int clubId,
-        int page = 1,
-        required Function(ClubModel) resultCallback}) async {
-    var url = NetworkConstantsUtil.clubDetail;
-    url = url.replaceAll('{{club_id}}', clubId.toString());
-    url = '$url&page=$page';
-
-    await ApiWrapper().getApi(url: url).then((result) {
-      if (result?.success == true) {
-        var club = result!.data['club'];
-        resultCallback(ClubModel.fromJson(club));
-      }
-    });
-  }
-
 }

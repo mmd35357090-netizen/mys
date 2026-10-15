@@ -3,7 +3,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'help_support_contorller.dart';
 
 class HelpScreen extends StatefulWidget {
-  const HelpScreen({Key? key}) : super(key: key);
+  const HelpScreen({super.key});
 
   @override
   State<HelpScreen> createState() => _HelpScreenState();
@@ -18,18 +18,17 @@ class _HelpScreenState extends State<HelpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
-
-            backNavigationBarWithIcon(
-                title: helpString.tr,
-                icon: ThemeIcon.card,
-                iconBtnClicked: () {
-                  Get.to(() => const SupportRequestsScreen());
-                }),
+            backNavigationBarWithTrailingWidget(
+              title: helpString.tr,
+              widget: ThemeIconWidget(ThemeIcon.card).ripple(() {
+                Get.to(() => const SupportRequestsScreen());
+              }),
+            ),
             SingleChildScrollView(
               child: GestureDetector(
                 onTap: () {
@@ -89,6 +88,11 @@ class _HelpScreenState extends State<HelpScreen> {
             email: emailController.text,
             phone: phoneController.text,
             message: messageController.text);
+
+        nameController.text = '';
+        emailController.text = '';
+        phoneController.text = '';
+        messageController.text = '';
       },
       text: submitString.tr,
     );

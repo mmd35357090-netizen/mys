@@ -1,10 +1,11 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
-
 import '../../main.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  final bool? showCloseBtn;
+
+  const LoginScreen({super.key, this.showCloseBtn = false});
 
   @override
   LoginScreenState createState() => LoginScreenState();
@@ -26,92 +27,100 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: SingleChildScrollView(
         child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: SizedBox(
-              height: Get.height,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: Get.height * 0.08,
-                    ),
-                    Heading3Text(signInMessageString.tr,
-                        weight: TextWeight.medium),
-
-                    SizedBox(
-                      height: Get.height * 0.05,
-                    ),
-                    AppTextField(
-                      controller: email,
-                      hintText: emailOrUsernameString.tr,
-                    ),
-                    SizedBox(
-                      height: Get.height * 0.025,
-                    ),
-                    AppPasswordTextField(
-                      controller: password,
-                      hintText: passwordString.tr,
-                      onChanged: (value) {},
-                    ),
-                    SizedBox(
-                      height: Get.height * 0.04,
-                    ),
-                    addLoginBtn(),
-                    SizedBox(
-                      height: Get.height * 0.03,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Get.to(() => const ForgotPasswordScreen());
-                      },
-                      child: Center(
-                        child: BodySmallText(
-                          forgotPwdString.tr,
-                          weight: TextWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: Get.height * 0.05,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: Get.height * 0.1,
+                ),
+                if (widget.showCloseBtn == true)
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: AppThemeCloseButton(),
+                  ),
+                SizedBox(
+                    height: Get.height * 0.12,
+                    child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        Container(
-                          height: 1,
-                          width: Get.width * 0.37,
-                          color: AppColorConstants.themeColor,
-                        ),
-                        Heading6Text(
-                          orString.tr,
-                        ),
-                        Container(
-                          height: 1,
-                          width: Get.width * 0.37,
-                          color: AppColorConstants.themeColor,
-                        )
+                        Heading3Text(signInMessageString.tr,
+                                weight: TextWeight.bold)
+                            .rp(100),
                       ],
+                    )),
+                SizedBox(
+                  height: Get.height * 0.05,
+                ),
+                AppTextField(
+                  controller: email,
+                  hintText: emailOrUsernameString.tr,
+                  icon: ThemeIcon.email,
+                ),
+                SizedBox(
+                  height: Get.height * 0.015,
+                ),
+                AppPasswordTextField(
+                  controller: password,
+                  hintText: passwordString.tr,
+                  icon: ThemeIcon.lock,
+                  onChanged: (value) {},
+                ),
+                SizedBox(
+                  height: Get.height * 0.02,
+                ),
+                InkWell(
+                  onTap: () {
+                    Get.to(() => const ForgotPasswordScreen());
+                  },
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: BodySmallText(
+                      forgotPwdString.tr,
+                      weight: TextWeight.semiBold,
                     ),
-                    SizedBox(
-                      height: Get.height * 0.04,
+                  ),
+                ),
+                SizedBox(
+                  height: Get.height * 0.015,
+                ),
+                addLoginBtn(),
+                SizedBox(
+                  height: Get.height * 0.02,
+                ),
+                Wrap(
+                  spacing: 2,
+                  children: [
+                    BodySmallText(dontHaveAccountString),
+                    BodySmallText(
+                      createAnAccountString,
+                      weight: TextWeight.bold,
                     ),
-                    const SocialLogin(hidePhoneLogin: false)
-                        .setPadding(left: 65, right: 65),
+                  ],
+                ).ripple(() {
+                  Get.to(() => const SignUpScreen());
+                }),
+                divider(height: 1).vp(40),
+                BodyMediumText(continueWithAccountsString),
+                SizedBox(
+                  height: Get.height * 0.04,
+                ),
+                const SocialLogin(hidePhoneLogin: false)
+                    .setPadding(left: 65, right: 65),
 
-                    SizedBox(
-                      height: Get.height * 0.05,
-                    ),
-                    // bioMetricView(),
-                    // const Spacer(),
-                  ]),
-            )).setPadding(left: 25, right: 25),
+                SizedBox(
+                  height: Get.height * 0.05,
+                ),
+                // bioMetricView(),
+                // const Spacer(),
+              ]),
+        ).setPadding(left: 25, right: 25),
       ),
     );
   }
