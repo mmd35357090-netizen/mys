@@ -89,7 +89,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
         body: Column(
           children: [
             Expanded(
-              child: postsView(), // পুরো বডিকে postsView-এর স্ক্রোলের সাথে ইন্টিগ্রেট করা হয়েছে
+              child: postsView(),
             ),
           ],
         ));
@@ -235,106 +235,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
               itemCount: _homeController.posts.length + baseOffset,
               itemBuilder: (context, index) {
                 
-                // ১. স্ক্রোলযোগ্য মেইন হেডার (face Hub নাম এবং প্লাস ও নোটিফিকেশন আইকন)
-                if (index == 0) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Heading3Text(
-                          AppConfigConstants.appName,
-                          weight: TextWeight.bold,
-                          color: Colors.black,
-                          maxLines: 1, 
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(
-                              height: 35,
-                              width: 35,
-                              child: ThemeIconWidget(
-                                ThemeIcon.plus,
-                                size: 26,
-                                color: Colors.black,
-                              )).ripple(() {
-                            Future.delayed(
-                              Duration.zero,
-                              () => showGeneralDialog(
-                                  context: Get.context!,
-                                  pageBuilder: (context, animation, secondaryAnimation) =>
-                                      const ContentCreatorView()),
-                            );
-                          }),
-                          const SizedBox(width: 15),
-                          SizedBox(
-                            height: 35,
-                            width: 35,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                ThemeIconWidget(
-                                  ThemeIcon.notification,
-                                  size: 26,
-                                  color: AppColorConstants.themeColor,
-                                ).ripple(() {
-                                  // নোটিফিকেশন আইকন ক্লিক অ্যাকশন
-                                }),
-                                Obx(() => _dashboardController.unreadMsgCount.value == 0
-                                    ? Container()
-                                    : Positioned(
-                                        top: 2,
-                                        right: 2,
-                                        child: Container(
-                                          color: AppColorConstants.red,
-                                          height: 9,
-                                          width: 9,
-                                        ).circular,
-                                      ))
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ).hp(16);
-                }
-                
-                // ২. স্টোরি সেকশন
-                if (index == 1 && _settingsController.setting.value!.enableStories) {
-                  return Obx(() => _homeController.isRefreshingStories.value == true
-                      ? const StoryAndHighlightsShimmer().tP15
-                      : storiesView().tP15);
-                }
-                
-                // ৩. স্ক্রোলযোগ্য অল, ফলোয়িং, ভিডিও কাস্টম ট্যাব বার
-                int tabIndex = _settingsController.setting.value!.enableStories ? 2 : 1;
-                if (index == tabIndex) {
-                  return Container(
-                    height: 38,
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      children: [
-                        _buildTopFilterTab(
-                          title: allString.tr,
-                          isSelected: _homeController.selectedSegment.value == 0,
-                          onTap: () => _homeController.selectSegment(0),
-                        ),
-                        _buildTopFilterTab(
-                          title: followingString.tr,
-  postsView() {
-    int baseOffset = _settingsController.setting.value!.enableStories ? 3 : 2;
-    
-    return Obx(() {
-      return ListView.separated(
-              controller: _controller,
-              padding: const EdgeInsets.only(top: 50, bottom: 100),
-              itemCount: _homeController.posts.length + baseOffset,
-              itemBuilder: (context, index) {
-                
-                // ১. স্ক্রোলযোগ্য মেইন হেডার (অ্যাপ নেম ১ লাইনে থাকবে এবং স্ক্রোলের সাথে ওপরে উঠে যাবে)
+                // ১. মেইন হেডার (অ্যাপ নেম ও আইকন)
                 if (index == 0) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -399,7 +300,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                   ).hp(16);
                 }
                 
-                // ২. স্টোরি সেকশন (tP15 এরর স্থায়ী ফিক্স করা হয়েছে standard Padding দিয়ে)
+                // ২. স্টোরি সেকশন
                 if (index == 1 && _settingsController.setting.value!.enableStories) {
                   return Obx(() => _homeController.isRefreshingStories.value == true
                       ? const Padding(
@@ -412,7 +313,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                         ));
                 }
                 
-                // ৩. স্ক্রোলযোগ্য অল, ফলোয়িং, ভিডিও কাস্টম ট্যাব বার
+                // ৩. স্ক্রোলযোগ্য কাস্টম ট্যাব বার
                 int tabIndex = _settingsController.setting.value!.enableStories ? 2 : 1;
                 if (index == tabIndex) {
                   return Container(
@@ -513,3 +414,4 @@ class HomeFeedState extends State<HomeFeedScreen> {
               enablePullDown: true);
     });
   }
+}
