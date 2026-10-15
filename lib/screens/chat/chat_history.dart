@@ -7,7 +7,12 @@ import '../settings_menu/settings_controller.dart';
 import 'group/open_group_listing.dart';
 
 class ChatHistory extends StatefulWidget {
-  const ChatHistory({super.key}) ;
+  final bool showBack;
+
+  const ChatHistory({
+    super.key,
+    this.showBack = true,
+  });
 
   @override
   State<ChatHistory> createState() => _ChatHistoryState();
