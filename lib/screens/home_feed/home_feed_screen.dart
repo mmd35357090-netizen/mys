@@ -365,28 +365,42 @@ class HomeFeedState extends State<HomeFeedScreen> {
                     index % 5 == 0 &&
                     _homeController.sponsoredPosts.length >= index / 5) {
                   PostModel post = _homeController.sponsoredPosts[(index ~/ 5) - 1];
-                  return Column(
-                    children: [
-                      PostCard(
-                        model: post,
-                        removePostHandler: () {
-                          _homeController.removePostFromList(post);
-                        },
-                        blockUserHandler: () {
-                          _homeController.removeUsersAllPostFromList(post);
-                        },
-                      ),
-                      divider(
-                        height: index > (baseOffset - 1) ? 10 : 0,
-                      ).tP16
-                    ],
-                  ).vp(index > (baseOffset - 1) ? 16 : 8);
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: index > (baseOffset - 1) ? 16.0 : 8.0,
+                    ),
+                    child: Column(
+                      children: [
+                        PostCard(
+                          model: post,
+                          removePostHandler: () {
+                            _homeController.removePostFromList(post);
+                          },
+                          blockUserHandler: () {
+                            _homeController.removeUsersAllPostFromList(post);
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: divider(
+                            height: index > (baseOffset - 1) ? 10 : 0,
+                          ),
+                        )
+                      ],
+                    ),
+                  );
                 } else {
-                  return divider(
-                    height: index > 1 ? 10 : 0,
-                  ).vp(index > 1 ? 16 : 8);
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: index > 1 ? 16.0 : 8.0,
+                    ),
+                    child: divider(
+                      height: index > 1 ? 10 : 0,
+                    ),
+                  );
                 }
               })
+
           .addPullToRefresh(
               refreshController: _refreshController,
               enablePullUp: true,
