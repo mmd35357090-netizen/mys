@@ -7,12 +7,7 @@ import '../settings_menu/settings_controller.dart';
 import 'group/open_group_listing.dart';
 
 class ChatHistory extends StatefulWidget {
-  final bool showBack;
-
-  const ChatHistory({
-    super.key,
-    this.showBack = true,
-  });
+  const ChatHistory({super.key}) ;
 
   @override
   State<ChatHistory> createState() => _ChatHistoryState();
@@ -57,39 +52,34 @@ class _ChatHistoryState extends State<ChatHistory> {
                   const SizedBox(
                     height: 50,
                   ),
-Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    widget.showBack
-        ? ThemeIconWidget(
-            ThemeIcon.backArrow,
-          ).ripple(() {
-            Get.back();
-          })
-        : const SizedBox(width: 25),
-
-    BodyLargeText(
-      chatsString.tr,
-      weight: TextWeight.medium,
-    ),
-
-    _settingsController.setting.value!.enableAudioCalling ||
-            _settingsController.setting.value!.enableVideoCalling
-        ? ThemeIconWidget(
-            ThemeIcon.mobile,
-            color: AppColorConstants.iconColor,
-            size: 25,
-          ).ripple(() {
-            Get.to(() => const CallHistory());
-          })
-        : const SizedBox(width: 25),
-  ],
-).setPadding(
-  left: DesignConstants.horizontalPadding,
-  right: DesignConstants.horizontalPadding,
-  top: 8,
-  bottom: 8,
-                       ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ThemeIconWidget(
+                        ThemeIcon.backArrow,
+                      ).ripple(() {
+                        Get.back();
+                      }),
+                      BodyLargeText(chatsString.tr, weight: TextWeight.medium),
+                      _settingsController.setting.value!.enableAudioCalling ||
+                              _settingsController
+                                  .setting.value!.enableVideoCalling
+                          ? ThemeIconWidget(
+                              ThemeIcon.mobile,
+                              color: AppColorConstants.iconColor,
+                              size: 25,
+                            ).ripple(() {
+                              Get.to(() => const CallHistory());
+                            })
+                          : const SizedBox(
+                              width: 25,
+                            ),
+                    ],
+                  ).setPadding(
+                      left: DesignConstants.horizontalPadding,
+                      right: DesignConstants.horizontalPadding,
+                      top: 8,
+                      bottom: 8),
                   SFSearchBar(
                           showSearchIcon: true,
                           iconColor: AppColorConstants.themeColor,

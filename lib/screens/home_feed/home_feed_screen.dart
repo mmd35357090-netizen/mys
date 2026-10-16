@@ -87,7 +87,106 @@ class HomeFeedState extends State<HomeFeedScreen> {
     return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(
+              height: 55,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Heading4Text(
+                  AppConfigConstants.appName,
+                  weight: TextWeight.semiBold,
+                  color: AppColorConstants.themeColor,
+                ),
+                const Spacer(),
+                Obx(() => CupertinoSegmentedControl(
+                    groupValue: _homeController.selectedSegment.value,
+                    children: <int, Widget>{
+                      0: BodySmallText(
+                        allString.tr,
+                        color: _homeController.selectedSegment.value == 0
+                            ? Colors.white
+                            : null,
+                      ).hP4,
+                      1: BodySmallText(followingString.tr,
+                              color:
+                                  _homeController.selectedSegment.value ==
+                                          1
+                                      ? Colors.white
+                                      : null)
+                          .hP4,
+                    },
+                    unselectedColor: AppColorConstants.backgroundColor,
+                    selectedColor: AppColorConstants.themeColor,
+                    onValueChanged: (value) {
+                      _homeController.selectSegment(value! as int);
+                    })),
+                const Spacer(),
+                SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: ThemeIconWidget(
+                      ThemeIcon.plus,
+                      size: 25,
+                    )).ripple(() {
+                  Future.delayed(
+                    Duration.zero,
+                    () => showGeneralDialog(
+                        context: Get.context!,
+                        pageBuilder:
+                            (context, animation, secondaryAnimation) =>
+                                const ContentCreatorView()),
+                  );
+                }),
+                const SizedBox(
+                  width: 5,
+                ),
+                // SizedBox(
+                //     height: 30,
+                //     width: 30,
+                //     child: ThemeIconWidget(
+                //       ThemeIcon.map,
+                //       size: 25,
+                //     )).ripple(() {
+                //   Get.to(() => MapsUsersScreen());
+                // }),
+                // const SizedBox(
+                //   width: 5,
+                // ),
+                SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ThemeIconWidget(
+                        ThemeIcon.chat,
+                        size: 25,
+                      ).ripple(() {
+                        Get.to(() => const ChatHistory());
+                      }),
+                      Obx(() =>
+                          _dashboardController.unreadMsgCount.value == 0
+                              ? Container()
+                              : Positioned(
+                                  top: 0,
+                                  right: 5,
+                                  child: Container(
+                                    color: AppColorConstants.red,
+                                    height: 10,
+                                    width: 10,
+                                  ).circular,
+                                ))
+                    ],
+                  ),
+                ),
+              ],
+            ).hp(10),
+            const SizedBox(
+              height: 20,
+            ),
             Expanded(
               child: postsView(),
             ),
@@ -95,33 +194,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
         ));
   }
 
-  Widget _buildTopFilterTab({required String title, required bool isSelected, required VoidCallback onTap}) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColorConstants.themeColor : Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Center(
-            child: Text(
-              title,
-              maxLines: 1,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black87,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-    Widget postingView() {
+  Widget postingView() {
     return Obx(() => _addPostController.isPosting.value
         ? Container(
             height: 55,
@@ -150,7 +223,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
                                 width: 40,
                                 height: 40,
                               ).round(5)
+                            // : BodyLargeText(_addPostController.postingTitle)
                             : Container()
+                    // : BodyLargeText(_addPostController.postingTitle),
                     : Container(),
                 const SizedBox(
                   width: 10,
@@ -196,6 +271,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
           builder: (ctx) {
             return StoryUpdatesBar(
               stories: _homeController.stories,
+              // liveUsers: _homeController.liveUsers,
               addStoryCallback: () {
                 openStoryUploader();
               },
@@ -221,136 +297,32 @@ class HomeFeedState extends State<HomeFeedScreen> {
                       fullscreenDialog: true);
                 }
               },
+              // joinLiveUserCallback: (user) {
+              //
+              // },
             ).hp(DesignConstants.horizontalPadding / 2);
           }),
     );
   }
-    postsView() {
-    int baseOffset = _settingsController.setting.value!.enableStories ? 3 : 2;
-    
+
+  postsView() {
+    int offset = _settingsController.setting.value!.enableStories ? 2 : 1;
     return Obx(() {
       return ListView.separated(
               controller: _controller,
-              padding: const EdgeInsets.only(top: 50, bottom: 100),
-              itemCount: _homeController.posts.length + baseOffset,
+              padding: const EdgeInsets.only(bottom: 100),
+              itemCount: _homeController.posts.length + offset,
               itemBuilder: (context, index) {
-                
-                // ১. মেইন হেডার (অ্যাপ নেম ও আইকন)
-                if (index == 0) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Heading3Text(
-                          AppConfigConstants.appName,
-                          weight: TextWeight.bold,
-                          color: Colors.black,
-                          maxLines: 1, 
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(
-                              height: 35,
-                              width: 35,
-                              child: ThemeIconWidget(
-                                ThemeIcon.plus,
-                                size: 26,
-                                color: Colors.black,
-                              )).ripple(() {
-                            Future.delayed(
-                              Duration.zero,
-                              () => showGeneralDialog(
-                                  context: Get.context!,
-                                  pageBuilder: (context, animation, secondaryAnimation) =>
-                                      const ContentCreatorView()),
-                            );
-                          }),
-                          const SizedBox(width: 15),
-                          SizedBox(
-                            height: 35,
-                            width: 35,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                ThemeIconWidget(
-                                  ThemeIcon.notification,
-                                  size: 26,
-                                  color: AppColorConstants.themeColor,
-                                ).ripple(() {
-                                  // নোটিফিকেশন ক্লিক অ্যাকশন
-                                }),
-                                Obx(() => _dashboardController.unreadMsgCount.value == 0
-                                    ? Container()
-                                    : Positioned(
-                                        top: 2,
-                                        right: 2,
-                                        child: Container(
-                                          color: AppColorConstants.red,
-                                          height: 9,
-                                          width: 9,
-                                        ).circular,
-                                      ))
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ).hp(16);
-                }
-                
-                // ২. স্টোরি সেকশন
-                if (index == 1 && _settingsController.setting.value!.enableStories) {
-                  return Obx(() => _homeController.isRefreshingStories.value == true
-                      ? const Padding(
-                          padding: EdgeInsets.only(top: 15),
-                          child: StoryAndHighlightsShimmer(),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(top: 15),
-                          child: storiesView(),
-                        ));
-                }
-                
-                // ৩. স্ক্রোলযোগ্য কাস্টম ট্যাব বার
-                int tabIndex = _settingsController.setting.value!.enableStories ? 2 : 1;
-                if (index == tabIndex) {
-                  return Container(
-                    height: 38,
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      children: [
-                        _buildTopFilterTab(
-                          title: allString.tr,
-                          isSelected: _homeController.selectedSegment.value == 0,
-                          onTap: () => _homeController.selectSegment(0),
-                        ),
-                        _buildTopFilterTab(
-                          title: followingString.tr,
-                          isSelected: _homeController.selectedSegment.value == 1,
-                          onTap: () => _homeController.selectSegment(1),
-                        ),
-                        _buildTopFilterTab(
-                          title: "Videos",
-                          isSelected: _homeController.selectedSegment.value == 2,
-                          onTap: () => _homeController.selectSegment(2),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                
-                // ৪. পোস্টিং প্রোগ্রেস ভিউ
-                if (index == baseOffset - 1) {
+                if (index == 0 &&
+                    _settingsController.setting.value!.enableStories) {
+                  return Obx(() =>
+                      _homeController.isRefreshingStories.value == true
+                          ? const StoryAndHighlightsShimmer()
+                          : storiesView());
+                } else if (index == offset - 1) {
                   return postingView().hP16;
-                } 
-                
-                // ৫. সাধারণ পোস্ট কার্ড লিস্ট
-                else {
-                  PostModel model = _homeController.posts[index - baseOffset];
+                } else {
+                  PostModel model = _homeController.posts[index - offset];
                   return PostCard(
                     model: model,
                     removePostHandler: () {
@@ -363,47 +335,31 @@ class HomeFeedState extends State<HomeFeedScreen> {
                 }
               },
               separatorBuilder: (context, index) {
-                if (index < baseOffset) {
-                  return const SizedBox.shrink();
-                }
-                
                 if (index > 0 &&
                     index % 5 == 0 &&
                     _homeController.sponsoredPosts.length >= index / 5) {
-                  PostModel post = _homeController.sponsoredPosts[(index ~/ 5) - 1];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: index > (baseOffset - 1) ? 16.0 : 8.0,
-                    ),
-                    child: Column(
-                      children: [
-                        PostCard(
-                          model: post,
-                          removePostHandler: () {
-                            _homeController.removePostFromList(post);
-                          },
-                          blockUserHandler: () {
-                            _homeController.removeUsersAllPostFromList(post);
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: divider(
-                            height: index > (baseOffset - 1) ? 10 : 0,
-                          ),
-                        )
-                      ],
-                    ),
-                  );
+                  PostModel post =
+                      _homeController.sponsoredPosts[(index ~/ 5) - 1];
+                  return Column(
+                    children: [
+                      PostCard(
+                        model: post,
+                        removePostHandler: () {
+                          _homeController.removePostFromList(post);
+                        },
+                        blockUserHandler: () {
+                          _homeController.removeUsersAllPostFromList(post);
+                        },
+                      ),
+                      divider(
+                        height: index > (offset - 1) ? 10 : 0,
+                      ).tP16
+                    ],
+                  ).vp(index > (offset - 1) ? 16 : 8);
                 } else {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: index > 1 ? 16.0 : 8.0,
-                    ),
-                    child: divider(
-                      height: index > 1 ? 10 : 0,
-                    ),
-                  );
+                  return divider(
+                    height: index > 1 ? 10 : 0,
+                  ).vp(index > 1 ? 16 : 8);
                 }
               })
           .addPullToRefresh(
