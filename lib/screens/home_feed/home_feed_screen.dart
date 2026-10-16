@@ -123,76 +123,121 @@ class HomeFeedState extends State<HomeFeedScreen> {
                     onValueChanged: (value) {
                       _homeController.selectSegment(value! as int);
                     })),
-                const Spacer(),
-                SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: ThemeIconWidget(
-                      ThemeIcon.plus,
-                      size: 25,
-                    )).ripple(() {
-                  Future.delayed(
-                    Duration.zero,
-                    () => showGeneralDialog(
-                        context: Get.context!,
-                        pageBuilder:
-                            (context, animation, secondaryAnimation) =>
-                                const ContentCreatorView()),
-                  );
-                }),
-                const SizedBox(
-                  width: 5,
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+        backgroundColor: AppColorConstants.backgroundColor,
+        // SafeArea ব্যবহার করা হলো যাতে ফোনের নচ বা ক্যামেরার জন্য কোড কেটে না যায়
+        body: SafeArea( 
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 15, // ৫৫ থেকে কমিয়ে ১৫ করা হলো কারণ SafeArea অলরেডি স্পেস দিচ্ছে
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0), // দুই পাশে সুন্দর মার্জিন
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // অ্যাপের নাম (Connect to Friends বা আপনার অ্যাপের নাম)
+                    Heading4Text(
+                      AppConfigConstants.appName,
+                      weight: TextWeight.semiBold,
+                      color: AppColorConstants.themeColor,
+                    ),
+                    
+                    // All / Following ফিল্টারটি মাঝখানে রাখার জন্য
+                    Obx(() => CupertinoSegmentedControl(
+                        groupValue: _homeController.selectedSegment.value,
+                        children: <int, Widget>{
+                          0: BodySmallText(
+                            allString.tr,
+                            color: _homeController.selectedSegment.value == 0
+                                ? Colors.white
+                                : null,
+                          ).hP4,
+                          1: BodySmallText(followingString.tr,
+                                  color:
+                                      _homeController.selectedSegment.value ==
+                                              1
+                                          ? Colors.white
+                                          : null)
+                              .hP4,
+                        },
+                        unselectedColor: AppColorConstants.backgroundColor,
+                        selectedColor: AppColorConstants.themeColor,
+                        onValueChanged: (value) {
+                          _homeController.selectSegment(value! as int);
+                        })),
+                    
+                    // ডানদিকের অ্যাকশন আইকনগুলো (Plus এবং Chat) একটি ছোট Row-তে রাখা হলো
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: ThemeIconWidget(
+                              ThemeIcon.plus,
+                              size: 25,
+                            )).ripple(() {
+                          Future.delayed(
+                            Duration.zero,
+                            () => showGeneralDialog(
+                                context: Get.context!,
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const ContentCreatorView()),
+                          );
+                        }),
+                        const SizedBox(
+                          width: 12, // আইকন দুটির মাঝখানের গ্যাপ বাড়ানো হলো
+                        ),
+                        SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              ThemeIconWidget(
+                                ThemeIcon.chat,
+                                size: 25,
+                              ).ripple(() {
+                                Get.to(() => const ChatHistory());
+                              }),
+                              Obx(() =>
+                                  _dashboardController.unreadMsgCount.value == 0
+                                      ? Container()
+                                      : Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            color: AppColorConstants.red,
+                                            height: 10,
+                                            width: 10,
+                                          ).circular,
+                                        ))
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                // SizedBox(
-                //     height: 30,
-                //     width: 30,
-                //     child: ThemeIconWidget(
-                //       ThemeIcon.map,
-                //       size: 25,
-                //     )).ripple(() {
-                //   Get.to(() => MapsUsersScreen());
-                // }),
-                // const SizedBox(
-                //   width: 5,
-                // ),
-                SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      ThemeIconWidget(
-                        ThemeIcon.chat,
-                        size: 25,
-                      ).ripple(() {
-                        Get.to(() => const ChatHistory());
-                      }),
-                      Obx(() =>
-                          _dashboardController.unreadMsgCount.value == 0
-                              ? Container()
-                              : Positioned(
-                                  top: 0,
-                                  right: 5,
-                                  child: Container(
-                                    color: AppColorConstants.red,
-                                    height: 10,
-                                    width: 10,
-                                  ).circular,
-                                ))
-                    ],
-                  ),
-                ),
-              ],
-            ).hp(10),
-            const SizedBox(
-              height: 20,
-            ),
-            Expanded(
-              child: postsView(),
-            ),
-          ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: postsView(),
+              ),
+            ],
+          ),
         ));
   }
+
 
   Widget postingView() {
     return Obx(() => _addPostController.isPosting.value
