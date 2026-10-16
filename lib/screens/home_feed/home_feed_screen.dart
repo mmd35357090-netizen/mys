@@ -86,47 +86,6 @@ class HomeFeedState extends State<HomeFeedScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 55,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Heading4Text(
-                  AppConfigConstants.appName,
-                  weight: TextWeight.semiBold,
-                  color: AppColorConstants.themeColor,
-                ),
-                const Spacer(),
-                Obx(() => CupertinoSegmentedControl(
-                    groupValue: _homeController.selectedSegment.value,
-                    children: <int, Widget>{
-                      0: BodySmallText(
-                        allString.tr,
-                        color: _homeController.selectedSegment.value == 0
-                            ? Colors.white
-                            : null,
-                      ).hP4,
-                      1: BodySmallText(followingString.tr,
-                              color:
-                                  _homeController.selectedSegment.value ==
-                                          1
-                                      ? Colors.white
-                                      : null)
-                          .hP4,
-                    },
-                    unselectedColor: AppColorConstants.backgroundColor,
-                    selectedColor: AppColorConstants.themeColor,
-                    onValueChanged: (value) {
-                      _homeController.selectSegment(value! as int);
-                    })),
-  @override
-  Widget build(BuildContext context) {
-    return AppScaffold(
-        backgroundColor: AppColorConstants.backgroundColor,
         // SafeArea ব্যবহার করা হলো যাতে ফোনের নচ বা ক্যামেরার জন্য কোড কেটে না যায়
         body: SafeArea( 
           child: Column(
