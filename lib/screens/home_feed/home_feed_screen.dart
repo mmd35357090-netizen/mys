@@ -99,102 +99,105 @@ void initState() {
     loadData();
     super.didUpdateWidget(oldWidget);
   }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: AppColorConstants.backgroundColor,
-        body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: Column(
-            children: [
-              Container(
-                color: AppColorConstants.backgroundColor,
-                child: Column(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: AppColorConstants.backgroundColor,
+    body: GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        children: [
+          Container(
+            color: AppColorConstants.backgroundColor,
+            child: Column(
+              children: [
+                const SizedBox(height: 50),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Heading4Text(
-                              AppConfigConstants.appName,
-                              weight: TextWeight.semiBold,
-                            )
-                          ],
+                        Heading4Text(
+                          AppConfigConstants.appName,
+                          weight: TextWeight.semiBold,
                         ),
-                        const Spacer(),
-                        ThemeIconWidget( // 👈 এখানে 'const' মুছে দেওয়া হয়েছে
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        ThemeIconWidget(
                           ThemeIcon.plus,
                           size: 25,
                         ).ripple(() {
                           Future.delayed(
                             Duration.zero,
                             () => showGeneralDialog(
-                                context: Get.context!,
-                                pageBuilder: (context, animation,
-                                        secondaryAnimation) =>
-                                    const ContentCreatorView()),
+                              context: Get.context!,
+                              pageBuilder: (context, animation, secondaryAnimation) =>
+                                  const ContentCreatorView(),
+                            ),
                           );
                         }),
-                                      : const SizedBox(width: 50),
-              Row(
-                children: [
-                  Obx(() => Stack(
-                        children: [
-                          ThemeIconWidget(
-                            ThemeIcon.notification,
-                            size: 25,
-                            color: AppColorConstants.themeColor,
-                          )
-                              .rp(_notificationController
-                                          .unreadNotificationCount.value >
-                                      0
-                                  ? 15
-                                  : 0)
-                              .ripple(() {
-                            Get.to(() => const NotificationsScreen());
-                          }),
-                          if (_notificationController
-                                  .unreadNotificationCount.value >
-                              0)
-                            Positioned(
-                                right: 0,
-                                top: 0,
-                                child: Container(
+                        const SizedBox(width: 15), // Replaced the broken ternary snippet with a standard spacer
+                        Obx(() => Stack(
+                              children: [
+                                ThemeIconWidget(
+                                  ThemeIcon.notification,
+                                  size: 25,
                                   color: AppColorConstants.themeColor,
-                                  child: Center(
-                                    child: Text(
-                                      _notificationController
-                                          .unreadNotificationCount.value
-                                          .toString(),
-                                      style: const TextStyle(
-                                          fontSize: 8,
-                                          color: Colors.white),
-                                      textAlign: TextAlign.center,
-                                    ).setPadding(
-                                        top: 2,
-                                        bottom: 2,
-                                        left: 4,
-                                        right: 4),
+                                )
+                                    .rp(_notificationController
+                                                .unreadNotificationCount.value >
+                                            0
+                                        ? 15
+                                        : 0)
+                                    .ripple(() {
+                                  Get.to(() => const NotificationsScreen());
+                                }),
+                                if (_notificationController
+                                        .unreadNotificationCount.value >
+                                    0)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      color: AppColorConstants.themeColor,
+                                      child: Center(
+                                        child: Text(
+                                          _notificationController
+                                              .unreadNotificationCount.value
+                                              .toString(),
+                                          style: const TextStyle(
+                                              fontSize: 8,
+                                              color: Colors.white),
+                                          textAlign: TextAlign.center,
+                                        ).setPadding(
+                                            top: 2,
+                                            bottom: 2,
+                                            left: 4,
+                                            right: 4),
+                                      ),
+                                    ).circular,
                                   ),
-                                ).circular)
                               ],
                             )),
                       ],
-                    ).hp(20),
+                    ),
                   ],
-                ),
-              ),
-              Expanded(child: postsView()),
-            ],
+                ).hp(20),
+              ],
+            ),
           ),
-        ));
-  }
+          Expanded(child: postsView()),
+        ],
+      ),
+    ),
+  );
+}
+
 
 
   Widget postingView() {
