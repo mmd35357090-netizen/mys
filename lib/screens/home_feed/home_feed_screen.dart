@@ -202,91 +202,107 @@ Widget build(BuildContext context) {
 
 
 Widget postsView() {
-  // পুরো ListView-কে Obx দিয়ে না মুড়ে, শুধু ডেটা এবং রিফ্রেশ স্টেট অবজার্ভ করা হচ্ছে
   return Obx(() {
-    final posts = _homeController.posts;
-    final isRefreshing = _homeController.isRefreshingPosts.value;
-    
-    // ১. যদি পোস্ট রিফ্রেশ বা লোড হতে থাকে, তবে পুরো স্ক্রিন জুড়েই শিমার দেখানো ভালো
-    if (isRefreshing) {
-      return const HomeScreenShimmer();
+    // ১. রিফ্রেশিং স্টেট হলে শিমার দেখাবে
+    if (_homeController.isRefreshingPosts.value == true) {
+      return SizedBox(
+        height: Get.height * 0.9,
+        child: const HomeScreenShimmer(),
+      );
     }
 
-    // ২. হেডার আইটেম সংখ্যা (Stories = 1, PostingView = 1, MenuBar = 1) মোট ৩টি
+    // ২. হেডার আইটেম সংখ্যা (Stories, Posting View, Menu/Empty Info)
     const int headerCount = 3;
-    
-    // যদি কোনো পোস্ট না থাকে, তবে হেডার ৩টি + ১টি খালি স্ক্রিন উইজেট দেখানো হবে
-    final int itemCount = posts.isEmpty ? headerCount + 1 : headerCount + posts.length;
+    final int postsLength = _homeController.posts.length;
+    final int itemCount = postsLength == 0 ? headerCount : headerCount + postsLength;
 
     return ListView.separated(
       controller: _controller,
       padding: const EdgeInsets.only(top: 25, bottom: 100),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        switch (index) {
-          case 0:
-            // Stories View Section
-            return Obx(() => _homeController.isRefreshingStories.value
-                ? const StoryAndHighlightsShimmer()
-                : storiesView());
-
-          case 1:
-            // Posting Alert/Progress View Section
-            return postingView().hp(DesignConstants.horizontalPadding);
-
-          case 2:
-            // Category/Horizontal Menu Bar Section
-            return HorizontalMenuBar(
-              padding: EdgeInsets.symmetric(horizontal: DesignConstants.horizontalPadding),
-              onSegmentChange: (segment) {
-                _homeController.categoryIndexChanged(
-                  index: segment,
-                  callback: () => _refreshController.refreshCompleted(),
-                );
-              },
-              selectedIndex: _homeController.categoryIndex.value,
-              menus: [allString.tr, followingString.tr, videosString.tr],
-            );
-
-          case 3:
-            // যদি পোস্ট লিস্ট একদম খালি হয়, তবে ৩ নম্বর ইনডেক্সে Empty View দেখাবে
-            if (posts.isEmpty) {
-              return SizedBox(
-                height: Get.height * 0.5,
-                child: emptyPost(
-                  title: noPostFoundString.tr,
-                  subTitle: followFriendsToSeeUpdatesString.tr,
+        if (index == 0) {
+          // Stories Section
+          return Obx(() => _homeController.isRefreshingStories.value == true
+              ? const StoryAndHighlightsShimmer()
+              : storiesView());
+        } 
+        
+        if (index == 1) {
+          // Posting Status Progress Bar
+          // নোট: আপনার ফাইলে postingView() মেথডটি যেভাবে ডিফাইন করা আছে, সে অনুযায়ী এক্সটেনশন (.hp বা .hP16) দিন
+          return postingView().hp(DesignConstants.horizontalPadding);
+        } 
+        
+        if (index == 2) {
+          // ক্যাটাগরি মেনু বার এবং যদি কোনো পোস্ট না থাকে তবে এম্পটি ভিউ
+          // এখানে আপনার অরিজিনাল উইজেটের লজিক ও নাম হুবহু অক্ষুণ্ণ রাখা হয়েছে
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // আপনার অরিজিনাল কোডের মেনু উইজেট ও মেথড কল
+              // (আপনার প্রোজেক্টে HorizontalMenuBar বা যা নাম আছে তা নিশ্চিত করুন)
+              HorizontalMenuBar(
+                padding: EdgeInsets.only(
+                  left: DesignConstants.horizontalPadding,
+                  right: DesignConstants.horizontalPadding,
                 ),
-              );
-            }
-            // যদি পোস্ট থাকে, তবে নিচে fall-through হয়ে regular post কার্ডে চলে যাবে
-            continue defaultCase;
-
-          defaultCase:
-          default:
-            // মূল পোস্ট কার্ড রেন্ডারিং লজিক
-            final postIndex = posts.isEmpty ? index - 4 : index - headerCount;
-            if (postIndex < 0 || postIndex >= posts.length) return const SizedBox.shrink();
-
-            final model = posts[postIndex];
-            return PostCard(
-              key: ValueKey(model.id), // পারফরম্যান্স ও স্মুথ স্ক্রলিংয়ের জন্য কি (Key) ব্যবহার করা জরুরী
-              model: model,
-              removePostHandler: () => _homeController.removePostFromList(model),
-              blockUserHandler: () => _homeController.removeUsersAllPostFromList(model),
-            );
+                onSegmentChange: (segment) {
+                  // আপনার কন্ট্রোলারের অরিজিনাল মেথড কল
+                  _homeController.categoryIndexChanged(
+                    index: segment,
+                    callback: () {
+                      _refreshController.refreshCompleted();
+                    },
+                  );
+                },
+                selectedIndex: _homeController.categoryIndex.value,
+                menus: [
+                  allString.tr,
+                  followingString.tr,
+                  videosString.tr,
+                ],
+              ),
+              
+              // যদি ডেটা একদম খালি থাকে তবে মেনুর নিচেই খালি স্টেট দেখাবে
+              if (postsLength == 0)
+                SizedBox(
+                  height: Get.height * 0.5,
+                  child: emptyPost(
+                    title: noPostFoundString.tr,
+                    subTitle: followFriendsToSeeUpdatesString.tr,
+                  ),
+                ),
+            ],
+          );
         }
+
+        // ৩. মূল পোস্ট কার্ড রেন্ডারিং (Index offsetting)
+        final postIndex = index - headerCount;
+        if (postIndex < 0 || postIndex >= postsLength) {
+          return const SizedBox.shrink();
+        }
+
+        PostModel model = _homeController.posts[postIndex];
+
+        return PostCard(
+          key: ValueKey(model.id), // স্ক্রলিং পারফরম্যান্স বুস্ট করার জন্য Key যুক্ত করা হয়েছে
+          model: model,
+          removePostHandler: () {
+            _homeController.removePostFromList(model);
+          },
+          blockUserHandler: () {
+            _homeController.removeUsersAllPostFromList(model);
+          },
+        );
       },
       separatorBuilder: (context, index) {
-        final hasPolls = _settingsController.setting.value?.enablePolls ?? false;
-        
-        // ৩. প্রতি ৪টি বা ৫টি পোস্ট পর পর পোল দেখালে ফিড দেখতে সুন্দর লাগে। 
-        // আপনি চাইলে আপনার আগের লজিক 'return polls(index);' ও রাখতে পারেন।
-        if (hasPolls && index > 2 && (index - 2) % 5 == 0) {
+        // ৪. পোলস (Polls) এবং সেপারেটর লজিক
+        if (_settingsController.setting.value?.enablePolls == true) {
           return polls(index);
+        } else {
+          return const SizedBox(height: 12); // ০ সাইজের চেয়ে হালকা গ্যাপ দেখতে ভালো লাগে
         }
-        
-        return const SizedBox(height: 12); // ০ হাইটের চেয়ে ডিফাল্ট একটি স্পেসিং দেওয়া ভালো
       },
     ).addPullToRefresh(
       refreshController: _refreshController,
@@ -297,6 +313,7 @@ Widget postsView() {
     );
   });
 }
+
 
 
   Widget storiesView() {
