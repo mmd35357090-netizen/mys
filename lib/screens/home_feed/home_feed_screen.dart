@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
+import '../../controllers/notification/notifications_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
 import 'package:foap/model/live_model.dart';
@@ -31,30 +32,35 @@ class HomeFeedState extends State<HomeFeedScreen> {
   final SettingsController _settingsController = Get.find();
   final DashboardController _dashboardController = Get.find();
   final _controller = ScrollController();
+  final NotificationController _notificationController = Get.find();
+
 
   String? selectedValue;
 
-  @override
-  void initState() {
-    super.initState();
+@override
+void initState() {
+  super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      loadData(isRecent: true);
-      _homeController.loadQuickLinksAccordingToSettings();
-    });
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    loadData(); // 👈 'isRecent: true' কেটে দেওয়া হয়েছে
+    _homeController.loadQuickLinksAccordingToSettings();
+  });
 
-    _notificationController.getNotificationInfo();
+  // এটি কাজ করবে যখন ওপরে কন্ট্রোলারটি ডিক্লেয়ার করবেন
+  _notificationController.getNotificationInfo(); 
 
-    _controller.addListener(() {
-      if (_controller.position.atEdge) {
-        bool isTop = _controller.position.pixels == 0;
-        if (isTop) {
-        } else {
-          loadData(isRecent: false);
-        }
+  _controller.addListener(() {
+    if (_controller.position.atEdge) {
+      bool isTop = _controller.position.pixels == 0;
+      if (isTop) {
+        // এখানে কিছু করার প্রয়োজন নেই
+      } else {
+        loadData(); // 👈 'isRecent: false' কেটে দেওয়া হয়েছে
       }
-    });
-  }
+    }
+  });
+}
+
 
   loadMore() {
     loadPosts();
