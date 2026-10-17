@@ -46,11 +46,65 @@ class DashboardState extends State<DashboardScreen> {
       const HomeFeedScreen(),
       const Explore(),
       const Reels(needBackBtn: false),
-      const WatchVideos(),
+      const ChatHistory(),
       const MyProfile(showBack: false),
     ];
   }
 
+
+    // Premium animated Reels navigation button
+  Widget _buildPremiumReelsButton() {
+    return Obx(() {
+      final bool isSelected =
+          _dashboardController.currentIndex.value == 2;
+
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColorConstants.themeColor,
+                    AppColorConstants.themeColor.withOpacity(0.65),
+                  ],
+                )
+              : null,
+          color: isSelected
+              ? null
+              : AppColorConstants.themeColor.withOpacity(0.10),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? Colors.white.withOpacity(0.35)
+                : AppColorConstants.themeColor.withOpacity(0.30),
+            width: 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColorConstants.themeColor.withOpacity(0.35),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        child: ThemeIconWidget(
+          ThemeIcon.reels,
+          size: 26,
+          color: isSelected
+              ? Colors.white
+              : AppColorConstants.iconColor,
+        ),
+      );
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Obx(() => _dashboardController.isLoading.value
@@ -91,7 +145,7 @@ class DashboardState extends State<DashboardScreen> {
                         ),
                         BottomNavigationBarItem(
                           icon: Icon(Icons.videocam_outlined),
-                          label: 'Videos',
+                          label: 'Chat',
                         ),
                         BottomNavigationBarItem(
                           icon: Icon(Icons.account_circle_outlined),
