@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../components/force_update_view.dart';
@@ -80,22 +81,27 @@ class DashboardState extends State<DashboardScreen> {
                       items: const [
                         BottomNavigationBarItem(
                           icon: Icon(Icons.home_outlined),
+                          activeIcon: Icon(Icons.home),
                           label: 'Home',
                         ),
                         BottomNavigationBarItem(
                           icon: Icon(Icons.search_sharp),
+                          activeIcon: Icon(Icons.search),
                           label: 'Explore',
                         ),
                         BottomNavigationBarItem(
                           icon: Icon(Icons.play_arrow_outlined),
+                          activeIcon: Icon(Icons.play_arrow),
                           label: 'Reels',
                         ),
                         BottomNavigationBarItem(
-                          icon: Icon(Icons.videocam_outlined),
+                          icon: Icon(Icons.chat_bubble_outline), // Fixed icon to match the 'Chat' label
+                          activeIcon: Icon(Icons.chat_bubble),
                           label: 'Chat',
                         ),
                         BottomNavigationBarItem(
                           icon: Icon(Icons.account_circle_outlined),
+                          activeIcon: Icon(Icons.account_circle),
                           label: 'Profile',
                         ),
                       ],
