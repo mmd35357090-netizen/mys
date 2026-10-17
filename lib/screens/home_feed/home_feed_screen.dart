@@ -141,52 +141,48 @@ void initState() {
                                     const ContentCreatorView()),
                           );
                         }),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Obx(() => Stack(
-                              children: [
-                                ThemeIconWidget(
-                                  ThemeIcon.notification,
-                                  size: 25,
+                                      : const SizedBox(width: 50),
+              Row(
+                children: [
+                  Obx(() => Stack(
+                        children: [
+                          ThemeIconWidget(
+                            ThemeIcon.notification,
+                            size: 25,
+                            color: AppColorConstants.themeColor,
+                          )
+                              .rp(_notificationController
+                                          .unreadNotificationCount.value >
+                                      0
+                                  ? 15
+                                  : 0)
+                              .ripple(() {
+                            Get.to(() => const NotificationsScreen());
+                          }),
+                          if (_notificationController
+                                  .unreadNotificationCount.value >
+                              0)
+                            Positioned(
+                                right: 0,
+                                top: 0,
+                                child: Container(
                                   color: AppColorConstants.themeColor,
-                                )
-                                    .rp(_notificationController
-                                                .unreadNotificationCount
-                                                .value >
-                                            0
-                                        ? 15
-                                        : 0)
-                                    .ripple(() {
-                                  Get.to(
-                                      () => const NotificationsScreen());// 👈 যদি এরর দেখায় const কেটে দেবেন
-                                }),
-                                if (_notificationController
-                                        .unreadNotificationCount.value >
-                                    0)
-                                  Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Container(
-                                        color:
-                                            AppColorConstants.themeColor,
-                                        child: Center(
-                                          child: Text(
-                                            _notificationController
-                                                .unreadNotificationCount
-                                                .value
-                                                .toString(),
-                                            style: const TextStyle(
-                                                fontSize: 8,
-                                                color: Colors.white),
-                                            textAlign: TextAlign.center,
-                                          ).setPadding(
-                                              top: 2,
-                                              bottom: 2,
-                                              left: 4,
-                                              right: 4),
-                                        ),
-                                      ).circular)
+                                  child: Center(
+                                    child: Text(
+                                      _notificationController
+                                          .unreadNotificationCount.value
+                                          .toString(),
+                                      style: const TextStyle(
+                                          fontSize: 8,
+                                          color: Colors.white),
+                                      textAlign: TextAlign.center,
+                                    ).setPadding(
+                                        top: 2,
+                                        bottom: 2,
+                                        left: 4,
+                                        right: 4),
+                                  ),
+                                ).circular)
                               ],
                             )),
                       ],
