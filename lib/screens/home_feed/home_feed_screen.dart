@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import '../../controllers/notification/notifications_controller.dart';
-import '../../controllers/notification/notification_setting_controller.dart';
-
+import 'package:foap/controllers/notification/notifications_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
 import 'package:foap/model/live_model.dart';
@@ -160,7 +158,8 @@ void initState() {
                                         ? 15
                                         : 0)
                                     .ripple(() {
-                                  Get.to(() =>  NotificationsScreen()); // 👈 যদি এরর দেখায় const কেটে দেবেন
+                                  Get.to(
+                                      () => const NotificationsScreen());// 👈 যদি এরর দেখায় const কেটে দেবেন
                                 }),
                                 if (_notificationController
                                         .unreadNotificationCount.value >
