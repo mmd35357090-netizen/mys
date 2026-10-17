@@ -128,7 +128,7 @@ void initState() {
                           ],
                         ),
                         const Spacer(),
-                        const ThemeIconWidget(
+                        ThemeIconWidget( // 👈 এখানে 'const' মুছে দেওয়া হয়েছে
                           ThemeIcon.plus,
                           size: 25,
                         ).ripple(() {
@@ -158,8 +158,7 @@ void initState() {
                                         ? 15
                                         : 0)
                                     .ripple(() {
-                                  Get.to(
-                                      () => const NotificationsScreen());
+                                  Get.to(() => const NotificationsScreen()); // 👈 যদি এরর দেখায় const কেটে দেবেন
                                 }),
                                 if (_notificationController
                                         .unreadNotificationCount.value >
