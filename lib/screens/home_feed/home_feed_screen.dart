@@ -1,6 +1,6 @@
+import 'package:foap/controllers/notification/notifications_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
-import 'package:foap/controllers/notification/notifications_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
 import 'package:foap/model/live_model.dart';
