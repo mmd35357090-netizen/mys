@@ -1,19 +1,19 @@
-import 'package:foap/controllers/notification/notifications_controller.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
-import 'package:foap/helper/imports/setting_imports.dart';
+import 'package:foap/helper/imports/story_imports.dart';
+import 'package:foap/model/live_model.dart';
 import 'package:foap/screens/home_feed/story_uploader.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:flutter_polls/flutter_polls.dart';
 import '../../components/post_card/post_card.dart';
 import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/live/agora_live_controller.dart';
 import '../../controllers/home/home_controller.dart';
-import '../../model/live_model.dart';
 import '../../model/post_model.dart';
-import '../../segmentAndMenu/horizontal_menu.dart';
-import '../post/content_creator_view.dart';
-import '../story/story_updates_bar.dart';
-import '../story/story_viewer.dart';
+import '../content_creator_view.dart';
+import '../dashboard/dashboard_screen.dart';
+import '../dashboard/map_screen.dart';
+import '../settings_menu/settings_controller.dart';
 
 class HomeFeedScreen extends StatefulWidget {
   const HomeFeedScreen({super.key});
@@ -29,12 +29,10 @@ class HomeFeedState extends State<HomeFeedScreen> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   final SettingsController _settingsController = Get.find();
-  final NotificationController _notificationController = Get.find();
-
+  final DashboardController _dashboardController = Get.find();
   final _controller = ScrollController();
 
   String? selectedValue;
-  int pollFrequencyIndex = 10;
 
   @override
   void initState() {
@@ -58,13 +56,13 @@ class HomeFeedState extends State<HomeFeedScreen> {
     });
   }
 
-  loadMore({required bool? isRecent}) {
-    loadPosts(isRecent);
+  loadMore() {
+    loadPosts();
   }
 
   refreshData() {
-    _homeController.clear();
-    loadData(isRecent: false);
+    _homeController.clearPosts();
+    loadData();
   }
 
   @override
@@ -74,26 +72,27 @@ class HomeFeedState extends State<HomeFeedScreen> {
     _homeController.closeQuickLinks();
   }
 
-  loadPosts(bool? isRecent) {
-    _homeController.getPosts(
-        isRecent: isRecent,
-        callback: () {
-          _refreshController.refreshCompleted();
-        });
+  loadPosts() {
+    _homeController.getPosts(callback: () {
+      _refreshController.refreshCompleted();
+      _refreshController.loadComplete();
+    });
+
+    _homeController.getPromotionalPosts();
   }
 
-  void loadData({required bool? isRecent}) {
-    loadPosts(isRecent);
-    _homeController.getPolls();
-    _homeController.getStories();
+  void loadData() {
+    loadPosts();
+    if (_settingsController.setting.value!.enableStories) {
+      _homeController.getStories();
+    }
   }
 
   @override
   void didUpdateWidget(covariant HomeFeedScreen oldWidget) {
-    loadData(isRecent: false);
+    loadData();
     super.didUpdateWidget(oldWidget);
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,96 +194,9 @@ class HomeFeedState extends State<HomeFeedScreen> {
         ));
   }
 
-  Widget postsView() {
-    return Obx(() {
-      return ListView.separated(
-              controller: _controller,
-              padding: const EdgeInsets.only(top: 25, bottom: 100),
-              itemCount: _homeController.posts.length + 3,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Obx(() =>
-                      _homeController.isRefreshingStories.value == true
-                          ? const StoryAndHighlightsShimmer()
-                          : storiesView());
-                } else if (index == 1) {
-                  return postingView()
-                      .hp(DesignConstants.horizontalPadding);
-                } else if (index == 2) {
-                  return Obx(() => Column(
-                        children: [
-                          HorizontalMenuBar(
-                              padding: EdgeInsets.only(
-                                  left: DesignConstants.horizontalPadding,
-                                  right:
-                                      DesignConstants.horizontalPadding),
-                              onSegmentChange: (segment) {
-                                _homeController.categoryIndexChanged(
-                                    index: segment,
-                                    callback: () {
-                                      _refreshController
-                                          .refreshCompleted();
-                                    });
-                              },
-                              selectedIndex:
-                                  _homeController.categoryIndex.value,
-                              menus: [
-                                allString.tr,
-                                followingString.tr,
-                                videosString.tr
-                              ]),
-                          _homeController.isRefreshingPosts.value == true
-                              ? SizedBox(
-                                  height: Get.height * 0.9,
-                                  child: const HomeScreenShimmer())
-                              : _homeController.posts.isEmpty
-                                  ? SizedBox(
-                                      height: Get.height * 0.5,
-                                      child: emptyPost(
-                                          title: noPostFoundString.tr,
-                                          subTitle:
-                                              followFriendsToSeeUpdatesString
-                                                  .tr),
-                                    )
-                                  : Container()
-                        ],
-                      ));
-                } else {
-                  PostModel model = _homeController.posts[index - 3];
-
-                  return PostCard(
-                    model: model,
-                    removePostHandler: () {
-                      _homeController.removePostFromList(model);
-                    },
-                    blockUserHandler: () {
-                      _homeController.removeUsersAllPostFromList(model);
-                    },
-                  );
-                }
-              },
-              separatorBuilder: (context, index) {
-                if (_settingsController.setting.value?.enablePolls ==
-                    true) {
-                  return polls(index);
-                } else {
-                  return const SizedBox(
-                    height: 0,
-                  );
-                }
-              })
-          .addPullToRefresh(
-              refreshController: _refreshController,
-              enablePullUp: false,
-              enablePullDown: true,
-              onRefresh: refreshData,
-              onLoading: () {});
-    });
-  }
 
   Widget postingView() {
-    return Obx(() => _addPostController.postingStatus.value ==
-            PostingStatus.posting
+    return Obx(() => _addPostController.isPosting.value
         ? Container(
             height: 55,
             color: AppColorConstants.cardColor,
@@ -354,105 +266,109 @@ class HomeFeedState extends State<HomeFeedScreen> {
 
   Widget storiesView() {
     return SizedBox(
-      height: 110,
+      height: storyCircleSize + (storyCircleSize / 2),
       child: GetBuilder<HomeController>(
           init: _homeController,
           builder: (ctx) {
             return StoryUpdatesBar(
               stories: _homeController.stories,
-              liveUsers: _homeController.liveUsers,
+              // liveUsers: _homeController.liveUsers,
               addStoryCallback: () {
                 openStoryUploader();
               },
               viewStoryCallback: (story) {
-                Get.to(() => StoryViewer(
-                      story: story,
-                      storyDeleted: () {
-                        _homeController.getStories();
-                      },
-                    ));
+                if (story.isLive) {
+                  LiveModel live = LiveModel();
+                  live.channelName =
+                      story.user!.liveCallDetail!.channelName;
+                  live.mainHostUserDetail = story.user;
+                  live.token = story.user!.liveCallDetail!.token;
+                  live.id = story.user!.liveCallDetail!.id;
+                  _agoraLiveController.joinAsAudience(
+                    live: live,
+                  );
+                } else {
+                  Get.to(
+                      () => StoryViewer(
+                            story: story,
+                            storyDeleted: () {
+                              _homeController.getStories();
+                            },
+                          ),
+                      fullscreenDialog: true);
+                }
               },
-              joinLiveUserCallback: (user) {
-                LiveModel live = LiveModel();
-                live.channelName = user.liveCallDetail!.channelName;
-                live.mainHostUserDetail = user;
-                live.token = user.liveCallDetail!.token;
-                live.id = user.liveCallDetail!.id;
-                _agoraLiveController.joinAsAudience(
-                  live: live,
-                );
-              },
-            ).vP16;
+              // joinLiveUserCallback: (user) {
+              //
+              // },
+            ).hp(DesignConstants.horizontalPadding / 2);
           }),
-    ).hp(DesignConstants.horizontalPadding);
+    );
   }
 
-  polls(int index) {
-    int postIndex = index > 2 ? index - 3 : 0;
-    if (postIndex % pollFrequencyIndex == 0 && postIndex != 0) {
-      int pollIndex = (postIndex ~/ pollFrequencyIndex) - 1;
-      if (_homeController.polls.length > pollIndex) {
-        return Container(
-          color: AppColorConstants.cardColor,
-          child: FlutterPolls(
-            pollId: _homeController.polls[pollIndex].id.toString(),
-            hasVoted: _homeController.polls[pollIndex].isVote! > 0,
-            userVotedOptionId: _homeController.polls[pollIndex].isVote! > 0
-                ? _homeController.polls[pollIndex].isVote.toString()
-                : null,
-            onVoted: (PollOption pollOption, int newTotalVotes) async {
-              await Future.delayed(const Duration(seconds: 1));
-              _homeController.postPollAnswer(
-                  _homeController.polls[pollIndex].id!,
-                  int.parse(pollOption.id!));
-
-              /// If HTTP status is success, return true else false
-              return true;
-            },
-            pollEnded: false,
-            pollOptionsSplashColor: Colors.white,
-            votedProgressColor: Colors.grey.withOpacity(0.3),
-            votedBackgroundColor: Colors.grey.withOpacity(0.2),
-            votesTextStyle: TextStyle(fontSize: FontSizes.b2),
-            votedPercentageTextStyle:
-                TextStyle(fontSize: FontSizes.b2).copyWith(
-              color: Colors.black,
-            ),
-            votedCheckmark: const Icon(
-              Icons.check_circle,
-              color: Colors.black,
-            ),
-            pollTitle: Align(
-              alignment: Alignment.centerLeft,
-              child: BodyLargeText(
-                _homeController.polls[pollIndex].title ?? "",
-                weight: TextWeight.medium,
-              ),
-            ),
-            pollOptions: List<PollOption>.from(
-              (_homeController.polls[pollIndex].pollOptions ?? []).map(
-                (option) {
-                  var a = PollOption(
-                    id: option.id.toString(),
-                    title: BodyLargeText(option.title ?? '',
-                        weight: TextWeight.medium),
-                    votes: option.totalOptionVoteCount ?? 0,
+  postsView() {
+    int offset = _settingsController.setting.value!.enableStories ? 2 : 1;
+    return Obx(() {
+      return ListView.separated(
+              controller: _controller,
+              padding: const EdgeInsets.only(bottom: 100),
+              itemCount: _homeController.posts.length + offset,
+              itemBuilder: (context, index) {
+                if (index == 0 &&
+                    _settingsController.setting.value!.enableStories) {
+                  return Obx(() =>
+                      _homeController.isRefreshingStories.value == true
+                          ? const StoryAndHighlightsShimmer()
+                          : storiesView());
+                } else if (index == offset - 1) {
+                  return postingView().hP16;
+                } else {
+                  PostModel model = _homeController.posts[index - offset];
+                  return PostCard(
+                    model: model,
+                    removePostHandler: () {
+                      _homeController.removePostFromList(model);
+                    },
+                    blockUserHandler: () {
+                      _homeController.removeUsersAllPostFromList(model);
+                    },
                   );
-                  return a;
-                },
-              ),
-            ),
-          ).p16,
-        ).round(15).p16;
-      } else {
-        return const SizedBox(
-          height: 0,
-        );
-      }
-    } else {
-      return const SizedBox(
-        height: 0,
-      );
-    }
+                }
+              },
+              separatorBuilder: (context, index) {
+                if (index > 0 &&
+                    index % 5 == 0 &&
+                    _homeController.sponsoredPosts.length >= index / 5) {
+                  PostModel post =
+                      _homeController.sponsoredPosts[(index ~/ 5) - 1];
+                  return Column(
+                    children: [
+                      PostCard(
+                        model: post,
+                        removePostHandler: () {
+                          _homeController.removePostFromList(post);
+                        },
+                        blockUserHandler: () {
+                          _homeController.removeUsersAllPostFromList(post);
+                        },
+                      ),
+                      divider(
+                        height: index > (offset - 1) ? 10 : 0,
+                      ).tP16
+                    ],
+                  ).vp(index > (offset - 1) ? 16 : 8);
+                } else {
+                  return divider(
+                    height: index > 1 ? 10 : 0,
+                  ).vp(index > 1 ? 16 : 8);
+                }
+              })
+          .addPullToRefresh(
+              refreshController: _refreshController,
+              enablePullUp: true,
+              onRefresh: refreshData,
+              onLoading: loadMore,
+              enablePullDown: true);
+    });
   }
 }
