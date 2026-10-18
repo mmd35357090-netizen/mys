@@ -188,7 +188,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                             animation,
                             secondaryAnimation,
                           ) =>
-                               ContentCreatorView(),
+                              const ContentCreatorView(),
                         );
                       }),
                       const SizedBox(width: 20),
