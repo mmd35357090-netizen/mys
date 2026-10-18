@@ -354,37 +354,37 @@ Widget postsView() {
   
   Widget storiesView() {
     return SizedBox(
-      height: 100,
+      height: 110,
       child: GetBuilder<HomeController>(
-        init: _homeController,
-        builder: (ctx) {
-          return StoryUpdatesBar(
-            stories: _homeController.stories,
-            addStoryCallback: openStoryUploader,
-            viewStoryCallback: (story) {
-              if (story.isLive) {
-                final LiveModel live = LiveModel();
-                live.channelName =
-                    story.user!.liveCallDetail!.channelName;
-                live.mainHostUserDetail = story.user;
-                live.token = story.user!.liveCallDetail!.token;
-                live.id = story.user!.liveCallDetail!.id;
-
-                _agoraLiveController.joinAsAudience(live: live);
-              } else {
-                Get.to(
-                  () => StoryViewer(
-                    story: story,
-                    storyDeleted: _homeController.getStories,
-                  ),
-                  fullscreenDialog: true,
+          init: _homeController,
+          builder: (ctx) {
+            return StoryUpdatesBar(
+              stories: _homeController.stories,
+              liveUsers: _homeController.liveUsers,
+              addStoryCallback: () {
+                openStoryUploader();
+              },
+              viewStoryCallback: (story) {
+                Get.to(() => StoryViewer(
+                      story: story,
+                      storyDeleted: () {
+                        _homeController.getStories();
+                      },
+                    ));
+              },
+              joinLiveUserCallback: (user) {
+                LiveModel live = LiveModel();
+                live.channelName = user.liveCallDetail!.channelName;
+                live.mainHostUserDetail = user;
+                live.token = user.liveCallDetail!.token;
+                live.id = user.liveCallDetail!.id;
+                _agoraLiveController.joinAsAudience(
+                  live: live,
                 );
-              }
-            },
-          ).hp(DesignConstants.horizontalPadding);
-        },
-      ),
-    );
+              },
+            ).vP16;
+          }),
+    ).hp(DesignConstants.horizontalPadding);
   }
 
 
