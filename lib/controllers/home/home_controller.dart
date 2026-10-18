@@ -12,7 +12,7 @@ import '../../screens/add_on/model/polls_model.dart';
 import '../../model/post_model.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import 'dart:async';
-import 'package:foap/manager/db_manager.dart';
+
 import 'package:foap/model/story_model.dart';
 import 'package:foap/model/post_gallery.dart';
 import 'package:foap/model/post_search_query.dart';
