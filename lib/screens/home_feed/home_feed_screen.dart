@@ -388,20 +388,22 @@ Widget postsView() {
   }
 
 
-  Widget feedFilterBar() {
+Widget feedFilterBar() {
   return Obx(() {
     final selected = _homeController.selectedSegment.value;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 12,
+        horizontal: 16,
+        vertical: 5,
       ),
       child: Row(
         children: [
           _filterButton('All', 0, selected),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           _filterButton('Following', 1, selected),
+          const SizedBox(width: 8),
+          _filterButton('Videos', 2, selected),
         ],
       ),
     );
