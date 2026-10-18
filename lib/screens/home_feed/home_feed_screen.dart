@@ -177,7 +177,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                         weight: TextWeight.semiBold,
                       ),
                       const Spacer(),
-                      const ThemeIconWidget(
+                       ThemeIconWidget(
                         ThemeIcon.plus,
                         size: 25,
                       ).ripple(() {
@@ -188,7 +188,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
                             animation,
                             secondaryAnimation,
                           ) =>
-                              const ContentCreatorView(),
+                               ContentCreatorView(),
                         );
                       }),
                       const SizedBox(width: 20),

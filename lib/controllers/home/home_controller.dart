@@ -218,12 +218,12 @@ class HomeController extends GetxController {
         postSearchQuery.isFollowing = 1;
         postSearchQuery.isRecent = 1;
       } else if (index == 2) {
-        postSearchQuery.isVideo = 1;
+     //   postSearchQuery.isVideo = 1;
       } else {
         postSearchQuery.isRecent = 1;
       }
 
-      getPosts(isRecent: false, callback: callback);
+     // getPosts(isRecent: false, callback: callback);
     }
   }
   
