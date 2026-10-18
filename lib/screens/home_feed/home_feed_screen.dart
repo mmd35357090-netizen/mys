@@ -201,120 +201,74 @@ Widget build(BuildContext context) {
 
 
 
-Widget postsView() {
-  return Obx(() {
-    // ১. রিফ্রেশিং স্টেট হলে শিমার দেখাবে
-    if (_homeController.isRefreshingPosts.value == true) {
-      return SizedBox(
-        height: Get.height * 0.9,
-        child: const HomeScreenShimmer(),
-      );
-    }
-
-    // ২. হেডার আইটেম সংখ্যা (Stories, Posting View, Menu/Empty Info)
-    const int headerCount = 3;
-    final int postsLength = _homeController.posts.length;
-    final int itemCount = postsLength == 0 ? headerCount : headerCount + postsLength;
-
-    return ListView.separated(
-      controller: _controller,
-      padding: const EdgeInsets.only(top: 25, bottom: 100),
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          // Stories Section
-          return Obx(() => _homeController.isRefreshingStories.value == true
-              ? const StoryAndHighlightsShimmer()
-              : storiesView());
-        } 
-        
-        if (index == 1) {
-          // Posting Status Progress Bar
-          // নোট: আপনার ফাইলে postingView() মেথডটি যেভাবে ডিফাইন করা আছে, সে অনুযায়ী এক্সটেনশন (.hp বা .hP16) দিন
-          return postingView().hp(DesignConstants.horizontalPadding);
-        } 
-        
-        if (index == 2) {
-          // ক্যাটাগরি মেনু বার এবং যদি কোনো পোস্ট না থাকে তবে এম্পটি ভিউ
-          // এখানে আপনার অরিজিনাল উইজেটের লজিক ও নাম হুবহু অক্ষুণ্ণ রাখা হয়েছে
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // আপনার অরিজিনাল কোডের মেনু উইজেট ও মেথড কল
-              // (আপনার প্রোজেক্টে HorizontalMenuBar বা যা নাম আছে তা নিশ্চিত করুন)
-              HorizontalMenuBar(
-                padding: EdgeInsets.only(
-                  left: DesignConstants.horizontalPadding,
-                  right: DesignConstants.horizontalPadding,
+  Widget postingView() {
+    return Obx(() => _addPostController.isPosting.value
+        ? Container(
+            height: 55,
+            color: AppColorConstants.cardColor,
+            child: Row(
+              children: [
+                _addPostController.postingMedia.isNotEmpty &&
+                        _addPostController.postingMedia.first.mediaType !=
+                            GalleryMediaType.gif
+                    ? _addPostController.postingMedia.first.thumbnail !=
+                            null
+                        ? Image.memory(
+                            _addPostController
+                                .postingMedia.first.thumbnail!,
+                            fit: BoxFit.cover,
+                            width: 40,
+                            height: 40,
+                          ).round(5)
+                        : _addPostController
+                                    .postingMedia.first.mediaType ==
+                                GalleryMediaType.photo
+                            ? Image.file(
+                                _addPostController
+                                    .postingMedia.first.file!,
+                                fit: BoxFit.cover,
+                                width: 40,
+                                height: 40,
+                              ).round(5)
+                            // : BodyLargeText(_addPostController.postingTitle)
+                            : Container()
+                    // : BodyLargeText(_addPostController.postingTitle),
+                    : Container(),
+                const SizedBox(
+                  width: 10,
                 ),
-                onSegmentChange: (segment) {
-                  // আপনার কন্ট্রোলারের অরিজিনাল মেথড কল
-                  _homeController.categoryIndexChanged(
-                    index: segment,
-                    callback: () {
-                      _refreshController.refreshCompleted();
-                    },
-                  );
-                },
-                selectedIndex: _homeController.categoryIndex.value,
-                menus: [
-                  allString.tr,
-                  followingString.tr,
-                  videosString.tr,
-                ],
-              ),
-              
-              // যদি ডেটা একদম খালি থাকে তবে মেনুর নিচেই খালি স্টেট দেখাবে
-              if (postsLength == 0)
-                SizedBox(
-                  height: Get.height * 0.5,
-                  child: emptyPost(
-                    title: noPostFoundString.tr,
-                    subTitle: followFriendsToSeeUpdatesString.tr,
-                  ),
+                Heading5Text(
+                  _addPostController.isErrorInPosting.value
+                      ? postFailedString.tr
+                      : postingString.tr,
                 ),
-            ],
-          );
-        }
-
-        // ৩. মূল পোস্ট কার্ড রেন্ডারিং (Index offsetting)
-        final postIndex = index - headerCount;
-        if (postIndex < 0 || postIndex >= postsLength) {
-          return const SizedBox.shrink();
-        }
-
-        PostModel model = _homeController.posts[postIndex];
-
-        return PostCard(
-          key: ValueKey(model.id), // স্ক্রলিং পারফরম্যান্স বুস্ট করার জন্য Key যুক্ত করা হয়েছে
-          model: model,
-          removePostHandler: () {
-            _homeController.removePostFromList(model);
-          },
-          blockUserHandler: () {
-            _homeController.removeUsersAllPostFromList(model);
-          },
-        );
-      },
-      separatorBuilder: (context, index) {
-        // ৪. পোলস (Polls) এবং সেপারেটর লজিক
-        if (_settingsController.setting.value?.enablePolls == true) {
-          return polls(index);
-        } else {
-          return const SizedBox(height: 12); // ০ সাইজের চেয়ে হালকা গ্যাপ দেখতে ভালো লাগে
-        }
-      },
-    ).addPullToRefresh(
-      refreshController: _refreshController,
-      enablePullUp: false,
-      enablePullDown: true,
-      onRefresh: refreshData,
-      onLoading: () {},
-    );
-  });
-}
-
-
+                const Spacer(),
+                _addPostController.isErrorInPosting.value
+                    ? Row(
+                        children: [
+                          Heading5Text(
+                            discardString.tr,
+                            weight: TextWeight.medium,
+                          ).ripple(() {
+                            _addPostController.discardFailedPost();
+                          }),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Heading5Text(
+                            retryString.tr,
+                            weight: TextWeight.medium,
+                          ).ripple(() {
+                            _addPostController.retryPublish();
+                          }),
+                        ],
+                      )
+                    : Container()
+              ],
+            ).hP8,
+          ).backgroundCard(radius: 10).bp(20)
+        : Container());
+  }
 
   Widget storiesView() {
     return SizedBox(
