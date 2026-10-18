@@ -9,7 +9,6 @@ import 'package:foap/model/live_model.dart';
 import 'package:foap/model/post_model.dart';
 import 'package:foap/screens/home_feed/story_uploader.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../components/post_card/post_card.dart';
 import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/live/agora_live_controller.dart';
@@ -254,136 +253,91 @@ class HomeFeedState extends State<HomeFeedScreen> {
     );
   }
 
-  Widget postsView() {
-    final bool enableStories =
-        _settingsController.setting.value?.enableStories ?? false;
 
-    const int headerCount = 3;
-    final int offset = enableStories ? 1 : 0;
+Widget postsView() {
+  final bool enableStories =
+      _settingsController.setting.value!.enableStories;
 
-    return Obx(() {
-      final posts = _homeController.posts;
-      final isRefreshing = _homeController.isRefreshingPosts.value;
+  // Story (optional) + Filter bar + Posting status
+  final int offset = enableStories ? 3 : 2;
 
-      if (isRefreshing && posts.isEmpty) {
-        return const HomeScreenShimmer();
-      }
+  return Obx(() {
+    return ListView.separated(
+      controller: _controller,
+      padding: const EdgeInsets.only(bottom: 100),
+      itemCount: _homeController.posts.length + offset,
 
-      final int totalHeaders = headerCount + offset;
-      final int itemCount = totalHeaders +
-          (posts.isEmpty ? 1 : posts.length);
-
-      return ListView.separated(
-        controller: _controller,
-        padding: const EdgeInsets.only(top: 16, bottom: 100),
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          if (enableStories && index == 0) {
-            return Obx(
-              () => _homeController.isRefreshingStories.value
-                  ? const StoryAndHighlightsShimmer()
-                  : storiesView(),
-            );
-          }
-
-          final int adjustedIndex = index - offset;
-
-          if (adjustedIndex == 0) {
-            return postingView().hp(
-              DesignConstants.horizontalPadding,
-            );
-          }
-
-          if (adjustedIndex == 1) {
-            return HorizontalMenuBar(
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignConstants.horizontalPadding,
-              ),
-              onSegmentChange: _onSegmentChanged,
-              selectedIndex: _homeController.categoryIndex.value,
-              menus: [
-                allString.tr,
-                followingString.tr,
-                videosString.tr,
-              ],
-            );
-          }
-
-          final int postIndex = adjustedIndex - 2;
-
-          if (posts.isEmpty) {
-            return SizedBox(
-              height: Get.height * 0.5,
-              child: emptyPost(
-                title: noPostFoundString.tr,
-                subTitle: followFriendsToSeeUpdatesString.tr,
-              ),
-            );
-          }
-
-          if (postIndex < 0 || postIndex >= posts.length) {
-            return const SizedBox.shrink();
-          }
-
-          final model = posts[postIndex];
-
-          return PostCard(
-            key: ValueKey(model.id),
-            model: model,
-            removePostHandler: () {
-              _homeController.removePostFromList(model);
-            },
-            blockUserHandler: () {
-              _homeController.removeUsersAllPostFromList(model);
-            },
+      itemBuilder: (context, index) {
+        // 1. Stories
+        if (enableStories && index == 0) {
+          return Obx(
+            () => _homeController.isRefreshingStories.value
+                ? const StoryAndHighlightsShimmer()
+                : storiesView(),
           );
-        },
-        separatorBuilder: (context, index) {
-          final bool enablePolls =
-              _settingsController.setting.value?.enablePolls ?? false;
+        }
 
-          if (enablePolls &&
-              index > 0 &&
-              index % pollFrequencyIndex == 0) {
-            return polls(index);
-          }
+        // 2. All | Following buttons
+        if (index == (enableStories ? 1 : 0)) {
+          return feedFilterBar();
+        }
 
-          final int sponsoredIndex = index ~/ 5;
+        // 3. Posting status
+        if (index == offset - 1) {
+          return postingView().hP16;
+        }
 
-          if (index > 0 &&
-              index % 5 == 0 &&
-              _homeController.sponsoredPosts.length > sponsoredIndex) {
-            final post =
-                _homeController.sponsoredPosts[sponsoredIndex];
+        // 4. Posts
+        final int postIndex = index - offset;
+        final PostModel model = _homeController.posts[postIndex];
 
-            return Column(
-              children: [
-                PostCard(
-                  model: post,
-                  removePostHandler: () {
-                    _homeController.removePostFromList(post);
-                  },
-                  blockUserHandler: () {
-                    _homeController.removeUsersAllPostFromList(post);
-                  },
-                ),
-                divider(height: 10).tP16,
-              ],
-            ).vp(16);
-          }
+        return PostCard(
+          model: model,
+          removePostHandler: () {
+            _homeController.removePostFromList(model);
+          },
+          blockUserHandler: () {
+            _homeController.removeUsersAllPostFromList(model);
+          },
+        );
+      },
 
-          return divider(height: 10).vp(8);
-        },
-      ).addPullToRefresh(
-        refreshController: _refreshController,
-        enablePullUp: true,
-        onRefresh: refreshData,
-        onLoading: loadMore,
-        enablePullDown: true,
-      );
-    });
-  }
+      separatorBuilder: (context, index) {
+        if (index > 0 &&
+            index % 5 == 0 &&
+            _homeController.sponsoredPosts.length >= index / 5) {
+          final PostModel post =
+              _homeController.sponsoredPosts[(index ~/ 5) - 1];
 
+          return Column(
+            children: [
+              PostCard(
+                model: post,
+                removePostHandler: () {
+                  _homeController.removePostFromList(post);
+                },
+                blockUserHandler: () {
+                  _homeController.removeUsersAllPostFromList(post);
+                },
+              ),
+              divider(height: 10).tP16,
+            ],
+          ).vp(16);
+        }
+
+        return divider(height: index > 1 ? 10 : 0)
+            .vp(index > 1 ? 16 : 8);
+      },
+    ).addPullToRefresh(
+      refreshController: _refreshController,
+      enablePullUp: true,
+      onRefresh: refreshData,
+      onLoading: loadMore,
+      enablePullDown: true,
+    );
+  });
+}
+  
   Widget postingView() {
     return Obx(
       () => _addPostController.isPosting.value
@@ -446,6 +400,8 @@ class HomeFeedState extends State<HomeFeedScreen> {
     );
   }
 
+
+  
   Widget storiesView() {
     return SizedBox(
       height: 110,
@@ -481,6 +437,54 @@ class HomeFeedState extends State<HomeFeedScreen> {
     );
   }
 
+
+  Widget feedFilterBar() {
+  return Obx(() {
+    final selected = _homeController.selectedSegment.value;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 12,
+      ),
+      child: Row(
+        children: [
+          _filterButton('All', 0, selected),
+          const SizedBox(width: 12),
+          _filterButton('Following', 1, selected),
+        ],
+      ),
+    );
+  });
+}
+
+Widget _filterButton(String title, int index, int selected) {
+  final isSelected = selected == index;
+
+  return Expanded(
+    child: GestureDetector(
+      onTap: () => _homeController.selectSegment(index),
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColorConstants.themeColor
+              : const Color(0xFFCBD5D9),
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontSize: 15,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+  
   Widget polls(int index) {
     final int postIndex = index > 2 ? index - 3 : 0;
 

@@ -12,9 +12,12 @@ import '../../screens/add_on/model/polls_model.dart';
 import '../../model/post_model.dart';
 import '../../screens/settings_menu/settings_controller.dart';
 import 'dart:async';
+import 'package:foap/manager/db_manager.dart';
 import 'package:foap/model/story_model.dart';
 import 'package:foap/model/post_gallery.dart';
 import 'package:foap/model/post_search_query.dart';
+import 'package:foap/screens/dashboard/posts.dart';
+import 'package:foap/screens/profile/other_user_profile.dart';
 import 'package:foap/screens/home_feed/quick_links.dart';
 import 'package:foap/helper/list_extension.dart';
 
@@ -203,6 +206,27 @@ class HomeController extends GetxController {
           linkType: QuickLinkType.job));
     }
   }
+
+  categoryIndexChanged(
+      {required int index, required VoidCallback callback}) {
+    if (index != categoryIndex.value) {
+      categoryIndex.value = index;
+      clearPosts();
+      postSearchQuery = PostSearchQuery();
+
+      if (index == 1) {
+        postSearchQuery.isFollowing = 1;
+        postSearchQuery.isRecent = 1;
+      } else if (index == 2) {
+        postSearchQuery.isVideo = 1;
+      } else {
+        postSearchQuery.isRecent = 1;
+      }
+
+      getPosts(isRecent: false, callback: callback);
+    }
+  }
+  
 
   removePostFromList(PostModel post) {
     posts.removeWhere((element) => element.id == post.id);
