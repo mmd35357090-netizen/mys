@@ -74,18 +74,24 @@ class HomeController extends GetxController {
     }
   }
 
-  selectSegment(int index) {
-    if (selectedSegment.value != index) {
-      selectedSegment.value = index;
-      if (index == 0) {
-        postSearchQuery.isFollowing = 0;
-      } else {
-        postSearchQuery.isFollowing = 1;
-      }
-      clearPosts();
-      getPosts(callback: () {});
-    }
+selectSegment(int index) {
+  if (selectedSegment.value == index) {
+    return;
   }
+
+  selectedSegment.value = index;
+
+  if (index == 0) {
+    // আগের All বাটনের আচরণ
+    postSearchQuery.isFollowing = 0;
+  } else if (index == 1) {
+    // আগের Following বাটনের আচরণ
+    postSearchQuery.isFollowing = 1;
+  }
+
+  clearPosts();
+  getPosts(callback: () {});
+}
 
   closeQuickLinks() {
     openQuickLinks.value = false;
@@ -264,34 +270,42 @@ class HomeController extends GetxController {
     postSearchQuery.isFollowing = isFollowing;
   }
 
-  void getPosts({required VoidCallback callback}) async {
-    if (postsDataWrapper.haveMoreData.value == true) {
-      postSearchQuery.isRecent = 1;
-      postSearchQuery.isMine = 1;
+void getPosts({required VoidCallback callback}) async {
+  if (postsDataWrapper.haveMoreData.value == true) {
+    postSearchQuery.isRecent = 1;
+    postSearchQuery.isMine = 1;
 
-      if (postsDataWrapper.page == 1) {
-        isRefreshingPosts.value = true;
-      }
-
-      PostApi.getPosts(
-          isFollowing: postSearchQuery.isFollowing,
-          isRecent: postSearchQuery.isRecent,
-          page: postsDataWrapper.page,
-          resultCallback: (result, metadata) {
-            posts.addAll(result);
-            posts.sort((a, b) => b.createDate!.compareTo(a.createDate!));
-            posts.unique((e) => e.id);
-
-            isRefreshingPosts.value = false;
-            postsDataWrapper.processCompletedWithData(metadata);
-
-            callback();
-            update();
-          });
-    } else {
-      callback();
+    if (postsDataWrapper.page == 1) {
+      isRefreshingPosts.value = true;
     }
+
+    PostApi.getPosts(
+      isFollowing: selectedSegment.value == 2
+          ? null
+          : postSearchQuery.isFollowing,
+      isVideo: selectedSegment.value == 2 ? 1 : null,
+      isRecent: postSearchQuery.isRecent,
+      page: postsDataWrapper.page,
+      resultCallback: (result, metadata) {
+        posts.addAll(result);
+
+        posts.sort(
+          (a, b) => b.createDate!.compareTo(a.createDate!),
+        );
+
+        posts.unique((e) => e.id);
+
+        isRefreshingPosts.value = false;
+        postsDataWrapper.processCompletedWithData(metadata);
+
+        callback();
+        update();
+      },
+    );
+  } else {
+    callback();
   }
+}
 
   postEdited(PostModel post) {
     int oldPostIndex =

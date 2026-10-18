@@ -354,7 +354,7 @@ Widget postsView() {
   
   Widget storiesView() {
     return SizedBox(
-      height: 110,
+      height: 100,
       child: GetBuilder<HomeController>(
         init: _homeController,
         builder: (ctx) {
@@ -395,7 +395,7 @@ Widget feedFilterBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
-        vertical: 5,
+        vertical: 2,
       ),
       child: Row(
         children: [
