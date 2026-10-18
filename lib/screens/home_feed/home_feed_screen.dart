@@ -1,5 +1,6 @@
 import 'package:foap/controllers/notification/notifications_controller.dart';
 import 'package:foap/screens/settings_menu/notifications.dart';
+import 'package:flutter_polls/flutter_polls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -37,6 +38,7 @@ class HomeFeedState extends State<HomeFeedScreen> {
 
 
   String? selectedValue;
+  int pollFrequencyIndex = 10;
 
 @override
 void initState() {
