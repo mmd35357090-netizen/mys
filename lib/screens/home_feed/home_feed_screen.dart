@@ -157,101 +157,105 @@ class HomeFeedState extends State<HomeFeedScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColorConstants.backgroundColor,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Column(
-          children: [
-            Container(
-              color: AppColorConstants.backgroundColor,
-              child: Column(
-                children: [
-                  const SizedBox(height: 50),
-                  Row(
-                    children: [
-                      Heading4Text(
-                        AppConfigConstants.appName,
-                        weight: TextWeight.semiBold,
-                      ),
-                      const Spacer(),
-                       ThemeIconWidget(
-                        ThemeIcon.plus,
-                        size: 25,
-                      ).ripple(() {
-                        showGeneralDialog(
-                          context: Get.context!,
-                          pageBuilder: (
-                            context,
-                            animation,
-                            secondaryAnimation,
-                          ) =>
-                              const ContentCreatorView(),
-                        );
-                      }),
-                      const SizedBox(width: 20),
-                      Obx(
-                        () => Stack(
-                          children: [
-                            ThemeIconWidget(
-                              ThemeIcon.notification,
-                              size: 25,
-                              color: AppColorConstants.themeColor,
-                            )
-                                .rp(
-                                  _notificationController
-                                              .unreadNotificationCount.value >
-                                          0
-                                      ? 15
-                                      : 0,
-                                )
-                                .ripple(() {
-                              Get.to(
-                                () => const NotificationsScreen(),
-                              );
-                            }),
-                            if (_notificationController
-                                    .unreadNotificationCount.value >
-                                0)
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: Container(
-                                  color: AppColorConstants.themeColor,
-                                  child: Center(
-                                    child: Text(
-                                      _notificationController
-                                          .unreadNotificationCount.value
-                                          .toString(),
-                                      style: const TextStyle(
-                                        fontSize: 8,
-                                        color: Colors.white,
-                                      ),
-                                    ).setPadding(
-                                      top: 2,
-                                      bottom: 2,
-                                      left: 4,
-                                      right: 4,
-                                    ),
-                                  ),
-                                ).circular,
-                              ),
-                          ],
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: AppColorConstants.backgroundColor,
+    body: GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        children: [
+          Container(
+            color: AppColorConstants.backgroundColor,
+            child: Column(
+              children: [
+                const SizedBox(height: 50),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Heading4Text(
+                          AppConfigConstants.appName,
+                          weight: TextWeight.semiBold,
                         ),
-                      ),
-                    ],
-                  ).hp(20),
-                ],
-              ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        ThemeIconWidget(
+                          ThemeIcon.plus,
+                          size: 25,
+                        ).ripple(() {
+                          Future.delayed(
+                            Duration.zero,
+                            () => showGeneralDialog(
+                              context: Get.context!,
+                              pageBuilder: (context, animation, secondaryAnimation) =>
+                                  const ContentCreatorView(),
+                            ),
+                          );
+                        }),
+                        const SizedBox(width: 15), // Replaced the broken ternary snippet with a standard spacer
+                        Obx(() => Stack(
+                              children: [
+                                ThemeIconWidget(
+                                  ThemeIcon.notification,
+                                  size: 25,
+                                  color: AppColorConstants.themeColor,
+                                )
+                                    .rp(_notificationController
+                                                .unreadNotificationCount.value >
+                                            0
+                                        ? 15
+                                        : 0)
+                                    .ripple(() {
+                                  Get.to(() => const NotificationsScreen());
+                                }),
+                                if (_notificationController
+                                        .unreadNotificationCount.value >
+                                    0)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      color: AppColorConstants.themeColor,
+                                      child: Center(
+                                        child: Text(
+                                          _notificationController
+                                              .unreadNotificationCount.value
+                                              .toString(),
+                                          style: const TextStyle(
+                                              fontSize: 8,
+                                              color: Colors.white),
+                                          textAlign: TextAlign.center,
+                                        ).setPadding(
+                                            top: 2,
+                                            bottom: 2,
+                                            left: 4,
+                                            right: 4),
+                                      ),
+                                    ).circular,
+                                  ),
+                              ],
+                            )),
+                      ],
+                    ),
+                  ],
+                ).hp(20),
+              ],
             ),
-            Expanded(child: postsView()),
-          ],
-        ),
+          ),
+          Expanded(child: postsView()),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
 
 Widget postsView() {
