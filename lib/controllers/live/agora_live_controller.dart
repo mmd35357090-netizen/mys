@@ -521,7 +521,7 @@ class AgoraLiveController extends GetxController {
           onFirstLocalVideoFramePublished:
               (RtcConnection connection, int elapsed) {
           }),
-    );
+    
 
     _liveEventHandler = handler;
     currentEngine.registerEventHandler(handler);
