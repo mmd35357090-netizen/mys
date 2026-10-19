@@ -44,16 +44,55 @@ class AgoraCallController extends GetxController {
     // callId = id;
   }
 
-  clear() {
-    isFront.value = false;
-    reConnectingRemoteView.value = false;
-    videoPaused.value = false;
+clear() {
+  isFront.value = false;
+  reConnectingRemoteView.value = false;
+  videoPaused.value = false;
 
-    mutedAudio.value = false;
-    mutedVideo.value = false;
-    switchMainView.value = false;
-    remoteJoined.value = false;
+  mutedAudio.value = false;
+  mutedVideo.value = false;
+  switchMainView.value = false;
+  remoteJoined.value = false;
+}
+
+// নিচে নতুন কোড বসবে
+bool _isCleaningUp = false;
+
+Future<void> cleanupAgora() async {
+  if (_isCleaningUp) return;
+
+  _isCleaningUp = true;
+  final oldEngine = engine;
+
+  try {
+    if (oldEngine != null) {
+      try {
+        await oldEngine.leaveChannel();
+      } catch (e) {
+        debugPrint('leaveChannel error: $e');
+      }
+
+      try {
+        await oldEngine.stopPreview();
+      } catch (e) {
+        debugPrint('stopPreview error: $e');
+      }
+
+      try {
+        await oldEngine.release();
+      } catch (e) {
+        debugPrint('release error: $e');
+      }
+    }
+  } finally {
+    engine = null;
+    remoteUserId.value = 0;
+    clear();
+    _isCleaningUp = false;
   }
+}
+
+
 
   makeCallRequest({required Call call}) async {
     opponent = call.opponent;

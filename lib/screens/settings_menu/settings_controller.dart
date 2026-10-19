@@ -30,16 +30,17 @@ class SettingsController extends GetxController {
   RxBool isPrivateAccount = false.obs;
   RxBool isShareOnlineStatus = true.obs;
 
-  List<Map<String, String>> languagesList = [
-    {'language_code': 'hi', 'language_name': 'Hindi'},
-    {'language_code': 'en', 'language_name': 'English'},
-    {'language_code': 'ar', 'language_name': 'Arabic'},
-    {'language_code': 'tr', 'language_name': 'Turkish'},
-    {'language_code': 'ru', 'language_name': 'Russian'},
-    {'language_code': 'es', 'language_name': 'Spanish'},
-    {'language_code': 'fr', 'language_name': 'French'},
-    {'language_code': 'pt', 'language_name': 'Brazil'},
-  ];
+List<Map<String, String>> languagesList = [
+  {'language_code': 'en', 'language_name': 'English'},
+  {'language_code': 'bn', 'language_name': 'বাংলা'},
+  {'language_code': 'hi', 'language_name': 'Hindi'},
+  {'language_code': 'ar', 'language_name': 'Arabic'},
+  {'language_code': 'tr', 'language_name': 'Turkish'},
+  {'language_code': 'ru', 'language_name': 'Russian'},
+  {'language_code': 'es', 'language_name': 'Spanish'},
+  {'language_code': 'fr', 'language_name': 'French'},
+  {'language_code': 'pt', 'language_name': 'Brazil'},
+];
 
   setCurrentSelectedLanguage() async {
     String currentLanguage = await SharedPrefs().getLanguage();
@@ -113,22 +114,32 @@ class SettingsController extends GetxController {
     });
   }
 
-  Future checkBiometric() async {
-    bool bioMetricAuthStatus =
-        true; //await SharedPrefs().getBioMetricAuthStatus();
-    if (bioMetricAuthStatus == true) {
-      List<BiometricType> availableBiometrics =
-          await localAuth.getAvailableBiometrics();
+  Future<void> checkBiometric() async {
+  try {
+    final bool canCheck =
+        await localAuth.canCheckBiometrics;
+    final bool supported =
+        await localAuth.isDeviceSupported();
 
-      if (availableBiometrics.contains(BiometricType.face)) {
-        // Face ID.
-        bioMetricType.value = 1;
-      } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
-        // Touch ID.
-        bioMetricType.value = 2;
-      }
+    if (!canCheck || !supported) {
+      bioMetricType.value = 0;
+      return;
     }
-    return;
+
+    final List<BiometricType> availableBiometrics =
+        await localAuth.getAvailableBiometrics();
+
+    if (availableBiometrics.contains(BiometricType.face)) {
+      bioMetricType.value = 1;
+    } else if (availableBiometrics
+        .contains(BiometricType.fingerprint)) {
+      bioMetricType.value = 2;
+    } else {
+      bioMetricType.value = 0;
+    }
+  } catch (e) {
+    bioMetricType.value = 0;
+  }
   }
 
   void biometricLogin(bool status) async {

@@ -114,10 +114,7 @@ class _SettingsState extends State<Settings> {
                                   _settingsController.deleteAccount();
                                 });
                           }, false),
-                          addTileEvent(createdByString.tr, () async {
-                            await launchUrl(Uri.parse(
-                                'https://instagram.com/singhcoders/'));
-                          }, true),
+                          
                         ],
                       ),
                       const SizedBox(
