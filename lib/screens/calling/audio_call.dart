@@ -209,46 +209,77 @@ class _AudioCallingScreenState extends State<AudioCallingScreen> {
   );
 
   // Ui & UX For Bottom Portion (Switch Camera,Video On/Off,Mic On/Off)
-  Widget _bottomPortionWidget() => Container(
-    margin: const EdgeInsets.only(bottom: 50, left: 35, right: 25),
-    alignment: Alignment.bottomCenter,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Obx(() => Container(
+// Bottom controls: Microphone, Speaker, End Call
+Widget _bottomPortionWidget() => Container(
+  margin: const EdgeInsets.only(
+    bottom: 50,
+    left: 10,
+    right: 10,
+  ),
+  alignment: Alignment.bottomCenter,
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[
+      // Microphone ON/OFF
+      Obx(
+        () => Container(
+          height: 70,
+          width: 70,
           color: agoraCallController.mutedAudio.value
               ? AppColorConstants.themeColor.withValues(alpha: 0.5)
               : AppColorConstants.themeColor,
-          height: 80,
-          width: 80,
           child: ThemeIconWidget(
             agoraCallController.mutedAudio.value
                 ? ThemeIcon.micOff
                 : ThemeIcon.mic,
-            size: 20,
-            color: Colors.white,
-          ).p16,
-        )).circular.ripple(() {
-          agoraCallController.onToggleMuteAudio();
-        }),
-        const SizedBox(
-          width: 25,
-        ),
-        Container(
-          color: AppColorConstants.red,
-          height: 80,
-          width: 80,
-          child: ThemeIconWidget(
-            ThemeIcon.declineCall,
-            size: 30,
+            size: 25,
             color: Colors.white,
           ).p16,
         ).circular.ripple(() {
-          agoraCallController.onCallEnd(widget.call);
+          agoraCallController.onToggleMuteAudio();
         }),
-      ],
-    ),
-  );
+      ),
+
+      const SizedBox(width: 12),
+
+      // Speaker ON/OFF
+      Obx(
+        () => Container(
+          height: 70,
+          width: 70,
+          color: agoraCallController.speakerphoneEnabled.value
+              ? AppColorConstants.themeColor
+              : AppColorConstants.themeColor.withValues(alpha: 0.5),
+          child: Icon(
+            agoraCallController.speakerphoneEnabled.value
+                ? Icons.volume_up
+                : Icons.volume_down,
+            size: 28,
+            color: Colors.white,
+          ),
+        ).circular.ripple(() {
+          agoraCallController.toggleSpeakerphone();
+        }),
+      ),
+
+      const SizedBox(width: 12),
+
+      // End Call
+      Container(
+        height: 70,
+        width: 70,
+        color: AppColorConstants.red,
+        child: ThemeIconWidget(
+          ThemeIcon.declineCall,
+          size: 30,
+          color: Colors.white,
+        ).p16,
+      ).circular.ripple(() {
+        agoraCallController.onCallEnd(widget.call);
+      }),
+    ],
+  ),
+);
 
   Widget _incomingCallBottomPortionWidget() => Container(
     margin: const EdgeInsets.only(bottom: 50),
