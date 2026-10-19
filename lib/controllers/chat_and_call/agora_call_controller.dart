@@ -642,7 +642,7 @@ Future<void> _performAgoraCleanup(
 
       await cleanupAgora();
 
-      await SharedPrefs().setCallNotificationData(null);
+          SharedPrefs().setCallNotificationData(null);
 
       if (isLaunchedFromCallNotification) {
         Get.offAll(() => const DashboardScreen());
@@ -769,6 +769,6 @@ void clear() {
   remoteJoined.value = false;
   remoteUserId.value = 0;
   speakerphoneEnabled.value = false;
-
   update();
+}
 }
