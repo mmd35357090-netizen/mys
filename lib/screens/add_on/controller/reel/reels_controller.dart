@@ -23,13 +23,16 @@ class ReelsController extends GetxController {
   bool canLoadMoreReels = true;
   PostSearchQuery reelSearchQuery = PostSearchQuery();
 
-  clearReels() {
-    isLoadingReels = false;
-    reelsCurrentPage = 1;
-    canLoadMoreReels = true;
-    currentViewingReel.value = null;
 
-    update();
+  void clearReels() {
+  isLoadingReels = false;
+  reelsCurrentPage = 1;
+  canLoadMoreReels = true;
+
+  publicReels.clear();
+  currentViewingReel.value = null;
+
+  update();
   }
 
   clearReelsWithAudio() {
@@ -67,44 +70,51 @@ class ReelsController extends GetxController {
     getReels();
   }
 
-  void getReels() async {
-    if (canLoadMoreReels == true) {
-      isLoadingReels = true;
-
-      PostApi.getPosts(
-          postType: PostCategory.reel,
-          userId: reelSearchQuery.userId,
-          isPopular: reelSearchQuery.isPopular,
-          isFollowing: reelSearchQuery.isFollowing,
-          isSold: reelSearchQuery.isSold,
-          isMine: reelSearchQuery.isMine,
-          isRecent: reelSearchQuery.isRecent,
-          title: reelSearchQuery.title,
-          hashtag: reelSearchQuery.hashTag,
-          page: reelsCurrentPage,
-          resultCallback: (result, metadata) {
-            publicReels.addAll(result);
-            publicReels.unique((e) => e.id);
-
-            publicReels
-                .sort((a, b) => b.createDate!.compareTo(a.createDate!));
-
-            isLoadingReels = false;
-            if (reelsCurrentPage == 1 && publicReels.isNotEmpty) {
-              currentPageChanged(0, publicReels.first);
-            }
-            if (reelsCurrentPage >= metadata.pageCount) {
-              canLoadMoreReels = false;
-            } else {
-              canLoadMoreReels = true;
-            }
-            reelsCurrentPage += 1;
-            // totalPages = metadata.pageCount;
-
-            update();
-          });
-    }
+void getReels() async {
+  if (isLoadingReels || !canLoadMoreReels) {
+    return;
   }
+
+  isLoadingReels = true;
+  update();
+
+  try {
+    await PostApi.getPosts(
+      postType: PostCategory.reel,
+      userId: reelSearchQuery.userId,
+      isPopular: reelSearchQuery.isPopular,
+      isFollowing: reelSearchQuery.isFollowing,
+      isSold: reelSearchQuery.isSold,
+      isMine: reelSearchQuery.isMine,
+      isRecent: reelSearchQuery.isRecent,
+      title: reelSearchQuery.title,
+      hashtag: reelSearchQuery.hashTag,
+      page: reelsCurrentPage,
+      resultCallback: (result, metadata) {
+        print('Reels API returned: ${result.length} posts');
+        print('Reels page: $reelsCurrentPage');
+        print('Reels total pages: ${metadata.pageCount}');
+
+        publicReels.addAll(result);
+        publicReels.unique((e) => e.id);
+
+        publicReels.sort(
+          (a, b) => b.createDate!.compareTo(a.createDate!),
+        );
+
+        if (reelsCurrentPage == 1 && publicReels.isNotEmpty) {
+          currentPageChanged(0, publicReels.first);
+        }
+
+        canLoadMoreReels = reelsCurrentPage < metadata.pageCount;
+        reelsCurrentPage++;
+      },
+    );
+  } finally {
+    isLoadingReels = false;
+    update();
+  }
+}
 
   void getReelsWithAudio(int audioId) async {
     if (canLoadMoreReelsWithAudio == true) {

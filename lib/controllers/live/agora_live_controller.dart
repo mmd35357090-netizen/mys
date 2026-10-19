@@ -99,13 +99,14 @@ class AgoraLiveController extends GetxController {
   RxList<int> remoteJoinedUsers = <int>[].obs;
   RxList<int> videoPausedUsers = <int>[].obs;
 
-  clear() async {
-    unregisterEventHandler();
-    remoteJoinedUsers.clear();
+  // Keep the exact handler instance so it can be unregistered correctly.
+  RtcEngineEventHandler? _liveEventHandler;
+  Future<void>? _cleanupFuture;
 
-    engine?.release();
-    engine?.leaveChannel();
-    engine = null;
+  Future<void> clear() async {
+    await cleanupAgora();
+    WakelockPlus.disable();
+    remoteJoinedUsers.clear();
 
     isFront.value = false;
     messageTextFocus.value = false;
@@ -138,6 +139,96 @@ class AgoraLiveController extends GetxController {
 
     isStreaming.value = false;
     localVideoSource = null;
+  }
+
+  // Stop local capture, leave the channel, and release the engine once.
+  Future<void> cleanupAgora() async {
+    final runningCleanup = _cleanupFuture;
+    if (runningCleanup != null) {
+      await runningCleanup;
+      return;
+    }
+
+    final currentEngine = engine;
+    engine = null;
+
+    if (currentEngine == null) {
+      cameraInitiated = false;
+      isStreaming.value = false;
+      localVideoSource = null;
+      remoteJoinedUsers.clear();
+      videoPausedUsers.clear();
+      return;
+    }
+
+    final task = _performAgoraCleanup(currentEngine);
+    _cleanupFuture = task;
+
+    try {
+      await task;
+    } finally {
+      _cleanupFuture = null;
+      cameraInitiated = false;
+      isStreaming.value = false;
+      localVideoSource = null;
+      remoteJoinedUsers.clear();
+      videoPausedUsers.clear();
+    }
+  }
+
+  Future<void> _performAgoraCleanup(RtcEngine currentEngine) async {
+    final handler = _liveEventHandler;
+    if (handler != null) {
+      try {
+        currentEngine.unregisterEventHandler(handler);
+      } catch (e) {
+        debugPrint('Unregister live event handler error: $e');
+      } finally {
+        _liveEventHandler = null;
+      }
+    }
+
+    try {
+      await currentEngine.muteLocalAudioStream(true);
+    } catch (e) {
+      debugPrint('Mute live audio error: $e');
+    }
+
+    try {
+      await currentEngine.muteLocalVideoStream(true);
+    } catch (e) {
+      debugPrint('Mute live video error: $e');
+    }
+
+    try {
+      await currentEngine.enableLocalAudio(false);
+    } catch (e) {
+      debugPrint('Disable live microphone error: $e');
+    }
+
+    try {
+      await currentEngine.enableLocalVideo(false);
+    } catch (e) {
+      debugPrint('Disable live camera error: $e');
+    }
+
+    try {
+      await currentEngine.stopPreview();
+    } catch (e) {
+      debugPrint('Stop live camera preview error: $e');
+    }
+
+    try {
+      await currentEngine.leaveChannel();
+    } catch (e) {
+      debugPrint('Leave live channel error: $e');
+    }
+
+    try {
+      await currentEngine.release();
+    } catch (e) {
+      debugPrint('Release live Agora engine error: $e');
+    }
   }
 
   clearGiftData() {
@@ -319,29 +410,24 @@ class AgoraLiveController extends GetxController {
   }
 
   void unregisterEventHandler() {
-    engine?.unregisterEventHandler(RtcEngineEventHandler(
-        onJoinChannelSuccess:
-            (RtcConnection connection, int elapsed) async {},
-        onUserJoined:
-            (RtcConnection connection, int remoteUid, int elapsed) {},
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {},
-        onTokenPrivilegeWillExpire:
-            (RtcConnection connection, String token) {},
-        onConnectionStateChanged: (RtcConnection connection,
-            ConnectionStateType state,
-            ConnectionChangedReasonType reason) async {},
-        onRemoteVideoStateChanged: (RtcConnection connection,
-            int remoteUid,
-            RemoteVideoState state,
-            RemoteVideoStateReason reason,
-            int elapsed) async {}));
+    final currentEngine = engine;
+    final handler = _liveEventHandler;
+    if (currentEngine == null || handler == null) return;
+
+    try {
+      currentEngine.unregisterEventHandler(handler);
+    } catch (e) {
+      debugPrint('Unregister live event handler error: $e');
+    }
+    _liveEventHandler = null;
   }
 
   //Agora Events Handler To Implement Ui/UX Based On Your Requirements
   void _addAgoraEventHandlers() {
-    engine?.registerEventHandler(
-      RtcEngineEventHandler(
+    final currentEngine = engine;
+    if (currentEngine == null) return;
+
+    final handler = RtcEngineEventHandler(
           onPermissionError: (permission) {
             debugPrint('checking live  ${permission.name}');
           },
@@ -436,31 +522,41 @@ class AgoraLiveController extends GetxController {
               (RtcConnection connection, int elapsed) {
           }),
     );
+
+    _liveEventHandler = handler;
+    currentEngine.registerEventHandler(handler);
   }
 
-  //Use This Method To End Call
-  void onCallEnd({required bool isHost}) async {
-    engine?.leaveChannel();
-    WakelockPlus.disable(); // Turn off wakelock feature after call end
+  // End the live and release camera/microphone safely.
+  Future<void> onCallEnd({required bool isHost}) async {
+    if (liveEnd.value) return;
+
+    WakelockPlus.disable();
+
+    final currentLive = live.value;
+    liveEndTime = DateTime.now();
+    liveEnd.value = true;
+
+    await cleanupAgora();
 
     if (isHost) {
       leaveFromLiveAsHost();
       clearGiftData();
-      loadGiftsReceived(liveId: live.value!.id);
+      if (currentLive != null) {
+        loadGiftsReceived(liveId: currentLive.id);
+      }
     } else {
-      leaveFromLiveAsAudience();
+      await leaveFromLiveAsAudience();
     }
 
-    liveEndTime = DateTime.now();
-    liveEnd.value = true;
-    // clear();
+    update();
   }
 
-  closeLive() {
-    Get.back();
-    Timer(const Duration(seconds: 1), () {
-      clear();
-    });
+  Future<void> closeLive() async {
+    await clear();
+    if (Get.key.currentState?.canPop() == true) {
+      Get.back();
+    }
   }
 
   leaveFromLiveAsHost() {
@@ -484,7 +580,7 @@ class AgoraLiveController extends GetxController {
     live.refresh();
   }
 
-  leaveFromLiveAsAudience() {
+  Future<void> leaveFromLiveAsAudience() async {
     sendTextMessage('Left');
     getIt<SocketManager>().emit(
         SocketConstants.leaveLive,
@@ -493,8 +589,10 @@ class AgoraLiveController extends GetxController {
           'liveCallId': live.value?.id
         }));
 
-    clear();
-    Get.back();
+    await clear();
+    if (Get.key.currentState?.canPop() == true) {
+      Get.back();
+    }
     InterstitialAds().show();
   }
 
@@ -966,15 +1064,17 @@ class AgoraLiveController extends GetxController {
     totalViewers.value = totalUsers;
   }
 
-  onUserLeave(
+  Future<void> onUserLeave(
       {required int userId,
       required int liveId,
-      required int totalUsers}) {
+      required int totalUsers}) async {
     totalViewers.value = totalUsers;
     if (userId == _userProfileManager.user.value!.id) {
       // remove me, i might be banned by host
-      clear();
-      Get.back();
+      await clear();
+      if (Get.key.currentState?.canPop() == true) {
+        Get.back();
+      }
     } else if (live.value?.id == liveId) {
       liveViewers.removeWhere((element) => element.user.id == userId);
       moderatorUsers.removeWhere((element) => element.user.id == userId);
@@ -984,17 +1084,17 @@ class AgoraLiveController extends GetxController {
     }
   }
 
-  onLiveEndMessageReceived(int liveId) {
-    engine?.leaveChannel();
+  Future<void> onLiveEndMessageReceived(int liveId) async {
+    if (live.value?.id != liveId) return;
 
+    await cleanupAgora();
     WakelockPlus.disable();
 
     messages.clear();
-    if (live.value?.id == liveId) {
-      liveEndTime = DateTime.now();
-      liveEnd.value = true;
-      live.value!.clearBattleData();
-    }
+    liveEndTime = DateTime.now();
+    liveEnd.value = true;
+    live.value?.clearBattleData();
+
     update();
   }
 
