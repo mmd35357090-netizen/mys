@@ -217,7 +217,7 @@ class _CreateReelScreenState extends State<CreateReelScreen>
       animationController?.reset();
 
       if (!_screenClosing && mounted) {
-        await _createReelController.createReel(audioFile, file);
+       _createReelController.createReel(audioFile, file);
       }
     } on CameraException catch (error) {
       debugPrint('Stop recording failed: ${error.code}');
