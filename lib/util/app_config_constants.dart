@@ -17,7 +17,7 @@ class AppConfigConstants {
   static const restApiBaseUrl = 'https://facehub.sbehf.com/api/web/v1/';
 
   // Socket api url
-  static const socketApiBaseUrl = "https://chat.sbehf.com/";
+  static const socketApiBaseUrl = "https://facehub.sbehf.com:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';
