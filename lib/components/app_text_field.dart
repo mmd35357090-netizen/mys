@@ -34,7 +34,9 @@ class AppTextField extends StatelessWidget {
         onChanged: onChanged,
         maxLength: maxLength,
         backgroundColor: AppColorConstants.cardColor.darken(0.02),
-        cornerRadius: 10,
+        showBorder: true,
+        borderColor: AppColorConstants.borderColor,
+        cornerRadius: 12,
         iconColor: AppColorConstants.iconColor,
         focusStatusChangeHandler: focusStatusChangeHandler);
   }
@@ -61,7 +63,9 @@ class AppPasswordTextField extends StatelessWidget {
       hintText: hintText,
       icon: icon,
       backgroundColor: AppColorConstants.cardColor.darken(0.02),
-      cornerRadius: 10,
+      showBorder: true,
+      borderColor: AppColorConstants.borderColor,
+      cornerRadius: 12,
       iconColor: AppColorConstants.iconColor,
       onChanged: onChanged,
     );

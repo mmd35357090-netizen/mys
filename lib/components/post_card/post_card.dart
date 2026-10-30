@@ -14,6 +14,7 @@ import 'package:foap/screens/near_by_offers/offer_detail.dart';
 import 'package:foap/components/post_card/video_widget.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/post_imports.dart';
+import 'package:foap/theme/app_design.dart';
 import 'package:foap/screens/shop_feature/home/ad_detail_screen.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -203,7 +204,13 @@ class PostMediaTile extends StatelessWidget {
       width: Get.width,
       placeholder: (context, url) =>
           AppUtil.addProgressIndicator(size: 100),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
+      errorWidget: (context, url, error) => Container(
+        height: 200,
+        width: Get.width,
+        color: AppColorConstants.cardColor,
+        child: Icon(Icons.broken_image_outlined,
+            size: 32, color: AppColorConstants.disabledColor),
+      ),
     );
   }
 }
@@ -377,7 +384,20 @@ class PostCardState extends State<PostCard> {
                 postPromotionId: widget.model.postPromotionData?.id);
           }
         },
-        child: Column(
+        child: Container(
+            // Full-bleed card separated from its neighbours by a soft
+            // gap and hairline borders (feed-style, no harsh dividers).
+            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+            padding: const EdgeInsets.only(
+                top: AppSpacing.md, bottom: AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColorConstants.backgroundColor,
+              border: Border.symmetric(
+                horizontal: BorderSide(
+                    color: AppColorConstants.borderColor, width: 0.5),
+              ),
+            ),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -479,13 +499,13 @@ class PostCardState extends State<PostCard> {
                   ).hp(DesignConstants.horizontalPadding),
                 ),
               const SizedBox(
-                height: 20,
+                height: AppSpacing.md,
               ),
               if (widget.model.postPromotionData != null)
                 sponsoredPostView().bP16,
               commentAndLikeWidget()
                   .hp(DesignConstants.horizontalPadding / 2),
-            ]));
+            ])));
   }
 
   Widget sponsoredPostView() {

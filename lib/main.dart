@@ -36,6 +36,7 @@ import 'package:foap/screens/add_on/controller/reel/reels_controller.dart';
 import 'package:foap/screens/dashboard/dashboard_screen.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
 import 'package:foap/util/constant_util.dart';
+import 'package:foap/theme/app_design.dart';
 import 'package:foap/util/shared_prefs.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -235,6 +236,8 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
                   fallbackLocale: const Locale('en', 'US'),
                   debugShowCheckedModeBanner: false,
                   home: widget.startScreen,
+                  theme: AppThemeBuilder.build(dark: false),
+                  darkTheme: AppThemeBuilder.build(dark: true),
                   themeMode: ThemeMode.dark,
                   localizationsDelegates: [
                     GlobalMaterialLocalizations.delegate,

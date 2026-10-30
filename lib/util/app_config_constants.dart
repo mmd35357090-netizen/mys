@@ -82,20 +82,20 @@ class AppColorConstants {
           .darken(0.05);
 
   static Color get dividerColor => isDarkMode
-      ? const Color(0xFFFFFFFF).withValues(alpha: 0.4)
-      : Colors.grey.withValues(alpha: 0.7);
+      ? const Color(0xFFFFFFFF).withValues(alpha: 0.10)
+      : Colors.black.withValues(alpha: 0.08);
 
   static Color get borderColor => isDarkMode
-      ? Colors.white.withValues(alpha: 0.9)
-      : Colors.grey.withValues(alpha: 0.2);
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.10);
 
   static Color get disabledColor => isDarkMode
-      ? Colors.grey.withValues(alpha: 0.2)
-      : Colors.grey.withValues(alpha: 0.2);
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
   static Color get shadowColor => isDarkMode
-      ? Colors.white.withValues(alpha: 0.2)
-      : Colors.black.withValues(alpha: 0.2);
+      ? Colors.black.withValues(alpha: 0.35)
+      : Colors.black.withValues(alpha: 0.08);
 
   // static Color get inputFieldBackgroundColor =>
   //     isDarkMode ? const Color(0xFF212121) : const Color(0xFF212121);
@@ -128,12 +128,12 @@ class AppColorConstants {
 
   static Color get subHeadingTextColor => isDarkMode
       ? settingsController.setting.value == null
-          ? const Color(0xFF34495e)
+          ? const Color(0xFFB0B7C3)
           : HexColor.fromHex(
                   settingsController.setting.value!.textColorForDarkTheme!)
               .withValues(alpha: 0.8)
       : settingsController.setting.value == null
-          ? const Color(0xFFecf0f1)
+          ? const Color(0xFF6B7280)
           : HexColor.fromHex(settingsController
                   .setting.value!.textColorForLightTheme!)
               .withValues(alpha: 0.8);

@@ -18,7 +18,8 @@ class AppThemeBackButton extends StatelessWidget {
       width: 40,
       color: AppColorConstants.cardColor,
       child: ThemeIconWidget(ThemeIcon.backArrow).lP8,
-    ).round(10).shadowWithBorder(borderWidth: 0).ripple(() {
+    ).round(12).borderWithRadius(
+        value: 0.5, radius: 12, color: AppColorConstants.borderColor).ripple(() {
       Get.back();
     });
   }
@@ -36,7 +37,8 @@ class AppThemeCloseButton extends StatelessWidget {
       width: 40,
       color: AppColorConstants.cardColor,
       child: ThemeIconWidget(ThemeIcon.close),
-    ).round(10).shadowWithBorder(borderWidth: 0).ripple(() {
+    ).round(12).borderWithRadius(
+        value: 0.5, radius: 12, color: AppColorConstants.borderColor).ripple(() {
       Get.back();
     });
   }
@@ -69,8 +71,8 @@ class AppThemeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: height ?? 45,
-      color: backgroundColor ?? AppColorConstants.themeColor.darken(),
+      height: height ?? 48,
+      color: backgroundColor ?? AppColorConstants.themeColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -79,12 +81,13 @@ class AppThemeButton extends StatelessWidget {
             child: BodyMediumText(
               text!,
               color: Colors.white,
+              weight: FontWeight.w600,
             ).hP16,
           ),
           trailing != null ? trailing!.hP4 : Container()
         ],
       ),
-    ).round(cornerRadius ?? 15).ripple(() {
+    ).round(cornerRadius ?? 12).ripple(() {
       onPress!();
     });
   }
