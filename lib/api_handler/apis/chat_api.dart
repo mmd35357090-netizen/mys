@@ -178,14 +178,11 @@ class ChatApi {
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         List items = result!.data['user'];
-
-        if (items.isEmpty) {
-          getRandomOnlineUsers(profileCategoryType,
-              resultCallback: resultCallback);
-        } else {
-          resultCallback(
-              List<UserModel>.from(items.map((x) => UserModel.fromJson(x))));
-        }
+        // Return an empty list too; the caller decides whether and when to
+        // retry (previously this re-called itself instantly in an endless
+        // request loop whenever no one was online).
+        resultCallback(
+            List<UserModel>.from(items.map((x) => UserModel.fromJson(x))));
       }
     });
   }

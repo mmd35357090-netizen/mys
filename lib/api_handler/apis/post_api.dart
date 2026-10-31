@@ -163,9 +163,7 @@ class PostApi {
       if (response?.data != null) {
         List<PostModel> posts = [];
         var items = response!.data['post']['items'];
-        posts =
-            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
-                .toList();
+        posts = PostModel.parseList(items);
 
         APIMetaData metaData =
             APIMetaData.fromJson(response.data['post']['_meta']);
@@ -187,9 +185,7 @@ class PostApi {
       if (response?.data != null) {
         List<PostModel> posts = [];
         var items = response!.data['postPromotionList']['items'];
-        posts =
-            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
-                .toList();
+        posts = PostModel.parseList(items);
 
         APIMetaData metaData = APIMetaData.fromJson(
             response.data['postPromotionList']['_meta']);
@@ -210,9 +206,7 @@ class PostApi {
       if (response?.data != null) {
         List<PostModel> posts = [];
         var items = response!.data['post']['items'];
-        posts =
-            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
-                .toList();
+        posts = PostModel.parseList(items);
 
         APIMetaData metaData =
             APIMetaData.fromJson(response.data['post']['_meta']);

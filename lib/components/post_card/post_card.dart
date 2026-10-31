@@ -669,7 +669,8 @@ class PostCardState extends State<PostCard> {
                   });
             }),
 
-          if (widget.model.contentType == PostContentType.event)
+          if (widget.model.contentType == PostContentType.event &&
+              widget.model.event != null)
             Row(
               children: [
                 ThemeIconWidget(

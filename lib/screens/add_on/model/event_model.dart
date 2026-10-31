@@ -73,26 +73,28 @@ class EventModel {
       this.shareLink});
 
   factory EventModel.fromJson(Map<String, dynamic> json) => EventModel(
+        // Null-safe: events created from the admin panel can have empty
+        // columns (no image, address, coordinates, creator ...).
         id: json["id"],
-        name: json["name"],
-        categoryId: json["category_id"],
-        image: json["imageUrl"],
-        startDate: json["start_date"],
-        endDate: json["end_date"],
-        placeName: json["place_name"],
-        completeAddress: json["address"],
-        latitude: json["latitude"],
-        longitude: json["longitude"],
-        disclaimer: json["disclaimer"],
-        description: json["description"],
-        status: json["status"],
-        eventCurrentStatus: json["eventCurrentStatus"],
+        name: json["name"] ?? '',
+        categoryId: json["category_id"] ?? 0,
+        image: json["imageUrl"] ?? '',
+        startDate: json["start_date"] ?? 0,
+        endDate: json["end_date"] ?? 0,
+        placeName: json["place_name"] ?? '',
+        completeAddress: json["address"] ?? '',
+        latitude: (json["latitude"] ?? '').toString(),
+        longitude: (json["longitude"] ?? '').toString(),
+        disclaimer: json["disclaimer"] ?? '',
+        description: json["description"] ?? '',
+        status: json["status"] ?? 0,
+        eventCurrentStatus: json["eventCurrentStatus"] ?? 1,
         isFree: json["is_paid"] == 0,
         isTicketBooked: json["is_ticket_booked"] == 1,
         isCompleted: json["eventCurrentStatus"] == 3 ||
             json["eventCurrentStatus"] == 4,
-        createdAt: json["created_at"],
-        createdBy: json["created_by"],
+        createdAt: json["created_at"] ?? 0,
+        createdBy: json["created_by"] ?? 0,
         updatedAt: json["updated_at"],
         updatedBy: json["updated_by"],
         gallery: json["eventGallaryImages"] == null
@@ -103,7 +105,9 @@ class EventModel {
         organizers: json["eventOrganisor"] != null
             ? [EventOrganizer.fromJson(json["eventOrganisor"])]
             : [],
-        createdByUser: UserModel.fromJson(json["createdByUser"]),
+        createdByUser: json["createdByUser"] == null
+            ? UserModel()
+            : UserModel.fromJson(json["createdByUser"]),
         tickets: json["eventTicket"] == null
             ? []
             : (json["eventTicket"] as List<dynamic>)

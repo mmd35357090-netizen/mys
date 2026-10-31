@@ -21,15 +21,17 @@ class OfferModel {
   });
 
   factory OfferModel.fromJson(Map<String, dynamic> json) => OfferModel(
-        name: json["name"],
+        name: json["name"] ?? '',
         id: json["id"],
         coverImage: json["imageUrl"] ?? '',
         code: json["code"] ?? '',
         description: json["description"] ?? '',
         startDate:
-            DateTime.fromMillisecondsSinceEpoch(json['start_date'] * 1000),
+            DateTime.fromMillisecondsSinceEpoch(
+            ((json['start_date'] ?? 0) as int) * 1000),
         endDate:
-            DateTime.fromMillisecondsSinceEpoch(json['expiry_date'] * 1000),
+            DateTime.fromMillisecondsSinceEpoch(
+            ((json['expiry_date'] ?? 0) as int) * 1000),
         isFavourite: json["is_favorite"] == 1,
       );
 }

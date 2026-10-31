@@ -41,18 +41,18 @@ class JobModel {
   factory JobModel.fromJson(dynamic json) {
     JobModel model = JobModel(
       id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      skills: json['skill'],
-      education: json['education'],
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      skills: json['skill'] ?? '',
+      education: json['education'] ?? '',
       minExperience: json['experience_min'],
       maxExperience: json['experience_max'],
       minSalary: double.parse(json['salary_min'].toString()),
       maxSalary: double.parse(json['salary_max'].toString()),
       isApplied: json['applied_status'] == 1,
-      country: json['country_name'].toString(),
-      state: json['state_name'].toString(),
-      city: json['city_name'].toString(),
+      country: (json['country_name'] ?? '').toString(),
+      state: (json['state_name'] ?? '').toString(),
+      city: (json['city_name'] ?? '').toString(),
       postedBy: json['organization'] == null
           ? null
           : UserModel.fromJson(json['organization']),

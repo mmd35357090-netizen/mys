@@ -47,13 +47,15 @@ class FundRaisingCampaign {
   factory FundRaisingCampaign.fromJson(dynamic json) {
     FundRaisingCampaign model = FundRaisingCampaign(
         id: json['id'],
-        title: json['title'],
-        description: json['description'],
-        coverImage: json['coverImageUrl'],
+        title: json['title'] ?? '',
+        description: json['description'] ?? '',
+        coverImage: json['coverImageUrl'] ?? '',
         startDate: AppUtil.convertToDateTime(json['start_date']),
         endDate: AppUtil.convertToDateTime(json['end_date']),
         createdDate: AppUtil.convertToDateTime(json['created_at']),
-        targetValue: double.parse(json['target_value'].toString()),
+        targetValue: json['target_value'] == null
+            ? 0.0
+            : double.parse(json['target_value'].toString()),
         raisedValue: json['raised_value'] == null
             ? 0.0
             : double.parse(json['raised_value'].toString()),

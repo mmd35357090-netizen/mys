@@ -22,6 +22,16 @@ class RandomChatAndCallController extends GetxController {
     if (stopSearching == false) {
       ChatApi.getRandomOnlineUsers(profileCategoryType,
           resultCallback: (result) {
+        if (result.isEmpty) {
+          // Nobody online right now: wait, then try again unless the user
+          // has left the search screen.
+          Timer(const Duration(seconds: 3), () {
+            if (stopSearching == false) {
+              getRandomOnlineUsers(profileCategoryType: profileCategoryType);
+            }
+          });
+          return;
+        }
         Timer(const Duration(seconds: 2), () {
           result.shuffle();
 

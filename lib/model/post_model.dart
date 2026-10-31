@@ -61,6 +61,28 @@ class PostModel {
 
   PostModel();
 
+  /// Parses a list of posts, skipping any single post that fails to parse
+  /// so one bad record (e.g. an event created from the admin panel with
+  /// missing fields) cannot blank out the whole feed.
+  static List<PostModel> parseList(dynamic items) {
+    final List<PostModel> posts = [];
+    if (items is! Iterable) return posts;
+    for (final item in items) {
+      try {
+        final post = PostModel.fromJson(item);
+        if (post.isReferenceMissing) {
+          debugPrint('Skipped post id=${post.id}: referenced '
+              '${post.contentType.name} content is missing/deleted');
+          continue;
+        }
+        posts.add(post);
+      } catch (e, st) {
+        debugPrint('Skipped unparsable post id=${item?['id']}: $e\n$st');
+      }
+    }
+    return posts;
+  }
+
   factory PostModel.fromJson(dynamic json) {
     PostModel model = PostModel();
     model.id = json['id'];
@@ -88,6 +110,9 @@ class PostModel {
 
     if (model.contentRefrence != null) {
       if (model.contentType == PostContentType.event) {
+        // The feed API does not expand contentReferenceDetail.createdByUser,
+        // so fall back to the post's own user.
+        json['contentReferenceDetail']['createdByUser'] ??= json['user'];
         model.event = EventModel.fromJson(json['contentReferenceDetail']);
       }
       if (model.contentType == PostContentType.competitionAdded ||
@@ -168,6 +193,33 @@ class PostModel {
     return model;
   }
 
+  /// True when this post is a "content" post (event, job, campaign ...) whose
+  /// referenced record could not be loaded (deleted / inactive / bad data).
+  bool get isReferenceMissing {
+    switch (contentType) {
+      case PostContentType.event:
+        return event == null;
+      case PostContentType.competitionAdded:
+      case PostContentType.competitionResultDeclared:
+        return competition == null;
+      case PostContentType.fundRaising:
+      case PostContentType.donation:
+        return fundRaisingCampaign == null;
+      case PostContentType.job:
+        return job == null;
+      case PostContentType.offer:
+        return offer == null;
+      case PostContentType.classified:
+        return product == null;
+      case PostContentType.club:
+        return createdClub == null;
+      case PostContentType.poll:
+        return poll == null;
+      default:
+        return false;
+    }
+  }
+
   bool get containVideoPost {
     return gallery.where((element) => element.isVideoPost).isNotEmpty;
   }
@@ -238,26 +290,26 @@ class PostModel {
         contentType == PostContentType.poll) {
       return title ?? '';
     } else if (contentType == PostContentType.event && event != null) {
-      return '${user.name!} ${addedNewEventString.tr} : ${event!.name}';
+      return '${user.name ?? ''} ${addedNewEventString.tr} : ${event!.name}';
     } else if (contentType == PostContentType.competitionAdded &&
         competition != null) {
-      return '${user.name!} ${addedNewCompetitionString.tr} ${competition!.title}';
+      return '${user.name ?? ''} ${addedNewCompetitionString.tr} ${competition!.title}';
     } else if (contentType == PostContentType.fundRaising &&
         fundRaisingCampaign != null) {
-      return '${user.name!} ${addedNewFundRaisingCampaignString.tr} ${fundRaisingCampaign!.title}';
+      return '${user.name ?? ''} ${addedNewFundRaisingCampaignString.tr} ${fundRaisingCampaign!.title}';
     } else if (contentType == PostContentType.job && job != null) {
-      return '${user.name!} ${addedNewJobOpeningString.tr} ${job!.title}';
+      return '${user.name ?? ''} ${addedNewJobOpeningString.tr} ${job!.title}';
     } else if (contentType == PostContentType.offer && offer != null) {
-      return '${user.name!} ${addedNewOfferString.tr} ${offer!.name} , ${couponCodeString.tr} : ${offer!.code}';
+      return '${user.name ?? ''} ${addedNewOfferString.tr} ${offer!.name} , ${couponCodeString.tr} : ${offer!.code}';
     } else if (contentType == PostContentType.classified &&
         product != null) {
-      return '${user.name!} ${addedNewProductString.tr} ${product!.title!}';
+      return '${user.name ?? ''} ${addedNewProductString.tr} ${product!.title!}';
     } else if (contentType == PostContentType.donation &&
         fundRaisingCampaign != null) {
-      return '${user.name!} ${donatedToString.tr} ${fundRaisingCampaign!.title}';
+      return '${user.name ?? ''} ${donatedToString.tr} ${fundRaisingCampaign!.title}';
     } else if (contentType == PostContentType.club &&
         createdClub != null) {
-      return '${user.name!} ${createdAClubString.tr} ${createdClub!.name!}';
+      return '${user.name ?? ''} ${createdAClubString.tr} ${createdClub!.name!}';
     }
     return '';
   }

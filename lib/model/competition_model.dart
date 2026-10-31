@@ -61,7 +61,7 @@ class CompetitionModel {
     CompetitionModel model = CompetitionModel();
     model.id = json['id'];
     model.title = json['title'];
-    model.photo = json['imageUrl'];
+    model.photo = json['imageUrl'] ?? '';
     model.description = json['description'] ?? '';
 
     model.awardType = json['award_type'];

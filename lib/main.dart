@@ -236,9 +236,11 @@ class _SocialifiedAppState extends State<SocialifiedApp> {
                   fallbackLocale: const Locale('en', 'US'),
                   debugShowCheckedModeBanner: false,
                   home: widget.startScreen,
-                  theme: AppThemeBuilder.build(dark: false),
-                  darkTheme: AppThemeBuilder.build(dark: true),
-                  themeMode: ThemeMode.dark,
+                  // Follow the app's own light/dark switch (isDarkMode) so Material
+                  // widgets (dialogs, sheets, pickers) match the app palette.
+                  theme: AppThemeBuilder.build(dark: isDarkMode),
+                  darkTheme: AppThemeBuilder.build(dark: isDarkMode),
+                  themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
                   localizationsDelegates: [
                     GlobalMaterialLocalizations.delegate,
                     GlobalWidgetsLocalizations.delegate,

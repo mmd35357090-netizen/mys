@@ -176,7 +176,7 @@ selectSegment(int index) {
           subHeading: datingString.tr,
           linkType: QuickLinkType.dating));
     }
-    if (!_settingsController.setting.value!.enableChatGPT) {
+    if (_settingsController.setting.value!.enableChatGPT) {
       quickLinks.add(QuickLink(
           icon: 'assets/explore/chatGPT.png',
           heading: chatGPT.tr,

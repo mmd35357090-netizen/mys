@@ -58,8 +58,7 @@ class PromotionApi {
     await ApiWrapper().getApi(url: url).then((response) async {
       if (response?.success == true) {
         List data = response!.data!['postPromotionList']['items'];
-        List<PostModel> posts =
-            List<PostModel>.from(data.map((x) => PostModel.fromJson(x)));
+        List<PostModel> posts = PostModel.parseList(data);
         postsCallback(posts,
             APIMetaData.fromJson(response.data!['postPromotionList']['_meta']));
       }
