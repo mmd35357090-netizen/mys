@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/post/saved_posts.dart';
+import 'package:foap/screens/post/post_promotion/promotion_campaigns.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/misc/gift_controller.dart';
@@ -65,6 +66,9 @@ class _SettingsState extends State<Settings> {
                           }, true),
                           addTileEvent(savedPostsString.tr, () {
                             Get.to(() => const SavedPosts());
+                          }, true),
+                          addTileEvent(boostMyCampaigns.tr, () {
+                            Get.to(() => const PromotionCampaignsScreen());
                           }, true),
                           addTileEvent(privacyString.tr, () {
                             Get.to(() => const PrivacyOptions());

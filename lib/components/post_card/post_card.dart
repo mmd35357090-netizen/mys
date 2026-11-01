@@ -26,6 +26,7 @@ import '../../controllers/home/home_controller.dart';
 import '../../controllers/post/comments_controller.dart';
 import '../../screens/post/liked_by_users.dart';
 import '../../controllers/post/promotion_controller.dart';
+import '../../api_handler/apis/promotion_api.dart';
 import '../../screens/chat/chat_detail.dart';
 import '../../screens/club/club_detail.dart';
 import '../../screens/home_feed/comments_screen.dart';
@@ -527,6 +528,18 @@ class PostCardState extends State<PostCard> {
             ThemeIconWidget(ThemeIcon.nextArrow,
                 size: 25, color: Colors.white)
           ]).p8.ripple(() {
+        // count the tap for the advertiser's campaign report
+        final int? promotionId = widget.model.postPromotionData?.id;
+        if (promotionId != null && promotionId > 0) {
+          PromotionApi.trackEvent(promotionId: promotionId, event: 'click');
+          PromotionApi.trackEvent(
+              promotionId: promotionId,
+              event: widget.model.postPromotionData?.type == GoalType.website
+                  ? 'website'
+                  : widget.model.postPromotionData?.type == GoalType.message
+                      ? 'message'
+                      : 'profile_visit');
+        }
         widget.model.postPromotionData?.type == GoalType.website
             ? launchUrl(
                 Uri.parse(widget.model.postPromotionData?.url ?? ''))

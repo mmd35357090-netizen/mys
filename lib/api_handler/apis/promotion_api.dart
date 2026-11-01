@@ -3,6 +3,7 @@ import '../../controllers/post/promotion_controller.dart';
 import '../../helper/imports/common_import.dart';
 import '../../model/audience_model.dart';
 import '../../model/post_promotion_model.dart';
+import '../../model/promotion_report_model.dart';
 import '../../model/regional_location_model.dart';
 import '../api_wrapper.dart';
 
@@ -143,6 +144,105 @@ class PromotionApi {
 
     ApiWrapper().postApi(url: url, param: param).then((response) {
       completionHandler(response?.success == true);
+    });
+  }
+
+  /// Limits, tax and currency decided by the server.
+  static getPricing(
+      {required Function(PromotionPricing) pricingCallback}) async {
+    await ApiWrapper()
+        .getApi(url: NetworkConstantsUtil.promotionPricing)
+        .then((response) async {
+      if (response?.success == true && response!.data['pricing'] != null) {
+        pricingCallback(PromotionPricing.fromJson(response.data['pricing']));
+      }
+    });
+  }
+
+  /// The real price for a budget plus an estimate of how many people it can reach.
+  static getEstimate(
+      {required double dailyBudget,
+      required int duration,
+      int? audienceId,
+      required Function(PromotionEstimate) estimateCallback}) async {
+    String url =
+        '${NetworkConstantsUtil.promotionEstimate}?amount=${dailyBudget.round()}&duration=$duration';
+    if (audienceId != null) {
+      url = '$url&audience_id=$audienceId';
+    }
+    await ApiWrapper().getApi(url: url).then((response) async {
+      if (response?.success == true && response!.data['estimate'] != null) {
+        estimateCallback(PromotionEstimate.fromJson(response.data['estimate']));
+      }
+    });
+  }
+
+  /// type: 'ACTIVE' or 'COMPLETED'
+  static getCampaigns(
+      {required String type,
+      required int page,
+      required Function(List<PromotionCampaign>, APIMetaData)
+          campaignsCallback}) async {
+    String url =
+        '${NetworkConstantsUtil.promotionCampaigns}?type=$type&page=$page';
+    await ApiWrapper().getApi(url: url).then((response) async {
+      if (response?.success == true && response!.data['campaigns'] != null) {
+        List data = response.data['campaigns']['items'] ?? [];
+        List<PromotionCampaign> campaigns =
+            data.map((e) => PromotionCampaign.fromJson(e)).toList();
+        campaignsCallback(campaigns,
+            APIMetaData.fromJson(response.data['campaigns']['_meta']));
+      }
+    });
+  }
+
+  static getReport(
+      {required int promotionId,
+      required Function(PromotionCampaign) reportCallback}) async {
+    String url = '${NetworkConstantsUtil.promotionReport}?id=$promotionId';
+    await ApiWrapper().getApi(url: url).then((response) async {
+      if (response?.success == true && response!.data['report'] != null) {
+        reportCallback(PromotionCampaign.fromJson(response.data['report']));
+      }
+    });
+  }
+
+  /// Records what a person did with a promoted post. event: click, profile_visit, message, website.
+  /// Tracking must never disturb the app, so errors are ignored.
+  static trackEvent({required int promotionId, required String event}) {
+    try {
+      ApiWrapper()
+          .postApi(url: NetworkConstantsUtil.promotionTrack, param: {
+            'post_promotion_id': promotionId.toString(),
+            'event': event,
+          })
+          .then((_) {})
+          .catchError((_) {});
+    } catch (_) {}
+  }
+
+  /// status: 3 = pause, 10 = resume
+  static updateStatus(
+      {required int promotionId,
+      required int status,
+      required Function(bool, String?) completionHandler}) async {
+    await ApiWrapper().postApi(
+        url: NetworkConstantsUtil.promotionUpdateStatus,
+        param: {
+          'id': promotionId.toString(),
+          'status': status.toString(),
+        }).then((response) {
+      completionHandler(response?.success == true, response?.message);
+    });
+  }
+
+  static cancelPromotion(
+      {required int promotionId,
+      required Function(bool, String?) completionHandler}) async {
+    await ApiWrapper().postApi(
+        url: NetworkConstantsUtil.promotionCancel,
+        param: {'id': promotionId.toString()}).then((response) {
+      completionHandler(response?.success == true, response?.message);
     });
   }
 }

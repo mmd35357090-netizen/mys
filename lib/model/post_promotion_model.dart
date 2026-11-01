@@ -38,6 +38,10 @@ class PostPromotionOrderRequest {
   AudienceModel? audience;
   double dailyBudget = 200;
 
+  // Tax percentage. The server decides it (see PromotionController.loadPricing);
+  // the server also recalculates the price, so this only has to match for display.
+  double taxPercent = 18;
+
   // double? tax;
 
   // double? grandAmount;
@@ -67,15 +71,15 @@ class PostPromotionOrderRequest {
       };
 
   double get gst {
-    return (dailyBudget * (duration)) * 0.18;
+    return double.parse((totalAmount * taxPercent / 100).toStringAsFixed(2));
   }
 
   double get totalAmount {
-    return (dailyBudget * (duration));
+    return (dailyBudget.roundToDouble() * duration);
   }
 
   double get grandTotalAmount {
-    return (dailyBudget * (duration)) + gst;
+    return double.parse((totalAmount + gst).toStringAsFixed(2));
   }
 }
 

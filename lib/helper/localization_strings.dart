@@ -1572,3 +1572,51 @@ String atleastTwoOptionsAreRequiredString =
 String sentOnPostString = 'Sent on post';
 String sentOnLiveString = 'Sent on live';
 String sentOnProfileString = 'Sent on profile';
+
+// ---- Boost / post promotion: campaigns, estimate and report ----
+String boostMyCampaigns = 'My campaigns';
+String boostActiveTab = 'Active';
+String boostCompletedTab = 'Completed';
+String boostNoCampaigns = 'You have no campaigns yet';
+String boostNoCampaignsHint = 'Boost one of your posts to reach more people.';
+String boostCampaignReport = 'Campaign report';
+String boostReachLabel = 'Reach';
+String boostImpressionsLabel = 'Impressions';
+String boostResultsLabel = 'Results';
+String boostSpentLabel = 'Spent';
+String boostRemainingLabel = 'Remaining';
+String boostClicksLabel = 'Clicks';
+String boostCtrLabel = 'Click rate';
+String boostProfileVisitsLabel = 'Profile visits';
+String boostMessagesLabel = 'Messages';
+String boostWebsiteVisitsLabel = 'Website visits';
+String boostNewFollowersLabel = 'New followers';
+String boostCostPerResultLabel = 'Cost per result';
+String boostDailyPerformance = 'Daily performance';
+String boostWhoSawIt = 'Who saw it';
+String boostGenderLabel = 'Gender';
+String boostAgeLabel = 'Age';
+String boostUnknownLabel = 'Unknown';
+String boostPauseCampaign = 'Pause campaign';
+String boostResumeCampaign = 'Resume campaign';
+String boostCancelCampaign = 'Cancel campaign';
+String boostCancelConfirm =
+    'The budget you have not spent yet will be returned to your wallet.';
+String boostPauseNote =
+    'Paused days still count towards the campaign duration.';
+String boostPendingNote =
+    'Your campaign will start after it has been reviewed.';
+String boostEstimatedReach = 'Estimated reach';
+String boostPeopleUnit = 'people';
+String boostAudienceMatches = 'people match your audience';
+String boostEstimateDisclaimer =
+    'This is an estimate. Real results can be higher or lower.';
+String boostDaysLeft = 'days left';
+String boostEnded = 'Ended';
+String boostTrackingMissing =
+    'Click and action tracking is not switched on yet, so only reach is shown.';
+String boostInvalidUrl =
+    'Please enter a valid website address that starts with http:// or https://';
+String boostOverLabel = 'over';
+String boostTaxLabel = 'Tax';
+String boostBudgetRangeNote = 'Daily budget';

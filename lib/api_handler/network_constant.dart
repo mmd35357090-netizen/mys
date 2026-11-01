@@ -379,6 +379,13 @@ class NetworkConstantsUtil {
   static String getAudiences =
       'audiences?expand=interestDetails,locationDetails';
   static String createPromotions = 'post-promotions';
+  static String promotionPricing = 'post-promotions/pricing';
+  static String promotionEstimate = 'post-promotions/estimate';
+  static String promotionCampaigns = 'post-promotions/campaigns';
+  static String promotionReport = 'post-promotions/report';
+  static String promotionTrack = 'post-promotions/track';
+  static String promotionUpdateStatus = 'post-promotions/update-status';
+  static String promotionCancel = 'post-promotions/cancel';
   static String getPromotedPosts =
       'posts/post-promotion-ad?expand=user,postPromotionData,user,postPromotionData,contentReferenceDetail.categoryDetails,contentReferenceDetail.pollOptions,user.isFollowing,user.subscriptionPlanUser,user.userLiveDetail,clubDetail.createdByUser,clubDetail.totalJoinedUser,originPost.user,isFavorite,originPost,pollDetails,pollDetails.pollOptions';
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:foap/screens/checkout/checkout.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as google_map;
@@ -6,6 +7,7 @@ import '../../helper/imports/common_import.dart';
 import '../../model/audience_model.dart';
 import '../../model/post_model.dart';
 import '../../model/post_promotion_model.dart';
+import '../../model/promotion_report_model.dart';
 import '../../model/regional_location_model.dart';
 import '../../screens/add_on/controller/event/checkout_controller.dart';
 import '../misc/map_screen_controller.dart';
@@ -24,6 +26,17 @@ class PromotionController extends GetxController {
   Rx<bool?> isValidWebsite = Rx<bool?>(null);
 
   PostPromotionOrderRequest order = PostPromotionOrderRequest();
+
+  // Limits, tax and currency from the server, and the estimate for the chosen budget
+  Rx<PromotionPricing?> pricing = Rx<PromotionPricing?>(null);
+  Rx<PromotionEstimate?> estimate = Rx<PromotionEstimate?>(null);
+  Timer? _estimateTimer;
+
+  String get currency => pricing.value?.currencySymbol ?? '\$';
+  int get minDailyBudget => pricing.value?.minDailyBudget ?? 1;
+  int get maxDailyBudget => pricing.value?.maxDailyBudget ?? 1000;
+  int get minDuration => pricing.value?.minDuration ?? 2;
+  int get maxDuration => pricing.value?.maxDuration ?? 30;
   List<String> actionButtons = [
     learnMore.tr,
     showNow.tr,
@@ -64,6 +77,8 @@ class PromotionController extends GetxController {
 
   clear() {
     order = PostPromotionOrderRequest();
+    order.taxPercent = pricing.value?.taxPercent ?? order.taxPercent;
+    estimate.value = null;
     pageChanged.value = 0;
 
     websiteUrl.text = '';
@@ -120,10 +135,24 @@ class PromotionController extends GetxController {
     actionSelected.value = 0;
   }
 
+
+  /// Readable place name for a coordinate. Never throws, never reads an empty list.
+  Future<String> _placeName(double lat, double lng) async {
+    try {
+      List<Placemark> placeMarks = await placemarkFromCoordinates(lat, lng);
+      if (placeMarks.isEmpty) return '';
+      Placemark first = placeMarks.first;
+      return '${first.name ?? ''}, ${first.country ?? ''}';
+    } catch (_) {
+      return '';
+    }
+  }
+
   setPromotingPost(PostModel post) {
     // promotingPost.value = post;
     order.post = post;
     update();
+    loadPricing();
   }
 
   pageChangedEvent(int value) {
@@ -141,11 +170,18 @@ class PromotionController extends GetxController {
   }
 
   validateUrl(String value) {
-    bool validURL = Uri.parse(value).isAbsolute;
+    bool validURL = false;
+    try {
+      Uri uri = Uri.parse(value.trim());
+      validURL = (uri.scheme == 'http' || uri.scheme == 'https') &&
+          uri.host.contains('.');
+    } catch (_) {
+      validURL = false;
+    }
     isValidWebsite.value = validURL;
     order.goalType = validURL ? GoalType.website : null;
     if (validURL) {
-      order.url = value;
+      order.url = value.trim();
     } else {
       order.url = null;
     }
@@ -173,10 +209,8 @@ class PromotionController extends GetxController {
             .toList()
             .join(', ');
       } else {
-        List<Placemark> placeMarks = await placemarkFromCoordinates(
-            double.parse(audience.latitude), double.parse(audience.longitude));
-        location =
-            '${placeMarks.first.name ?? ''}, ${placeMarks.first.country ?? ''}';
+        location = await _placeName(double.tryParse(audience.latitude) ?? 0.0,
+            double.tryParse(audience.longitude) ?? 0.0);
       }
       location = location.isEmpty ? '' : ', $location';
 
@@ -191,6 +225,7 @@ class PromotionController extends GetxController {
     // audienceSelected.value = selection;
     order.audience = audience;
     update();
+    refreshEstimate();
   }
 
   setCurrentLocation(bool selection, VoidCallback action) {
@@ -200,10 +235,8 @@ class PromotionController extends GetxController {
         longitude.value = location.longitude;
         isLocationEnabled.value = true;
 
-        List<Placemark> placeMarks = await placemarkFromCoordinates(
-            latitude.value ?? 0.0, longitude.value ?? 0.0);
         selectedLocationNames.value =
-            '${placeMarks.first.name ?? ''}, ${placeMarks.first.country ?? ''}';
+            await _placeName(latitude.value ?? 0.0, longitude.value ?? 0.0);
 
         update();
         action();
@@ -261,10 +294,8 @@ class PromotionController extends GetxController {
     } else {
       latitude.value = double.parse(model.latitude);
       longitude.value = double.parse(model.longitude);
-      List<Placemark> placeMarks = await placemarkFromCoordinates(
-          latitude.value ?? 0.0, longitude.value ?? 0.0);
       selectedLocationNames.value =
-          '${placeMarks.first.name ?? ''}, ${placeMarks.first.country ?? ''}';
+          await _placeName(latitude.value ?? 0.0, longitude.value ?? 0.0);
 
       radius.value = model.radius.toDouble();
     }
@@ -294,19 +325,59 @@ class PromotionController extends GetxController {
 
   setBudgetRange(double val) {
     // budget.value = val;
-    order.dailyBudget = val;
+    order.dailyBudget = val.roundToDouble();
     update();
+    refreshEstimate();
   }
 
   setBudgetDurationRange(int val) {
     // duration.value = val;
     order.duration = val;
     update();
+    refreshEstimate();
   }
 
   getTotalPayment() {
-    return double.parse(
-        ((order.dailyBudget * order.duration) + order.gst).toStringAsFixed(2));
+    return order.grandTotalAmount;
+  }
+
+  /// Loads limits, tax and currency from the server (once per wizard start).
+  loadPricing() {
+    PromotionApi.getPricing(pricingCallback: (result) {
+      pricing.value = result;
+      order.taxPercent = result.taxPercent;
+      // keep the chosen budget inside the limits the server allows
+      if (order.dailyBudget > result.maxDailyBudget) {
+        order.dailyBudget = result.maxDailyBudget.toDouble();
+      }
+      if (order.dailyBudget < result.minDailyBudget) {
+        order.dailyBudget = result.minDailyBudget.toDouble();
+      }
+      if (order.duration < result.minDuration) {
+        order.duration = result.minDuration;
+      }
+      if (order.duration > result.maxDuration) {
+        order.duration = result.maxDuration;
+      }
+      update();
+      refreshEstimate();
+    });
+  }
+
+  /// Asks the server what this budget costs and how many people it can reach.
+  /// Waits a moment, so dragging a slider does not send a request for every step.
+  refreshEstimate() {
+    _estimateTimer?.cancel();
+    _estimateTimer = Timer(const Duration(milliseconds: 400), () {
+      PromotionApi.getEstimate(
+          dailyBudget: order.dailyBudget,
+          duration: order.duration,
+          audienceId: order.audience?.id,
+          estimateCallback: (result) {
+            estimate.value = result;
+            update();
+          });
+    });
   }
 
   previousButtonEvent() {
