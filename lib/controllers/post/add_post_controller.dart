@@ -104,13 +104,22 @@ class AddPostController extends GetxController {
     postingTitle = title;
     isPosting.value = true;
 
-    var responses = await Future.wait([
-      for (Media media in items)
-        uploadMedia(
-          media,
-          competitionId,
-        )
-    ]).whenComplete(() {});
+    List<Map<String, String>> responses;
+    try {
+      responses = await Future.wait([
+        for (Media media in items)
+          uploadMedia(
+            media,
+            competitionId,
+          )
+      ]);
+    } catch (e) {
+      // An upload failed (the reason was already shown to the user).
+      // Show the retry / discard bar instead of waiting forever.
+      Loader.dismiss();
+      isErrorInPosting.value = true;
+      return;
+    }
 
     publishAction(
       postType: postType,
@@ -146,7 +155,7 @@ class AddPostController extends GetxController {
       Uint8List mainFileData = await media.file!.compress();
 
       file = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}.${media.file!.extension}')
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}.jpg')
           .create();
       file.writeAsBytesSync(mainFileData);
       uploadMainFile(
@@ -202,7 +211,11 @@ class AddPostController extends GetxController {
 
     await MiscApi.uploadFile(file.path,
         type: UploadMediaType.post, mediaType: media.mediaType!,
-        resultCallback: (fileName, filePath) async {
+        errorHandler: (message) {
+      if (!completer.isCompleted) {
+        completer.completeError(message);
+      }
+    }, resultCallback: (fileName, filePath) async {
       String imagePath = fileName;
 
       await file.delete();

@@ -240,31 +240,53 @@ class MiscApi {
     required UploadMediaType type,
     required GalleryMediaType mediaType,
     required Function(String, String) resultCallback,
+    Function(String)? errorHandler,
   }) async {
-    print('uploaded thumbnail $filePath');
-
-    await ApiWrapper()
-        .uploadFile(
-            url: NetworkConstantsUtil.uploadFileImage,
-            file: filePath,
-            mediaType: mediaType,
-            type: type)
-        .then((result) {
-      print('uploaded thumbnail result ${result!.data}');
+    try {
+      final result = await ApiWrapper().uploadFile(
+          url: NetworkConstantsUtil.uploadFileImage,
+          file: filePath,
+          mediaType: mediaType,
+          type: type);
 
       if (result?.success == true) {
         var items = result!.data['files'] as List<dynamic>;
-
-        print('uploaded thumbnail result $items');
-        bool isProhabited = items.first['isProhabited'];
+        bool isProhabited = items.first['isProhabited'] == true;
         if (isProhabited == false) {
           resultCallback(items.first['file'], items.first['fileUrl']);
         } else {
           AppUtil.showToast(
               message: thisContentNotAllowedString.tr, isSuccess: false);
+          errorHandler?.call(thisContentNotAllowedString.tr);
+        }
+      } else {
+        // The server refused the file (for example: invalid file type).
+        String message = _uploadErrorMessage(result);
+        AppUtil.showToast(message: message, isSuccess: false);
+        errorHandler?.call(message);
+      }
+    } catch (e) {
+      Loader.dismiss();
+      String message = '${errorString.tr}: $e';
+      AppUtil.showToast(message: message, isSuccess: false);
+      errorHandler?.call(message);
+    }
+  }
+
+  static String _uploadErrorMessage(ApiResponse? result) {
+    try {
+      var errors = result?.data?['errors'];
+      if (errors is Map && errors.isNotEmpty) {
+        var first = errors.values.first;
+        if (first is List && first.isNotEmpty) {
+          return first.first.toString();
         }
       }
-    });
+    } catch (_) {}
+    String? message = result?.message;
+    return (message != null && message.isNotEmpty)
+        ? message
+        : errorString.tr;
   }
 
   static pinContent(

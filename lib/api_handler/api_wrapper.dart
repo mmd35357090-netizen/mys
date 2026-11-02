@@ -231,9 +231,15 @@ class ApiWrapper {
           'mediaFile', file,
           contentType: MediaType('video', 'mp4')));
     } else if (mediaType == GalleryMediaType.audio) {
+      // voice recordings are AAC in an .m4a (MPEG-4) container, not mp3
+      final String lowerName = file.toLowerCase();
+      final bool isMp4Audio = lowerName.endsWith('.m4a') ||
+          lowerName.endsWith('.mp4') ||
+          lowerName.endsWith('.aac');
       request.files.add(await http.MultipartFile.fromPath(
           'mediaFile', file,
-          contentType: MediaType('audio', 'mp3')));
+          contentType:
+              isMp4Audio ? MediaType('audio', 'mp4') : MediaType('audio', 'mpeg')));
     } else {
       request.files
           .add(await http.MultipartFile.fromPath('mediaFile', file));
