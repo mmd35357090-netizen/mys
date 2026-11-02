@@ -155,6 +155,8 @@ PaymentType paymentTypeFromId(int id) {
       return PaymentType.bannerAd;
     case 20:
       return PaymentType.subscription;
+    case 21:
+      return PaymentType.deposit;
   }
   return PaymentType.package;
 }
@@ -195,6 +197,8 @@ String paymentTypeStringFromId(PaymentType type) {
       return promotedAdString.tr;
     case PaymentType.subscription:
       return subscriptionString.tr;
+    case PaymentType.deposit:
+      return walletDepositString.tr;
   }
 }
 
@@ -293,6 +297,8 @@ int uploadMediaTypeId(UploadMediaType type) {
       return 13;
     case UploadMediaType.uploadResume:
       return 28;
+    case UploadMediaType.depositProof:
+      return 32;
   }
 }
 

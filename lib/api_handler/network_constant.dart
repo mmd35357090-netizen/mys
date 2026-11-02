@@ -389,6 +389,11 @@ class NetworkConstantsUtil {
   static String getPromotedPosts =
       'posts/post-promotion-ad?expand=user,postPromotionData,user,postPromotionData,contentReferenceDetail.categoryDetails,contentReferenceDetail.pollOptions,user.isFollowing,user.subscriptionPlanUser,user.userLiveDetail,clubDetail.createdByUser,clubDetail.totalJoinedUser,originPost.user,isFavorite,originPost,pollDetails,pollDetails.pollOptions';
 
+  //*********** Wallet deposit ***********//
+  static String depositMethods = 'deposits/methods';
+  static String depositCreate = 'deposits/create';
+  static String depositRequests = 'deposits/requests';
+
   //*********** Shop ***********//
   static String postAd = "ads";
   static String updateAd = "ads/";

@@ -87,7 +87,8 @@ enum UploadMediaType {
   verification,
   uploadResume,
   event,
-  post
+  post,
+  depositProof
 }
 
 ///Media picker selection type
@@ -207,7 +208,8 @@ enum PaymentType {
   fundRaising,
   featureAd,
   bannerAd,
-  subscription
+  subscription,
+  deposit
 }
 
 enum PaymentMode {

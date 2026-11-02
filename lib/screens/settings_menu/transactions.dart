@@ -4,6 +4,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/transaction_tile.dart';
 import '../../controllers/profile/profile_controller.dart';
 import '../../model/payment_model.dart';
+import '../wallet/add_money.dart';
+import '../wallet/deposit_history.dart';
 
 class Transactions extends StatefulWidget {
   const Transactions({super.key});
@@ -47,6 +49,8 @@ class PaymentWithdrawalState extends State<Transactions> {
             height: 20,
           ),
           totalBalanceView(),
+          const SizedBox(height: 12),
+          depositButtons(),
           Expanded(
             child: GetBuilder<ProfileController>(
                 init: _profileController,
@@ -73,6 +77,40 @@ class PaymentWithdrawalState extends State<Transactions> {
                 }),
           ),
         ]));
+  }
+
+  depositButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: AppThemeButton(
+              text: addMoneyString.tr,
+              onPress: () async {
+                final added = await Get.to(() => const AddMoneyScreen());
+                if (added == true) {
+                  _profileController.getMyProfile();
+                }
+              }),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                side: BorderSide(color: AppColorConstants.themeColor),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10))),
+            onPressed: () async {
+              await Get.to(() => const DepositHistoryScreen());
+              _profileController.getMyProfile();
+              _profileController.getTransactionHistory(() {});
+            },
+            child: Text(myDepositsString.tr,
+                style: TextStyle(color: AppColorConstants.themeColor)),
+          ),
+        ),
+      ],
+    ).hp(DesignConstants.horizontalPadding);
   }
 
   totalBalanceView() {
