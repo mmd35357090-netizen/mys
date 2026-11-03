@@ -47,6 +47,9 @@ class SocketManager {
   StreamSubscription<FGBGType>? subscription;
 
   logout() {
+    // stop listening to foreground/background changes of the old session
+    subscription?.cancel();
+    subscription = null;
     _socketInstance?.disconnect();
     _socketInstance = null;
   }
@@ -70,6 +73,7 @@ class SocketManager {
     // }
     socketGlobalListeners();
 
+    subscription?.cancel();
     subscription = FGBGEvents.instance.stream.listen((event) {
       if (event == FGBGType.foreground) {
         _socketInstance?.connect();
@@ -157,29 +161,42 @@ class SocketManager {
 
   //  To Emit Event Into Socket
   bool emit(String event, Map<String, dynamic> data) {
-    log('emiting ${_socketInstance!.connected}');
-    if (_socketInstance!.connected == true) {
+    final io.Socket? socket = _socketInstance;
+    if (socket == null) {
+      // logged out / not connected yet: keep the request for later
+      cachedRequests.add(CachedRequest(event: event, data: data));
+      return false;
+    }
+    log('emiting ${socket.connected}');
+    if (socket.connected == true) {
       log('event == $event ========== data = ${jsonDecode(json.encode(data))}');
-      _socketInstance?.emit(event, jsonDecode(json.encode(data)));
+      socket.emit(event, jsonDecode(json.encode(data)));
     } else {
       // print('socked is not connected');
       cachedRequests.add(CachedRequest(event: event, data: data));
     }
-    return _socketInstance!.connected;
+    return socket.connected;
   }
 
 //Get This Event After Successful Connection To Socket
   dynamic onConnect(_) {
-    emit(SocketConstants.login, {
-      'userId': _userProfileManager.user.value!.id,
-      'username': _userProfileManager.user.value!.userName
-    });
+    final user = _userProfileManager.user.value;
+    if (user != null) {
+      emit(SocketConstants.login, {
+        'userId': user.id,
+        'username': user.userName
+      });
+    }
 
-    for (CachedRequest request in cachedRequests) {
+    // take the waiting requests first: emit() may add to the list again
+    // when the connection drops meanwhile (changing a list while looping
+    // over it throws an error)
+    final List<CachedRequest> waiting = List.of(cachedRequests);
+    cachedRequests.clear();
+    for (CachedRequest request in waiting) {
       // print('sending cached event ${request.event}');
       emit(request.event, request.data);
     }
-    cachedRequests.clear();
   }
 
 //Get This Event After Connection Lost To Socket Due To Network Or Any Other Reason

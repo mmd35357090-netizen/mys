@@ -181,10 +181,13 @@ class NotificationManager {
             jsonDecode(response.payload!), false, true);
       }
     } else {
-      FGBGEvents.instance.stream.listen((event) {
-        handleNotificationTap(jsonDecode(response.payload!),
-            event == FGBGType.foreground ? true : false);
-      });
+      // handle this tap once. (Listening forever made every earlier tap run
+      // again on each return from the background.)
+      final dynamic tapData = jsonDecode(response.payload!);
+      FGBGEvents.instance.stream.first.then((event) {
+        handleNotificationTap(
+            tapData, event == FGBGType.foreground ? true : false);
+      }).catchError((_) {});
     }
   }
 
@@ -193,7 +196,7 @@ class NotificationManager {
 
     int notificationType =
         int.parse(data['notification_type'] as String? ?? '0');
-    String accountId = data['receiver_id'] as String;
+    String accountId = (data['receiver_id'] ?? '').toString();
     SayHiAppAccount? account = await SharedPrefs().getAccount(accountId);
 
     if (isInForeground) {
@@ -239,7 +242,7 @@ class NotificationManager {
             ),
             account: account);
       } else if (notificationType == 100) {
-        int? roomId = data['room'] as int?;
+        int? roomId = int.tryParse((data['room'] ?? '').toString());
         if (roomId != null) {
           ChatApi.getChatRoomDetail(roomId, resultCallback: (result) {
             navigateFromNotification(
@@ -283,7 +286,7 @@ class NotificationManager {
   handleForegroundNotifications(dynamic data) async {
     int notificationType =
         int.parse(data['notification_type'] as String? ?? '0');
-    String accountId = data['receiver_id'] as String;
+    String accountId = (data['receiver_id'] ?? '').toString();
     SayHiAppAccount? account = await SharedPrefs().getAccount(accountId);
     final AgoraLiveController agoraLiveController = Get.find();
 

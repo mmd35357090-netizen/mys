@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:ui' show PlatformDispatcher;
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -93,13 +95,32 @@ bool isPermissionsAsked = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
+  try {
+    cameras = await availableCameras();
+  } catch (_) {
+    // no camera / permission problem must not stop the whole app from starting
+    cameras = [];
+  }
   HttpOverrides.global = MyHttpOverrides();
 
   await Firebase.initializeApp(
     name: AppConfigConstants.appName,
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Crash reports: Firebase console -> Crashlytics. Wrapped in try/catch so a
+  // reporting problem can never stop the app from starting.
+  try {
+    FlutterError.onError = (FlutterErrorDetails details) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+    };
+    PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  } catch (e) {
+    debugPrint('Crashlytics setup failed: $e');
+  }
+
   FirebaseMessaging.onBackgroundMessage(
       _firebaseMessagingBackgroundHandler);
 

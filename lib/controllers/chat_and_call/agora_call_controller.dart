@@ -38,7 +38,9 @@ class AgoraCallController extends GetxController {
   // Speaker ON/OFF state
   final RxBool speakerphoneEnabled = false.obs;
 
-  late String localCallId;
+  // empty until this device starts a call (a 'late' field threw an error when
+  // a call event arrived before any call was made from this device)
+  String localCallId = '';
   UserModel? opponent;
 
   bool _isEndingCall = false;
