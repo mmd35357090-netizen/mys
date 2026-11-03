@@ -212,10 +212,15 @@ Widget postsView() {
   final int offset = enableStories ? 3 : 2;
 
   return Obx(() {
+    // A very short feed (new account, few followings) has no slot between
+    // posts, so the first sponsored post is added after the last post.
+    final bool trailingAd = _homeController.sponsoredPosts.isNotEmpty &&
+        _homeController.posts.length < 3;
+
     return ListView.separated(
       controller: _controller,
       padding: const EdgeInsets.only(bottom: 100),
-      itemCount: _homeController.posts.length + offset,
+      itemCount: _homeController.posts.length + offset + (trailingAd ? 1 : 0),
 
       itemBuilder: (context, index) {
         // 1. Stories
@@ -239,6 +244,10 @@ Widget postsView() {
 
         // 4. Posts
         final int postIndex = index - offset;
+        if (postIndex >= _homeController.posts.length) {
+          // trailing sponsored post (only when the feed is very short)
+          return _sponsoredCard(_homeController.sponsoredPosts.first);
+        }
         final PostModel model = _homeController.posts[postIndex];
 
         return PostCard(
@@ -253,26 +262,13 @@ Widget postsView() {
       },
 
       separatorBuilder: (context, index) {
-        if (index > 0 &&
-            index % 5 == 0 &&
-            _homeController.sponsoredPosts.length >= index / 5) {
-          final PostModel post =
-              _homeController.sponsoredPosts[(index ~/ 5) - 1];
-
-          return Column(
-            children: [
-              PostCard(
-                model: post,
-                removePostHandler: () {
-                  _homeController.removePostFromList(post);
-                },
-                blockUserHandler: () {
-                  _homeController.removeUsersAllPostFromList(post);
-                },
-              ),
-              divider(height: 10).tP16,
-            ],
-          ).vp(16);
+        // index of the post just above this separator
+        final int postAbove = index - offset;
+        if (postAbove >= 1 && (postAbove - 1) % 5 == 0) {
+          final int adIndex = (postAbove - 1) ~/ 5;
+          if (adIndex < _homeController.sponsoredPosts.length) {
+            return _sponsoredCard(_homeController.sponsoredPosts[adIndex]);
+          }
         }
 
         return divider(height: index > 1 ? 10 : 0)
@@ -288,6 +284,23 @@ Widget postsView() {
   });
 }
   
+  Widget _sponsoredCard(PostModel post) {
+    return Column(
+      children: [
+        PostCard(
+          model: post,
+          removePostHandler: () {
+            _homeController.removePostFromList(post);
+          },
+          blockUserHandler: () {
+            _homeController.removeUsersAllPostFromList(post);
+          },
+        ),
+        divider(height: 10).tP16,
+      ],
+    ).vp(16);
+  }
+
   Widget postingView() {
     return Obx(
       () => _addPostController.isPosting.value
