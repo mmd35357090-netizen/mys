@@ -4,6 +4,9 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/post_promotion_model.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
 import 'package:foap/helper/imports/event_imports.dart';
+import 'package:foap/api_handler/apis/deposit_api.dart';
+import 'package:foap/screens/wallet/add_money.dart';
+import 'package:foap/helper/play_build.dart';
 
 class Checkout extends StatefulWidget {
   final String itemName;
@@ -11,10 +14,15 @@ class Checkout extends StatefulWidget {
   final Function(List<Payment>) transactionCallbackHandler;
   final VoidCallback? shareToFeedCallback;
 
+  /// A digital in-app feature (for example a post boost). In the Play Store
+  /// build it is paid with coins only; otherwise nothing changes.
+  final bool digitalItem;
+
   const Checkout(
       {super.key,
       required this.itemName,
       required this.amountToPay,
+      this.digitalItem = false,
       this.shareToFeedCallback,
       required this.transactionCallbackHandler});
 
@@ -30,8 +38,21 @@ class _CheckoutState extends State<Checkout> {
 
   TextEditingController textController = TextEditingController();
 
+  bool get _coinOnly => kPlayStoreBuild && widget.digitalItem;
+
+  // true when the admin has switched on at least one manual deposit method
+  // (bKash, Nagad, ...): then the "Add money" card is shown on this screen.
+  bool _hasDepositMethods = false;
+
   @override
   void initState() {
+    if (!_coinOnly) {
+      DepositApi.getMethods(resultCallback: (methods) {
+        if (mounted) {
+          setState(() => _hasDepositMethods = methods.isNotEmpty);
+        }
+      });
+    }
     _profileController.getMyProfile();
     _settingsController.loadSettings();
 
@@ -86,9 +107,14 @@ class _CheckoutState extends State<Checkout> {
                                     left: DesignConstants.horizontalPadding,
                                     right: DesignConstants.horizontalPadding),
                                 // divider().vP16,
-                                walletView(),
-                                paymentGateways()
-                                    .hp(DesignConstants.horizontalPadding),
+                                if (_coinOnly) ...[
+                                  coinView(),
+                                ] else ...[
+                                  walletView(),
+                                  if (_hasDepositMethods) addMoneyCard(),
+                                  paymentGateways()
+                                      .hp(DesignConstants.horizontalPadding),
+                                ],
                                 const SizedBox(
                                   height: 25,
                                 ),
@@ -116,6 +142,46 @@ class _CheckoutState extends State<Checkout> {
                 ProcessingPaymentStatus.completed
             ? orderPlacedView()
             : errorView();
+  }
+
+  /// Play Store build: the price is shown in coins and paid from the coin balance.
+  Widget coinView() {
+    return Obx(() {
+      final setting = _settingsController.setting.value;
+      final rate = setting?.boostCoinsPerUsd ?? 100;
+      final coinsNeeded = (widget.amountToPay * rate).ceil();
+      final myCoins = _userProfileManager.user.value?.coins ?? 0;
+      final enough = myCoins >= coinsNeeded;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BodyExtraLargeText('${availableCoinsString.tr} ($myCoins)',
+              weight: TextWeight.bold, color: AppColorConstants.themeColor),
+          const SizedBox(height: 8),
+          BodyLargeText('${coinsRequiredString.tr}: $coinsNeeded',
+              weight: TextWeight.medium),
+          const SizedBox(height: 20),
+          if (!enough)
+            BodySmallText(notEnoughCoinsString.tr,
+                color: AppColorConstants.subHeadingTextColor),
+          if (!enough) const SizedBox(height: 12),
+          if (enough)
+            AppThemeButton(
+                text: payWithCoinsString.tr,
+                onPress: () {
+                  _checkoutController.payWithCoins(
+                      itemName: widget.itemName,
+                      totalAmount: widget.amountToPay,
+                      transactionHandler: (paymentTransactions) {
+                        widget.transactionCallbackHandler(paymentTransactions);
+                      });
+                }),
+        ],
+      ).setPadding(
+          top: 20,
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding);
+    });
   }
 
   Widget walletView() {
@@ -170,6 +236,52 @@ class _CheckoutState extends State<Checkout> {
                 ),
             ],
           ));
+  }
+
+  /// Lets the user top up the wallet with bKash / Nagad / ... and then pay
+  /// from the wallet balance once the admin has approved the deposit.
+  Widget addMoneyCard() {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () async {
+        final added = await Get.to(() => const AddMoneyScreen());
+        if (added == true) {
+          _profileController.getMyProfile();
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColorConstants.cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColorConstants.themeColor),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.account_balance_wallet_outlined,
+                color: AppColorConstants.themeColor, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BodyLargeText(checkoutAddMoneyTitle.tr,
+                      weight: TextWeight.bold),
+                  const SizedBox(height: 2),
+                  BodySmallText(checkoutAddMoneySubtitle.tr,
+                      color: AppColorConstants.subHeadingTextColor),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right,
+                color: AppColorConstants.subHeadingTextColor),
+          ],
+        ),
+      ),
+    ).setPadding(
+        top: 20,
+        left: DesignConstants.horizontalPadding,
+        right: DesignConstants.horizontalPadding);
   }
 
   Widget paymentGateways() {

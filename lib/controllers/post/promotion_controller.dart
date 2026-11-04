@@ -455,6 +455,7 @@ class PromotionController extends GetxController {
     Get.to(() => Checkout(
           amountToPay: order.grandTotalAmount,
           itemName: postPromotionString.tr,
+          digitalItem: true,
           transactionCallbackHandler: (paymentTransactions) {
             order.payments = paymentTransactions;
 

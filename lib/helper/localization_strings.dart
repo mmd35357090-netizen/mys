@@ -1659,3 +1659,10 @@ String depositReason = 'Reason';
 String depositCredited = 'Added';
 String depositRateChanged = 'The rate has changed. The amount was updated: please check it and submit again.';
 String depositMinMax = 'Min {{min}} - Max {{max}}';
+String checkoutAddMoneyTitle = 'Add money to wallet';
+String checkoutAddMoneySubtitle =
+    'Pay with bKash, Nagad and more. After we approve it, come back and pay from your wallet.';
+
+String coinsRequiredString = 'Coins required';
+String notEnoughCoinsString = 'You do not have enough coins. Buy coins from the coin packages, then try again.';
+String payWithCoinsString = 'Pay with coins';

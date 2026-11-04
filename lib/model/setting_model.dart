@@ -60,6 +60,7 @@ class SettingModel {
   int minWithdrawLimit;
   int minCoinsWithdrawLimit;
   double coinsValue;
+  double boostCoinsPerUsd;
   double serviceFee;
 
   String? pid;
@@ -91,6 +92,7 @@ class SettingModel {
       required this.minWithdrawLimit,
       required this.minCoinsWithdrawLimit,
       required this.coinsValue,
+      this.boostCoinsPerUsd = 100,
       this.pid,
       required this.siteName,
       required this.inAppPurchaseId,
@@ -147,6 +149,9 @@ class SettingModel {
       minWithdrawLimit: json["min_widhdraw_price"] ?? 0,
       minCoinsWithdrawLimit: json["min_coin_redeem"] ?? 0,
       coinsValue: double.parse(json["per_coin_value"].toString()),
+      boostCoinsPerUsd:
+          double.tryParse((json["boost_coins_per_usd"] ?? '100').toString()) ??
+              100,
       pid: json["user_p_id"],
       siteName: json["site_name"],
       inAppPurchaseId: json["in_app_purchase_id"],

@@ -115,6 +115,24 @@ class CheckoutController extends GetxController {
     }
   }
 
+  /// Pays the whole amount with coins (Play Store build). The server turns the
+  /// USD amount into coins with the admin rate and takes them from the balance.
+  payWithCoins({
+    required double totalAmount,
+    required String itemName,
+    required Function(List<Payment>) transactionHandler,
+  }) {
+    totalAmountToPay = totalAmount;
+    this.itemName = itemName;
+    this.transactionHandler = transactionHandler;
+    Payment payment = Payment();
+    payment.paymentMode = '13';
+    payment.amount = totalAmount.toStringAsFixed(2);
+    payment.transactionId = '';
+    transactions = [payment];
+    placeOrder();
+  }
+
   // applePay() async {
   //   try {
   //     // 1. Present Apple Pay sheet
