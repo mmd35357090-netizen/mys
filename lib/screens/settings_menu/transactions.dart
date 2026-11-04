@@ -5,6 +5,7 @@ import '../../components/transaction_tile.dart';
 import '../../controllers/profile/profile_controller.dart';
 import '../../model/payment_model.dart';
 import '../wallet/add_money.dart';
+import '../../api_handler/apis/deposit_api.dart';
 import '../wallet/deposit_history.dart';
 
 class Transactions extends StatefulWidget {
@@ -23,9 +24,17 @@ class PaymentWithdrawalState extends State<Transactions> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  // Add money / My deposits are shown only while the admin has at least one
+  // deposit method switched on.
+  bool _hasDepositMethods = false;
+
   @override
   void initState() {
     super.initState();
+
+    DepositApi.getMethods(resultCallback: (methods) {
+      if (mounted) setState(() => _hasDepositMethods = methods.isNotEmpty);
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _profileController.getMyProfile();
@@ -49,8 +58,8 @@ class PaymentWithdrawalState extends State<Transactions> {
             height: 20,
           ),
           totalBalanceView(),
-          const SizedBox(height: 12),
-          depositButtons(),
+          if (_hasDepositMethods) const SizedBox(height: 12),
+          if (_hasDepositMethods) depositButtons(),
           Expanded(
             child: GetBuilder<ProfileController>(
                 init: _profileController,

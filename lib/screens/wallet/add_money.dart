@@ -12,14 +12,21 @@ import 'package:foap/model/deposit_model.dart';
 /// The wallet stays in USD; the amount to send is converted with the admin's rate.
 /// Pops with `true` when a request was sent.
 class AddMoneyScreen extends StatefulWidget {
-  const AddMoneyScreen({super.key});
+  /// Amount (USD) to start with, for example what is still missing at checkout.
+  final double? initialUsd;
+
+  const AddMoneyScreen({super.key, this.initialUsd});
 
   @override
   State<AddMoneyScreen> createState() => _AddMoneyScreenState();
 }
 
 class _AddMoneyScreenState extends State<AddMoneyScreen> {
-  final TextEditingController _amount = TextEditingController(text: '10');
+  late final TextEditingController _amount = TextEditingController(
+      text: widget.initialUsd != null && widget.initialUsd! > 0
+          ? _plain(widget.initialUsd!)
+          : '10');
+  bool _initialApplied = false;
   final TextEditingController _trx = TextEditingController();
   final TextEditingController _sender = TextEditingController();
   final TextEditingController _note = TextEditingController();
@@ -58,7 +65,26 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
             : (methods.isNotEmpty ? methods.first : null);
       });
     });
+    _applyInitial();
     if (mounted) setState(() => _loading = false);
+  }
+
+  static String _plain(double v) {
+    final fixed = v.toStringAsFixed(2);
+    return fixed.endsWith('.00') ? fixed.substring(0, fixed.length - 3) : fixed;
+  }
+
+  // keep the suggested amount inside the limits of the chosen method (once)
+  void _applyInitial() {
+    final m = _selected;
+    if (_initialApplied || m == null) return;
+    _initialApplied = true;
+    final start = widget.initialUsd;
+    if (start == null || start <= 0) return;
+    double v = start;
+    if (v < m.minUsd) v = m.minUsd;
+    if (v > m.maxUsd) v = m.maxUsd;
+    _amount.text = _plain(v);
   }
 
   double? get _usd {

@@ -1659,10 +1659,22 @@ String depositReason = 'Reason';
 String depositCredited = 'Added';
 String depositRateChanged = 'The rate has changed. The amount was updated: please check it and submit again.';
 String depositMinMax = 'Min {{min}} - Max {{max}}';
-String checkoutAddMoneyTitle = 'Add money to wallet';
+String checkoutAddMoneyTitle = 'Add {{amount}} to your wallet';
 String checkoutAddMoneySubtitle =
-    'Pay with bKash, Nagad and more. After we approve it, come back and pay from your wallet.';
+    'Your wallet is short by {{amount}}. Send money by bKash, Nagad and more, we approve it, then come back and pay from your wallet.';
+String addMoneyNeededBanner =
+    'This payment needs {{amount}} more in your wallet. The amount below is filled in for you. After we approve it, go back and pay from your wallet.';
 
 String coinsRequiredString = 'Coins required';
 String notEnoughCoinsString = 'You do not have enough coins. Buy coins from the coin packages, then try again.';
 String payWithCoinsString = 'Pay with coins';
+
+String checkoutYouPayString = 'You pay';
+String checkoutYourWalletString = 'Your wallet balance';
+String checkoutStillNeededString = 'Still needed';
+String checkoutWalletEnoughString = 'Your wallet has enough balance for this payment.';
+String checkoutPayFromWalletString = 'Pay {{amount}} from wallet';
+String checkoutAddAmountString = 'Add {{amount}} to wallet';
+String checkoutHowItWorksString = '1. Send the money by bKash, Nagad or another method and upload the screenshot.  2. We check it and add the amount to your wallet.  3. Come back here and pay from your wallet.';
+String checkoutPendingString = 'Your deposit of {{amount}} is waiting for approval. It is added to your wallet after we approve it.';
+String comingSoonString = 'Coming soon';

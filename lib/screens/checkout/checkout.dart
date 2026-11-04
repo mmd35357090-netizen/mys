@@ -7,6 +7,7 @@ import 'package:foap/helper/imports/event_imports.dart';
 import 'package:foap/api_handler/apis/deposit_api.dart';
 import 'package:foap/screens/wallet/add_money.dart';
 import 'package:foap/helper/play_build.dart';
+import 'package:foap/model/deposit_model.dart';
 
 class Checkout extends StatefulWidget {
   final String itemName;
@@ -44,6 +45,26 @@ class _CheckoutState extends State<Checkout> {
   // (bKash, Nagad, ...): then the "Add money" card is shown on this screen.
   bool _hasDepositMethods = false;
 
+  // USD that the user already sent and that waits for the admin's approval
+  double _pendingUsd = 0;
+
+  double get _balance =>
+      double.tryParse(_userProfileManager.user.value?.balance ?? '0') ?? 0;
+
+  void _loadPending() {
+    DepositApi.getRequests(
+        page: 1,
+        resultCallback: (items, meta) {
+          double sum = 0;
+          for (final r in items) {
+            if (r.status == DepositStatus.pending) sum += r.usdAmount;
+          }
+          if (mounted) setState(() => _pendingUsd = sum);
+        });
+  }
+
+  String _usd(double v) => '\$${v.toStringAsFixed(2)}';
+
   @override
   void initState() {
     if (!_coinOnly) {
@@ -52,6 +73,7 @@ class _CheckoutState extends State<Checkout> {
           setState(() => _hasDepositMethods = methods.isNotEmpty);
         }
       });
+      _loadPending();
     }
     _profileController.getMyProfile();
     _settingsController.loadSettings();
@@ -110,8 +132,10 @@ class _CheckoutState extends State<Checkout> {
                                 if (_coinOnly) ...[
                                   coinView(),
                                 ] else ...[
-                                  walletView(),
-                                  if (_hasDepositMethods) addMoneyCard(),
+                                  if (_hasDepositMethods)
+                                    walletSummary()
+                                  else
+                                    walletView(),
                                   paymentGateways()
                                       .hp(DesignConstants.horizontalPadding),
                                 ],
@@ -238,50 +262,130 @@ class _CheckoutState extends State<Checkout> {
           ));
   }
 
-  /// Lets the user top up the wallet with bKash / Nagad / ... and then pay
-  /// from the wallet balance once the admin has approved the deposit.
-  Widget addMoneyCard() {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: () async {
-        final added = await Get.to(() => const AddMoneyScreen());
-        if (added == true) {
-          _profileController.getMyProfile();
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.all(14),
+  /// Shows what has to be paid, what the wallet holds and what to do next:
+  /// pay from the wallet when it is enough, otherwise add the missing amount.
+  Widget walletSummary() {
+    return Obx(() {
+      final double amount = widget.amountToPay;
+      final double balance = _balance;
+      final bool enough = balance + 0.001 >= amount;
+      final double missing = enough ? 0 : (amount - balance);
+      final double toAdd = double.parse(missing.toStringAsFixed(2));
+      final double pending = _pendingUsd;
+
+      Widget row(String label, String value, {bool bold = false, Color? color}) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BodyLargeText(label,
+                  weight: bold ? TextWeight.bold : TextWeight.regular),
+              BodyLargeText(value,
+                  weight: bold ? TextWeight.bold : TextWeight.medium,
+                  color: color),
+            ],
+          ),
+        );
+      }
+
+      return Container(
+        margin: EdgeInsets.fromLTRB(DesignConstants.horizontalPadding, 4,
+            DesignConstants.horizontalPadding, 0),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColorConstants.cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColorConstants.themeColor),
+          border: Border.all(
+              color: enough
+                  ? AppColorConstants.themeColor
+                  : AppColorConstants.dividerColor),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.account_balance_wallet_outlined,
-                color: AppColorConstants.themeColor, size: 28),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BodyLargeText(checkoutAddMoneyTitle.tr,
-                      weight: TextWeight.bold),
-                  const SizedBox(height: 2),
-                  BodySmallText(checkoutAddMoneySubtitle.tr,
-                      color: AppColorConstants.subHeadingTextColor),
-                ],
+            row(checkoutYouPayString.tr, _usd(amount), bold: true),
+            row(checkoutYourWalletString.tr, _usd(balance)),
+            if (!enough)
+              row(checkoutStillNeededString.tr, _usd(toAdd),
+                  bold: true, color: AppColorConstants.themeColor),
+            const SizedBox(height: 10),
+            if (pending > 0)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: AppColorConstants.themeColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: BodySmallText(
+                    checkoutPendingString.tr.replaceAll('{{amount}}', _usd(pending)),
+                    color: AppColorConstants.mainTextColor),
               ),
-            ),
-            Icon(Icons.chevron_right,
-                color: AppColorConstants.subHeadingTextColor),
+            if (enough) ...[
+              BodySmallText(checkoutWalletEnoughString.tr,
+                  color: AppColorConstants.subHeadingTextColor),
+              const SizedBox(height: 12),
+              AppThemeButton(
+                  text: checkoutPayFromWalletString.tr
+                      .replaceAll('{{amount}}', _usd(amount)),
+                  onPress: () {
+                    _checkoutController.useWalletSwitchChange(
+                        status: true,
+                        totalAmount: widget.amountToPay,
+                        transactionHandler: widget.transactionCallbackHandler);
+                    _checkoutController.payAndBuy(
+                        itemName: widget.itemName,
+                        totalAmount: widget.amountToPay,
+                        paymentGateway: PaymentGateway.wallet,
+                        transactionHandler: (paymentTransactions) {
+                          widget.transactionCallbackHandler(paymentTransactions);
+                        });
+                  }),
+            ] else ...[
+              BodySmallText(checkoutHowItWorksString.tr,
+                  color: AppColorConstants.subHeadingTextColor),
+              const SizedBox(height: 12),
+              AppThemeButton(
+                  text: checkoutAddAmountString.tr
+                      .replaceAll('{{amount}}', _usd(toAdd)),
+                  onPress: () async {
+                    final added = await Get.to(
+                        () => AddMoneyScreen(initialUsd: toAdd));
+                    if (added == true) {
+                      _profileController.getMyProfile();
+                      _loadPending();
+                    }
+                  }),
+            ],
           ],
         ),
+      );
+    });
+  }
+
+  /// A greyed-out option for a payment method that a later version will bring.
+  Widget comingSoonTile(String name) {
+    return Container(
+      height: 50,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(10),
       ),
-    ).setPadding(
-        top: 20,
-        left: DesignConstants.horizontalPadding,
-        right: DesignConstants.horizontalPadding);
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          BodyLargeText(name,
+              weight: TextWeight.medium,
+              color: AppColorConstants.subHeadingTextColor),
+          BodySmallText(comingSoonString.tr,
+              color: AppColorConstants.subHeadingTextColor),
+        ],
+      ),
+    ).vP8;
   }
 
   Widget paymentGateways() {
@@ -358,18 +462,7 @@ class _CheckoutState extends State<Checkout> {
                   checkout();
                 },
               ),
-              PaymentMethodTile(
-                text: razorPayString.tr,
-                icon: "assets/razorpay.png",
-                price: '\$${_checkoutController.balanceToPay.value}',
-                isSelected: _checkoutController.selectedPaymentGateway.value ==
-                    PaymentGateway.razorpay,
-                press: () {
-                  // _checkoutController
-                  //     .selectPaymentGateway(PaymentGateway.razorpay);
-                  // checkout();
-                },
-              ),
+              if (!_hasDepositMethods) comingSoonTile(googlePayString.tr),
               // PaymentMethodTile(
               //   text: inAppPurchase,
               //   icon: "assets/in_app_purchases.png",
