@@ -25,4 +25,22 @@ class CoinHistoryApi {
       }
     });
   }
+
+  /// Turns earned coins into dollars in the wallet. [onDone] gets the message to show.
+  static Future redeem(
+      {required int coins,
+      required Function(String message) onSuccess,
+      required Function(String message) onError}) async {
+    final response = await ApiWrapper().postApi(
+        url: NetworkConstantsUtil.redeemCoins,
+        param: {'redeem_coin': coins.toString()});
+    final String message = (response?.message ?? '').isNotEmpty
+        ? response!.message!
+        : errorString.tr;
+    if (response?.success == true) {
+      onSuccess(message);
+    } else {
+      onError(message);
+    }
+  }
 }

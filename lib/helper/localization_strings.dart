@@ -1686,3 +1686,11 @@ String coinEarnedString = 'Earned';
 String coinSpentString = 'Spent';
 String coinRefundString = 'Refunds';
 String coinHistoryEmptyString = 'No coin activity yet.';
+
+String coinRedeemTitleString = 'Convert coins to dollars';
+String coinRedeemableString = 'Can be converted';
+String coinLockedString = 'Only for use in the app';
+String coinRedeemMinString = 'Minimum coins';
+String coinRedeemConfirmString = 'Convert';
+String coinRedeemNotReadyString = 'You have no coins that can be converted yet, or the amount is below the minimum.';
+String coinRedeemHintString = 'Coins you earn can be converted to dollars in your wallet, then withdrawn or used for dollar features. Coins you bought can only be used inside the app.';

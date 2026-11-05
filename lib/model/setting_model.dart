@@ -92,7 +92,7 @@ class SettingModel {
       required this.minWithdrawLimit,
       required this.minCoinsWithdrawLimit,
       required this.coinsValue,
-      this.boostCoinsPerUsd = 100,
+      this.boostCoinsPerUsd = 1000,
       this.pid,
       required this.siteName,
       required this.inAppPurchaseId,
@@ -150,8 +150,8 @@ class SettingModel {
       minCoinsWithdrawLimit: json["min_coin_redeem"] ?? 0,
       coinsValue: double.parse(json["per_coin_value"].toString()),
       boostCoinsPerUsd:
-          double.tryParse((json["boost_coins_per_usd"] ?? '100').toString()) ??
-              100,
+          double.tryParse((json["boost_coins_per_usd"] ?? '1000').toString()) ??
+              1000,
       pid: json["user_p_id"],
       siteName: json["site_name"],
       inAppPurchaseId: json["in_app_purchase_id"],

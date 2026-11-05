@@ -60,10 +60,12 @@ class CheckoutController extends GetxController {
 
     useWallet.value = status;
     totalAmountToPay = totalAmount;
-    balanceToPay.value = totalAmount -
-        (status == true
-            ? double.parse(_userProfileManager.user.value!.balance)
-            : 0);
+    // rounded to cents: 2.36 - 0.64 must show 1.72, not 1.7199999999999998
+    balanceToPay.value = double.parse((totalAmount -
+            (status == true
+                ? double.parse(_userProfileManager.user.value!.balance)
+                : 0))
+        .toStringAsFixed(2));
   }
 
   payAndBuy({

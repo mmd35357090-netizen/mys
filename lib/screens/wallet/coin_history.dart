@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/api_handler/apis/coin_history_api.dart';
 import 'package:foap/model/coin_history_model.dart';
+import 'package:flutter/services.dart';
 
 /// Every coin movement of the user: bought with a package, earned (ads, gifts,
 /// awards, subscriptions...) and spent (boost, gifts, live, podcast...).
@@ -70,6 +71,73 @@ class _CoinHistoryScreenState extends State<CoinHistoryScreen> {
           if (mounted) setState(() => _failed = true);
         });
     if (mounted) setState(() => _loading = false);
+  }
+
+  String _usd(double v) => '\$${v.toStringAsFixed(2)}';
+
+  Future<void> _redeemDialog() async {
+    final s = _summary;
+    if (s.perCoinValue <= 0 || s.redeemable <= 0 || s.redeemable < s.minRedeem) {
+      AppUtil.showToast(message: coinRedeemNotReadyString.tr, isSuccess: false);
+      return;
+    }
+    final TextEditingController ctrl =
+        TextEditingController(text: s.redeemable.toString());
+    final int? coins = await showDialog<int>(
+        context: context,
+        builder: (ctx) => StatefulBuilder(builder: (ctx, setD) {
+              final int v = int.tryParse(ctrl.text.trim()) ?? 0;
+              final double usd = (v * s.perCoinValue * 100).floorToDouble() / 100;
+              final bool ok = v >= s.minRedeem && v > 0 && v <= s.redeemable && usd >= 0.01;
+              return AlertDialog(
+                title: Text(coinRedeemTitleString.tr),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${coinRedeemableString.tr}: ${s.redeemable}'),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: ctrl,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (_) => setD(() {}),
+                      decoration:
+                          InputDecoration(suffixText: coinsString.tr),
+                    ),
+                    const SizedBox(height: 10),
+                    Text('= ${_usd(usd)}',
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    if (s.minRedeem > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                            '${coinRedeemMinString.tr}: ${s.minRedeem}',
+                            style: const TextStyle(fontSize: 12)),
+                      ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: Text(cancelString.tr)),
+                  TextButton(
+                      onPressed: ok ? () => Navigator.of(ctx).pop(v) : null,
+                      child: Text(coinRedeemConfirmString.tr)),
+                ],
+              );
+            }));
+    ctrl.dispose();
+    if (coins == null) return;
+    await CoinHistoryApi.redeem(
+        coins: coins,
+        onSuccess: (m) {
+          AppUtil.showToast(message: m, isSuccess: true);
+          Get.find<UserProfileManager>().refreshProfile();
+          _reload(_filter);
+        },
+        onError: (m) => AppUtil.showToast(message: m, isSuccess: false));
   }
 
   String _date(int ts) {
@@ -182,6 +250,17 @@ class _CoinHistoryScreenState extends State<CoinHistoryScreen> {
                         Heading3Text('${_summary.balance}',
                             weight: TextWeight.bold,
                             color: AppColorConstants.themeColor),
+                        const SizedBox(height: 8),
+                        BodySmallText(
+                            '${coinRedeemableString.tr}: ${_summary.redeemable}   ·   ${coinLockedString.tr}: ${_summary.locked}',
+                            color: AppColorConstants.subHeadingTextColor),
+                        const SizedBox(height: 12),
+                        AppThemeButton(
+                            text: coinRedeemTitleString.tr,
+                            onPress: _redeemDialog),
+                        const SizedBox(height: 6),
+                        BodySmallText(coinRedeemHintString.tr,
+                            color: AppColorConstants.subHeadingTextColor),
                       ],
                     ),
                   ),

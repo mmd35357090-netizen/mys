@@ -392,8 +392,6 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Widget paymentGateways() {
-    // nothing to list: the wallet summary above already shows what to do
-    if (!_stripeEnabled && _hasDepositMethods) return const SizedBox.shrink();
     return Obx(() => _checkoutController.balanceToPay.value > 0 ||
             _checkoutController.useWallet.value == false
         ? Column(
@@ -469,7 +467,7 @@ class _CheckoutState extends State<Checkout> {
                     checkout();
                   },
                 ),
-              if (!_hasDepositMethods) comingSoonTile(googlePayString.tr),
+              comingSoonTile(googlePayString.tr),
               // PaymentMethodTile(
               //   text: inAppPurchase,
               //   icon: "assets/in_app_purchases.png",

@@ -26,12 +26,20 @@ class CoinSummary {
   int earned = 0;
   int spent = 0;
   int refunded = 0;
+  int redeemable = 0; // earned coins that can be turned into dollars
+  int locked = 0; // bought / bonus coins: can be spent, not redeemed
+  double perCoinValue = 0; // USD for one coin
+  int minRedeem = 0;
 
   CoinSummary();
 
   factory CoinSummary.fromJson(dynamic data) {
     final s = CoinSummary();
     s.balance = _int(data['balance']);
+    s.redeemable = _int(data['redeemable']);
+    s.locked = _int(data['locked']);
+    s.perCoinValue = double.tryParse('${data['per_coin_value'] ?? 0}') ?? 0;
+    s.minRedeem = _int(data['min_coin_redeem']);
     final m = data['summary'];
     if (m is Map) {
       s.bought = _int(m['bought']);

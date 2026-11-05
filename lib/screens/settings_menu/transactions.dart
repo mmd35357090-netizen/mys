@@ -24,8 +24,8 @@ class PaymentWithdrawalState extends State<Transactions> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  // Add money / My deposits are shown only while the admin has at least one
-  // deposit method switched on.
+  // Add money / My deposits show only while the admin has a deposit method switched ON.
+  // When it is OFF the buttons and their space are gone, the list moves up.
   bool _hasDepositMethods = false;
 
   @override
@@ -152,7 +152,9 @@ class PaymentWithdrawalState extends State<Transactions> {
   withdrawBtn() {
     return InkWell(
       onTap: () {
-        if (double.parse(_userProfileManager.user.value!.balance) < 50) {
+        final int minWithdraw =
+            _settingsController.setting.value?.minWithdrawLimit ?? 50;
+        if (double.parse(_userProfileManager.user.value!.balance) < minWithdraw) {
           AppUtil.showToast(
               message: minWithdrawLimitString.tr.replaceAll(
                   '{{cash}}',
