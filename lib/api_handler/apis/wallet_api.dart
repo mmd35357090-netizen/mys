@@ -22,16 +22,25 @@ class WalletApi {
       {required String packageId,
       required String transactionId,
       required String amount,
+      String? purchaseToken,
+      String? productId,
+      String platform = 'android',
+      VoidCallback? errorCallback,
       required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.subscribePackage;
 
     await ApiWrapper().postApi(url: url, param: {
       "package_id": packageId,
       "transaction_id": transactionId,
-      "amount": amount
+      "amount": amount,
+      "platform": platform,
+      if (purchaseToken != null) "purchase_token": purchaseToken,
+      if (productId != null) "product_id": productId,
     }).then((result) {
       if (result?.success == true) {
         resultCallback();
+      } else if (errorCallback != null) {
+        errorCallback();
       }
     });
   }

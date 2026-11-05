@@ -26,9 +26,17 @@ class _CoinPackagesWidgetState extends State<CoinPackagesWidget> {
             return ListView.separated(
                 padding: const EdgeInsets.only(top: 20, bottom: 70),
                 itemBuilder: (ctx, index) {
+                  final PackageModel pkg = packageController.packages[index];
+                  final String storeId = Platform.isIOS
+                      ? pkg.inAppPurchaseIdIOS
+                      : pkg.inAppPurchaseIdAndroid;
+                  final matched = packageController.products
+                      .where((p) => p.id == storeId)
+                      .toList();
                   return PackageTile(
-                    package: packageController.packages[index],
+                    package: pkg,
                     index: index,
+                    storePrice: matched.isNotEmpty ? matched.first.price : null,
                     buyPackageHandler: () {
                       // _paymentController.makePayment();
                       buyPackage(packageController.packages[index]);

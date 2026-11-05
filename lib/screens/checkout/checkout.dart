@@ -41,6 +41,9 @@ class _CheckoutState extends State<Checkout> {
 
   bool get _coinOnly => kPlayStoreBuild && widget.digitalItem;
 
+  // card payment (Stripe) is off for now
+  static const bool _stripeEnabled = false;
+
   // true when the admin has switched on at least one manual deposit method
   // (bKash, Nagad, ...): then the "Add money" card is shown on this screen.
   bool _hasDepositMethods = false;
@@ -389,6 +392,8 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Widget paymentGateways() {
+    // nothing to list: the wallet summary above already shows what to do
+    if (!_stripeEnabled && _hasDepositMethods) return const SizedBox.shrink();
     return Obx(() => _checkoutController.balanceToPay.value > 0 ||
             _checkoutController.useWallet.value == false
         ? Column(
@@ -449,19 +454,21 @@ class _CheckoutState extends State<Checkout> {
               //     checkout();
               //   },
               // ),
-              PaymentMethodTile(
-                text: stripeString.tr,
-                icon: "assets/stripe.png",
-                price: '\$${_checkoutController.balanceToPay.value}',
-                isSelected: _checkoutController.selectedPaymentGateway.value ==
-                    PaymentGateway.stripe,
-                press: () {
-                  // _checkoutController.launchRazorpayPayment();
-                  _checkoutController
-                      .selectPaymentGateway(PaymentGateway.stripe);
-                  checkout();
-                },
-              ),
+              // Stripe is switched off for now. Set _stripeEnabled = true to bring it back.
+              if (_stripeEnabled)
+                PaymentMethodTile(
+                  text: stripeString.tr,
+                  icon: "assets/stripe.png",
+                  price: '\$${_checkoutController.balanceToPay.value}',
+                  isSelected:
+                      _checkoutController.selectedPaymentGateway.value ==
+                          PaymentGateway.stripe,
+                  press: () {
+                    _checkoutController
+                        .selectPaymentGateway(PaymentGateway.stripe);
+                    checkout();
+                  },
+                ),
               if (!_hasDepositMethods) comingSoonTile(googlePayString.tr),
               // PaymentMethodTile(
               //   text: inAppPurchase,

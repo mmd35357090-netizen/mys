@@ -71,14 +71,19 @@ class SubscriptionPackageController extends GetxController {
       if (purchaseDetails.status == PurchaseStatus.pending) {
         //showPending error
       } else {
+        bool coinsGiven = true;
         if (purchaseDetails.status == PurchaseStatus.error) {
           //show error
           AppUtil.showToast(message: purchaseErrorString.tr, isSuccess: false);
-        } else if (purchaseDetails.status == PurchaseStatus.purchased) {
-          //show success
-
-          subscribeToPackage(
-              purchaseDetails.purchaseID!, purchaseDetails.productID);
+        } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+            purchaseDetails.status == PurchaseStatus.restored) {
+          // The purchase is finished in the store only after our server has
+          // confirmed it. If the server call fails the store hands the purchase
+          // over again next time, so the user does not lose the coins.
+          coinsGiven = await subscribeToPackage(
+              purchaseDetails.purchaseID ?? '',
+              purchaseDetails.productID,
+              purchaseDetails.verificationData.serverVerificationData);
         }
         if (Platform.isAndroid) {
           if (!kAutoConsume &&
@@ -89,14 +94,15 @@ class SubscriptionPackageController extends GetxController {
             await androidAddition.consumePurchase(purchaseDetails);
           }
         }
-        if (purchaseDetails.pendingCompletePurchase) {
+        if (purchaseDetails.pendingCompletePurchase && coinsGiven) {
           await inAppPurchase.completePurchase(purchaseDetails);
         }
       }
     });
   }
 
-  subscribeToPackage(String purchaseId, String productId) {
+  Future<bool> subscribeToPackage(
+      String purchaseId, String productId, String purchaseToken) async {
     List<PackageModel> boughtPackages = packages.where((package) {
       if (Platform.isIOS) {
         if (package.inAppPurchaseIdIOS == productId) {
@@ -113,17 +119,29 @@ class SubscriptionPackageController extends GetxController {
       }
     }).toList();
 
+    if (boughtPackages.isEmpty) {
+      return false;
+    }
     PackageModel boughtPackage = boughtPackages.first;
 
+    final Completer<bool> done = Completer<bool>();
     WalletApi.subscribePackage(
         packageId: boughtPackage.id.toString(),
         transactionId: purchaseId,
         amount: boughtPackage.price.toString(),
+        productId: productId,
+        purchaseToken: purchaseToken,
+        platform: Platform.isIOS ? 'ios' : 'android',
+        errorCallback: () {
+          if (!done.isCompleted) done.complete(false);
+        },
         resultCallback: () {
           AppUtil.showToast(message: coinsAddedString.tr, isSuccess: true);
           _userProfileManager.refreshProfile();
           user.value.coins = boughtPackage.coin;
+          if (!done.isCompleted) done.complete(true);
         });
+    return done.future;
   }
 
   subscribeToDummyPackage(String purchaseId) {

@@ -1,5 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
+import 'package:foap/screens/wallet/coin_history.dart';
 
 class PaymentAndCoins extends StatefulWidget {
   const PaymentAndCoins({super.key});
@@ -35,6 +36,9 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                   children: [
                     addTileEvent('${coinsString.tr} ($coin)', () {
                       Get.to(() => const PackagesScreen());
+                    }),
+                    addTileEvent(coinHistoryString.tr, () {
+                      Get.to(() => const CoinHistoryScreen());
                     }),
                     addTileEvent(transactionHistoryString.tr, () {
                       Get.to(() => const Transactions());

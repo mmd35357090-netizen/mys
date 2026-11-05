@@ -322,6 +322,7 @@ class NetworkConstantsUtil {
   static String getPackages = 'packages';
   static String subscribePackage = 'payments/package-subscription';
   static String redeemCoins = 'payments/redeem-coin';
+  static String coinHistory = 'payments/coin-history';
   static String rewardedAdCoins = 'posts/promotion-ad-view';
 
   //***********Dating***********//

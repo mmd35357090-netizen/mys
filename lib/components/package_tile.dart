@@ -9,10 +9,14 @@ class PackageTile extends StatelessWidget {
   final SubscriptionPackageController packageController = Get.find();
   final VoidCallback buyPackageHandler;
 
+  /// Price as Google Play shows it (local currency); falls back to the server price.
+  final String? storePrice;
+
   PackageTile(
       {super.key,
       required this.package,
       required this.index,
+      this.storePrice,
       required this.buyPackageHandler})
       ;
 
@@ -36,7 +40,9 @@ class PackageTile extends StatelessWidget {
         ),
         const Spacer(),
         BodyLargeText(
-          '${buyInString.tr} \$${package.price}',
+          (storePrice != null && storePrice!.isNotEmpty)
+              ? '${buyInString.tr} $storePrice'
+              : '${buyInString.tr} \$${package.price}',
           weight: TextWeight.semiBold,
         )
         // SizedBox(

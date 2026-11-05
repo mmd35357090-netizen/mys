@@ -1678,3 +1678,11 @@ String checkoutAddAmountString = 'Add {{amount}} to wallet';
 String checkoutHowItWorksString = '1. Send the money by bKash, Nagad or another method and upload the screenshot.  2. We check it and add the amount to your wallet.  3. Come back here and pay from your wallet.';
 String checkoutPendingString = 'Your deposit of {{amount}} is waiting for approval. It is added to your wallet after we approve it.';
 String comingSoonString = 'Coming soon';
+
+String coinHistoryString = 'Coin history';
+String coinBalanceString = 'Coin balance';
+String coinBoughtString = 'Bought';
+String coinEarnedString = 'Earned';
+String coinSpentString = 'Spent';
+String coinRefundString = 'Refunds';
+String coinHistoryEmptyString = 'No coin activity yet.';
