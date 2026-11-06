@@ -24,7 +24,10 @@ class SubscriptionPackageController extends GetxController {
 
   initiate() {
     WalletApi.getAllPackages(resultCallback: (result) {
-      packages.value = result;
+      // the free signup package is not for sale
+      packages.value = result
+          .where((p) => (double.tryParse(p.price.toString()) ?? 0) > 0)
+          .toList();
       initStoreInfo();
       update();
     });
