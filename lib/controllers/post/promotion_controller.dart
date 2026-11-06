@@ -182,10 +182,23 @@ class PromotionController extends GetxController {
     order.goalType = validURL ? GoalType.website : null;
     if (validURL) {
       order.url = value.trim();
+      order.urlText ??= actionButtons[actionSelected.value];
     } else {
       order.url = null;
     }
     update();
+  }
+
+  /// Called by the Done button on the website screen.
+  /// Returns true when the link is valid and the goal is saved.
+  bool confirmWebsiteGoal() {
+    validateUrl(websiteUrl.text);
+    if (isValidWebsite.value != true) return false;
+    order.goalType = GoalType.website;
+    order.url = websiteUrl.text.trim();
+    order.urlText = actionButtons[actionSelected.value];
+    update();
+    return true;
   }
 
   selectAction(int selection) {
@@ -455,7 +468,6 @@ class PromotionController extends GetxController {
     Get.to(() => Checkout(
           amountToPay: order.grandTotalAmount,
           itemName: postPromotionString.tr,
-          digitalItem: true,
           transactionCallbackHandler: (paymentTransactions) {
             order.payments = paymentTransactions;
 

@@ -517,7 +517,7 @@ class PostCardState extends State<PostCard> {
           children: [
             BodyLargeText(
               widget.model.postPromotionData?.type == GoalType.website
-                  ? widget.model.postPromotionData!.urlText!
+                  ? (widget.model.postPromotionData!.urlText ?? learnMore.tr)
                   : widget.model.postPromotionData?.type ==
                           GoalType.message
                       ? sendMessagesString.tr

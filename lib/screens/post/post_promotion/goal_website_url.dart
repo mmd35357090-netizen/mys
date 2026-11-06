@@ -50,6 +50,17 @@ class GoalWebsiteUrl extends StatelessWidget {
                             index);
                       }),
                 ),
+                AppThemeButton(
+                    text: doneString.tr,
+                    onPress: () {
+                      if (_promotionController.confirmWebsiteGoal()) {
+                        Get.back();
+                      } else {
+                        AppUtil.showToast(
+                            message: 'Please enter a valid website address, e.g. https://www.example.com',
+                            isSuccess: false);
+                      }
+                    }).hP16.bP25,
               ],
             );
           }),

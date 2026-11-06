@@ -37,6 +37,7 @@ class PromotionReviewScreen extends StatelessWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          adPreview(order).hP16.bP16,
                           addReviewTile(
                                   adGoal.tr,
                                   order.goalType == GoalType.profile
@@ -96,6 +97,69 @@ class PromotionReviewScreen extends StatelessWidget {
                     }).bP25.hP16,
               ]);
         });
+  }
+
+  /// How the ad will look in other people's feed.
+  Widget adPreview(dynamic order) {
+    final post = order.post;
+    String? imageUrl;
+    if (post != null && post.gallery.isNotEmpty) {
+      final g = post.gallery.first;
+      imageUrl = (g.mediaType == 2 ? g.videoThumbnail : g.filePath);
+    }
+    final bool isWebsite = order.goalType == GoalType.website;
+    final String buttonText = isWebsite
+        ? ((order.urlText == null || order.urlText.toString().isEmpty)
+            ? learnMore.tr
+            : order.urlText.toString())
+        : order.goalType == GoalType.message
+            ? sendMessagesString.tr
+            : viewProfileString.tr;
+    final String caption = post == null ? '' : post.postTitle;
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColorConstants.dividerColor),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(children: [
+            Expanded(
+                child: Heading6Text(post?.user.userName ?? '',
+                    weight: TextWeight.semiBold)),
+            BodySmallText(sponsoredString.tr,
+                color: AppColorConstants.subHeadingTextColor),
+          ]),
+        ),
+        if (imageUrl != null && imageUrl.isNotEmpty)
+          CachedNetworkImage(
+              imageUrl: imageUrl,
+              height: 180,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorWidget: (c, u, e) =>
+                  const SizedBox(height: 180, child: Icon(Icons.error))),
+        if (caption.isNotEmpty)
+          Padding(
+              padding: const EdgeInsets.all(10),
+              child: BodyMediumText(caption, maxLines: 2)),
+        Container(
+          color: AppColorConstants.themeColor,
+          padding: const EdgeInsets.all(8),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BodyLargeText(buttonText,
+                    color: Colors.white, weight: TextWeight.semiBold),
+                const Icon(Icons.arrow_forward_ios,
+                    size: 18, color: Colors.white),
+              ]),
+        ),
+      ]),
+    );
   }
 
   Widget addReviewTile(String title, String subTitle) {
