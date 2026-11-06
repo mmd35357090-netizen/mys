@@ -9,6 +9,7 @@ import 'package:foap/model/live_model.dart';
 import 'package:foap/screens/home_feed/story_uploader.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../components/post_card/post_card.dart';
+import '../../components/feed_native_ad.dart';
 import '../../controllers/post/add_post_controller.dart';
 import '../../controllers/live/agora_live_controller.dart';
 import '../../controllers/home/home_controller.dart';
@@ -268,6 +269,21 @@ Widget postsView() {
           final int adIndex = (postAbove - 1) ~/ 5;
           if (adIndex < _homeController.sponsoredPosts.length) {
             return _sponsoredCard(_homeController.sponsoredPosts[adIndex]);
+          }
+        }
+
+        // Google AdMob native ad after every N posts (admin setting), on a different slot from the boosted posts
+        final setting = _settingsController.setting.value;
+        if (setting != null && setting.feedNativeAdsEnabled) {
+          final int every = setting.feedNativeAdEvery < 3
+              ? 3
+              : setting.feedNativeAdEvery;
+          if (postAbove >= 3 &&
+              postAbove % every == 3 % every &&
+              postAbove < _homeController.posts.length) {
+            final int hostId = _homeController.posts[postAbove].id;
+            return FeedNativeAd(
+                key: ValueKey('native_ad_$hostId'), hostPostId: hostId);
           }
         }
 

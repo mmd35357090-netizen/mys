@@ -61,6 +61,10 @@ class SettingModel {
   int minCoinsWithdrawLimit;
   double coinsValue;
   double boostCoinsPerUsd;
+  String? nativeAdUnitIdForAndroid;
+  String? nativeAdUnitIdForiOS;
+  bool feedNativeAdsEnabled;
+  int feedNativeAdEvery;
   double serviceFee;
 
   String? pid;
@@ -93,6 +97,10 @@ class SettingModel {
       required this.minCoinsWithdrawLimit,
       required this.coinsValue,
       this.boostCoinsPerUsd = 1000,
+      this.nativeAdUnitIdForAndroid,
+      this.nativeAdUnitIdForiOS,
+      this.feedNativeAdsEnabled = false,
+      this.feedNativeAdEvery = 5,
       this.pid,
       required this.siteName,
       required this.inAppPurchaseId,
@@ -152,6 +160,14 @@ class SettingModel {
       boostCoinsPerUsd:
           double.tryParse((json["boost_coins_per_usd"] ?? '1000').toString()) ??
               1000,
+      nativeAdUnitIdForAndroid: json["native_ad_unit_id_for_android"],
+      nativeAdUnitIdForiOS: json["native_ad_unit_id_for_IOS"],
+      feedNativeAdsEnabled:
+          (int.tryParse((json["feed_native_ads_enabled"] ?? '0').toString()) ??
+                  0) ==
+              1,
+      feedNativeAdEvery:
+          int.tryParse((json["feed_native_ad_every"] ?? '5').toString()) ?? 5,
       pid: json["user_p_id"],
       siteName: json["site_name"],
       inAppPurchaseId: json["in_app_purchase_id"],

@@ -323,6 +323,8 @@ class NetworkConstantsUtil {
   static String subscribePackage = 'payments/package-subscription';
   static String redeemCoins = 'payments/redeem-coin';
   static String coinHistory = 'payments/coin-history';
+  static String creatorAdImpression = 'creator-pool/impression';
+  static String creatorPoolStatus = 'creator-pool/status';
   static String rewardedAdCoins = 'posts/promotion-ad-view';
 
   //***********Dating***********//

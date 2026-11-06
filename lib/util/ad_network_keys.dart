@@ -47,6 +47,16 @@ class AdmobKeys {
     }
   }
 
+  /// Native ad unit for the home feed; empty when the admin has not set one.
+  String get nativeAdUnitId {
+    if (Platform.isAndroid) {
+      return settingsController.setting.value?.nativeAdUnitIdForAndroid ?? '';
+    } else if (Platform.isIOS) {
+      return settingsController.setting.value?.nativeAdUnitIdForiOS ?? '';
+    }
+    return '';
+  }
+
   String get bannerAdUnitId {
     if (Platform.isAndroid) {
       return settingsController.setting.value!.bannerAdUnitIdForAndroid!;
