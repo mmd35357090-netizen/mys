@@ -1,6 +1,9 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/reel_imports.dart';
 
+import '../../../../components/reel_ad_page.dart';
+import '../../../../util/ad_gate.dart';
+
 class ReelsList extends StatefulWidget {
   final int? audioId;
   final int index;
@@ -40,7 +43,8 @@ class _ReelsListState extends State<ReelsList> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _reelsController.addReels(widget.reels ?? [], widget.page);
 
-      controller.jumpToPage(widget.index);
+      controller.jumpToPage(ReelSlots.pageOfReel(
+          widget.index, ReelSlots.every(), ReelSlots.adsOn()));
       loadData();
     });
   }
@@ -75,31 +79,40 @@ class _ReelsListState extends State<ReelsList> {
                   GetBuilder<ReelsController>(
                       init: _reelsController,
                       builder: (ctx) {
+                        final reels = _reelsController.filteredReels;
+                        final bool adsOn = ReelSlots.adsOn();
+                        final int every = ReelSlots.every();
+                        final slots = ReelSlots.layout(reels.length, every, adsOn);
                         return PageView(
                             controller: controller,
                             scrollDirection: Axis.vertical,
                             allowImplicitScrolling: true,
-                            onPageChanged: (index) {
-                              _reelsController.currentPageChanged(index,
-                                  _reelsController.filteredReels[index]);
-                              if (index ==
-                                  _reelsController.filteredReels.length - 2) {
+                            onPageChanged: (page) {
+                              if (page >= slots.length) return;
+                              final r = slots[page];
+                              if (r == null) return;
+                              _reelsController.currentPageChanged(r, reels[r]);
+                              AdGate.onReelViewed();
+                              if (r == reels.length - 2) {
                                 _reelsController.getReels();
                               }
                             },
                             children: [
-                              for (int i = 0;
-                                  i < _reelsController.filteredReels.length;
-                                  i++)
-                                SizedBox(
-                                  height: Get.height,
-                                  width: Get.width,
-                                  // color: Colors.brown,
-                                  child: ReelVideoPlayer(
-                                    reel: _reelsController.filteredReels[i],
-                                    // play: false,
-                                  ),
-                                )
+                              for (int p = 0; p < slots.length; p++)
+                                if (slots[p] != null)
+                                  SizedBox(
+                                    height: Get.height,
+                                    width: Get.width,
+                                    child: ReelVideoPlayer(
+                                      reel: reels[slots[p]!],
+                                    ),
+                                  )
+                                else
+                                  ReelAdPage(
+                                    key: ValueKey('reel_ad_page_$p'),
+                                    adNumber: slots.sublist(0, p).where((e) => e == null).length,
+                                    hostReelId: reels[slots[p - 1]!].id,
+                                  )
                             ]);
                       }),
                   // Positioned(

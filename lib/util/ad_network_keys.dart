@@ -47,6 +47,16 @@ class AdmobKeys {
     }
   }
 
+  /// Interstitial unit id, empty (not a crash) when the admin has not set one.
+  String get interstitialAdUnitIdSafe {
+    if (Platform.isAndroid) {
+      return settingsController.setting.value?.interstitialAdUnitIdForAndroid ?? '';
+    } else if (Platform.isIOS) {
+      return settingsController.setting.value?.interstitialAdUnitIdForiOS ?? '';
+    }
+    return '';
+  }
+
   /// Native ad unit for the home feed; empty when the admin has not set one.
   String get nativeAdUnitId {
     if (Platform.isAndroid) {

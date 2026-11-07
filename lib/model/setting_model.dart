@@ -64,6 +64,11 @@ class SettingModel {
   String? nativeAdUnitIdForAndroid;
   String? nativeAdUnitIdForiOS;
   bool feedNativeAdsEnabled;
+  int adSource;
+  bool adsReelsEnabled;
+  bool adsVideoEnabled;
+  int reelsAdEvery;
+  int interstitialGapSeconds;
   int feedNativeAdEvery;
   double serviceFee;
 
@@ -100,6 +105,11 @@ class SettingModel {
       this.nativeAdUnitIdForAndroid,
       this.nativeAdUnitIdForiOS,
       this.feedNativeAdsEnabled = false,
+      this.adSource = 3,
+      this.adsReelsEnabled = true,
+      this.adsVideoEnabled = true,
+      this.reelsAdEvery = 4,
+      this.interstitialGapSeconds = 180,
       this.feedNativeAdEvery = 5,
       this.pid,
       required this.siteName,
@@ -143,6 +153,12 @@ class SettingModel {
       this.androidAppLink,
       required this.smsGateway});
 
+  /// Google AdMob allowed (ad_source 1 or 3)
+  bool get googleAdsOn => adSource == 1 || adSource == 3;
+
+  /// In-app user promotions allowed (ad_source 2 or 3)
+  bool get ownAdsOn => adSource == 2 || adSource == 3;
+
   factory SettingModel.fromJson(Map<String, dynamic> json) => SettingModel(
       email: json["email"],
       phone: json["phone"],
@@ -166,6 +182,19 @@ class SettingModel {
           (int.tryParse((json["feed_native_ads_enabled"] ?? '0').toString()) ??
                   0) ==
               1,
+      adSource: int.tryParse((json["ad_source"] ?? '3').toString()) ?? 3,
+      adsReelsEnabled:
+          (int.tryParse((json["ads_reels_enabled"] ?? '1').toString()) ?? 1) == 1,
+      adsVideoEnabled:
+          (int.tryParse((json["ads_video_enabled"] ?? '1').toString()) ?? 1) == 1,
+      reelsAdEvery:
+          (int.tryParse((json["reels_ad_every"] ?? '4').toString()) ?? 4) < 3
+              ? 3
+              : (int.tryParse((json["reels_ad_every"] ?? '4').toString()) ?? 4),
+      interstitialGapSeconds:
+          (int.tryParse((json["interstitial_gap_seconds"] ?? '180').toString()) ?? 180) < 60
+              ? 60
+              : (int.tryParse((json["interstitial_gap_seconds"] ?? '180').toString()) ?? 180),
       feedNativeAdEvery:
           int.tryParse((json["feed_native_ad_every"] ?? '5').toString()) ?? 5,
       pid: json["user_p_id"],

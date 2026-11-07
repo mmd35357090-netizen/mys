@@ -2,6 +2,9 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/reel_imports.dart';
 
 import '../../../content_creator_view.dart';
+import '../../../../components/reel_ad_page.dart';
+import '../../../../util/ad_gate.dart';
+
 
 class Reels extends StatefulWidget {
   final bool needBackBtn;
@@ -36,26 +39,37 @@ class _ReelsState extends State<Reels> {
             GetBuilder<ReelsController>(
                 init: _reelsController,
                 builder: (ctx) {
+                  final reels = _reelsController.publicReels;
+                  final bool adsOn = ReelSlots.adsOn();
+                  final int every = ReelSlots.every();
+                  final slots = ReelSlots.layout(reels.length, every, adsOn);
                   return PageView(
                       scrollDirection: Axis.vertical,
                       allowImplicitScrolling: true,
-                      onPageChanged: (index) {
-                        _reelsController.currentPageChanged(
-                            index, _reelsController.publicReels[index]);
+                      onPageChanged: (page) {
+                        if (page >= slots.length) return;
+                        final r = slots[page];
+                        if (r != null) {
+                          _reelsController.currentPageChanged(r, reels[r]);
+                          AdGate.onReelViewed();
+                        }
                       },
                       children: [
-                        for (int i = 0;
-                            i < _reelsController.publicReels.length;
-                            i++)
-                          SizedBox(
-                            height: Get.height,
-                            width: Get.width,
-                            // color: Colors.brown,
-                            child: ReelVideoPlayer(
-                              reel: _reelsController.publicReels[i],
-                              // play: false,
-                            ),
-                          )
+                        for (int p = 0; p < slots.length; p++)
+                          if (slots[p] != null)
+                            SizedBox(
+                              height: Get.height,
+                              width: Get.width,
+                              child: ReelVideoPlayer(
+                                reel: reels[slots[p]!],
+                              ),
+                            )
+                          else
+                            ReelAdPage(
+                              key: ValueKey('reel_ad_page_$p'),
+                              adNumber: slots.sublist(0, p).where((e) => e == null).length,
+                              hostReelId: reels[slots[p - 1]!].id,
+                            )
                       ]);
                 }),
             Positioned(

@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../util/ad_gate.dart';
 import 'package:chewie/chewie.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/models.dart';
@@ -171,12 +172,14 @@ class _VideoPostTileState extends State<VideoPostTile> {
   }
 
   openFullScreen() {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          return FullScreenVideoPostTile(
-              videoPlayerController: videoPlayerController!);
-        },
-        fullscreenDialog: true));
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(
+            builder: (BuildContext context) {
+              return FullScreenVideoPostTile(
+                  videoPlayerController: videoPlayerController!);
+            },
+            fullscreenDialog: true))
+        .then((_) => AdGate.onVideoClosed());
   }
 
   unMuteAudio() {

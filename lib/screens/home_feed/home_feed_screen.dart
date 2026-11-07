@@ -215,7 +215,10 @@ Widget postsView() {
   return Obx(() {
     // A very short feed (new account, few followings) has no slot between
     // posts, so the first sponsored post is added after the last post.
-    final bool trailingAd = _homeController.sponsoredPosts.isNotEmpty &&
+    final bool ownOn =
+        _settingsController.setting.value?.ownAdsOn ?? true;
+    final bool trailingAd = ownOn &&
+        _homeController.sponsoredPosts.isNotEmpty &&
         _homeController.posts.length < 3;
 
     return ListView.separated(
@@ -265,7 +268,7 @@ Widget postsView() {
       separatorBuilder: (context, index) {
         // index of the post just above this separator
         final int postAbove = index - offset;
-        if (postAbove >= 1 && (postAbove - 1) % 5 == 0) {
+        if (ownOn && postAbove >= 1 && (postAbove - 1) % 5 == 0) {
           final int adIndex = (postAbove - 1) ~/ 5;
           if (adIndex < _homeController.sponsoredPosts.length) {
             return _sponsoredCard(_homeController.sponsoredPosts[adIndex]);
@@ -274,7 +277,9 @@ Widget postsView() {
 
         // Google AdMob native ad after every N posts (admin setting), on a different slot from the boosted posts
         final setting = _settingsController.setting.value;
-        if (setting != null && setting.feedNativeAdsEnabled) {
+        if (setting != null &&
+            setting.googleAdsOn &&
+            setting.feedNativeAdsEnabled) {
           final int every = setting.feedNativeAdEvery < 3
               ? 3
               : setting.feedNativeAdEvery;
