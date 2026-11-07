@@ -143,7 +143,15 @@ class PromotionApi {
     dynamic param = order.toJson();
 
     ApiWrapper().postApi(url: url, param: param).then((response) {
-      completionHandler(response?.success == true);
+      final bool ok = response?.success == true;
+      if (!ok) {
+        // show the real reason from the server, so a failed order is not a mystery
+        final String reason = (response?.message ?? '').trim();
+        AppUtil.showToast(
+            message: reason.isEmpty ? 'The promotion could not be created.' : reason,
+            isSuccess: false);
+      }
+      completionHandler(ok);
     });
   }
 
