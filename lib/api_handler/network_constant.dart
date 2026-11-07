@@ -27,7 +27,7 @@ class NetworkConstantsUtil {
       'users/{{id}}?expand=isFollowing,isFollower,totalFollowing,totalFollower,totalPost,totalWinnerPost,totalReel,totalClub,totalMention,userLiveDetail,giftSummary,userSetting,subscribedStatus,subscriptionPlanUser';
 
   static String getMyProfile =
-      'users/profile?expand=totalFollowing,totalFollower,totalActivePost,totalReel,totalClub,totalMention,userLiveDetail,giftSummary,userSetting,interest,language,featureList,isSubscriptionAllowed,subscriptionPlanUser';
+      'users/profile?expand=totalFollowing,totalFollower,totalActivePost,totalReel,totalClub,totalMention,userLiveDetail,giftSummary,userSetting,interest,language,featureList,isSubscriptionAllowed,subscriptionProgress,subscriptionPlanUser';
   static String updateUserProfile = 'users/profile-update';
   static String updateProfileImage = 'users/update-profile-image';
   static String updateProfileCoverImage =

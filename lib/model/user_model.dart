@@ -88,6 +88,8 @@ class UserModel {
   bool isShareOnlineStatus = false;
   List<FeatureModel> features = [];
   bool isEligibleForSubscription = false;
+  // progress for the Subscription feature: followers, posts, total views (have / needed)
+  List<int> subscriptionProgress = [0, 0, 0, 0, 0, 0];
   List<SubscriptionPlan> subscriptionPlans = [];
   SubscribedStatus subscribedStatus = SubscribedStatus.notSubscribed;
 
@@ -209,6 +211,15 @@ class UserModel {
         : [];
 
     model.isEligibleForSubscription = json["isSubscriptionAllowed"] == 1;
+    if (json["subscriptionProgress"] is Map) {
+      final Map p = json["subscriptionProgress"];
+      int n(String k) => int.tryParse((p[k] ?? 0).toString()) ?? 0;
+      model.subscriptionProgress = [
+        n('followers'), n('followers_needed'),
+        n('posts'), n('posts_needed'),
+        n('views'), n('views_needed'),
+      ];
+    }
     model.subscribedStatus =
         subscribedStatusType(json["subscribedStatus"] ?? 0);
     return model;
