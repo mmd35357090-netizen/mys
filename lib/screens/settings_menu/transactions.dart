@@ -64,6 +64,17 @@ class PaymentWithdrawalState extends State<Transactions> {
             child: GetBuilder<ProfileController>(
                 init: _profileController,
                 builder: (ctx) {
+                  if (_profileController.transactions.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(30),
+                        child: BodyLargeText(
+                            'No ad transactions yet. Boosts, cancelled boosts and withdrawals appear here.',
+                            textAlign: TextAlign.center,
+                            color: AppColorConstants.subHeadingTextColor),
+                      ),
+                    );
+                  }
                   return ListView.builder(
                       padding: EdgeInsets.only(
                           top: 25,

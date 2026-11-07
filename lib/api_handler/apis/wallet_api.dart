@@ -50,7 +50,7 @@ class WalletApi {
       required Function(List<TransactionModel>, APIMetaData)
           resultCallback}) async {
     var url = NetworkConstantsUtil.transactionHistory;
-    url = '${url}month=2000-08,2050-09&page=$page';
+    url = '${url}month=2000-08,2050-09&scope=ads&page=$page';
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {

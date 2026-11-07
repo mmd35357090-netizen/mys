@@ -29,7 +29,7 @@ class TransactionTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   BodyLargeText(
-                    paymentTypeStringFromId(model.paymentType),
+                    _adsTitle(model.paymentType),
                     color: AppColorConstants.themeColor,
                   ),
                   // const SizedBox(height: 5),
@@ -75,5 +75,21 @@ class TransactionTile extends StatelessWidget {
             ])),
       ],
     );
+  }
+}
+
+/// Titles for the Ads transaction history.
+String _adsTitle(PaymentType type) {
+  switch (type) {
+    case PaymentType.promotion:
+      return 'Boost';
+    case PaymentType.promotionRefund:
+      return 'Boost cancelled (refund)';
+    case PaymentType.withdrawal:
+      return 'Withdraw';
+    case PaymentType.withdrawalRefund:
+      return 'Withdraw failed (refund)';
+    default:
+      return paymentTypeStringFromId(type);
   }
 }
