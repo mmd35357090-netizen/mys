@@ -75,10 +75,16 @@ class _FeedNativeAdState extends State<FeedNativeAd> {
     if (_ad == null || !_loaded) {
       return const SizedBox.shrink();
     }
-    return Container(
-      constraints: const BoxConstraints(minHeight: 320, maxHeight: 400),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      child: AdWidget(ad: _ad!),
-    );
+    // The medium template is about 0.95 x its width tall. A fixed tall box left a big empty
+    // gap under the ad, so the height follows the width (a little extra so the button is never cut).
+    return LayoutBuilder(builder: (context, c) {
+      final double w = (c.maxWidth.isFinite ? c.maxWidth : MediaQuery.of(context).size.width) - 16;
+      final double h = (w * 0.97).clamp(300.0, 400.0).toDouble();
+      return Container(
+        height: h,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: AdWidget(ad: _ad!),
+      );
+    });
   }
 }

@@ -167,6 +167,7 @@ class PromotionController extends GetxController {
 
     clearWebsiteData();
     update();
+    refreshEstimate();
   }
 
   validateUrl(String value) {
@@ -386,6 +387,11 @@ class PromotionController extends GetxController {
           dailyBudget: order.dailyBudget,
           duration: order.duration,
           audienceId: order.audience?.id,
+          goal: order.goalType == GoalType.website
+              ? 4
+              : order.goalType == GoalType.message
+                  ? 2
+                  : 1,
           estimateCallback: (result) {
             estimate.value = result;
             update();

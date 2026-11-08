@@ -71,6 +71,14 @@ class PromotionEstimate {
   double tax = 0;
   double grandAmount = 0;
 
+  // pay-per-result billing: the advertiser pays only for results of the chosen goal
+  bool payPerResult = false;
+  String resultLabel = '';
+  double pricePerResult = 0;
+  int? resultsMax;
+  String billingNote = '';
+  String currencySymbol = '\$';
+
   PromotionEstimate();
 
   factory PromotionEstimate.fromJson(dynamic json) {
@@ -84,6 +92,15 @@ class PromotionEstimate {
     model.reachMax =
         json['reach_max'] == null ? null : _toInt(json['reach_max']);
     model.error = json['error']?.toString();
+    model.payPerResult = (json['billing'] ?? '').toString() == 'result';
+    model.resultLabel = (json['result_label'] ?? '').toString();
+    model.pricePerResult = _toDouble(json['price_per_result']);
+    model.resultsMax =
+        json['results_max'] == null ? null : _toInt(json['results_max']);
+    model.billingNote = (json['billing_note'] ?? '').toString();
+    if (json['currency_symbol'] != null) {
+      model.currencySymbol = json['currency_symbol'].toString();
+    }
     var pricing = json['pricing'];
     if (pricing is Map) {
       model.totalAmount = _toDouble(pricing['total_amount']);

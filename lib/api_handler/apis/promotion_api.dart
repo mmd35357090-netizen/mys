@@ -172,9 +172,10 @@ class PromotionApi {
       {required double dailyBudget,
       required int duration,
       int? audienceId,
+      int goal = 1,
       required Function(PromotionEstimate) estimateCallback}) async {
     String url =
-        '${NetworkConstantsUtil.promotionEstimate}?amount=${dailyBudget.round()}&duration=$duration';
+        '${NetworkConstantsUtil.promotionEstimate}?amount=${dailyBudget.round()}&duration=$duration&goal=$goal';
     if (audienceId != null) {
       url = '$url&audience_id=$audienceId';
     }

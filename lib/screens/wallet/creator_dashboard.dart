@@ -126,10 +126,24 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
         const SizedBox(height: 2),
         BodySmallText(change, color: changeColor),
         const SizedBox(height: 14),
+        if (_i(b['held_coins']) > 0) ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10)),
+            child: BodySmallText(
+                '${_n.format(_i(b['held_coins']))} coins you earned in the last ${_i(b['hold_days'])} days can be turned into dollars after that waiting time.'),
+          ),
+        ],
         Row(children: [
           _stat('Coin balance', _n.format(_i(b['coins']))),
           _stat('Can withdraw', _usd(_i(b['redeemable_coins']), pc),
-              sub: '${_n.format(_i(b['redeemable_coins']))} coins'),
+              sub: _f(b['withdraw_min_usd']) > 0
+                  ? '${_n.format(_i(b['redeemable_coins']))} coins, min \$${_f(b['withdraw_min_usd']).toStringAsFixed(0)}'
+                  : '${_n.format(_i(b['redeemable_coins']))} coins'),
         ]),
       ]),
     );

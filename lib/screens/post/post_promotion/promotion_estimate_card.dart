@@ -27,7 +27,51 @@ class PromotionEstimateCard extends StatelessWidget {
         init: _promotionController,
         builder: (ctx) {
           final estimate = _promotionController.estimate.value;
-          if (estimate == null || !estimate.available) {
+          if (estimate == null) {
+            return const SizedBox();
+          }
+
+          // Pay-per-result: the advertiser pays only when the goal is reached.
+          if (estimate.payPerResult) {
+            final String max = estimate.resultsMax == null
+                ? ''
+                : 'Up to ${_format(estimate.resultsMax!)} ${estimate.resultLabel}';
+            final String price =
+                '${estimate.currencySymbol}${estimate.pricePerResult.toStringAsFixed(estimate.pricePerResult < 0.1 ? 3 : 2)}';
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColorConstants.cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColorConstants.borderColor),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BodySmallText(
+                    'You pay only for results',
+                    color: AppColorConstants.subHeadingTextColor,
+                  ),
+                  const SizedBox(height: 4),
+                  Heading5Text(
+                      max.isEmpty ? '$price per ${estimate.resultLabel}' : max,
+                      weight: TextWeight.semiBold),
+                  const SizedBox(height: 4),
+                  if (max.isNotEmpty)
+                    BodySmallText('$price for each different person',
+                        color: AppColorConstants.subHeadingTextColor),
+                  const SizedBox(height: 6),
+                  BodyExtraSmallText(
+                    estimate.billingNote,
+                    color: AppColorConstants.subHeadingTextColor,
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (!estimate.available) {
             return const SizedBox();
           }
 
