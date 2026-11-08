@@ -3,6 +3,7 @@ import 'package:foap/screens/settings_menu/creator_tools/my_subscribers.dart';
 import 'package:foap/screens/settings_menu/creator_tools/subscription_plan.dart';
 import 'package:foap/screens/settings_menu/settings_controller.dart';
 
+import 'package:foap/screens/wallet/creator_dashboard.dart';
 import 'account_verification/request_verification.dart';
 import 'not_elegible_for_subscription.dart';
 
@@ -35,6 +36,9 @@ class _CreatorToolsState extends State<CreatorTools> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
+                        addTileEvent('Creator dashboard', () {
+                          Get.to(() => const CreatorDashboardScreen());
+                        }, true),
                         addTileEvent(subscriptionString.tr, () {
                           if (_userProfileManager
                               .user.value!.isEligibleForSubscription) {

@@ -69,3 +69,19 @@ class CreatorStatusApi {
     });
   }
 }
+
+class CreatorDashboardApi {
+  static Future getDashboard(
+      {required Function(Map<String, dynamic>) resultCallback,
+      Function()? errorCallback}) async {
+    await ApiWrapper()
+        .getApi(url: NetworkConstantsUtil.creatorDashboard)
+        .then((response) {
+      if (response?.success == true && response!.data != null) {
+        resultCallback(Map<String, dynamic>.from(response.data as Map));
+      } else if (errorCallback != null) {
+        errorCallback();
+      }
+    });
+  }
+}

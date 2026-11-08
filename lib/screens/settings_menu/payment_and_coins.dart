@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/wallet/coin_history.dart';
+import 'package:foap/screens/wallet/creator_dashboard.dart';
 import 'package:foap/screens/wallet/creator_earnings.dart';
 
 class PaymentAndCoins extends StatefulWidget {
@@ -40,6 +41,9 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                     }),
                     addTileEvent(coinHistoryString.tr, () {
                       Get.to(() => const CoinHistoryScreen());
+                    }),
+                    addTileEvent('Creator dashboard', () {
+                      Get.to(() => const CreatorDashboardScreen());
                     }),
                     addTileEvent('Ad earnings', () {
                       Get.to(() => const CreatorEarningsScreen());

@@ -325,6 +325,7 @@ class NetworkConstantsUtil {
   static String coinHistory = 'payments/coin-history';
   static String creatorAdImpression = 'creator-pool/impression';
   static String creatorPoolStatus = 'creator-pool/status';
+  static String creatorDashboard = 'creator-pool/dashboard';
   static String rewardedAdCoins = 'posts/promotion-ad-view';
 
   //***********Dating***********//
