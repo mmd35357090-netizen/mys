@@ -389,15 +389,22 @@ class PostCardState extends State<PostCard> {
         child: Container(
             // Full-bleed card separated from its neighbours by a soft
             // gap and hairline borders (feed-style, no harsh dividers).
-            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+            clipBehavior: Clip.antiAlias,
+            margin: const EdgeInsets.fromLTRB(8, 4, 8, 10),
             padding: const EdgeInsets.only(
                 top: AppSpacing.md, bottom: AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColorConstants.backgroundColor,
-              border: Border.symmetric(
-                horizontal: BorderSide(
-                    color: AppColorConstants.borderColor, width: 0.5),
-              ),
+              color: AppColorConstants.cardColor,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                  color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                  width: 0.6),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6)),
+              ],
             ),
             child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -618,135 +625,131 @@ class PostCardState extends State<PostCard> {
     }
   }
 
+  Widget _actionChip({
+    required Widget icon,
+    String? label,
+    Color? tint,
+    VoidCallback? onTap,
+    VoidCallback? onLabelTap,
+  }) {
+    final Color base = tint ?? AppColorConstants.iconColor;
+    return Material(
+      color: base.withValues(alpha: 0.10),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              icon,
+              if (label != null) ...[
+                const SizedBox(width: 6),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onLabelTap ?? onTap,
+                  child: BodyMediumText(
+                    label,
+                    weight: TextWeight.semiBold,
+                    color: AppColorConstants.mainTextColor,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget commentAndLikeWidget() {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Obx(() => ThemeIconWidget(
-                    postCardController.likedPosts.contains(widget.model) ||
-                            widget.model.isLike
-                        ? ThemeIcon.favFilled
-                        : ThemeIcon.fav,
-                    color: postCardController.likedPosts
-                                .contains(widget.model) ||
-                            widget.model.isLike
-                        ? AppColorConstants.red
-                        : AppColorConstants.iconColor,
-                    size: 15,
-                  ).ripple(() {
-                    postCardController.likeUnlikePost(
-                      post: widget.model,
-                    );
-                  })),
-              const SizedBox(
-                width: 5,
+          Obx(() {
+            final bool liked =
+                postCardController.likedPosts.contains(widget.model) ||
+                    widget.model.isLike;
+            int totalLikes = widget.model.totalLike;
+            if (postCardController.likedPosts.contains(widget.model)) {
+              totalLikes = postCardController.likedPosts
+                  .where((e) => e.id == widget.model.id)
+                  .first
+                  .totalLike;
+            }
+            return AnimatedScale(
+              scale: liked ? 1.0 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: _actionChip(
+                tint: liked ? AppColorConstants.red : null,
+                icon: ThemeIconWidget(
+                  liked ? ThemeIcon.favFilled : ThemeIcon.fav,
+                  color: liked
+                      ? AppColorConstants.red
+                      : AppColorConstants.iconColor,
+                  size: 18,
+                ),
+                label: '$totalLikes',
+                onTap: () {
+                  postCardController.likeUnlikePost(post: widget.model);
+                },
+                onLabelTap: () {
+                  Get.to(() => LikedByUsers(postId: widget.model.id));
+                },
               ),
-              Obx(() {
-                int totalLikes = 0;
-                if (postCardController.likedPosts.contains(widget.model)) {
-                  PostModel post = postCardController.likedPosts
-                      .where((e) => e.id == widget.model.id)
-                      .first;
-                  totalLikes = post.totalLike;
-                } else {
-                  totalLikes = widget.model.totalLike;
-                }
-                return BodyMediumText(
-                  '$totalLikes',
-                  color: AppColorConstants.mainTextColor,
-                ).ripple(() {
-                  Get.to(() => LikedByUsers(
-                        postId: widget.model.id,
-                      ));
-                });
-              }),
-            ],
-          ),
+            );
+          }),
           if (widget.model.commentsEnabled)
-            Row(
-              children: [
-                ThemeIconWidget(
-                  ThemeIcon.message,
-                  size: 15,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                BodyMediumText(
-                  '${widget.model.totalComment}',
-                  color: AppColorConstants.mainTextColor,
-                ).ripple(() {
-                  openComments();
-                }),
-              ],
-            ).ripple(() {
-              openComments();
-            }),
-          Row(
-            children: [
-              ThemeIconWidget(
-                ThemeIcon.eye,
-                size: 15,
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              BodyMediumText(
-                '${widget.model.totalView}',
-                // weight: TextWeight.semiBold,
-                color: AppColorConstants.mainTextColor,
-              ),
-            ],
+            _actionChip(
+              icon: ThemeIconWidget(ThemeIcon.message, size: 18),
+              label: '${widget.model.totalComment}',
+              onTap: () {
+                openComments();
+              },
+            ),
+          _actionChip(
+            icon: ThemeIconWidget(ThemeIcon.eye, size: 18),
+            label: '${widget.model.totalView}',
           ),
           if (widget.model.sharedPost == null)
-            Row(
-              children: [
-                ThemeIconWidget(
-                  ThemeIcon.share,
-                  size: 15,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                BodyMediumText(
-                  '${widget.model.totalShare}',
-                  color: AppColorConstants.mainTextColor,
-                )
-              ],
-            ).ripple(() {
-              showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) => FractionallySizedBox(
-                      heightFactor: 0.95,
-                      child: SharePost(post: widget.model)));
-            }),
+            _actionChip(
+              icon: ThemeIconWidget(ThemeIcon.share, size: 18),
+              label: '${widget.model.totalShare}',
+              onTap: () {
+                showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => FractionallySizedBox(
+                        heightFactor: 0.95,
+                        child: SharePost(post: widget.model)));
+              },
+            ),
           if (!widget.model.isMyPost &&
               widget.model.user.role != UserRole.admin)
-            Row(
-              children: [
-                ThemeIconWidget(
-                  ThemeIcon.gift,
-                  size: 15,
-                ),
-              ],
-            ).ripple(() {
-              showModalBottomSheet<void>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return FractionallySizedBox(
-                        heightFactor: 0.8,
-                        child:
-                            GiftsPageView(giftSelectedCompletion: (gift) {
-                          Get.back();
-                          homeController.sendPostGift(
-                              gift, widget.model.user.id, widget.model.id);
-                        }));
-                  });
-            }),
+            _actionChip(
+              tint: const Color(0xFFF59E0B),
+              icon: ThemeIconWidget(
+                ThemeIcon.gift,
+                size: 18,
+                color: const Color(0xFFF59E0B),
+              ),
+              onTap: () {
+                showModalBottomSheet<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return FractionallySizedBox(
+                          heightFactor: 0.8,
+                          child: GiftsPageView(giftSelectedCompletion: (gift) {
+                            Get.back();
+                            homeController.sendPostGift(
+                                gift, widget.model.user.id, widget.model.id);
+                          }));
+                    });
+              },
+            ),
 
           if (widget.model.contentType == PostContentType.event &&
               widget.model.event != null)

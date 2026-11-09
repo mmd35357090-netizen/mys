@@ -33,15 +33,38 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
   Widget _card({required Widget child}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: AppColorConstants.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColorConstants.dividerColor),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.6)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 5))
+        ],
       ),
       child: child,
     );
+  }
+
+  Widget _heading(IconData icon, Color color, String text, {Widget? trailing}) {
+    return Row(children: [
+      Container(
+        height: 38,
+        width: 38,
+        decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(13)),
+        child: Icon(icon, color: color, size: 20),
+      ),
+      const SizedBox(width: 12),
+      Expanded(child: Heading5Text(text, weight: TextWeight.bold)),
+      if (trailing != null) trailing,
+    ]);
   }
 
   Widget _progress(String label, int value, int needed) {
@@ -65,7 +88,7 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
           borderRadius: BorderRadius.circular(6),
           child: LinearProgressIndicator(
               value: ratio,
-              minHeight: 8,
+              minHeight: 10,
               color: done ? Colors.green : AppColorConstants.themeColor,
               backgroundColor: AppColorConstants.dividerColor),
         ),
@@ -82,8 +105,8 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _card(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Heading5Text('How it works', weight: TextWeight.bold),
-          const SizedBox(height: 8),
+          _heading(Icons.lightbulb_rounded, const Color(0xFFF2994A), 'How it works'),
+          const SizedBox(height: 12),
           BodyLargeText(
               '${s.googleEnabled ? 'Google ads: ${s.sharePercent.toStringAsFixed(0)}% of the real ad revenue is shared with eligible creators every month. ' : ''}'
               '${s.ownEnabled ? 'In-app promotions: ${s.ownSharePercent.toStringAsFixed(0)}% of the money advertisers really spend goes to a separate creator pool. ' : ''}'
@@ -93,20 +116,21 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
       ),
       _card(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(
-                child: Heading5Text('Your eligibility', weight: TextWeight.bold)),
-            Container(
+          _heading(
+            Icons.verified_user_rounded,
+            const Color(0xFF2E9E6B),
+            'Your eligibility',
+            trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                   color: (s.eligible ? Colors.green : Colors.orange)
-                      .withOpacity(0.15),
+                      .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20)),
               child: BodySmallText(s.eligible ? 'Eligible' : 'Not yet',
                   color: s.eligible ? Colors.green : Colors.orange,
                   weight: TextWeight.semiBold),
             ),
-          ]),
+          ),
           const SizedBox(height: 12),
           _progress('Followers', s.followers, s.followersNeeded),
           _progress('Posts', s.posts, s.postsNeeded),
@@ -115,8 +139,8 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
       ),
       _card(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Heading5Text('This month', weight: TextWeight.bold),
-          const SizedBox(height: 12),
+          _heading(Icons.insights_rounded, AppColorConstants.themeColor, 'This month'),
+          const SizedBox(height: 14),
           Row(children: [
             _stat('${s.thisMonthPoints}', 'Points'),
             _stat('${s.todayPoints}', 'Today'),
@@ -144,8 +168,15 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
       if (s.lastPayoutCoins > 0)
         _card(
           child: Row(children: [
-            const Icon(Icons.payments_outlined, color: Colors.green),
-            const SizedBox(width: 10),
+            Container(
+              height: 38,
+              width: 38,
+              decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(13)),
+              child: const Icon(Icons.payments_rounded, color: Colors.green, size: 20),
+            ),
+            const SizedBox(width: 12),
             Expanded(
                 child: BodyLargeText(
                     'Last payout: ${s.lastPayoutCoins} coins'
@@ -158,10 +189,17 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
 
   Widget _stat(String value, String label) {
     return Expanded(
-      child: Column(children: [
-        Heading3Text(value, weight: TextWeight.bold),
-        BodySmallText(label, color: AppColorConstants.subHeadingTextColor),
-      ]),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+            color: AppColorConstants.themeColor.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(14)),
+        child: Column(children: [
+          Heading3Text(value, weight: TextWeight.bold),
+          BodySmallText(label, color: AppColorConstants.subHeadingTextColor),
+        ]),
+      ),
     );
   }
 

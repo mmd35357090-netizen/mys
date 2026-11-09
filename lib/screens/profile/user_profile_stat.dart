@@ -12,78 +12,72 @@ class UserProfileStatistics extends StatelessWidget {
     return statsView();
   }
 
+  Widget _stat(String value, String label, VoidCallback onTap) {
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Heading4Text(value, weight: TextWeight.bold),
+              const SizedBox(height: 4),
+              BodySmallText(
+                label,
+                color: AppColorConstants.subHeadingTextColor,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _divider() => Container(
+        width: 1,
+        height: 30,
+        color: AppColorConstants.dividerColor.withValues(alpha: 0.7),
+      );
+
   Widget statsView() {
     return Container(
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 16,
+              offset: const Offset(0, 6)),
+        ],
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Heading4Text(
-                user.totalPost.toString(),
-              ).bP8,
-              BodySmallText(
-                postsString.tr,
-              ),
-            ],
-          ).ripple(() {
+          _stat(user.totalPost.toString(), postsString.tr, () {
             if (user.totalPost > 0) {
-              Get.to(() => Posts(
-                    userId: user.id,
-                    title: user.userName,
-                  ));
+              Get.to(() => Posts(userId: user.id, title: user.userName));
             }
           }),
-          // const SizedBox(
-          //   width: 20,
-          // ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Heading4Text(
-                '${user.totalFollower}',
-              ).bP8,
-              BodySmallText(
-                followersString.tr,
-              ),
-            ],
-          ).ripple(() {
+          _divider(),
+          _stat('${user.totalFollower}', followersString.tr, () {
             if (user.totalFollower > 0) {
               Get.to(() => FollowerFollowingList(
-                        isFollowersList: true,
-                        userId: user.id,
-                      ))!
-                  .then((value) {
-                // initialLoad();
-              });
+                  isFollowersList: true, userId: user.id));
             }
           }),
-
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Heading4Text(
-                '${user.totalFollowing}',
-              ).bP8,
-              BodySmallText(
-                followingString.tr,
-              ),
-            ],
-          ).ripple(() {
+          _divider(),
+          _stat('${user.totalFollowing}', followingString.tr, () {
             if (user.totalFollowing > 0) {
               Get.to(() => FollowerFollowingList(
-                        isFollowersList: false,
-                        userId: user.id,
-                      ))!
-                  .then((value) {
-                // initialLoad();
-              });
+                  isFollowersList: false, userId: user.id));
             }
           }),
         ],
-      ).p16,
-    ).round(15);
+      ),
+    );
   }
 }

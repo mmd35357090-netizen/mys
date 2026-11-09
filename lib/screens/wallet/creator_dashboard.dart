@@ -53,21 +53,50 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
   Widget _card({required Widget child, VoidCallback? onTap}) {
     final c = Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: AppColorConstants.cardColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColorConstants.dividerColor),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.6)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 5))
+        ],
       ),
       child: child,
     );
-    return onTap == null ? c : InkWell(onTap: onTap, child: c);
+    return onTap == null
+        ? c
+        : GestureDetector(onTap: onTap, behavior: HitTestBehavior.opaque, child: c);
+  }
+
+  Widget _iconBubble(IconData icon, Color color, {double size = 40}) {
+    return Container(
+      height: size,
+      width: size,
+      decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(size / 2.8)),
+      child: Icon(icon, color: color, size: size * 0.5),
+    );
   }
 
   Widget _title(String t) => Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: 6),
-      child: Heading6Text(t, weight: TextWeight.bold));
+      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      child: Row(children: [
+        Container(
+            width: 4,
+            height: 18,
+            decoration: BoxDecoration(
+                color: AppColorConstants.themeColor,
+                borderRadius: BorderRadius.circular(2))),
+        const SizedBox(width: 8),
+        Heading6Text(t, weight: TextWeight.bold),
+      ]));
 
   Widget _stat(String label, String value, {String? sub}) {
     return Expanded(
@@ -75,8 +104,8 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: AppColorConstants.themeColor.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(12),
+          color: AppColorConstants.themeColor.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           BodySmallText(label, color: AppColorConstants.subHeadingTextColor),
@@ -108,40 +137,90 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
     } else {
       change = last30 > 0 ? 'First earnings in the last 30 days' : 'No earnings in the last 30 days';
     }
-    return _card(
+    final Color base = AppColorConstants.themeColor;
+    Widget heroStat(String label, String value, String? sub) => Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(14)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              BodySmallText(label, color: Colors.white.withValues(alpha: 0.85)),
+              const SizedBox(height: 4),
+              Heading6Text(value, color: Colors.white, weight: TextWeight.bold),
+              if (sub != null) ...[
+                const SizedBox(height: 2),
+                BodySmallText(sub, color: Colors.white.withValues(alpha: 0.8)),
+              ],
+            ]),
+          ),
+        );
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [base, base.withValues(alpha: 0.7)]),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+              color: base.withValues(alpha: 0.3),
+              blurRadius: 22,
+              offset: const Offset(0, 10))
+        ],
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        BodyMediumText('Total earned',
-            color: AppColorConstants.subHeadingTextColor),
-        const SizedBox(height: 4),
-        Heading3Text('${_n.format(total)} coins', weight: TextWeight.bold),
+        BodyMediumText('Total earned', color: Colors.white.withValues(alpha: 0.85)),
+        const SizedBox(height: 6),
+        Heading2Text('${_n.format(total)} coins',
+            color: Colors.white, weight: TextWeight.bold),
         BodyMediumText('about ${_usd(total, pc)}',
-            color: AppColorConstants.subHeadingTextColor),
-        const SizedBox(height: 10),
-        Row(children: [
-          BodyLargeText('${_n.format(last30)} coins',
-              weight: TextWeight.medium),
-          const SizedBox(width: 8),
-          Expanded(child: BodySmallText('last 30 days', color: AppColorConstants.subHeadingTextColor)),
-        ]),
-        const SizedBox(height: 2),
-        BodySmallText(change, color: changeColor),
+            color: Colors.white.withValues(alpha: 0.9)),
         const SizedBox(height: 14),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(30)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(
+                prev30 > 0 && last30 < prev30
+                    ? Icons.trending_down_rounded
+                    : Icons.trending_up_rounded,
+                size: 18,
+                color: Colors.white),
+            const SizedBox(width: 6),
+            Flexible(
+              child: BodySmallText(
+                  '${_n.format(last30)} coins in 30 days  ·  $change',
+                  color: Colors.white),
+            ),
+          ]),
+        ),
+        const SizedBox(height: 16),
         if (_i(b['held_coins']) > 0) ...[
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10)),
+                color: Colors.black.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(12)),
             child: BodySmallText(
-                '${_n.format(_i(b['held_coins']))} coins you earned in the last ${_i(b['hold_days'])} days can be turned into dollars after that waiting time.'),
+                '${_n.format(_i(b['held_coins']))} coins you earned in the last ${_i(b['hold_days'])} days can be turned into dollars after that waiting time.',
+                color: Colors.white),
           ),
         ],
         Row(children: [
-          _stat('Coin balance', _n.format(_i(b['coins']))),
-          _stat('Can withdraw', _usd(_i(b['redeemable_coins']), pc),
-              sub: _f(b['withdraw_min_usd']) > 0
+          heroStat('Coin balance', _n.format(_i(b['coins'])), null),
+          heroStat(
+              'Can withdraw',
+              _usd(_i(b['redeemable_coins']), pc),
+              _f(b['withdraw_min_usd']) > 0
                   ? '${_n.format(_i(b['redeemable_coins']))} coins, min \$${_f(b['withdraw_min_usd']).toStringAsFixed(0)}'
                   : '${_n.format(_i(b['redeemable_coins']))} coins'),
         ]),
@@ -181,7 +260,7 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
                         color: _i(_m(x)['coins']) > 0
                             ? AppColorConstants.themeColor
                             : AppColorConstants.themeColor.withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                   ),
@@ -256,6 +335,8 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
       Expanded(
         child: _card(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            _iconBubble(Icons.card_giftcard_rounded, const Color(0xFFE84393)),
+            const SizedBox(height: 10),
             BodySmallText('Gifts received', color: AppColorConstants.subHeadingTextColor),
             const SizedBox(height: 4),
             Heading5Text(_n.format(_i(g['count'])), weight: TextWeight.bold),
@@ -270,6 +351,8 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
       Expanded(
         child: _card(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            _iconBubble(Icons.workspace_premium_rounded, const Color(0xFF6C63FF)),
+            const SizedBox(height: 10),
             BodySmallText('Subscribers', color: AppColorConstants.subHeadingTextColor),
             const SizedBox(height: 4),
             Heading5Text(_n.format(_i(s['active'])), weight: TextWeight.bold),
@@ -351,13 +434,16 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
       required String text,
       required String chipText,
       required Color chipColor,
+      IconData icon = Icons.paid_rounded,
       double? progress,
       VoidCallback? onTap}) {
     return _card(
       onTap: onTap,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: BodyLargeText(title, weight: TextWeight.medium)),
+          _iconBubble(icon, chipColor, size: 38),
+          const SizedBox(width: 12),
+          Expanded(child: BodyLargeText(title, weight: TextWeight.semiBold)),
           _chip(chipText, chipColor),
         ]),
         const SizedBox(height: 6),
@@ -402,12 +488,14 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
       _title('Ways to earn'),
       _program(
         title: 'Gifts',
+        icon: Icons.card_giftcard_rounded,
         text: 'Fans send you gifts on your posts and live streams. Gifts turn into coins you can withdraw.',
         chipText: 'Active',
         chipColor: Colors.green,
       ),
       _program(
         title: 'Subscriptions',
+        icon: Icons.workspace_premium_rounded,
         text: subOk
             ? 'Set your price and earn coins from every subscriber.'
             : 'Reach the follower, post and view goals to unlock subscriptions.',
@@ -424,6 +512,7 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
       ),
       _program(
         title: 'Ad revenue share',
+        icon: Icons.ads_click_rounded,
         text: !adOn
             ? 'Not running at the moment.'
             : adOk
@@ -438,6 +527,7 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
       ),
       _program(
         title: 'Competition prizes',
+        icon: Icons.emoji_events_rounded,
         text: 'Win competitions and prize coins are added to your balance.',
         chipText: 'Active',
         chipColor: Colors.green,

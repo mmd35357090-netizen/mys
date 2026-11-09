@@ -456,13 +456,29 @@ Widget _filterButton(String title, int index, int selected) {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColorConstants.themeColor
-              : const Color(0xFFCBD5D9),
+              : AppColorConstants.cardColor,
           borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+              color: isSelected
+                  ? AppColorConstants.themeColor
+                  : AppColorConstants.dividerColor),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                      color: AppColorConstants.themeColor
+                          .withValues(alpha: 0.30),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4))
+                ]
+              : null,
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
+            color: isSelected
+                ? Colors.white
+                : AppColorConstants.mainTextColor,
+            fontWeight: FontWeight.w600,
             fontSize: 15,
           ),
         ),
