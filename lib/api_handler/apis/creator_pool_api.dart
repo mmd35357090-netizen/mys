@@ -25,6 +25,10 @@ class CreatorStatus {
   int accountDays = 0, accountDaysNeeded = 0;
   int thisMonthPoints = 0, todayPoints = 0, allCreatorsPoints = 0;
   double shareOfPoolPercent = 0;
+  // in-app promotion pool (separate from the Google ads pool)
+  bool googleEnabled = true, ownEnabled = false;
+  double ownSharePercent = 0, ownShareOfPoolPercent = 0;
+  int ownThisMonthPoints = 0, ownTodayPoints = 0, ownAllCreatorsPoints = 0;
   int lastPayoutCoins = 0;
   int lastPayoutTime = 0;
 
@@ -46,6 +50,13 @@ class CreatorStatus {
     todayPoints = _i(json['today_points']);
     allCreatorsPoints = _i(json['all_creators_points']);
     shareOfPoolPercent = _d(json['share_of_pool_percent']);
+    googleEnabled = json['google_enabled'] != false;
+    ownEnabled = json['own_enabled'] == true;
+    ownSharePercent = _d(json['own_share_percent']);
+    ownThisMonthPoints = _i(json['own_this_month_points']);
+    ownTodayPoints = _i(json['own_today_points']);
+    ownAllCreatorsPoints = _i(json['own_all_creators_points']);
+    ownShareOfPoolPercent = _d(json['own_share_of_pool_percent']);
     if (json['last_payout'] is Map) {
       lastPayoutCoins = _i(json['last_payout']['coins']);
       lastPayoutTime = _i(json['last_payout']['time']);

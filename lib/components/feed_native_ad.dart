@@ -75,11 +75,11 @@ class _FeedNativeAdState extends State<FeedNativeAd> {
     if (_ad == null || !_loaded) {
       return const SizedBox.shrink();
     }
-    // The medium template is about 0.95 x its width tall. A fixed tall box left a big empty
-    // gap under the ad, so the height follows the width (a little extra so the button is never cut).
+    // AdMob's medium template needs at least about 355 dp of height; a smaller box makes AdMob refuse
+    // to draw the ad. So the height follows the width but never goes below 360.
     return LayoutBuilder(builder: (context, c) {
       final double w = (c.maxWidth.isFinite ? c.maxWidth : MediaQuery.of(context).size.width) - 16;
-      final double h = (w * 0.97).clamp(300.0, 400.0).toDouble();
+      final double h = w.clamp(360.0, 420.0).toDouble();
       return Container(
         height: h,
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),

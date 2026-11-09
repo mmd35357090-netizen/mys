@@ -427,7 +427,7 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
         text: !adOn
             ? 'Not running at the moment.'
             : adOk
-                ? 'You share ${_f(ad['share_percent']).toStringAsFixed(0)}% of the ad revenue with other creators. This month: ${_n.format(_i(ad['this_month_points']))} points.'
+                ? 'Creators share the ad revenue (Google ads and in-app promotions). This month: ${_n.format(_i(ad['this_month_points']))} points in total.'
                 : 'Reach the follower, post and account-age goals to join the ad revenue share.',
         chipText: !adOn ? 'Off' : (adOk ? 'Eligible' : '${(adRatio * 100).round()}% done'),
         chipColor: !adOn

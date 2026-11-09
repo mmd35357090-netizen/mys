@@ -85,9 +85,10 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
           Heading5Text('How it works', weight: TextWeight.bold),
           const SizedBox(height: 8),
           BodyLargeText(
-              'The app shows ads in the feed. ${s.sharePercent.toStringAsFixed(0)}% of the real ad revenue is shared with eligible creators every month. '
-              'You get a point when a different person sees an ad next to your post (one point per person per day). '
-              'At the end of the month the shared amount is divided by points and paid to you as coins that you can convert to dollars.'),
+              '${s.googleEnabled ? 'Google ads: ${s.sharePercent.toStringAsFixed(0)}% of the real ad revenue is shared with eligible creators every month. ' : ''}'
+              '${s.ownEnabled ? 'In-app promotions: ${s.ownSharePercent.toStringAsFixed(0)}% of the money advertisers really spend goes to a separate creator pool. ' : ''}'
+              'You get a point when a different person sees an ad right after looking at your post (one point per person per day, in each pool). '
+              'At the end of the month each pool is divided by points and paid to you as coins that you can convert to dollars.'),
         ]),
       ),
       _card(
@@ -121,10 +122,21 @@ class _CreatorEarningsScreenState extends State<CreatorEarningsScreen> {
             _stat('${s.todayPoints}', 'Today'),
             _stat('${s.shareOfPoolPercent.toStringAsFixed(1)}%', 'Your share'),
           ]),
+          if (s.ownEnabled) ...[
+            const SizedBox(height: 12),
+            BodySmallText('In-app promotions',
+                color: AppColorConstants.subHeadingTextColor),
+            const SizedBox(height: 6),
+            Row(children: [
+              _stat('${s.ownThisMonthPoints}', 'Points'),
+              _stat('${s.ownTodayPoints}', 'Today'),
+              _stat('${s.ownShareOfPoolPercent.toStringAsFixed(1)}%', 'Your share'),
+            ]),
+          ],
           const SizedBox(height: 10),
           BodySmallText(
               s.eligible
-                  ? 'Your share is your points divided by the points of all creators (${s.allCreatorsPoints}). The final amount depends on what the ads really earn this month.'
+                  ? 'Your share is your points divided by the points of all creators in the same pool (Google ads: ${s.allCreatorsPoints}${s.ownEnabled ? ', in-app promotions: ${s.ownAllCreatorsPoints}' : ''}). The final amount depends on what the ads really earn this month.'
                   : 'Points are paid only when you are eligible at the end of the month.',
               color: AppColorConstants.subHeadingTextColor),
         ]),
