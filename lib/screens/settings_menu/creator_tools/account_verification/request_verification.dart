@@ -224,9 +224,9 @@ class _RequestVerificationState extends State<RequestVerification> {
                             _requestVerificationController
                                 .setSelectedDocumentType(
                                     passportString.tr);
-                          } else if (value == NIDCardString.tr) {
+                          } else if (value == panCardString.tr) {
                             _requestVerificationController
-                                .setSelectedDocumentType(NIDCardString.tr);
+                                .setSelectedDocumentType(panCardString.tr);
                           } else if (value == otherString.tr) {
                             _requestVerificationController
                                 .setSelectedDocumentType(otherString.tr);
