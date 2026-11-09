@@ -1,6 +1,8 @@
 import 'package:foap/helper/imports/common_import.dart';
 import '../../../controllers/post/promotion_controller.dart';
+import '../../../model/post_promotion_model.dart';
 import 'promotion_estimate_card.dart';
+import 'promotion_ui.dart';
 
 class PromotionReviewScreen extends StatelessWidget {
   PromotionReviewScreen({super.key});
@@ -40,11 +42,7 @@ class PromotionReviewScreen extends StatelessWidget {
                           adPreview(order).hP16.bP16,
                           addReviewTile(
                                   adGoal.tr,
-                                  order.goalType == GoalType.profile
-                                      ? moreProfileVisits.tr
-                                      : order.goalType == GoalType.website
-                                          ? moreWebsiteVisits.tr
-                                          : moreMessages.tr)
+                                  promotionGoalText(goalTypeCode(order.goalType)))
                               .hP16,
                           addReviewTile(
                                   audience.tr,
@@ -107,14 +105,22 @@ class PromotionReviewScreen extends StatelessWidget {
       final g = post.gallery.first;
       imageUrl = (g.mediaType == 2 ? g.videoThumbnail : g.filePath);
     }
-    final bool isWebsite = order.goalType == GoalType.website;
-    final String buttonText = isWebsite
-        ? ((order.urlText == null || order.urlText.toString().isEmpty)
-            ? learnMore.tr
-            : order.urlText.toString())
-        : order.goalType == GoalType.message
-            ? sendMessagesString.tr
-            : viewProfileString.tr;
+    final GoalType? goal = order.goalType;
+    final bool hasOwnText =
+        order.urlText != null && order.urlText.toString().isNotEmpty;
+    final String buttonText = goal == GoalType.reach
+        ? ''
+        : (goal == GoalType.website || goal == GoalType.whatsapp || goal == GoalType.call)
+            ? (hasOwnText
+                ? order.urlText.toString()
+                : goal == GoalType.website
+                    ? learnMore.tr
+                    : goal == GoalType.whatsapp
+                        ? 'WhatsApp us'
+                        : 'Call now')
+            : goal == GoalType.message
+                ? sendMessagesString.tr
+                : viewProfileString.tr;
     final String caption = post == null ? '' : post.postTitle;
 
     return Container(
@@ -146,6 +152,7 @@ class PromotionReviewScreen extends StatelessWidget {
           Padding(
               padding: const EdgeInsets.all(10),
               child: BodyMediumText(caption, maxLines: 2)),
+        if (buttonText.isNotEmpty)
         Container(
           color: AppColorConstants.themeColor,
           padding: const EdgeInsets.all(8),

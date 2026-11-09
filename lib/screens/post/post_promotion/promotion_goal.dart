@@ -1,5 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import '../../../controllers/post/promotion_controller.dart';
+import 'goal_phone.dart';
 import 'goal_website_url.dart';
 
 class PromotionGoalScreen extends StatelessWidget {
@@ -49,6 +50,9 @@ class PromotionGoalScreen extends StatelessWidget {
               addCheckboxTile(moreProfileVisits.tr, GoalType.profile),
               addCheckboxTile(moreMessages.tr, GoalType.message),
               addCheckboxTile(moreWebsiteVisits.tr, GoalType.website),
+              addCheckboxTile('More WhatsApp chats', GoalType.whatsapp),
+              addCheckboxTile('More phone calls', GoalType.call),
+              addCheckboxTile('Only reach (show to more people)', GoalType.reach),
               Expanded(
                 child:
                     Column(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -92,6 +96,8 @@ class PromotionGoalScreen extends StatelessWidget {
     ).vP16.ripple(() {
       if (type == GoalType.website) {
         Get.to(() => GoalWebsiteUrl());
+      } else if (type == GoalType.whatsapp || type == GoalType.call) {
+        Get.to(() => GoalPhone(type: type));
       } else {
         _promotionController.selectGoalType(type);
       }

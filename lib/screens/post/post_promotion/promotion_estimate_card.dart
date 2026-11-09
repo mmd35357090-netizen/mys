@@ -36,8 +36,11 @@ class PromotionEstimateCard extends StatelessWidget {
             final String max = estimate.resultsMax == null
                 ? ''
                 : 'Up to ${_format(estimate.resultsMax!)} ${estimate.resultLabel}';
-            final String price =
-                '${estimate.currencySymbol}${estimate.pricePerResult.toStringAsFixed(estimate.pricePerResult < 0.1 ? 3 : 2)}';
+            // up to 4 decimals, without trailing zeros ($0.05, $0.0001)
+            String amount = estimate.pricePerResult.toStringAsFixed(4);
+            amount = amount.replaceFirst(RegExp(r'0+$'), '');
+            if (amount.endsWith('.')) amount = amount.substring(0, amount.length - 1);
+            final String price = '${estimate.currencySymbol}$amount';
             return Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),

@@ -23,6 +23,11 @@ class PromotionController extends GetxController {
   // Rx<PostModel?> promotingPost = Rx<PostModel?>(null);
   // Rx<GoalType?> goalType = Rx<GoalType?>(null);
   TextEditingController websiteUrl = TextEditingController();
+  // own text of the website button (empty = the chosen preset)
+  TextEditingController websiteButtonText = TextEditingController();
+  // phone number for the WhatsApp and Call goals (with the country code)
+  TextEditingController phoneNumber = TextEditingController();
+  TextEditingController phoneButtonText = TextEditingController();
   Rx<bool?> isValidWebsite = Rx<bool?>(null);
 
   PostPromotionOrderRequest order = PostPromotionOrderRequest();
@@ -131,6 +136,9 @@ class PromotionController extends GetxController {
 
   clearWebsiteData() {
     websiteUrl.text = '';
+    websiteButtonText.text = '';
+    phoneNumber.text = '';
+    phoneButtonText.text = '';
     isValidWebsite.value = null;
     actionSelected.value = 0;
   }
@@ -197,8 +205,31 @@ class PromotionController extends GetxController {
     if (isValidWebsite.value != true) return false;
     order.goalType = GoalType.website;
     order.url = websiteUrl.text.trim();
-    order.urlText = actionButtons[actionSelected.value];
+    final String own = websiteButtonText.text.trim();
+    order.urlText = own.isNotEmpty ? own : actionButtons[actionSelected.value];
     update();
+    refreshEstimate();
+    return true;
+  }
+
+  /// Digits of the phone number, with the country code. Empty when it is not a valid number.
+  String phoneDigits() {
+    final String digits = phoneNumber.text.replaceAll(RegExp(r'[^0-9]'), '');
+    return (digits.length >= 7 && digits.length <= 15) ? digits : '';
+  }
+
+  /// Done button of the WhatsApp / Call screen. Returns true when the number is valid.
+  bool confirmPhoneGoal(GoalType type) {
+    final String digits = phoneDigits();
+    if (digits.isEmpty) return false;
+    order.goalType = type;
+    order.url = digits;
+    final String own = phoneButtonText.text.trim();
+    order.urlText = own.isNotEmpty
+        ? own
+        : (type == GoalType.whatsapp ? 'WhatsApp us' : 'Call now');
+    update();
+    refreshEstimate();
     return true;
   }
 
@@ -387,11 +418,7 @@ class PromotionController extends GetxController {
           dailyBudget: order.dailyBudget,
           duration: order.duration,
           audienceId: order.audience?.id,
-          goal: order.goalType == GoalType.website
-              ? 4
-              : order.goalType == GoalType.message
-                  ? 2
-                  : 1,
+          goal: goalTypeCode(order.goalType),
           estimateCallback: (result) {
             estimate.value = result;
             update();

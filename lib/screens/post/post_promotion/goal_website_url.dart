@@ -37,6 +37,17 @@ class GoalWebsiteUrl extends StatelessWidget {
                       .tP4,
                   Heading6Text(buttonAction.tr, weight: TextWeight.semiBold)
                       .tP16,
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    controller: _promotionController.websiteButtonText,
+                    hintText: 'Write your own, e.g. Download app',
+                    maxLength: 30,
+                  ),
+                  BodyExtraSmallText(
+                          'Leave empty to use one of the buttons below',
+                          weight: TextWeight.semiBold,
+                          color: AppColorConstants.subHeadingTextColor)
+                      .tP4,
                 ]).hP16,
                 Expanded(
                   child: ListView.builder(
@@ -87,6 +98,7 @@ class GoalWebsiteUrl extends StatelessWidget {
             .lP4,
       ],
     ).vP16.ripple(() {
+      _promotionController.websiteButtonText.text = '';
       _promotionController.selectAction(index);
     });
   }

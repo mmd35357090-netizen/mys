@@ -2,6 +2,41 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/audience_model.dart';
 import 'package:foap/model/post_model.dart';
 
+/// Goal codes used by the server: 1 profile, 2 message, 4 website, 5 WhatsApp, 6 call, 7 only reach.
+GoalType goalTypeFromCode(dynamic code) {
+  switch (int.tryParse('$code') ?? 1) {
+    case 2:
+      return GoalType.message;
+    case 4:
+      return GoalType.website;
+    case 5:
+      return GoalType.whatsapp;
+    case 6:
+      return GoalType.call;
+    case 7:
+      return GoalType.reach;
+    default:
+      return GoalType.profile;
+  }
+}
+
+int goalTypeCode(GoalType? type) {
+  switch (type) {
+    case GoalType.message:
+      return 2;
+    case GoalType.website:
+      return 4;
+    case GoalType.whatsapp:
+      return 5;
+    case GoalType.call:
+      return 6;
+    case GoalType.reach:
+      return 7;
+    default:
+      return 1;
+  }
+}
+
 class PostPromotionModel {
   int id = 0;
   int postId = 0;
@@ -17,11 +52,7 @@ class PostPromotionModel {
     model.id = json['id'];
     model.postId = json['post_id'];
 
-    model.type = json['type'] == 4
-        ? GoalType.website
-        : json['type'] == 2
-            ? GoalType.message
-            : GoalType.profile;
+    model.type = goalTypeFromCode(json['type']);
     model.url = json['url'];
     model.urlText = json['url_text'];
     return model;
@@ -53,11 +84,7 @@ class PostPromotionOrderRequest {
 
   Map<String, dynamic> toJson() => {
         "post_id": post?.id.toString(),
-        "type": goalType == GoalType.website
-            ? '4'
-            : goalType == GoalType.message
-                ? '2'
-                : '1',
+        "type": goalTypeCode(goalType).toString(),
         "url": url ?? '',
         "url_text": urlText ?? '',
         "is_audience_automatic": audience?.id == null ? 1 : 0,

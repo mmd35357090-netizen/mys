@@ -27,6 +27,7 @@ import '../../controllers/post/comments_controller.dart';
 import '../../screens/post/liked_by_users.dart';
 import '../../controllers/post/promotion_controller.dart';
 import '../../api_handler/apis/promotion_api.dart';
+import '../../model/post_promotion_model.dart';
 import '../../screens/chat/chat_detail.dart';
 import '../../screens/club/club_detail.dart';
 import '../../screens/home_feed/comments_screen.dart';
@@ -510,18 +511,29 @@ class PostCardState extends State<PostCard> {
   }
 
   Widget sponsoredPostView() {
+    final PostPromotionModel? promo = widget.model.postPromotionData;
+    final GoalType? goal = promo?.type;
+    // "only reach" ads have no button
+    if (goal == GoalType.reach) {
+      return const SizedBox();
+    }
+    final String ownText = (promo?.urlText ?? '').trim();
+    final String label = goal == GoalType.website
+        ? (ownText.isNotEmpty ? ownText : learnMore.tr)
+        : goal == GoalType.whatsapp
+            ? (ownText.isNotEmpty ? ownText : 'WhatsApp us')
+            : goal == GoalType.call
+                ? (ownText.isNotEmpty ? ownText : 'Call now')
+                : goal == GoalType.message
+                    ? sendMessagesString.tr
+                    : viewProfileString.tr;
     return Container(
       color: AppColorConstants.themeColor,
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BodyLargeText(
-              widget.model.postPromotionData?.type == GoalType.website
-                  ? (widget.model.postPromotionData!.urlText ?? learnMore.tr)
-                  : widget.model.postPromotionData?.type ==
-                          GoalType.message
-                      ? sendMessagesString.tr
-                      : viewProfileString.tr,
+              label,
               color: Colors.white,
               weight: TextWeight.semiBold,
             ),
@@ -529,27 +541,54 @@ class PostCardState extends State<PostCard> {
                 size: 25, color: Colors.white)
           ]).p8.ripple(() {
         // count the tap for the advertiser's campaign report
-        final int? promotionId = widget.model.postPromotionData?.id;
+        final int? promotionId = promo?.id;
         if (promotionId != null && promotionId > 0) {
           PromotionApi.trackEvent(promotionId: promotionId, event: 'click');
           PromotionApi.trackEvent(
               promotionId: promotionId,
-              event: widget.model.postPromotionData?.type == GoalType.website
+              event: goal == GoalType.website
                   ? 'website'
-                  : widget.model.postPromotionData?.type == GoalType.message
+                  : goal == GoalType.message
                       ? 'message'
-                      : 'profile_visit');
+                      : goal == GoalType.whatsapp
+                          ? 'whatsapp'
+                          : goal == GoalType.call
+                              ? 'call'
+                              : 'profile_visit');
         }
-        widget.model.postPromotionData?.type == GoalType.website
-            ? launchUrl(
-                Uri.parse(widget.model.postPromotionData?.url ?? ''))
-            : widget.model.postPromotionData?.type == GoalType.message
-                ? openChatRoom()
-                : Get.to(() => OtherUserProfile(
-                    userId: widget.model.user.id,
-                    user: widget.model.user));
+        _openPromotionAction(promo);
       }),
     );
+  }
+
+  /// What the sponsored button does for each goal.
+  void _openPromotionAction(PostPromotionModel? promo) {
+    final GoalType? goal = promo?.type;
+    final String value = (promo?.url ?? '').trim();
+    if (goal == GoalType.website) {
+      launchUrl(Uri.parse(value), mode: LaunchMode.externalApplication)
+          .catchError((_) => false);
+    } else if (goal == GoalType.whatsapp) {
+      // opens WhatsApp with a chat to the advertiser's number
+      launchUrl(Uri.parse('https://wa.me/${value.replaceAll(RegExp(r'[^0-9]'), '')}'),
+              mode: LaunchMode.externalApplication)
+          .then((ok) {
+        if (!ok) {
+          AppUtil.showToast(message: 'WhatsApp could not be opened', isSuccess: false);
+        }
+      }).catchError((_) {
+        AppUtil.showToast(message: 'WhatsApp could not be opened', isSuccess: false);
+      });
+    } else if (goal == GoalType.call) {
+      // opens the phone dialer with the number, the person only has to press call
+      launchUrl(Uri(scheme: 'tel', path: '+${value.replaceAll(RegExp(r'[^0-9]'), '')}'))
+          .catchError((_) => false);
+    } else if (goal == GoalType.message) {
+      openChatRoom();
+    } else {
+      Get.to(() => OtherUserProfile(
+          userId: widget.model.user.id, user: widget.model.user));
+    }
   }
 
   Widget commentAndLikeWidget() {

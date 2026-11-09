@@ -175,7 +175,7 @@ enum BattleStatus { none, accepted, started, completed }
 
 enum OfferSource { normal, fav }
 
-enum GoalType { profile, website, message }
+enum GoalType { profile, website, message, whatsapp, call, reach }
 
 enum ItemViewSource { normal, promotion }
 
