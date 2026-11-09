@@ -68,44 +68,102 @@ class DashboardState extends State<DashboardScreen> {
                 : Scaffold(
                     backgroundColor: AppColorConstants.backgroundColor,
                     body: widgets[_dashboardController.currentIndex.value],
-                    bottomNavigationBar: BottomNavigationBar(
-                      currentIndex:
-                          _dashboardController.currentIndex.value,
-                      onTap: (index) {
-                        _dashboardController.indexChanged(index);
-                      },
-                      selectedItemColor: AppColorConstants.themeColor,
-                      unselectedItemColor: AppColorConstants.iconColor,
-                      backgroundColor: AppColorConstants.cardColor,
-                      type: BottomNavigationBarType.fixed,
-                      items: const [
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.home_outlined),
-                          activeIcon: Icon(Icons.home),
-                          label: 'Home',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.search_sharp),
-                          activeIcon: Icon(Icons.search),
-                          label: 'Explore',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.play_arrow_outlined),
-                          activeIcon: Icon(Icons.play_arrow),
-                          label: 'Reels',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.chat_bubble_outline), // Fixed icon to match the 'Chat' label
-                          activeIcon: Icon(Icons.chat_bubble),
-                          label: 'Chat',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.account_circle_outlined),
-                          activeIcon: Icon(Icons.account_circle),
-                          label: 'Profile',
-                        ),
-                      ],
-                    ),
+                    bottomNavigationBar: _bottomBar(),
                   ));
+  }
+
+  Widget _bottomBar() {
+    const items = [
+      [Icons.home_outlined, Icons.home_rounded, 'Home'],
+      [Icons.search_rounded, Icons.search_rounded, 'Explore'],
+      [Icons.play_circle_outline_rounded, Icons.play_circle_rounded, 'Reels'],
+      [Icons.chat_bubble_outline_rounded, Icons.chat_bubble_rounded, 'Chat'],
+      [Icons.account_circle_outlined, Icons.account_circle_rounded, 'Profile'],
+    ];
+    final int current = _dashboardController.currentIndex.value;
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColorConstants.cardColor,
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.6),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.10),
+                blurRadius: 22,
+                offset: const Offset(0, 8)),
+          ],
+        ),
+        child: Row(
+          children: List.generate(items.length, (i) {
+            final bool active = i == current;
+            final Color color = active
+                ? AppColorConstants.themeColor
+                : AppColorConstants.iconColor;
+            return Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _dashboardController.indexChanged(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: active
+                        ? AppColorConstants.themeColor.withValues(alpha: 0.12)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Icon(active ? items[i][1] as IconData : items[i][0] as IconData,
+                              size: 25, color: color),
+                          if (i == 3 &&
+                              _dashboardController.unreadMsgCount.value > 0)
+                            Positioned(
+                              right: -4,
+                              top: -2,
+                              child: Container(
+                                height: 9,
+                                width: 9,
+                                decoration: BoxDecoration(
+                                  color: AppColorConstants.red,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: AppColorConstants.cardColor,
+                                      width: 1.5),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        items[i][2] as String,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight:
+                              active ? FontWeight.w700 : FontWeight.w500,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ),
+      ),
+    );
   }
 }
