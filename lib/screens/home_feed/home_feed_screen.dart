@@ -452,31 +452,18 @@ Widget _filterButton(String title, int index, int selected) {
       onTap: () => _homeController.selectSegment(index),
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 13),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColorConstants.themeColor
-              : AppColorConstants.cardColor,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-              color: isSelected
-                  ? AppColorConstants.themeColor
-                  : AppColorConstants.dividerColor),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                      color: AppColorConstants.themeColor
-                          .withValues(alpha: 0.30),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4))
-                ]
-              : null,
+              ? AppColorConstants.mainTextColor
+              : AppColorConstants.themeColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
           title,
           style: TextStyle(
             color: isSelected
-                ? Colors.white
+                ? AppColorConstants.backgroundColor
                 : AppColorConstants.mainTextColor,
             fontWeight: FontWeight.w600,
             fontSize: 15,
@@ -486,7 +473,7 @@ Widget _filterButton(String title, int index, int selected) {
     ),
   );
 }
-  
+
   Widget polls(int index) {
     final int postIndex = index > 2 ? index - 3 : 0;
 

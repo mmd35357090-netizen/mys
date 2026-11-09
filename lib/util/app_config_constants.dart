@@ -10,14 +10,14 @@ class AppConfigConstants {
   static String appName = 'Connect to Friends';
 
   static String currentVersion = '2.5';
-  static const liveAppLink = 'https://facehub.sbehf.com/';
+  static const liveAppLink = 'https://connecttofriends.com/';
 
   static String appTagline = 'Share your day activity with friends';
   static const googleMapApiKey = 'AIzaSyA4vcqErGvq5NRbvhvq8JKSp0VFpNBBPjE';
   static const restApiBaseUrl = 'https://facehub.sbehf.com/api/web/v1/';
 
   // Socket api url
-  static const socketApiBaseUrl = "https://facehub.sbehf.com:4000/";
+  static const socketApiBaseUrl = "https://connecttofriends.com:4000/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';

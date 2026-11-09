@@ -3,6 +3,7 @@ import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/wallet/coin_history.dart';
 import 'package:foap/screens/wallet/creator_dashboard.dart';
 import 'package:foap/screens/wallet/creator_earnings.dart';
+import '../../universal_components/menu_tiles.dart';
 
 class PaymentAndCoins extends StatefulWidget {
   const PaymentAndCoins({super.key});
@@ -32,63 +33,65 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
           backNavigationBar(title: paymentAndCoinsString.tr),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.fromLTRB(DesignConstants.horizontalPadding,
+                  16, DesignConstants.horizontalPadding, 40),
               children: [
-                Column(
-                  children: [
-                    addTileEvent('${coinsString.tr} ($coin)', () {
+                MenuSection(tiles: [
+                  MenuTile(
+                    icon: Icons.monetization_on_outlined,
+                    color: const Color(0xFFF59E0B),
+                    title: '${coinsString.tr} ($coin)',
+                    subtitle: 'Buy coin packages',
+                    onTap: () {
                       Get.to(() => const PackagesScreen());
-                    }),
-                    addTileEvent(coinHistoryString.tr, () {
+                    },
+                  ),
+                  MenuTile(
+                    icon: Icons.history_rounded,
+                    color: const Color(0xFF3B82F6),
+                    title: coinHistoryString.tr,
+                    onTap: () {
                       Get.to(() => const CoinHistoryScreen());
-                    }),
-                    addTileEvent('Creator dashboard', () {
+                    },
+                  ),
+                ]),
+                const SizedBox(height: 16),
+                MenuSection(tiles: [
+                  MenuTile(
+                    icon: Icons.insights_rounded,
+                    color: const Color(0xFF8B5CF6),
+                    title: 'Creator dashboard',
+                    subtitle: 'Earnings, gifts and ad revenue',
+                    onTap: () {
                       Get.to(() => const CreatorDashboardScreen());
-                    }),
-                    addTileEvent('Ad earnings', () {
+                    },
+                  ),
+                  MenuTile(
+                    icon: Icons.ads_click_rounded,
+                    color: const Color(0xFF10B981),
+                    title: 'Ad earnings',
+                    subtitle: 'Your share of ad revenue',
+                    onTap: () {
                       Get.to(() => const CreatorEarningsScreen());
-                    }),
-                    addTileEvent(transactionHistoryString.tr, () {
+                    },
+                  ),
+                ]),
+                const SizedBox(height: 16),
+                MenuSection(tiles: [
+                  MenuTile(
+                    icon: Icons.receipt_long_outlined,
+                    color: const Color(0xFF64748B),
+                    title: transactionHistoryString.tr,
+                    onTap: () {
                       Get.to(() => const Transactions());
-                    }),
-                  ],
-                ),
-                const SizedBox(
-                  height: 50,
-                )
+                    },
+                  ),
+                ]),
               ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  addTileEvent(String title, VoidCallback action) {
-    return InkWell(
-        onTap: action,
-        child: Column(
-          children: [
-            SizedBox(
-              height: 50,
-              child: Row(children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [BodyLargeText(title, weight: TextWeight.medium)],
-                  ),
-                ),
-                // const Spacer(),
-                ThemeIconWidget(
-                  ThemeIcon.nextArrow,
-                  color: AppColorConstants.iconColor,
-                  size: 15,
-                )
-              ]).hp(DesignConstants.horizontalPadding),
-            ),
-            divider()
-          ],
-        ));
   }
 }

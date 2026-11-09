@@ -2,6 +2,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/profile/blocked_users.dart';
 import 'package:foap/screens/settings_menu/my_subscriptions.dart';
 import '../live/live_history.dart';
+import '../../universal_components/menu_tiles.dart';
+
 
 class AppAccount extends StatefulWidget {
   const AppAccount({super.key});
@@ -26,59 +28,40 @@ class _AppAccountState extends State<AppAccount> {
           backNavigationBar(title: accountString.tr),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.fromLTRB(DesignConstants.horizontalPadding,
+                  16, DesignConstants.horizontalPadding, 40),
               children: [
-                Column(
-                  children: [
-                    addTileEvent(liveHistoryString.tr, () {
+                MenuSection(tiles: [
+                  MenuTile(
+                    icon: Icons.sensors_rounded,
+                    color: const Color(0xFFEF4444),
+                    title: liveHistoryString.tr,
+                    onTap: () {
                       Get.to(() => const LiveHistory());
-                    }),
-                    addTileEvent(blockedUserString.tr, () {
+                    },
+                  ),
+                  MenuTile(
+                    icon: Icons.block_rounded,
+                    color: const Color(0xFF64748B),
+                    title: blockedUserString.tr,
+                    onTap: () {
                       Get.to(() => const BlockedUsersList());
-                    }),
-                    addTileEvent(mySubscriptionString.tr, () {
+                    },
+                  ),
+                  MenuTile(
+                    icon: Icons.workspace_premium_outlined,
+                    color: const Color(0xFFF59E0B),
+                    title: mySubscriptionString.tr,
+                    onTap: () {
                       Get.to(() => const MySubscriptions());
-                    }),
-                  ],
-                ),
-                const SizedBox(
-                  height: 50,
-                )
+                    },
+                  ),
+                ]),
               ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  addTileEvent(String title, VoidCallback action) {
-    return InkWell(
-        onTap: action,
-        child: Column(
-          children: [
-            SizedBox(
-              height: 50,
-              child: Row(children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      BodyLargeText(title.tr, weight: TextWeight.medium)
-                    ],
-                  ),
-                ),
-                // const Spacer(),
-                ThemeIconWidget(
-                  ThemeIcon.nextArrow,
-                  color: AppColorConstants.iconColor,
-                  size: 15,
-                )
-              ]).hp(DesignConstants.horizontalPadding),
-            ),
-            divider()
-          ],
-        ));
   }
 }

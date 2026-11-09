@@ -1,5 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
+import '../../universal_components/menu_tiles.dart';
+
 
 class PrivacyOptions extends StatefulWidget {
   const PrivacyOptions({super.key});
@@ -26,25 +28,15 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
           backNavigationBar(title: privacyString.tr),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 20),
+              padding: EdgeInsets.fromLTRB(DesignConstants.horizontalPadding,
+                  16, DesignConstants.horizontalPadding, 40),
               children: [
-                Column(
-                  children: [
-                    // shareLocationTile(),
-                    bioMetricLoginTile(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    accountPrivacyTile(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    onlineStatusTile()
-                  ],
-                ),
-                const SizedBox(
-                  height: 50,
-                )
+                Obx(() => MenuSection(tiles: [
+                      if (settingsController.bioMetricType.value != 0)
+                        bioMetricLoginTile(),
+                      accountPrivacyTile(),
+                      onlineStatusTile(),
+                    ])),
               ],
             ),
           ),
@@ -53,164 +45,53 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
     );
   }
 
-  shareLocationTile() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 50,
-          child: Row(children: [
-            Expanded(
-              child: BodyLargeText(shareLocationString.tr,
-                  weight: TextWeight.medium),
-            ),
-            // const Spacer(),
-            Obx(() => WKToggleSwitch1(
-                  inactiveColor: AppColorConstants.disabledColor,
-                  activeColor: AppColorConstants.themeColor,
-                  width: 50.0,
-                  height: 30.0,
-                  // valueFontSize: 15.0,
-                  // toggleSize: 20.0,
-                  initialValue: settingsController.shareLocation.value,
-                  // borderRadius: 30.0,
-                  // padding: 8.0,
-                  // showOnOff: true,
-                  onChanged: (val) {
-                    settingsController.shareLocationToggle(val);
-                  },
-                )),
-          ]).hp(DesignConstants.horizontalPadding),
-        ),
-        divider()
-      ],
+  Widget _switch(bool value, ValueChanged<bool> onChanged) {
+    return WKToggleSwitch1(
+      inactiveColor: AppColorConstants.disabledColor,
+      activeColor: AppColorConstants.themeColor,
+      width: 50.0,
+      height: 30.0,
+      initialValue: value,
+      onChanged: onChanged,
     );
   }
 
-  bioMetricLoginTile() {
-    return Obx(() => settingsController.bioMetricType.value == 0
-        ? Container()
-        : SizedBox(
-            height: 50,
-            child: Row(children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    BodyLargeText(faceIdOrTouchIdString.tr,
-                            weight: TextWeight.medium)
-                        .bP4,
-                    BodySmallText(
-                      unlockYourAppUsingBiometricLoginString.tr,
-                    ),
-                  ],
-                ),
-              ),
-              // const Spacer(),
-              WKToggleSwitch1(
-                inactiveColor: AppColorConstants.disabledColor,
-                activeColor: AppColorConstants.themeColor,
-                width: 50.0,
-                height: 30.0,
-                // valueFontSize: 15.0,
-                // toggleSize: 20.0,
-                initialValue: settingsController.bioMetricAuthStatus.value,
-                // borderRadius: 30.0,
-                // padding: 8.0,
-                // showOnOff: true,
-                onChanged: (value) {
-                  settingsController.biometricLogin(value);
-                },
-              ),
-            ]).hp(DesignConstants.horizontalPadding),
-          ));
+  Widget bioMetricLoginTile() {
+    return MenuRow(
+      icon: Icons.fingerprint_rounded,
+      color: const Color(0xFF10B981),
+      title: faceIdOrTouchIdString.tr,
+      subtitle: unlockYourAppUsingBiometricLoginString.tr,
+      trailing: _switch(settingsController.bioMetricAuthStatus.value,
+          (value) {
+        settingsController.biometricLogin(value);
+      }),
+    );
   }
 
-  accountPrivacyTile() {
-    return Obx(() => SizedBox(
-          height: 65,
-          child:
-              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ThemeIconWidget(
-              ThemeIcon.account,
-              size: 20,
-              color: AppColorConstants.mainTextColor,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  BodyLargeText(privateAccountString.tr,
-                          weight: TextWeight.medium)
-                      .bP4,
-                  BodySmallText(
-                    privateAccountMsgString.tr,
-                  ),
-                ],
-              ),
-            ),
-            // const Spacer(),
-            WKToggleSwitch1(
-              inactiveColor: AppColorConstants.disabledColor,
-              activeColor: AppColorConstants.themeColor,
-              width: 50.0,
-              height: 30.0,
-              // valueFontSize: 15.0,
-              // toggleSize: 20.0,
-              initialValue: settingsController.isPrivateAccount.value,
-              // borderRadius: 30.0,
-              // padding: 8.0,
-              onChanged: (isPrivate) {
-                settingsController.toggleAccountPrivacy(isPrivate);
-              },
-            ),
-          ]).hp(DesignConstants.horizontalPadding),
-        ));
+  Widget accountPrivacyTile() {
+    return MenuRow(
+      icon: Icons.lock_outline_rounded,
+      color: const Color(0xFF6366F1),
+      title: privateAccountString.tr,
+      subtitle: privateAccountMsgString.tr,
+      trailing: _switch(settingsController.isPrivateAccount.value,
+          (isPrivate) {
+        settingsController.toggleAccountPrivacy(isPrivate);
+      }),
+    );
   }
 
-  onlineStatusTile() {
-    return Obx(() => SizedBox(
-          height: 80,
-          child:
-              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ThemeIconWidget(
-              ThemeIcon.chat,
-              size: 20,
-              color: AppColorConstants.mainTextColor,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  BodyLargeText(shareOnlineStatusStaring.tr,
-                          weight: TextWeight.medium)
-                      .bP4,
-                  BodySmallText(
-                    shareOnlineStatusMsgString.tr,
-                  ),
-                ],
-              ),
-            ),
-            // const Spacer(),
-            WKToggleSwitch1(
-              inactiveColor: AppColorConstants.disabledColor,
-              activeColor: AppColorConstants.themeColor,
-              width: 50.0,
-              height: 30.0,
-              // valueFontSize: 15.0,
-              // toggleSize: 20.0,
-              initialValue: settingsController.isShareOnlineStatus.value,
-              // borderRadius: 30.0,
-              // padding: 8.0,
-              onChanged: (status) {
-                settingsController.toggleShowOnlineStatusSetting(status);
-              },
-            ),
-          ]).hp(DesignConstants.horizontalPadding),
-        ));
+  Widget onlineStatusTile() {
+    return MenuRow(
+      icon: Icons.circle_outlined,
+      color: const Color(0xFF22C55E),
+      title: shareOnlineStatusStaring.tr,
+      subtitle: shareOnlineStatusMsgString.tr,
+      trailing: _switch(settingsController.isShareOnlineStatus.value,
+          (status) {
+        settingsController.toggleShowOnlineStatusSetting(status);
+      }),
+    );
   }
 }
