@@ -41,37 +41,12 @@ class PromotionEstimateCard extends StatelessWidget {
             amount = amount.replaceFirst(RegExp(r'0+$'), '');
             if (amount.endsWith('.')) amount = amount.substring(0, amount.length - 1);
             final String price = '${estimate.currencySymbol}$amount';
-            return Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColorConstants.cardColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColorConstants.borderColor),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BodySmallText(
-                    'You pay only for results',
-                    color: AppColorConstants.subHeadingTextColor,
-                  ),
-                  const SizedBox(height: 4),
-                  Heading5Text(
-                      max.isEmpty ? '$price per ${estimate.resultLabel}' : max,
-                      weight: TextWeight.semiBold),
-                  const SizedBox(height: 4),
-                  if (max.isNotEmpty)
-                    BodySmallText('$price for each different person',
-                        color: AppColorConstants.subHeadingTextColor),
-                  const SizedBox(height: 6),
-                  BodyExtraSmallText(
-                    estimate.billingNote,
-                    color: AppColorConstants.subHeadingTextColor,
-                  ),
-                ],
-              ),
-            );
+            return _shell(
+                icon: Icons.verified_rounded,
+                title: 'You pay only for results',
+                headline: max.isEmpty ? '$price per ${estimate.resultLabel}' : max,
+                sub: max.isEmpty ? '' : '$price for each different person',
+                note: estimate.billingNote);
           }
 
           if (!estimate.available) {
@@ -91,31 +66,68 @@ class PromotionEstimateCard extends StatelessWidget {
             return const SizedBox();
           }
 
-          return Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
+          return _shell(
+              icon: Icons.groups_rounded,
+              title: boostEstimatedReach.tr,
+              headline: headline,
+              sub: '',
+              note: boostEstimateDisclaimer.tr);
+        });
+  }
+
+  Widget _shell(
+      {required IconData icon,
+      required String title,
+      required String headline,
+      required String sub,
+      required String note}) {
+    final Color color = AppColorConstants.themeColor;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [color.withValues(alpha: 0.12), color.withValues(alpha: 0.03)],
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 44,
+            width: 44,
             decoration: BoxDecoration(
-              color: AppColorConstants.cardColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColorConstants.borderColor),
-            ),
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14)),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BodySmallText(
-                  boostEstimatedReach.tr,
-                  color: AppColorConstants.subHeadingTextColor,
-                ),
+                BodySmallText(title,
+                    color: AppColorConstants.subHeadingTextColor),
                 const SizedBox(height: 4),
-                Heading5Text(headline, weight: TextWeight.semiBold),
-                const SizedBox(height: 6),
-                BodyExtraSmallText(
-                  boostEstimateDisclaimer.tr,
-                  color: AppColorConstants.subHeadingTextColor,
-                ),
+                Heading5Text(headline, weight: TextWeight.bold),
+                if (sub.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  BodySmallText(sub, color: color, weight: TextWeight.semiBold),
+                ],
+                if (note.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  BodyExtraSmallText(note,
+                      color: AppColorConstants.subHeadingTextColor),
+                ],
               ],
             ),
-          );
-        });
+          ),
+        ],
+      ),
+    );
   }
 }

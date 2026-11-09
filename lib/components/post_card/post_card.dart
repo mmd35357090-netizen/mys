@@ -528,18 +528,45 @@ class PostCardState extends State<PostCard> {
                     ? sendMessagesString.tr
                     : viewProfileString.tr;
     return Container(
-      color: AppColorConstants.themeColor,
-      child: Row(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+        AppColorConstants.themeColor,
+        AppColorConstants.themeColor.withValues(alpha: 0.78)
+      ])),
+      child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            BodyLargeText(
-              label,
-              color: Colors.white,
-              weight: TextWeight.semiBold,
-            ),
-            ThemeIconWidget(ThemeIcon.nextArrow,
-                size: 25, color: Colors.white)
-          ]).p8.ripple(() {
+            Row(children: [
+              Icon(
+                  goal == GoalType.whatsapp
+                      ? Icons.chat_rounded
+                      : goal == GoalType.call
+                          ? Icons.call_rounded
+                          : goal == GoalType.website
+                              ? Icons.open_in_new_rounded
+                              : goal == GoalType.message
+                                  ? Icons.chat_bubble_rounded
+                                  : Icons.person_rounded,
+                  color: Colors.white,
+                  size: 20),
+              const SizedBox(width: 10),
+              BodyLargeText(
+                label,
+                color: Colors.white,
+                weight: TextWeight.semiBold,
+              ),
+            ]),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.22),
+                  shape: BoxShape.circle),
+              child: const Icon(Icons.arrow_forward_rounded,
+                  size: 18, color: Colors.white),
+            )
+          ])).ripple(() {
         // count the tap for the advertiser's campaign report
         final int? promotionId = promo?.id;
         if (promotionId != null && promotionId > 0) {

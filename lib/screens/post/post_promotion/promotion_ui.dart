@@ -69,3 +69,41 @@ Widget promotionMetric(String label, String value) {
     ],
   );
 }
+
+/// Rounded card used by the boost screens. A selected card gets the theme colour border and tint.
+Widget promotionCard(
+    {required Widget child,
+    bool selected = false,
+    EdgeInsets padding = const EdgeInsets.all(16),
+    EdgeInsets margin = const EdgeInsets.only(bottom: 12)}) {
+  return AnimatedContainer(
+    duration: const Duration(milliseconds: 200),
+    margin: margin,
+    padding: padding,
+    decoration: BoxDecoration(
+      color: selected
+          ? AppColorConstants.themeColor.withValues(alpha: 0.08)
+          : AppColorConstants.cardColor,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+          color: selected
+              ? AppColorConstants.themeColor
+              : AppColorConstants.dividerColor,
+          width: selected ? 1.6 : 1),
+    ),
+    child: child,
+  );
+}
+
+/// Round icon on a soft coloured background.
+Widget promotionIconBubble(IconData icon, Color color, {double size = 46}) {
+  return Container(
+    height: size,
+    width: size,
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.14),
+      borderRadius: BorderRadius.circular(size / 2.8),
+    ),
+    child: Icon(icon, color: color, size: size * 0.5),
+  );
+}

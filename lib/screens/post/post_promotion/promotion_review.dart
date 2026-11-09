@@ -59,26 +59,30 @@ class PromotionReviewScreen extends StatelessWidget {
                           const SizedBox(
                             height: 10,
                           ),
-                          Heading6Text(
-                            costSummary.tr,
-                            weight: TextWeight.semiBold,
-                          ).p16,
-                          paymentInfoTile(adBudget.tr,
-                                  '$currency${order.totalAmount.toStringAsFixed(2)}')
-                              .hP16,
-                          paymentInfoTile(
+                          promotionCard(
+                            margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                            child: Column(children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Heading6Text(
+                                  costSummary.tr,
+                                  weight: TextWeight.semiBold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              paymentInfoTile(adBudget.tr,
+                                  '$currency${order.totalAmount.toStringAsFixed(2)}'),
+                              paymentInfoTile(
                                   '${gst.tr} (${_taxText(order.taxPercent)}%)',
-                                  '$currency${order.gst.toStringAsFixed(2)}')
-                              .hP16,
-                          paymentInfoTile(totalSpend.tr,
+                                  '$currency${order.gst.toStringAsFixed(2)}'),
+                              Divider(
+                                  height: 20,
+                                  color: AppColorConstants.dividerColor),
+                              paymentInfoTile(totalSpend.tr,
                                   '$currency${order.grandTotalAmount.toStringAsFixed(2)}',
-                                  boldHeader: true)
-                              .hP16,
-                          const SizedBox(
-                            height: 10,
+                                  boldHeader: true),
+                            ]),
                           ),
-                          divider(
-                              height: 1, color: AppColorConstants.dividerColor),
                           if (needsApproval)
                             BodySmallText(
                               boostPendingNote.tr,
@@ -154,8 +158,12 @@ class PromotionReviewScreen extends StatelessWidget {
               child: BodyMediumText(caption, maxLines: 2)),
         if (buttonText.isNotEmpty)
         Container(
-          color: AppColorConstants.themeColor,
-          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            AppColorConstants.themeColor,
+            AppColorConstants.themeColor.withValues(alpha: 0.78)
+          ])),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -170,22 +178,25 @@ class PromotionReviewScreen extends StatelessWidget {
   }
 
   Widget addReviewTile(String title, String subTitle) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Heading6Text(
-          title,
-          weight: FontWeight.normal,
+    return promotionCard(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BodySmallText(title,
+                  color: AppColorConstants.subHeadingTextColor),
+              if (subTitle != '') ...[
+                const SizedBox(height: 4),
+                BodyLargeText(subTitle, weight: TextWeight.semiBold),
+              ],
+            ],
+          ),
         ),
-        subTitle == ''
-            ? const SizedBox()
-            : BodyMediumText(
-                subTitle,
-                weight: FontWeight.normal,
-                color: AppColorConstants.subHeadingTextColor,
-              ).tP4
-      ],
-    ).vP16;
+      ]),
+    );
   }
 
   Widget paymentInfoTile(String title, String subTitle,
