@@ -1,3 +1,4 @@
+import 'package:foap/universal_components/profile_widgets.dart';
 import 'package:foap/controllers/subscription/subscription_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/profile/sliver_app_bar.dart';
@@ -150,10 +151,10 @@ class OtherUserProfileState extends State<OtherUserProfile>
     return (_profileController.user.value!.isPrivateProfile &&
                 _profileController.user.value!.followingStatus !=
                     FollowingStatus.following
-            ? 370
+            ? 385
             : _highlightsController.highlights.isNotEmpty
-                ? 415.0
-                : 390) +
+                ? 435.0
+                : 410) +
         categoryPortionHt +
         cityNamePortionHt;
   }
@@ -253,34 +254,35 @@ class OtherUserProfileState extends State<OtherUserProfile>
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              UserAvatarView(
-                  user: _profileController.user.value!,
-                  size: 75,
-                  onTapHandler: () {
-                    //open live
-                  }),
+              ProfileAvatarRing(
+                child: UserAvatarView(
+                    user: _profileController.user.value!,
+                    size: 75,
+                    hideBorder: true,
+                    onTapHandler: () {
+                      //open live
+                    }),
+              ),
               const SizedBox(
                 height: 10,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  BodyLargeText(_profileController.user.value!.userName,
-                      weight: TextWeight.medium),
+                  Heading6Text(_profileController.user.value!.userName,
+                      weight: TextWeight.bold),
                   if (_profileController.user.value!.isVerified)
                     verifiedUserTag()
                 ],
               ).bP4,
-              if (_profileController.user.value!.profileCategoryTypeId !=
-                  0)
-                BodyMediumText(
-                        _profileController
-                            .user.value!.profileCategoryTypeName,
-                        weight: TextWeight.regular)
-                    .bP4,
+              if (_profileController.user.value!.profileCategoryTypeId != 0)
+                ProfileChip(
+                  text: _profileController.user.value!.profileCategoryTypeName,
+                ).bP4,
               if (_profileController.user.value?.country != null)
-                BodyMediumText(
-                  '${_profileController.user.value!.country},${_profileController.user.value!.city}',
+                ProfileLocation(
+                  text:
+                      '${_profileController.user.value!.country}, ${_profileController.user.value!.city}',
                 ),
             ],
           ),
@@ -297,9 +299,21 @@ class OtherUserProfileState extends State<OtherUserProfile>
                 fit: BoxFit.cover,
                 imageUrl: _profileController.user.value!.coverImage!)
             .bottomRounded(20)
-        : SizedBox(
+        : Container(
             width: Get.width,
-            height: 200,
+            height: 215,
+            decoration: BoxDecoration(
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(20)),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColorConstants.themeColor.withValues(alpha: 0.14),
+                  AppColorConstants.backgroundColor,
+                ],
+              ),
+            ),
           );
   }
 

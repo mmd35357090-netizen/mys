@@ -6,8 +6,8 @@ import 'package:foap/model/subscription_plan_model.dart';
 class UserSubscriptionController extends GetxController {
   final UserProfileManager _userProfileManager = Get.find();
   RxList<SubscriptionPlan> plans = <SubscriptionPlan>[].obs;
-  RxList<UserModel> subscribers = <UserModel>[].obs;
-  RxList<UserModel> subscriptions = <UserModel>[].obs;
+  RxList<SubscriptionInfo> subscribers = <SubscriptionInfo>[].obs;
+  RxList<SubscriptionInfo> subscriptions = <SubscriptionInfo>[].obs;
 
   DataWrapper subscribersDataWrapper = DataWrapper();
   DataWrapper subscriptionsDataWrapper = DataWrapper();

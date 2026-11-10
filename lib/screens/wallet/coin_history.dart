@@ -152,7 +152,16 @@ class _CoinHistoryScreenState extends State<CoinHistoryScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
           color: AppColorConstants.cardColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.6),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 14,
+                offset: const Offset(0, 5)),
+          ],
         ),
         child: Column(
           children: [
@@ -171,7 +180,20 @@ class _CoinHistoryScreenState extends State<CoinHistoryScreen> {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
-        label: Text(label),
+        label: Text(label,
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: _filter == value
+                    ? Colors.white
+                    : AppColorConstants.mainTextColor)),
+        selectedColor: AppColorConstants.themeColor,
+        backgroundColor: AppColorConstants.cardColor,
+        showCheckmark: false,
+        side: BorderSide(
+            color: _filter == value
+                ? AppColorConstants.themeColor
+                : AppColorConstants.dividerColor),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         selected: _filter == value,
         onSelected: (_) => _reload(value),
       ),
@@ -189,15 +211,24 @@ class _CoinHistoryScreenState extends State<CoinHistoryScreen> {
             : e.category == 'refund'
                 ? Icons.undo
                 : Icons.local_fire_department_outlined;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+      ),
       child: Row(
         children: [
           Container(
-            height: 36,
-            width: 36,
+            height: 38,
+            width: 38,
             decoration: BoxDecoration(
-                color: color.withOpacity(0.12), shape: BoxShape.circle),
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, size: 18, color: color),
           ),
           const SizedBox(width: 12),
@@ -238,8 +269,17 @@ class _CoinHistoryScreenState extends State<CoinHistoryScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColorConstants.cardColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColorConstants.themeColor),
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                          color: AppColorConstants.themeColor
+                              .withValues(alpha: 0.35)),
+                      boxShadow: [
+                        BoxShadow(
+                            color: AppColorConstants.themeColor
+                                .withValues(alpha: 0.12),
+                            blurRadius: 18,
+                            offset: const Offset(0, 8)),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

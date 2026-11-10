@@ -20,7 +20,20 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: Get.width * 0.6,
-      color: AppColorConstants.cardColor,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5)),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -86,7 +99,7 @@ class EventCard extends StatelessWidget {
           ),
         ],
       ).p8,
-    ).round(25);
+    );
   }
 }
 
@@ -107,7 +120,20 @@ class EventCard2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 140,
-      color: AppColorConstants.cardColor,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5)),
+        ],
+      ),
       child: Row(
         children: [
           Stack(
@@ -201,7 +227,7 @@ class EventCard2 extends StatelessWidget {
           ),
         ],
       ).p(12),
-    ).round(25);
+    );
   }
 }
 
@@ -230,7 +256,20 @@ class ProviderEventCard2 extends StatelessWidget {
           : event.statusType == EventStatus.active
               ? 200
               : 160,
-      color: AppColorConstants.cardColor,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5)),
+        ],
+      ),
       child: Column(
         children: [
           Expanded(
@@ -374,6 +413,6 @@ class ProviderEventCard2 extends StatelessWidget {
             ).vP8
         ],
       ).p(12),
-    ).round(25);
+    );
   }
 }

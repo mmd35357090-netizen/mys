@@ -37,8 +37,38 @@ class _HelpScreenState extends State<HelpScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: Get.height * 0.01,
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 18),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColorConstants.themeColor,
+                            AppColorConstants.themeColor
+                                .withValues(alpha: 0.72),
+                          ],
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.support_agent_rounded,
+                              color: Colors.white, size: 34),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Need help? Send us a message and our team will reply as soon as possible.',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  height: 1.35,
+                                  color: Colors.white.withValues(alpha: 0.95)),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     AppTextField(
                       controller: nameController,

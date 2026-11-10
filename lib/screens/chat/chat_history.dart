@@ -3,6 +3,7 @@ import 'package:foap/components/sm_tab_bar.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../calling/call_history.dart';
+import '../../universal_components/app_buttons.dart';
 import '../settings_menu/settings_controller.dart';
 import 'group/open_group_listing.dart';
 
@@ -33,15 +34,31 @@ class _ChatHistoryState extends State<ChatHistory> {
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColorConstants.backgroundColor,
       floatingActionButton: Container(
-        height: 50,
-        width: 50,
-        color: AppColorConstants.themeColor,
+        height: 56,
+        width: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColorConstants.themeColor,
+              AppColorConstants.themeColor.withValues(alpha: 0.75),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+                color: AppColorConstants.themeColor.withValues(alpha: 0.35),
+                blurRadius: 16,
+                offset: const Offset(0, 8)),
+          ],
+        ),
         child: ThemeIconWidget(
           ThemeIcon.edit,
-          size: 25,
+          size: 24,
           color: Colors.white,
         ),
-      ).circular.ripple(() {
+      ).ripple(() {
         selectUsers();
       }).bP16,
       body: KeyboardDismissOnTap(
@@ -55,12 +72,8 @@ class _ChatHistoryState extends State<ChatHistory> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ThemeIconWidget(
-                        ThemeIcon.backArrow,
-                      ).ripple(() {
-                        Get.back();
-                      }),
-                      BodyLargeText(chatsString.tr, weight: TextWeight.medium),
+                      const AppThemeBackButton(),
+                      Heading6Text(chatsString.tr, weight: TextWeight.bold),
                       _settingsController.setting.value!.enableAudioCalling ||
                               _settingsController
                                   .setting.value!.enableVideoCalling
@@ -126,9 +139,10 @@ class _ChatHistoryState extends State<ChatHistory> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Heading5Text(
+                        BodyMediumText(
                           key,
                           weight: TextWeight.bold,
+                          color: AppColorConstants.subHeadingTextColor,
                         ),
                         const SizedBox(
                           height: 15,
@@ -142,14 +156,19 @@ class _ChatHistoryState extends State<ChatHistory> {
                                   _chatController.deleteRoom(room);
                                 },
                                 background: Container(
-                                  color: AppColorConstants.red,
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: AppColorConstants.red,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Heading6Text(
                                         deleteString.tr,
                                         weight: TextWeight.bold,
-                                        color: AppColorConstants.mainTextColor,
+                                        color: Colors.white,
                                       )
                                     ],
                                   ),

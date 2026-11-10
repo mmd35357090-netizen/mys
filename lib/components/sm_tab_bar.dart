@@ -96,20 +96,25 @@ TabBar getTextTabBar(
     controller: controller,
     isScrollable: canScroll,
     tabAlignment: canScroll == true ? TabAlignment.start : null,
-    dividerHeight: hideDivider ? 0 : 1,
-    indicator: UnderlineTabIndicator(
-
-      borderSide:
-          BorderSide(width: 3.0, color: AppColorConstants.themeColor),
-      insets: const EdgeInsets.symmetric(horizontal: 16.0),
+    dividerHeight: 0,
+    // soft pill behind the selected tab
+    indicatorSize: TabBarIndicatorSize.tab,
+    indicatorPadding:
+        const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+    indicator: BoxDecoration(
+      color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+      borderRadius: BorderRadius.circular(14),
     ),
+    splashBorderRadius: BorderRadius.circular(14),
     onTap: (status) {
       FocusScope.of(Get.context!).requestFocus(FocusNode());
     },
     labelStyle: TextStyle(
         fontSize: FontSizes.b2,
         color: AppColorConstants.themeColor,
-        fontWeight: TextWeight.regular),
+        fontWeight: FontWeight.w700),
+    unselectedLabelStyle: TextStyle(
+        fontSize: FontSizes.b2, fontWeight: FontWeight.w500),
     labelColor: AppColorConstants.themeColor,
     unselectedLabelColor: AppColorConstants.subHeadingTextColor,
     tabs: List.generate(tabs.length, (int index) {

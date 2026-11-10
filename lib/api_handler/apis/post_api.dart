@@ -98,6 +98,7 @@ class PostApi {
       int? isSaved,
       int? audioId,
       int? isVideo,
+      int? isPremium,
       int? isMine,
       int? isRecent,
       int? isCollaboration,
@@ -158,12 +159,17 @@ class PostApi {
     if (isVideo != null) {
       url = '$url&is_video_post=1';
     }
+    if (isPremium != null) {
+      url = '$url&is_premium_post=1';
+    }
     url = '$url&page=$page';
     await ApiWrapper().getApi(url: url).then((response) {
       if (response?.data != null) {
         List<PostModel> posts = [];
         var items = response!.data['post']['items'];
-        posts = PostModel.parseList(items);
+        posts =
+            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
+                .toList();
 
         APIMetaData metaData =
             APIMetaData.fromJson(response.data['post']['_meta']);
@@ -185,7 +191,9 @@ class PostApi {
       if (response?.data != null) {
         List<PostModel> posts = [];
         var items = response!.data['postPromotionList']['items'];
-        posts = PostModel.parseList(items);
+        posts =
+            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
+                .toList();
 
         APIMetaData metaData = APIMetaData.fromJson(
             response.data['postPromotionList']['_meta']);
@@ -206,7 +214,9 @@ class PostApi {
       if (response?.data != null) {
         List<PostModel> posts = [];
         var items = response!.data['post']['items'];
-        posts = PostModel.parseList(items);
+        posts =
+            List<PostModel>.from(items.map((x) => PostModel.fromJson(x)))
+                .toList();
 
         APIMetaData metaData =
             APIMetaData.fromJson(response.data['post']['_meta']);

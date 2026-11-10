@@ -23,7 +23,20 @@ class _AdCardState extends State<AdCard> {
       onTap: () => widget.pressed(),
       child: Container(
         height: 250,
-        color: AppColorConstants.cardColor,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: AppColorConstants.cardColor,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.6),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5)),
+          ],
+        ),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -119,7 +132,7 @@ class _AdCardState extends State<AdCard> {
                 ],
               )
             ]).p16,
-      ).round(10),
+      ),
     );
   }
 }

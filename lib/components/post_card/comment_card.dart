@@ -143,17 +143,32 @@ class _CommentTileState extends State<CommentTile> {
                     ],
                   ),
                   widget.model.type == CommentType.text
-                      ? showCommentText()
+                      ? Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: AppColorConstants.cardColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(16),
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                            ),
+                          ),
+                          child: showCommentText(),
+                        )
                       : showCommentMedia(),
                   const SizedBox(
-                    height: 5,
+                    height: 6,
                   ),
                   Row(
                     children: [
                       if (widget.model.canReply)
                         BodySmallText(
                           replyString.tr,
-                          weight: TextWeight.semiBold,
+                          weight: TextWeight.bold,
+                          color: AppColorConstants.themeColor,
                         ).rp(20).ripple(() {
                           widget.replyActionHandler(widget.model);
                         }),

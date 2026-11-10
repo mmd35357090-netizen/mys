@@ -186,7 +186,10 @@ class CommentsScreenState extends State<CommentsScreen> {
         children: <Widget>[
           Expanded(
             child: Container(
-              color: AppColorConstants.cardColor.withValues(alpha: 0.5),
+              decoration: BoxDecoration(
+                color: AppColorConstants.cardColor,
+                borderRadius: BorderRadius.circular(25),
+              ),
               child: Row(children: <Widget>[
                 Expanded(
                   child: SizedBox(
@@ -243,21 +246,38 @@ class CommentsScreenState extends State<CommentsScreen> {
                   });
                 }),
               ]).hP8,
-            ).borderWithRadius(value: 0.5, radius: 15),
+            ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           Container(
-            width: 45,
-            height: 45,
-            color: AppColorConstants.mainTextColor,
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColorConstants.themeColor,
+                  AppColorConstants.themeColor.withValues(alpha: 0.75),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4)),
+              ],
+            ),
             child: InkWell(
               onTap: addNewMessage,
-              child: Icon(
-                Icons.send,
-                color: AppColorConstants.themeColor,
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: 22,
               ),
             ),
-          ).circular
+          )
         ],
       ),
     );

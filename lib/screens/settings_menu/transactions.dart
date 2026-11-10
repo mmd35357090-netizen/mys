@@ -116,10 +116,11 @@ class PaymentWithdrawalState extends State<Transactions> {
         Expanded(
           child: OutlinedButton(
             style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                side: BorderSide(color: AppColorConstants.themeColor),
+                minimumSize: const Size.fromHeight(48),
+                side: BorderSide(
+                    color: AppColorConstants.themeColor, width: 1.2),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10))),
+                    borderRadius: BorderRadius.circular(16))),
             onPressed: () async {
               await Get.to(() => const DepositHistoryScreen());
               _profileController.getMyProfile();
@@ -133,12 +134,39 @@ class PaymentWithdrawalState extends State<Transactions> {
     ).hp(DesignConstants.horizontalPadding);
   }
 
+  // "-1.04904e-7" style float leftovers are shown as $0.00
+  String _balanceText() {
+    final String raw = _userProfileManager.user.value!.balance;
+    final double? value = double.tryParse(raw);
+    if (value == null) {
+      return raw;
+    }
+    return '\$${(value < 0.005 ? 0.0 : value).toStringAsFixed(2)}';
+  }
+
   totalBalanceView() {
     return GetBuilder<ProfileController>(
         init: _profileController,
         builder: (ctx) {
           return Container(
-            color: AppColorConstants.cardColor,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColorConstants.themeColor,
+                  AppColorConstants.themeColor.withValues(alpha: 0.72),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.28),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8)),
+              ],
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -146,17 +174,17 @@ class PaymentWithdrawalState extends State<Transactions> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BodySmallText(availableBalanceToWithdrawString.tr,
-                            weight: TextWeight.medium),
-                        const SizedBox(height: 10),
-                        Heading3Text(
-                            '\$${_userProfileManager.user.value!.balance}',
-                            weight: TextWeight.bold)
+                            weight: TextWeight.medium,
+                            color: Colors.white.withValues(alpha: 0.85)),
+                        const SizedBox(height: 8),
+                        Heading3Text(_balanceText(),
+                            weight: TextWeight.bold, color: Colors.white)
                       ]),
                 ),
                 withdrawBtn()
               ],
-            ).p16,
-          ).round(10);
+            ),
+          );
         }).hp(DesignConstants.horizontalPadding);
   }
 
@@ -179,18 +207,21 @@ class PaymentWithdrawalState extends State<Transactions> {
           _profileController.withdrawalRequest();
         }
       },
-      child: Center(
-        child: Container(
-            height: 35.0,
-            width: 100,
-            color: AppColorConstants.themeColor,
-            child: Center(
-              child: BodyLargeText(
-                withdrawString.tr,
-                weight: TextWeight.medium,
-                color: Colors.white,
-              ),
-            )).round(5).backgroundCard(),
+      child: Container(
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Center(
+          child: Text(
+            withdrawString.tr,
+            style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppColorConstants.themeColor),
+          ),
+        ),
       ),
     );
   }

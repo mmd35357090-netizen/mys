@@ -176,7 +176,7 @@ selectSegment(int index) {
           subHeading: datingString.tr,
           linkType: QuickLinkType.dating));
     }
-    if (_settingsController.setting.value!.enableChatGPT) {
+    if (!_settingsController.setting.value!.enableChatGPT) {
       quickLinks.add(QuickLink(
           icon: 'assets/explore/chatGPT.png',
           heading: chatGPT.tr,
@@ -280,10 +280,11 @@ void getPosts({required VoidCallback callback}) async {
     }
 
     PostApi.getPosts(
-      isFollowing: selectedSegment.value == 2
+      isFollowing: selectedSegment.value >= 2
           ? null
           : postSearchQuery.isFollowing,
       isVideo: selectedSegment.value == 2 ? 1 : null,
+      isPremium: selectedSegment.value == 3 ? 1 : null,
       isRecent: postSearchQuery.isRecent,
       page: postsDataWrapper.page,
       resultCallback: (result, metadata) {

@@ -1,4 +1,5 @@
 import 'package:foap/components/sm_tab_bar.dart';
+import 'package:foap/universal_components/profile_widgets.dart';
 import 'package:foap/controllers/notification/notifications_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
@@ -132,12 +133,22 @@ class MyProfileState extends State<MyProfile> {
     double cityNamePortionHt =
         _profileController.user.value?.country != null ? 20 : 0;
 
-    return 385 + categoryPortionHt + cityNamePortionHt;
+    return 410 + categoryPortionHt + cityNamePortionHt;
   }
 
   Widget header() {
-    return SizedBox(
+    return Container(
       height: headerHeight(),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            AppColorConstants.themeColor.withValues(alpha: 0.10),
+            AppColorConstants.backgroundColor,
+          ],
+        ),
+      ),
       child: Column(
         children: [
           addProfileView().bP16,
@@ -174,17 +185,20 @@ class MyProfileState extends State<MyProfile> {
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                      UserAvatarView(
-                          user: _profileController.user.value!,
-                          size: 75,
-                          onTapHandler: () {}),
+                      ProfileAvatarRing(
+                        child: UserAvatarView(
+                            user: _profileController.user.value!,
+                            size: 75,
+                            hideBorder: true,
+                            onTapHandler: () {}),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          BodyLargeText(
+                          Heading6Text(
                             _profileController.user.value!.userName,
                             weight: TextWeight.bold,
                           ),
@@ -195,16 +209,14 @@ class MyProfileState extends State<MyProfile> {
                       if (_profileController
                               .user.value!.profileCategoryTypeId !=
                           0)
-                        BodyMediumText(
-                          _profileController
+                        ProfileChip(
+                          text: _profileController
                               .user.value!.profileCategoryTypeName,
-                          weight: TextWeight.medium,
-                          color: AppColorConstants.mainTextColor,
                         ).bP4,
                       if (_profileController.user.value!.country != null)
-                        BodyMediumText(
-                          '${_profileController.user.value!.country}, ${_profileController.user.value!.city}',
-                          color: AppColorConstants.mainTextColor,
+                        ProfileLocation(
+                          text:
+                              '${_profileController.user.value!.country}, ${_profileController.user.value!.city}',
                         ),
                       const SizedBox(
                         height: 20,
@@ -216,7 +228,8 @@ class MyProfileState extends State<MyProfile> {
                         height: 20,
                       ),
                       AppThemeButton(
-                          height: 40,
+                          height: 44,
+                          width: double.infinity,
                           text: editProfileString.tr,
                           onPress: () {
                             Get.to(() => const UpdateProfile())!

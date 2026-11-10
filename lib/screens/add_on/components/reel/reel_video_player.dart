@@ -139,16 +139,15 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
             right: 0,
             bottom: 0,
             child: Container(
-              height: 200,
+              height: 260,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.black.withValues(alpha: 0.0001),
-                    // You can add more colors to customize the gradient
-                    Colors.black.withValues(alpha: 0.1),
-                    Colors.black26,
+                    Colors.black.withValues(alpha: 0.25),
+                    Colors.black.withValues(alpha: 0.65),
                   ],
                 ),
               ),

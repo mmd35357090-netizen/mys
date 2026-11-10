@@ -11,7 +11,19 @@ class ChatHistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 80,
-        color: AppColorConstants.cardColor,
+        decoration: BoxDecoration(
+          color: AppColorConstants.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.6),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4)),
+          ],
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,9 +104,10 @@ class ChatHistoryTile extends StatelessWidget {
                         width: 25,
                         color: AppColorConstants.themeColor,
                         child: Center(
-                          child: BodyLargeText(
+                          child: BodySmallText(
                             '${model.unreadMessages}',
                             weight: TextWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ).circular.bP8
@@ -109,7 +122,7 @@ class ChatHistoryTile extends StatelessWidget {
               ],
             ),
           ],
-        ).hP8).round(20);
+        ).hP8);
   }
 }
 

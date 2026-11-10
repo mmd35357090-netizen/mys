@@ -216,41 +216,47 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
 
   Widget quickLinkView2(QuickLink link) {
     return Container(
-      color: AppColorConstants.cardColor,
-      child: Stack(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5)),
+        ],
+      ),
+      child: Row(
         children: [
           Container(
-            height: 50,
-            width: 50,
-            color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(13),
+            ),
             child: Center(
               child: Image.asset(
                 link.icon,
-                height: 30,
-                width: 30,
-              ),
-            ),
-          ).topLeftDiognalRounded(20),
-          const SizedBox(
-            width: 10,
-          ),
-          Positioned(
-            top: 0,
-            bottom: 0,
-            left: 60,
-            child: Center(
-              child: BodySmallText(
-                link.heading.tr,
-                weight: TextWeight.semiBold,
-                maxLines: 2,
+                height: 24,
+                width: 24,
               ),
             ),
           ),
-          const SizedBox(
-            width: 10,
+          const SizedBox(width: 10),
+          Expanded(
+            child: BodySmallText(
+              link.heading.tr,
+              weight: TextWeight.semiBold,
+              maxLines: 2,
+            ),
           ),
         ],
       ),
-    ).round(20);
+    );
   }
 }

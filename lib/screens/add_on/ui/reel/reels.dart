@@ -81,23 +81,31 @@ class _ReelsState extends State<Reels> {
                   children: [
                     widget.needBackBtn
                         ? Container(
-                            height: 40,
-                            width: 40,
-                            color: AppColorConstants.themeColor
-                                .withValues(alpha: 0.5),
+                            height: 42,
+                            width: 42,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withValues(alpha: 0.35),
+                              border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.25)),
+                            ),
                             child: ThemeIconWidget(
                               ThemeIcon.backArrow,
                               color: Colors.white,
                             ).lP8.ripple(() {
                               Get.back();
                             }),
-                          ).circular
+                          )
                         : Container(),
                     Container(
-                      height: 40,
-                      width: 40,
-                      color: AppColorConstants.themeColor
-                          .withValues(alpha: 0.5),
+                      height: 42,
+                      width: 42,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withValues(alpha: 0.35),
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.25)),
+                      ),
                       child: ThemeIconWidget(
                         ThemeIcon.camera,
                         color: Colors.white,
@@ -114,7 +122,7 @@ class _ReelsState extends State<Reels> {
                                   )),
                         );
                       }),
-                    ).circular,
+                    ),
                   ],
                 ))
           ],

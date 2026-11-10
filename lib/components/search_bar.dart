@@ -67,8 +67,21 @@ class _SFSearchBarState extends State<SFSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: 50,
+      decoration: BoxDecoration(
+        color: backgroundColor ?? AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(radius ?? 16),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.6),
+            width: 0.8),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: shadowOpacity ?? 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 4)),
+        ],
+      ),
       child: Center(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,7 +138,7 @@ class _SFSearchBarState extends State<SFSearchBar> {
                     hintStyle: textStyle ??
                         TextStyle(
                             fontSize: FontSizes.b3,
-                            color: AppColorConstants.mainTextColor),
+                            color: AppColorConstants.subHeadingTextColor),
                     hintText: hintText ?? searchAnythingString.tr,
                     border: InputBorder.none,
                   )).setPadding(bottom: 4, left: 8),
@@ -133,10 +146,7 @@ class _SFSearchBarState extends State<SFSearchBar> {
           ],
         ),
       ),
-    ).backgroundCard(
-        radius: radius ?? 20,
-        fillColor: backgroundColor,
-        shadowOpacity: shadowOpacity);
+    );
   }
 }
 

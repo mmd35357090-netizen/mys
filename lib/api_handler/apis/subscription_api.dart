@@ -3,6 +3,40 @@ import 'package:foap/model/subscription_plan_model.dart';
 import '../../model/api_meta_data.dart';
 import '../api_wrapper.dart';
 
+/// One subscription row: the other person plus what was paid and until when.
+class SubscriptionInfo {
+  final UserModel user;
+  final int coins;
+  final int expiryTime; // unix seconds
+  final int startedAt; // unix seconds
+
+  SubscriptionInfo(
+      {required this.user,
+      required this.coins,
+      required this.expiryTime,
+      required this.startedAt});
+
+  bool get isActive =>
+      expiryTime > DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+  int get daysLeft {
+    final int left = expiryTime - DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    return left <= 0 ? 0 : (left / 86400).ceil();
+  }
+
+  static int _toInt(dynamic v) =>
+      v == null ? 0 : (double.tryParse(v.toString()) ?? 0).round();
+
+  factory SubscriptionInfo.fromJson(Map<String, dynamic> json, String key) {
+    return SubscriptionInfo(
+      user: UserModel.fromJson(json[key]),
+      coins: _toInt(json['subscription_plan_value']),
+      expiryTime: _toInt(json['expiry_time']),
+      startedAt: _toInt(json['created_at']),
+    );
+  }
+}
+
 class SubscriptionApi {
   static getSubscriptionPlans(
       {required Function(List<SubscriptionPlan>) resultCallback}) async {
@@ -62,7 +96,7 @@ class SubscriptionApi {
 
   static getSubscribers(
       {required int id,
-      required Function(List<UserModel>, APIMetaData)
+      required Function(List<SubscriptionInfo>, APIMetaData)
           resultCallback}) async {
     var url = NetworkConstantsUtil.subscribersList;
     url = url.replaceAll('{{user_id}}', id.toString());
@@ -72,7 +106,10 @@ class SubscriptionApi {
         var items = result!.data['subscriber']['items'];
 
         resultCallback(
-            List<UserModel>.from(items.map((x) => UserModel.fromJson(x['subscriberDetail']))),
+            List<SubscriptionInfo>.from(items
+                .where((x) => x['subscriberDetail'] != null)
+                .map((x) => SubscriptionInfo.fromJson(
+                    Map<String, dynamic>.from(x), 'subscriberDetail'))),
             APIMetaData.fromJson(result.data['subscriber']['_meta']));
       }
     });
@@ -80,7 +117,8 @@ class SubscriptionApi {
 
   static getMySubscriptions(
       {required int id,
-      required Function(List<UserModel>,APIMetaData) resultCallback}) async {
+      required Function(List<SubscriptionInfo>, APIMetaData)
+          resultCallback}) async {
     var url = NetworkConstantsUtil.mySubscription;
     url = url.replaceAll('{{user_id}}', id.toString());
 
@@ -89,7 +127,10 @@ class SubscriptionApi {
         var items = result!.data['subscription']['items'];
 
         resultCallback(
-          List<UserModel>.from(items.map((x) => UserModel.fromJson(x['subscriptionUserDetail']))),
+          List<SubscriptionInfo>.from(items
+              .where((x) => x['subscriptionUserDetail'] != null)
+              .map((x) => SubscriptionInfo.fromJson(
+                  Map<String, dynamic>.from(x), 'subscriptionUserDetail'))),
             APIMetaData.fromJson(result.data['subscription']['_meta'])
         );
       }

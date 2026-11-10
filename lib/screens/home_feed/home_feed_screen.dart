@@ -2,6 +2,7 @@ import 'package:foap/controllers/notification/notifications_controller.dart';
 import 'package:foap/screens/settings_menu/notifications.dart';
 import 'package:flutter_polls/flutter_polls.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:foap/helper/imports/chat_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/story_imports.dart';
@@ -35,6 +36,8 @@ class HomeFeedState extends State<HomeFeedScreen> {
   final SettingsController _settingsController = Get.find();
   final DashboardController _dashboardController = Get.find();
   final _controller = ScrollController();
+  // tab bar hides while scrolling down and returns when scrolling up
+  final RxBool _showFilterBar = true.obs;
   final NotificationController _notificationController = Get.find();
 
 
@@ -54,6 +57,18 @@ void initState() {
   _notificationController.getNotificationInfo(); 
 
   _controller.addListener(() {
+    if (_controller.hasClients) {
+      final double pixels = _controller.position.pixels;
+      final ScrollDirection dir =
+          _controller.position.userScrollDirection;
+      if (pixels <= 40) {
+        _showFilterBar.value = true;
+      } else if (dir == ScrollDirection.reverse) {
+        _showFilterBar.value = false;
+      } else if (dir == ScrollDirection.forward) {
+        _showFilterBar.value = true;
+      }
+    }
     if (_controller.position.atEdge) {
       bool isTop = _controller.position.pixels == 0;
       if (isTop) {
@@ -195,6 +210,15 @@ Widget build(BuildContext context) {
               ],
             ),
           ),
+          Obx(() => ClipRect(
+                child: AnimatedAlign(
+                  alignment: Alignment.topCenter,
+                  heightFactor: _showFilterBar.value ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  child: feedFilterBar().vP8,
+                ),
+              )),
           Expanded(child: postsView()),
         ],
       ),
@@ -209,8 +233,8 @@ Widget postsView() {
   final bool enableStories =
       _settingsController.setting.value!.enableStories;
 
-  // Story (optional) + Filter bar + Posting status
-  final int offset = enableStories ? 3 : 2;
+  // Story (optional) + Posting status (filter bar is pinned above the list)
+  final int offset = enableStories ? 2 : 1;
 
   return Obx(() {
     // A very short feed (new account, few followings) has no slot between
@@ -234,11 +258,6 @@ Widget postsView() {
                 ? const StoryAndHighlightsShimmer()
                 : storiesView(),
           );
-        }
-
-        // 2. All | Following buttons
-        if (index == (enableStories ? 1 : 0)) {
-          return feedFilterBar();
         }
 
         // 3. Posting status
@@ -428,8 +447,8 @@ Widget feedFilterBar() {
 
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 2,
+        horizontal: 12,
+        vertical: 0,
       ),
       child: Row(
         children: [
@@ -438,6 +457,8 @@ Widget feedFilterBar() {
           _filterButton('Following', 1, selected),
           const SizedBox(width: 8),
           _filterButton('Videos', 2, selected),
+          const SizedBox(width: 8),
+          _filterButton('Premium', 3, selected),
         ],
       ),
     );
@@ -452,7 +473,7 @@ Widget _filterButton(String title, int index, int selected) {
       onTap: () => _homeController.selectSegment(index),
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 13),
+        padding: const EdgeInsets.symmetric(vertical: 11),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColorConstants.mainTextColor
@@ -466,7 +487,7 @@ Widget _filterButton(String title, int index, int selected) {
                 ? AppColorConstants.backgroundColor
                 : AppColorConstants.mainTextColor,
             fontWeight: FontWeight.w600,
-            fontSize: 15,
+            fontSize: 13.5,
           ),
         ),
       ),

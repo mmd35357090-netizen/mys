@@ -21,14 +21,14 @@ class ReceivedGiftsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColorConstants.cardColor,
+      color: AppColorConstants.backgroundColor,
       child: Column(
         children: [
           backNavigationBar(title: giftsReceivedString.tr),
           Expanded(child: giftersView())
         ],
       ),
-    ).topRounded(40);
+    );
   }
 
   Widget giftersView() {
@@ -38,16 +38,27 @@ class ReceivedGiftsList extends StatelessWidget {
             padding: EdgeInsets.only(
                 left: DesignConstants.horizontalPadding,
                 right: DesignConstants.horizontalPadding,
-                top: 25,
+                top: 16,
                 bottom: 100),
             itemCount: _giftController.stickerGifts.length,
             itemBuilder: (ctx, index) {
-              return GifterUserTile(
-                gift: _giftController.stickerGifts[index],
+              return Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColorConstants.cardColor,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                      color:
+                          AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                      width: 0.6),
+                ),
+                child: GifterUserTile(
+                  gift: _giftController.stickerGifts[index],
+                ),
               );
             },
             separatorBuilder: (ctx, index) {
-              return divider(height: 0.2).vP16;
+              return const SizedBox(height: 10);
             }).addPullToRefresh(
             refreshController: _refreshController,
             onRefresh: () {},

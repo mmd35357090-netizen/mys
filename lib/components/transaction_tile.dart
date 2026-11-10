@@ -10,70 +10,82 @@ class TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-            padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 15.0),
-            child: Row(children: [
+    final bool credit = model.transactionType == TransactionType.credit;
+    final Color color = credit ? AppColorConstants.green : AppColorConstants.red;
+    final bool isMoney = model.transactionMedium == TransactionMedium.money;
+    final String amountText = isMoney
+        ? '${credit ? '+' : '-'} \$${model.amount}'
+        : '${credit ? '+' : '-'} ${model.coins} ${coinsString.tr}';
+    final String statusText = model.status == 1
+        ? pendingString.tr
+        : model.status == 2
+            ? rejectedString.tr
+            : completedString.tr;
+    final Color statusColor = model.status == 1
+        ? const Color(0xFFF59E0B)
+        : model.status == 2
+            ? AppColorConstants.red
+            : AppColorConstants.green;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+      ),
+      child: Row(children: [
+        Container(
+          height: 42,
+          width: 42,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(
+              credit ? Icons.south_west_rounded : Icons.north_east_rounded,
+              color: color,
+              size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BodyLargeText(_adsTitle(model.paymentType),
+                  weight: TextWeight.semiBold),
+              const SizedBox(height: 2),
+              BodySmallText(model.createDate,
+                  color: AppColorConstants.subHeadingTextColor),
+            ],
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            BodyLargeText(amountText, weight: TextWeight.bold, color: color),
+            if (isMoney) ...[
+              const SizedBox(height: 4),
               Container(
-                color: AppColorConstants.themeColor.withValues(alpha: 0.1),
-                height: 31,
-                width: 31,
-                child: ThemeIconWidget(ThemeIcon.wallet,
-                    color: AppColorConstants.iconColor, size: 18),
-              ).circular,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  BodyLargeText(
-                    _adsTitle(model.paymentType),
-                    color: AppColorConstants.themeColor,
-                  ),
-                  // const SizedBox(height: 5),
-                  BodySmallText(
-                    model.createDate,
-                  )
-                ],
-              ).lP8,
-              const Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (model.transactionMedium == TransactionMedium.money)
-                    BodyLargeText(
-                        '${model.transactionType == TransactionType.credit ? '+' : '-'} \$${model.amount}',
-                        weight: TextWeight.bold,
-                        color:
-                            model.transactionType == TransactionType.credit
-                                ? AppColorConstants.green
-                                : AppColorConstants.red),
-                  if (model.transactionMedium == TransactionMedium.coin)
-                    BodyLargeText(
-                        '${model.transactionType == TransactionType.credit ? '+' : '-'} ${model.coins} ${coinsString.tr}',
-                        weight: TextWeight.bold,
-                        color:
-                            model.transactionType == TransactionType.credit
-                                ? AppColorConstants.green
-                                : AppColorConstants.red),
-                  if (model.transactionMedium == TransactionMedium.money)
-                    BodyMediumText(
-                      model.status == 1
-                          ? pendingString.tr
-                          : model.status == 2
-                              ? rejectedString.tr
-                              : completedString.tr,
-                      weight: TextWeight.medium,
-                      color: model.status == 1
-                          ? AppColorConstants.themeColor
-                          : AppColorConstants.red,
-                    ),
-                ],
-              )
-            ])),
-      ],
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(statusText,
+                    style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: statusColor)),
+              ),
+            ],
+          ],
+        ),
+      ]),
     );
   }
 }
