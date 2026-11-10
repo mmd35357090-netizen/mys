@@ -99,7 +99,7 @@ class _BuyTicketState extends State<BuyTicket> {
   Widget eventDetail() {
     return Container(
       height: 120,
-      color: AppColorConstants.cardColor.withValues(alpha: 0.4),
+      color: AppColorConstants.cardColor,
       child: Row(
         children: [
           CachedNetworkImage(
@@ -133,9 +133,10 @@ class _BuyTicketState extends State<BuyTicket> {
                         Container(
                           height: 30,
                           width: 30,
-                          color: AppColorConstants.cardColor.darken(),
-                          child: ThemeIconWidget(ThemeIcon.minus),
-                        ).round(5).ripple(() {
+                          color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                          child: ThemeIconWidget(ThemeIcon.minus,
+                              color: AppColorConstants.themeColor),
+                        ).round(10).ripple(() {
                           _buyTicketController.removeTicket();
                         }),
                         Obx(() => SizedBox(
@@ -149,9 +150,10 @@ class _BuyTicketState extends State<BuyTicket> {
                         Container(
                           height: 30,
                           width: 30,
-                          color: AppColorConstants.cardColor.darken(),
-                          child: ThemeIconWidget(ThemeIcon.plusSymbol),
-                        ).round(5).ripple(() {
+                          color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                          child: ThemeIconWidget(ThemeIcon.plusSymbol,
+                              color: AppColorConstants.themeColor),
+                        ).round(10).ripple(() {
                           _buyTicketController.addTicket();
                         }),
                       ],
@@ -163,12 +165,12 @@ class _BuyTicketState extends State<BuyTicket> {
           ),
         ],
       ).p8,
-    ).round(15);
+    ).round(18).backgroundCard(shadowOpacity: 0.06);
   }
 
   Widget giftTo() {
     return Container(
-      color: AppColorConstants.cardColor.withValues(alpha: 0.4),
+      color: AppColorConstants.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -200,7 +202,7 @@ class _BuyTicketState extends State<BuyTicket> {
           )
         ],
       ).p16,
-    ).round(10).hp(DesignConstants.horizontalPadding);
+    ).round(18).hp(DesignConstants.horizontalPadding);
   }
 
   Widget ticketType() {
@@ -255,12 +257,10 @@ class _BuyTicketState extends State<BuyTicket> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                      color: Theme.of(context)
-                          .primaryColor
-                          .darken()
-                          .withValues(alpha: 0.2),
-                      child:
-                          Heading4Text(ticket.name, weight: TextWeight.medium)
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                      child: Heading5Text(ticket.name,
+                              weight: TextWeight.bold,
+                              color: AppColorConstants.themeColor)
                               .setPadding(
                                   left: DesignConstants.horizontalPadding,
                                   right: DesignConstants.horizontalPadding,
@@ -310,7 +310,7 @@ class _BuyTicketState extends State<BuyTicket> {
       ).p16,
     ).borderWithRadius(
         value: isSelected == true ? 2 : 1,
-        radius: 20,
+        radius: 22,
         color: isSelected == true ? AppColorConstants.themeColor : null);
   }
 
@@ -421,7 +421,7 @@ class _BuyTicketState extends State<BuyTicket> {
       ).p25,
     ).borderWithRadius(
         value: isSelected == true ? 4 : 1,
-        radius: 20,
+        radius: 22,
         color: isSelected == true ? AppColorConstants.themeColor : null);
   }
 

@@ -114,7 +114,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
 
   Widget giftTo() {
     return Container(
-      color: AppColorConstants.cardColor.withValues(alpha: 0.4),
+      color: AppColorConstants.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -160,7 +160,7 @@ class EventBookingDetailState extends State<EventBookingDetail> {
 
   Widget giftBy() {
     return Container(
-      color: AppColorConstants.cardColor.withValues(alpha: 0.4),
+      color: AppColorConstants.cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,7 +210,16 @@ class EventBookingDetailState extends State<EventBookingDetail> {
         left: 0,
         right: 0,
         child: Container(
-          color: AppColorConstants.cardColor,
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4))
+            ],
+          ),
           height: widget.booking.giftedToUser == null ? 150 : 90,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -303,12 +312,16 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                    color: AppColorConstants.themeColor
-                        .withValues(alpha: 0.2),
-                    child: ThemeIconWidget(ThemeIcon.calendar,
-                            color: AppColorConstants.themeColor)
-                        .p8)
-                .circular,
+              height: 42,
+              width: 42,
+              decoration: BoxDecoration(
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(13)),
+              child: Center(
+                child: ThemeIconWidget(ThemeIcon.calendar,
+                    size: 20, color: AppColorConstants.themeColor),
+              ),
+            ),
             const SizedBox(
               width: 20,
             ),
@@ -333,12 +346,16 @@ class EventBookingDetailState extends State<EventBookingDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                    color: AppColorConstants.themeColor
-                        .withValues(alpha: 0.2),
-                    child: ThemeIconWidget(ThemeIcon.location,
-                            color: AppColorConstants.themeColor)
-                        .p8)
-                .circular,
+              height: 42,
+              width: 42,
+              decoration: BoxDecoration(
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(13)),
+              child: Center(
+                child: ThemeIconWidget(ThemeIcon.location,
+                    size: 20, color: AppColorConstants.themeColor),
+              ),
+            ),
             const SizedBox(
               width: 20,
             ),

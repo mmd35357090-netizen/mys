@@ -155,18 +155,43 @@ class EventDetailState extends State<EventDetail> {
   }
 
   Widget eventInfo() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
+      child: _eventInfoInner(),
+    );
+  }
+
+  Widget _eventInfoInner() {
     return Column(
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                    color: AppColorConstants.themeColor
-                        .withValues(alpha: 0.2),
-                    child: ThemeIconWidget(ThemeIcon.calendar,
-                            color: AppColorConstants.themeColor)
-                        .p8)
-                .circular,
+              height: 42,
+              width: 42,
+              decoration: BoxDecoration(
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(13)),
+              child: Center(
+                child: ThemeIconWidget(ThemeIcon.calendar,
+                    size: 20, color: AppColorConstants.themeColor),
+              ),
+            ),
             const SizedBox(
               width: 20,
             ),
@@ -191,12 +216,16 @@ class EventDetailState extends State<EventDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                    color: AppColorConstants.themeColor
-                        .withValues(alpha: 0.2),
-                    child: ThemeIconWidget(ThemeIcon.location,
-                            color: AppColorConstants.themeColor)
-                        .p8)
-                .circular,
+              height: 42,
+              width: 42,
+              decoration: BoxDecoration(
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(13)),
+              child: Center(
+                child: ThemeIconWidget(ThemeIcon.location,
+                    size: 20, color: AppColorConstants.themeColor),
+              ),
+            ),
             const SizedBox(
               width: 20,
             ),
@@ -222,12 +251,16 @@ class EventDetailState extends State<EventDetail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                      color: AppColorConstants.themeColor
-                          .withValues(alpha: 0.2),
-                      child: ThemeIconWidget(ThemeIcon.calendar,
-                              color: AppColorConstants.themeColor)
-                          .p8)
-                  .circular,
+              height: 42,
+              width: 42,
+              decoration: BoxDecoration(
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(13)),
+              child: Center(
+                child: ThemeIconWidget(ThemeIcon.calendar,
+                    size: 20, color: AppColorConstants.themeColor),
+              ),
+            ),
               const SizedBox(
                 width: 20,
               ),
@@ -406,7 +439,16 @@ class EventDetailState extends State<EventDetail> {
         left: 0,
         right: 0,
         child: Container(
-          color: AppColorConstants.cardColor,
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4))
+            ],
+          ),
           height: 100,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -435,7 +477,16 @@ class EventDetailState extends State<EventDetail> {
         left: 0,
         right: 0,
         child: Container(
-          color: AppColorConstants.cardColor,
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4))
+            ],
+          ),
           height: 100,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -470,7 +521,16 @@ class EventDetailState extends State<EventDetail> {
         left: 0,
         right: 0,
         child: Container(
-          color: AppColorConstants.cardColor,
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4))
+            ],
+          ),
           height: 100,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -501,7 +561,16 @@ class EventDetailState extends State<EventDetail> {
         left: 0,
         right: 0,
         child: Container(
-          color: AppColorConstants.cardColor,
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4))
+            ],
+          ),
           height: 90,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
