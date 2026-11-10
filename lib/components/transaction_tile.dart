@@ -90,13 +90,13 @@ class TransactionTile extends StatelessWidget {
   }
 }
 
-/// Titles for the Ads transaction history.
+/// Titles for the money transaction history.
 String _adsTitle(PaymentType type) {
   switch (type) {
     case PaymentType.promotion:
       return 'Boost';
     case PaymentType.promotionRefund:
-      return 'Boost cancelled (refund)';
+      return 'Boost refund (unused budget)';
     case PaymentType.withdrawal:
       return 'Withdraw';
     case PaymentType.withdrawalRefund:

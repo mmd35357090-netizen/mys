@@ -69,7 +69,7 @@ class PaymentWithdrawalState extends State<Transactions> {
                       child: Padding(
                         padding: const EdgeInsets.all(30),
                         child: BodyLargeText(
-                            'No ad transactions yet. Boosts, cancelled boosts and withdrawals appear here.',
+                            'No transactions yet. Boosts, refunds, withdrawals and other money activity appear here.',
                             textAlign: TextAlign.center,
                             color: AppColorConstants.subHeadingTextColor),
                       ),
