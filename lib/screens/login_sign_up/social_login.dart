@@ -51,79 +51,79 @@ class _SocialLoginState extends State<SocialLogin> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         widget.hidePhoneLogin == false
             ? Container(
-                height: 40,
-                width: 40,
-                color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                height: 52,
+                width: 52,
+                color: AppColorConstants.cardColor,
                 child: Center(
                     child: Image.asset(
                   'assets/phone.png',
-                  height: 20,
-                  width: 20,
+                  height: 24,
+                  width: 24,
                   color: isDarkMode
                       ? Colors.white
                       : AppColorConstants.mainTextColor,
-                ))).round(10).ripple(() {
+                ))).round(16).ripple(() {
                 Get.offAll(() => const PhoneLoginScreen());
               })
             : Container(
-                height: 40,
-                width: 40,
-                color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                height: 52,
+                width: 52,
+                color: AppColorConstants.cardColor,
                 child: Center(
                     child: Image.asset(
                   'assets/email.png',
-                  height: 20,
-                  width: 20,
+                  height: 24,
+                  width: 24,
                   color: isDarkMode
                       ? Colors.white
                       : AppColorConstants.mainTextColor,
-                ))).round(10).ripple(() {
+                ))).round(16).ripple(() {
                 Get.offAll(() => const LoginScreen());
               }),
         Container(
-            height: 40,
-            width: 40,
-            color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+            height: 52,
+            width: 52,
+            color: AppColorConstants.cardColor,
             child: Center(
                 child: Image.asset(
               'assets/google.png',
-              height: 20,
-              width: 20,
-            ))).round(10).ripple(() {
+              height: 24,
+              width: 24,
+            ))).round(16).ripple(() {
           signInWithGoogle();
         }),
         if (Platform.isIOS)
           Container(
-              height: 40,
-              width: 40,
-              color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+              height: 52,
+              width: 52,
+              color: AppColorConstants.cardColor,
               child: Center(
                   child: Image.asset(
                 'assets/apple.png',
-                height: 20,
-                width: 20,
+                height: 24,
+                width: 24,
                 color: isDarkMode
                     ? Colors.white
                     : AppColorConstants.mainTextColor,
-              ))).round(10).ripple(() {
+              ))).round(16).ripple(() {
             //signInWithGoogle();
             _handleAppleSignIn();
             // Get.to(() => const InstagramView());
           }),
         Container(
-            height: 40,
-            width: 40,
-            color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+            height: 52,
+            width: 52,
+            color: AppColorConstants.cardColor,
             child: Center(
                 child: Image.asset(
               'assets/facebook.png',
-              height: 20,
-              width: 20,
-            ))).round(10).ripple(() {
+              height: 24,
+              width: 24,
+            ))).round(16).ripple(() {
           fbSignInAction();
         }),
       ],

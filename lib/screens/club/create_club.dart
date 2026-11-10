@@ -192,40 +192,52 @@ class CreateClubState extends State<CreateClub> {
       required String subTitle,
       required bool isSelected,
       required VoidCallback callback}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Container(
-                color: AppColorConstants.themeColor,
-                child: ThemeIconWidget(
-                  icon,
-                  color: Colors.white,
-                ).p8)
-            .circular,
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BodyLargeText(title, weight: TextWeight.semiBold),
-              const SizedBox(
-                height: 5,
-              ),
-              BodySmallText(
-                subTitle,
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: isSelected
+                ? AppColorConstants.themeColor
+                : AppColorConstants.dividerColor.withValues(alpha: 0.6),
+            width: isSelected ? 1.4 : 0.8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+                color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                shape: BoxShape.circle),
+            child: Center(
+              child: ThemeIconWidget(icon,
+                  size: 20, color: AppColorConstants.themeColor),
+            ),
           ),
-        ),
-        // Spacer(),
-        ThemeIconWidget(
-          isSelected ? ThemeIcon.selectedCheckbox : ThemeIcon.emptyCheckbox,
-          size: 25,
-          color: isSelected
-              ? AppColorConstants.themeColor
-              : AppColorConstants.iconColor,
-        )
-      ],
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BodyLargeText(title, weight: TextWeight.semiBold),
+                const SizedBox(height: 4),
+                BodySmallText(subTitle,
+                    color: AppColorConstants.subHeadingTextColor),
+              ],
+            ),
+          ),
+          ThemeIconWidget(
+            isSelected ? ThemeIcon.selectedCheckbox : ThemeIcon.emptyCheckbox,
+            size: 24,
+            color: isSelected
+                ? AppColorConstants.themeColor
+                : AppColorConstants.iconColor,
+          )
+        ],
+      ),
     ).ripple(() {
       callback();
     });

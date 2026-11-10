@@ -34,17 +34,20 @@ class SelectUserForChatState extends State<SelectUserForChat> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+      ),
       child: Column(
         children: [
           const SizedBox(
-            height: 5,
+            height: 10,
           ),
           Center(
             child: Container(
               height: 5,
-              width: 100,
-              color: AppColorConstants.mainTextColor,
+              width: 44,
+              color: AppColorConstants.dividerColor,
             ).circular,
           ),
           const SizedBox(

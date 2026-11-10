@@ -35,92 +35,102 @@ class LoginScreenState extends State<LoginScreen> {
             FocusScope.of(context).requestFocus(FocusNode());
           },
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  height: Get.height * 0.1,
-                ),
+                SizedBox(height: Get.height * 0.08),
                 if (widget.showCloseBtn == true)
                   const Align(
                     alignment: Alignment.centerRight,
                     child: AppThemeCloseButton(),
                   ),
-                SizedBox(
-                    height: Get.height * 0.12,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Heading3Text(signInMessageString.tr,
-                                weight: TextWeight.bold)
-                            .rp(100),
+                Center(
+                  child: Container(
+                    height: 76,
+                    width: 76,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColorConstants.themeColor,
+                          AppColorConstants.themeColor.withValues(alpha: 0.7)
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                            color: AppColorConstants.themeColor
+                                .withValues(alpha: 0.3),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6))
                       ],
-                    )),
-                SizedBox(
-                  height: Get.height * 0.05,
+                    ),
+                    child: const Icon(Icons.person_rounded,
+                        color: Colors.white, size: 38),
+                  ),
                 ),
+                const SizedBox(height: 22),
+                Heading3Text(signInMessageString.tr,
+                    weight: TextWeight.bold, textAlign: TextAlign.center),
+                const SizedBox(height: 28),
                 AppTextField(
                   controller: email,
                   hintText: emailOrUsernameString.tr,
                   icon: ThemeIcon.email,
                 ),
-                SizedBox(
-                  height: Get.height * 0.015,
-                ),
+                const SizedBox(height: 12),
                 AppPasswordTextField(
                   controller: password,
                   hintText: passwordString.tr,
                   icon: ThemeIcon.lock,
                   onChanged: (value) {},
                 ),
-                SizedBox(
-                  height: Get.height * 0.02,
-                ),
-                InkWell(
-                  onTap: () {
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: BodySmallText(
+                    forgotPwdString.tr,
+                    weight: TextWeight.semiBold,
+                    color: AppColorConstants.themeColor,
+                  ).ripple(() {
                     Get.to(() => const ForgotPasswordScreen());
-                  },
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: BodySmallText(
-                      forgotPwdString.tr,
-                      weight: TextWeight.semiBold,
-                    ),
-                  ),
+                  }),
                 ),
-                SizedBox(
-                  height: Get.height * 0.015,
-                ),
+                const SizedBox(height: 18),
                 addLoginBtn(),
-                SizedBox(
-                  height: Get.height * 0.02,
-                ),
+                const SizedBox(height: 18),
                 Wrap(
-                  spacing: 2,
+                  alignment: WrapAlignment.center,
+                  spacing: 4,
                   children: [
-                    BodySmallText(dontHaveAccountString),
-                    BodySmallText(
+                    BodyMediumText(dontHaveAccountString,
+                        color: AppColorConstants.subHeadingTextColor),
+                    BodyMediumText(
                       createAnAccountString,
                       weight: TextWeight.bold,
+                      color: AppColorConstants.themeColor,
                     ),
                   ],
                 ).ripple(() {
                   Get.to(() => const SignUpScreen());
                 }),
-                divider(height: 1).vp(40),
-                BodyMediumText(continueWithAccountsString),
-                SizedBox(
-                  height: Get.height * 0.04,
+                const SizedBox(height: 28),
+                Row(
+                  children: [
+                    Expanded(child: divider(height: 1)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: BodySmallText(continueWithAccountsString,
+                          color: AppColorConstants.subHeadingTextColor),
+                    ),
+                    Expanded(child: divider(height: 1)),
+                  ],
                 ),
-                const SocialLogin(hidePhoneLogin: false)
-                    .setPadding(left: 65, right: 65),
-
-                SizedBox(
-                  height: Get.height * 0.05,
-                ),
-                // bioMetricView(),
-                // const Spacer(),
+                const SizedBox(height: 22),
+                const SocialLogin(hidePhoneLogin: false),
+                SizedBox(height: Get.height * 0.05),
               ]),
-        ).setPadding(left: 25, right: 25),
+        ).setPadding(left: 24, right: 24),
       ),
     );
   }

@@ -54,13 +54,13 @@ class _WallpaperForChatBackgroundState
 
         backNavigationBar(
              title: wallpaperString.tr),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Expanded(
             child: GridView.builder(
                 padding: EdgeInsets.zero,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
                     childAspectRatio: 0.6,
                     crossAxisCount: 3),
                 itemCount: wallpapers.length,
@@ -79,15 +79,20 @@ class _WallpaperForChatBackgroundState
                               height: double.infinity,
                               width: double.infinity,
                               color: Colors.black38,
-                              child: ThemeIconWidget(
-                                ThemeIcon.checkMark,
-                                size: 50,
-                                color: Colors.white,
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: AppColorConstants.themeColor,
+                                      shape: BoxShape.circle),
+                                  child: const Icon(Icons.check_rounded,
+                                      size: 28, color: Colors.white),
+                                ),
                               ),
                             ))
                           : Container()
                     ],
-                  ).round(5).ripple(() {
+                  ).round(16).ripple(() {
                     currentWallpaper = wallpapers[index];
                     SharedPrefs().setWallpaper(
                         roomId: widget.roomId,

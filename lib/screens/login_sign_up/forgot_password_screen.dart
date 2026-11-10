@@ -23,24 +23,38 @@ class ForgotPasswordState extends State<ForgotPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: Get.height * 0.1,
-              ),
+              SizedBox(height: Get.height * 0.07),
               const Align(
                 alignment: Alignment.centerLeft,
                 child: AppThemeBackButton(),
               ),
-              SizedBox(
-                height: Get.height * 0.05,
+              SizedBox(height: Get.height * 0.04),
+              Center(
+                child: Container(
+                  height: 84,
+                  width: 84,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  ),
+                  child: Icon(Icons.lock_reset_rounded,
+                      size: 40, color: AppColorConstants.themeColor),
+                ),
               ),
-              Heading3Text(forgotPwdString.tr, weight: TextWeight.bold).rp(100),
-              SizedBox(
-                height: Get.height * 0.01,
+              const SizedBox(height: 20),
+              Center(
+                child: Heading3Text(forgotPwdString.tr,
+                    weight: TextWeight.bold),
               ),
-              BodyMediumText(
-                helpToGetAccountString.tr,
-                color: AppColorConstants.subHeadingTextColor,
-              ).setPadding(top: 10, bottom: 40),
+              const SizedBox(height: 8),
+              Center(
+                child: BodyMediumText(
+                  helpToGetAccountString.tr,
+                  textAlign: TextAlign.center,
+                  color: AppColorConstants.subHeadingTextColor,
+                ),
+              ),
+              const SizedBox(height: 28),
               AppTextField(
                 controller: email,
                 hintText: enterEmailString.tr,
@@ -55,7 +69,7 @@ class ForgotPasswordState extends State<ForgotPasswordScreen> {
                   loginAnotherAccountString.tr,
                   weight: TextWeight.bold,
                   textAlign: TextAlign.start,
-                  color: AppColorConstants.subHeadingTextColor,
+                  color: AppColorConstants.themeColor,
                 ).ripple(() {
                   Get.back();
                 }),

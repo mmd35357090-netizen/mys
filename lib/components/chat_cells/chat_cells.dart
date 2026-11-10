@@ -61,17 +61,14 @@ class ChatMessageTile extends StatelessWidget {
                         ? Colors.transparent
                         : message.isMineMessage
                             ? AppColorConstants.themeColor
-                                .withValues(alpha: 0.35)
+                                .withValues(alpha: 0.22)
                             : AppColorConstants.cardColor,
-                    // Rounded bubble with a small "tail" corner on the
-                    // sender's side.
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16),
-                      topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(
-                          message.isMineMessage ? 16 : 4),
-                      bottomRight: Radius.circular(
-                          message.isMineMessage ? 4 : 16),
+                      topLeft: const Radius.circular(18),
+                      topRight: const Radius.circular(18),
+                      bottomLeft: Radius.circular(message.isMineMessage ? 18 : 4),
+                      bottomRight:
+                          Radius.circular(message.isMineMessage ? 4 : 18),
                     ),
                   ),
                   child: Column(
@@ -109,7 +106,7 @@ class ChatMessageTile extends StatelessWidget {
                       ),
                       MessageDeliveryStatusView(message: message),
                     ],
-                  ).setPadding(left: 12, right: 12, top: 8, bottom: 8),
+                  ).p8,
                 ).setPadding(
                     left: message.isMineMessage ? 50 : 0,
                     right: message.isMineMessage ? 0 : 50),

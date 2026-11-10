@@ -111,21 +111,31 @@ class AddPostState extends State<AddPostScreen> {
                                 }
                               },
                               child: ThemeIconWidget(ThemeIcon.backArrow)),
-                          const Spacer(),
-                          Container(
-                                  color: AppColorConstants.themeColor,
+                          Expanded(
+                              child: Center(
                                   child: BodyLargeText(
-                                    widget.competition == null
-                                        ? postString.tr
-                                        : submitString.tr,
-                                    weight: TextWeight.medium,
-                                    color: Colors.white,
-                                  ).setPadding(
-                                      left: 8,
-                                      right: 8,
-                                      top: 5,
-                                      bottom: 5))
-                              .round(10)
+                                      widget.competition == null
+                                          ? 'New post'
+                                          : postString.tr,
+                                      weight: TextWeight.bold))),
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: LinearGradient(colors: [
+                                  AppColorConstants.themeColor,
+                                  AppColorConstants.themeColor
+                                      .withValues(alpha: 0.78)
+                                ]),
+                              ),
+                              child: BodyLargeText(
+                                widget.competition == null
+                                    ? postString.tr
+                                    : submitString.tr,
+                                weight: TextWeight.bold,
+                                color: Colors.white,
+                              ))
                               .ripple(() {
                             if ((widget.items ??
                                         _selectPostMediaController
@@ -163,7 +173,12 @@ class AddPostState extends State<AddPostScreen> {
                         height: 30,
                       ),
                       postSourceWidget(),
-                      Row(
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: DesignConstants.horizontalPadding),
+                        padding: const EdgeInsets.all(12),
+                        decoration: _cardDecoration(),
+                        child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           media().ripple(() {
@@ -188,113 +203,100 @@ class AddPostState extends State<AddPostScreen> {
                           }),
                           Expanded(child: addDescriptionView()),
                         ],
-                      ).hp(DesignConstants.horizontalPadding),
+                      ),
+                      ),
                       if (widget.isReel != true)
                         PostOptionsPopup(
                           callbackHandler: (option) {
                             postOptionSelected(option);
                           },
-                        ).vP25,
-                      SizedBox(
-                        height: 50,
-                        child: Row(
+                        ).vP16,
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: DesignConstants.horizontalPadding),
+                        decoration: _cardDecoration(),
+                        child: Column(
                           children: [
-                            ThemeIconWidget(ThemeIcon.message),
-                            const SizedBox(
-                              width: 10,
+                            _optionRow(
+                              icon: Icons.chat_bubble_outline_rounded,
+                              title: BodyMediumText(allowCommentsString.tr,
+                                  weight: TextWeight.medium),
+                              trailing: Obx(() => Switch(
+                                    value: addPostController
+                                        .enableComments.value,
+                                    activeColor:
+                                        AppColorConstants.themeColor,
+                                    onChanged: (_) => addPostController
+                                        .toggleEnableComments(),
+                                  )),
                             ),
-                            BodyMediumText(allowCommentsString),
-                            const Spacer(),
-                            Obx(() => ThemeIconWidget(addPostController
-                                            .enableComments.value
-                                        ? ThemeIcon.selectedCheckbox
-                                        : ThemeIcon.emptyCheckbox)
-                                    .ripple(() {
-                                  addPostController.toggleEnableComments();
-                                })),
-                          ],
-                        ),
-                      ).hp(DesignConstants.horizontalPadding),
-                      if (_userProfileManager
-                          .user.value!.subscriptionPlans.isNotEmpty)
-                        SizedBox(
-                          height: 50,
-                          child: Row(
-                            children: [
-                              ThemeIconWidget(ThemeIcon.diamond),
-                              const SizedBox(
-                                width: 10,
+                            if (_userProfileManager
+                                .user.value!.subscriptionPlans.isNotEmpty) ...[
+                              _optionDivider(),
+                              _optionRow(
+                                icon: Icons.diamond_outlined,
+                                title: BodyMediumText(
+                                    forSubscribersOnlyString.tr,
+                                    weight: TextWeight.medium),
+                                trailing: Obx(() => Switch(
+                                      value: addPostController
+                                          .isPaidContent.value,
+                                      activeColor:
+                                          AppColorConstants.themeColor,
+                                      onChanged: (_) => addPostController
+                                          .togglePaidContentMode(),
+                                    )),
                               ),
-                              BodyMediumText(forSubscribersOnlyString),
-                              const Spacer(),
-                              Obx(() => ThemeIconWidget(addPostController
-                                              .isPaidContent.value
-                                          ? ThemeIcon.selectedCheckbox
-                                          : ThemeIcon.emptyCheckbox)
-                                      .ripple(() {
-                                    addPostController
-                                        .togglePaidContentMode();
-                                  })),
                             ],
-                          ),
-                        ).hp(DesignConstants.horizontalPadding),
-                      divider(height: 0.5),
-                      SizedBox(
-                        height: 50,
-                        child: Row(
-                          children: [
-                            ThemeIconWidget(ThemeIcon.location),
-                            const SizedBox(
-                              width: 10,
+                            _optionDivider(),
+                            _optionRow(
+                              icon: Icons.location_on_outlined,
+                              title: Obx(() => addPostController
+                                          .taggedLocation.value ==
+                                      null
+                                  ? BodyMediumText(addLocationString.tr,
+                                      weight: TextWeight.medium)
+                                  : BodyMediumText(
+                                      addPostController
+                                          .taggedLocation.value!.name,
+                                      weight: TextWeight.semiBold,
+                                      color: AppColorConstants.themeColor)),
+                              trailing: Obx(() => addPostController
+                                          .taggedLocation.value ==
+                                      null
+                                  ? Icon(Icons.chevron_right_rounded,
+                                      color: AppColorConstants
+                                          .subHeadingTextColor)
+                                  : Icon(Icons.close_rounded,
+                                          color: AppColorConstants
+                                              .subHeadingTextColor)
+                                      .ripple(() {
+                                      addPostController
+                                          .setTaggedLocation(null);
+                                    })),
+                              onTap: () {
+                                openLocationPicker();
+                              },
                             ),
-                            Obx(() =>
-                                addPostController.taggedLocation.value ==
-                                        null
-                                    ? BodyMediumText(addLocationString)
-                                    : BodyLargeText(addPostController
-                                        .taggedLocation.value!.name)),
-                            const Spacer(),
-                            Obx(() =>
-                                addPostController.taggedLocation.value ==
-                                        null
-                                    ? ThemeIconWidget(ThemeIcon.nextArrow)
-                                    : ThemeIconWidget(ThemeIcon.close)
-                                        .ripple(() {
-                                        addPostController
-                                            .setTaggedLocation(null);
-                                      })),
+                            _optionDivider(),
+                            _optionRow(
+                              icon: Icons.group_add_outlined,
+                              title: Obx(() => BodyMediumText(
+                                  addPostController.collaborators.isEmpty
+                                      ? addCollaboratorString.tr
+                                      : '${addCollaboratorString.tr} (${addPostController.collaborators.length} ${collaboratorsString.tr})',
+                                  weight: TextWeight.medium)),
+                              trailing: Icon(Icons.chevron_right_rounded,
+                                  color:
+                                      AppColorConstants.subHeadingTextColor),
+                              onTap: () {
+                                Get.to(() => const AddCollaborators(),
+                                    fullscreenDialog: true);
+                              },
+                            ),
                           ],
                         ),
-                      ).hp(DesignConstants.horizontalPadding).ripple(() {
-                        openLocationPicker();
-                      }),
-                      divider(height: 0.5),
-                      SizedBox(
-                        height: 50,
-                        child: Row(
-                          children: [
-                            ThemeIconWidget(ThemeIcon.account),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Obx(() => Wrap(
-                                  children: [
-                                    BodyMediumText(addCollaboratorString),
-                                    if (addPostController
-                                        .collaborators.isNotEmpty)
-                                      BodyMediumText(
-                                          '(${addPostController.collaborators.length} $collaboratorsString)'),
-                                  ],
-                                )),
-                            const Spacer(),
-                            ThemeIconWidget(ThemeIcon.nextArrow),
-                          ],
-                        ),
-                      ).hp(DesignConstants.horizontalPadding).ripple(() {
-                        Get.to(() => const AddCollaborators(),
-                            fullscreenDialog: true);
-                      }),
-                      divider(height: 0.5),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -331,6 +333,52 @@ class AddPostState extends State<AddPostScreen> {
             );
           }),
     );
+  }
+
+  BoxDecoration _cardDecoration() => BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      );
+
+  Widget _optionDivider() => Divider(
+      height: 1,
+      indent: 60,
+      color: AppColorConstants.dividerColor.withValues(alpha: 0.5));
+
+  Widget _optionRow(
+      {required IconData icon,
+      required Widget title,
+      required Widget trailing,
+      VoidCallback? onTap}) {
+    final row = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: Row(
+        children: [
+          Container(
+            height: 34,
+            width: 34,
+            decoration: BoxDecoration(
+                color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(11)),
+            child:
+                Icon(icon, size: 19, color: AppColorConstants.themeColor),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: title),
+          trailing,
+        ],
+      ),
+    );
+    return onTap == null ? row : row.ripple(onTap);
   }
 
   postOptionSelected(PostOptionType type) {
@@ -454,7 +502,7 @@ class AddPostState extends State<AddPostScreen> {
                           ],
                         )
                       : ThemeIconWidget(ThemeIcon.mic),
-        ).round(10).rP8;
+        ).round(14).rP8;
       } else {
         return Container();
       }
@@ -463,10 +511,10 @@ class AddPostState extends State<AddPostScreen> {
 
   Widget addDescriptionView() {
     return SizedBox(
-      height: 70,
+      height: 110,
       child: Obx(() {
         return Container(
-          color: AppColorConstants.cardColor,
+          color: Colors.transparent,
           child: SmartTextField(
               maxLine: 5,
               controller: _smartTextFieldController.textField.value,
@@ -480,7 +528,7 @@ class AddPostState extends State<AddPostScreen> {
                   _smartTextFieldController.stoppedEditing();
                 }
               }),
-        ).round(5);
+        );
       }),
     );
   }

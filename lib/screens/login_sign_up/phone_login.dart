@@ -32,26 +32,47 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
             child: SizedBox(
               height: Get.height,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(
-                      height: Get.height * 0.08,
+                    SizedBox(height: Get.height * 0.1),
+                    Center(
+                      child: Container(
+                        height: 76,
+                        width: 76,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColorConstants.themeColor,
+                              AppColorConstants.themeColor
+                                  .withValues(alpha: 0.7)
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                                color: AppColorConstants.themeColor
+                                    .withValues(alpha: 0.3),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6))
+                          ],
+                        ),
+                        child: const Icon(Icons.phone_iphone_rounded,
+                            color: Colors.white, size: 36),
+                      ),
                     ),
-                    Heading3Text(welcomeString.tr, weight: TextWeight.bold),
-                    SizedBox(
-                      height: Get.height * 0.01,
-                    ),
-                    Heading3Text(signInMessageString.tr,
-                        weight: TextWeight.medium),
-
-                    SizedBox(
-                      height: Get.height * 0.1,
-                    ),
+                    const SizedBox(height: 22),
+                    Heading3Text(welcomeString.tr,
+                        weight: TextWeight.bold, textAlign: TextAlign.center),
+                    const SizedBox(height: 6),
+                    BodyMediumText(signInMessageString.tr,
+                        textAlign: TextAlign.center,
+                        color: AppColorConstants.subHeadingTextColor),
+                    const SizedBox(height: 30),
                     Obx(() => AppMobileTextField(
                           controller: phone,
-                          // showDivider: true,
                           hintText: phoneNumberString.tr,
-                          // cornerRadius: 5,
                           countryCodeText:
                               '+${controller.phoneCountryCode.value}',
                           onChanged: (String value) {},
@@ -59,76 +80,53 @@ class PhoneLoginScreenState extends State<PhoneLoginScreen> {
                             controller.phoneCodeSelected(value);
                           },
                         )),
-
-                    SizedBox(
-                      height: Get.height * 0.04,
-                    ),
+                    const SizedBox(height: 22),
                     addLoginBtn(),
-                    SizedBox(
-                      height: Get.height * 0.03,
-                    ),
-                    InkWell(
-                      onTap: () {
+                    const SizedBox(height: 16),
+                    Center(
+                      child: BodyMediumText(
+                        forgotPwdString.tr,
+                        weight: TextWeight.bold,
+                        color: AppColorConstants.themeColor,
+                      ).ripple(() {
                         Get.to(() => const ForgotPasswordScreen());
-                      },
-                      child: Center(
-                        child: BodyMediumText(
-                          forgotPwdString.tr,
-                          weight: TextWeight.bold,
-                          color: AppColorConstants.themeColor,
-                        ),
-                      ),
+                      }),
                     ),
-                    SizedBox(
-                      height: Get.height * 0.05,
-                    ),
+                    const SizedBox(height: 28),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          height: 1,
-                          width: Get.width * 0.37,
-                          color: AppColorConstants.themeColor,
+                        Expanded(child: divider(height: 1)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: BodySmallText(orString.tr,
+                              color: AppColorConstants.subHeadingTextColor),
                         ),
-                        Heading6Text(
-                          orString.tr,
-                        ),
-                        Container(
-                          height: 1,
-                          width: Get.width * 0.37,
-                          color: AppColorConstants.themeColor,
-                        )
+                        Expanded(child: divider(height: 1)),
                       ],
                     ),
-                    SizedBox(
-                      height: Get.height * 0.04,
-                    ),
+                    const SizedBox(height: 22),
                     const SocialLogin(
                       hidePhoneLogin: true,
-                    ).setPadding(left: 65, right: 65),
+                    ),
                     const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Heading6Text(
-                          dontHaveAccountString.tr,
-                        ),
-                        Heading6Text(
+                        BodyMediumText(dontHaveAccountString.tr,
+                            color: AppColorConstants.subHeadingTextColor),
+                        const SizedBox(width: 4),
+                        BodyMediumText(
                           signUpString.tr,
-                          weight: TextWeight.medium,
+                          weight: TextWeight.bold,
                           color: AppColorConstants.themeColor,
                         ).ripple(() {
                           Get.to(() => const SignUpScreen());
                         }),
                       ],
                     ),
-                    SizedBox(
-                      height: Get.height * 0.05,
-                    ),
-                    // bioMetricView(),
-                    // const Spacer(),
+                    SizedBox(height: Get.height * 0.05),
                   ]),
-            )).setPadding(left: 25, right: 25),
+            )).setPadding(left: 24, right: 24),
       ),
     );
   }

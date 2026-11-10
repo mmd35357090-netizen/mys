@@ -44,27 +44,27 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         child: Stack(
           children: [
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const SizedBox(
-                height: 120,
+              const SizedBox(height: 90),
+              Center(
+                child: Container(
+                  height: 84,
+                  width: 84,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  ),
+                  child: Icon(Icons.password_rounded,
+                      size: 40, color: AppColorConstants.themeColor),
+                ),
               ),
-              // Center(
-              //     child: Image.asset(
-              //   'assets/logo.png',
-              //   width: 80,
-              //   height: 25,
-              // )),
-
-              Heading2Text(
-                resetPwdString.tr,
-                weight: TextWeight.bold,
-                color: AppColorConstants.themeColor,
-                textAlign: TextAlign.start,
+              const SizedBox(height: 20),
+              Center(
+                child: Heading3Text(resetPwdString.tr,
+                    weight: TextWeight.bold),
               ),
-              const SizedBox(
-                height: 40,
-              ),
+              const SizedBox(height: 30),
               addTextField(newPassword, newPasswordString.tr),
-              addTextField(confirmPassword, confirmPasswordString.tr).tP25,
+              addTextField(confirmPassword, confirmPasswordString.tr).tP16,
               const Spacer(),
               addSubmitBtn(),
               const SizedBox(
@@ -93,19 +93,16 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Widget addTextField(TextEditingController controller, String hint) {
-    return SizedBox(
-      height: 48,
-      child: PasswordField(
-        onChanged: (value) {},
-        controller: controller,
-        showRevealPasswordIcon: true,
-        hintText: hint,
-      ),
-    ).vP8.borderWithRadius(
-          value: 1,
-          radius: 5,
-          color: AppColorConstants.dividerColor,
-        );
+    return PasswordField(
+      onChanged: (value) {},
+      controller: controller,
+      showRevealPasswordIcon: true,
+      hintText: hint,
+      backgroundColor: AppColorConstants.cardColor.darken(0.02),
+      cornerRadius: 14,
+      showBorder: true,
+      borderColor: AppColorConstants.dividerColor.withValues(alpha: 0.7),
+    );
   }
 
   addSubmitBtn() {

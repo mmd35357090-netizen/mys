@@ -41,10 +41,14 @@ class _ContactListState extends State<ContactList> {
                   ).ripple(() {
                     Navigator.of(context).pop();
                   }),
-                  Heading5Text(
-                    sendString.tr,
-                    weight: TextWeight.medium,
-
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 7),
+                    decoration: BoxDecoration(
+                        color: AppColorConstants.themeColor,
+                        borderRadius: BorderRadius.circular(18)),
+                    child: BodyMediumText(sendString.tr,
+                        weight: TextWeight.bold, color: Colors.white),
                   ).ripple(() {
                     Navigator.of(context).pop();
                     widget.selectedContactsHandler(

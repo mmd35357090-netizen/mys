@@ -37,30 +37,42 @@ class SignUpScreenState extends State<SignUpScreen> {
           },
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            SizedBox(
-              height: Get.height * 0.1,
-            ),
+            SizedBox(height: Get.height * 0.07),
             const Align(
               alignment: Alignment.centerLeft,
               child: AppThemeBackButton(),
             ),
-            SizedBox(
-              height: Get.height * 0.05,
-            ),
-            SizedBox(
-                height: Get.height * 0.12,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Heading3Text(createAnAccountString.tr,
-                            weight: TextWeight.bold)
-                        .rp(100),
-
+            const SizedBox(height: 12),
+            Center(
+              child: Container(
+                height: 76,
+                width: 76,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColorConstants.themeColor,
+                      AppColorConstants.themeColor.withValues(alpha: 0.7)
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                        color:
+                            AppColorConstants.themeColor.withValues(alpha: 0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6))
                   ],
-                )),
-            SizedBox(
-              height: Get.height * 0.05,
+                ),
+                child: const Icon(Icons.person_add_alt_1_rounded,
+                    color: Colors.white, size: 36),
+              ),
             ),
+            const SizedBox(height: 22),
+            Heading3Text(createAnAccountString.tr,
+                weight: TextWeight.bold, textAlign: TextAlign.center),
+            const SizedBox(height: 26),
             Stack(
               children: [
                 AppTextField(
@@ -123,6 +135,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                           height: 5,
                         ),
                         LinearProgressIndicator(
+                          borderRadius: BorderRadius.circular(6),
                           value: loginController.passwordStrength.value,
                           backgroundColor: Colors.grey[300],
                           color: loginController.passwordStrength.value <= 1 / 4
@@ -149,6 +162,7 @@ class SignUpScreenState extends State<SignUpScreen> {
               height: Get.height * 0.015,
             ),
             RichText(
+              textAlign: TextAlign.center,
               text: TextSpan(
                 children: <TextSpan>[
                   TextSpan(
@@ -192,27 +206,38 @@ class SignUpScreenState extends State<SignUpScreen> {
               height: Get.height * 0.02,
             ),
             Wrap(
-              spacing: 2,
+              alignment: WrapAlignment.center,
+              spacing: 4,
               children: [
-                BodySmallText(alreadyHaveAccString),
-                BodySmallText(
+                BodyMediumText(alreadyHaveAccString,
+                    color: AppColorConstants.subHeadingTextColor),
+                BodyMediumText(
                   signInString,
                   weight: TextWeight.bold,
+                  color: AppColorConstants.themeColor,
                 ),
               ],
             ).ripple(() {
               Get.to(() => const LoginScreen());
             }),
-            divider(height: 1).vp(40),
-            BodyMediumText(continueWithAccountsString),
-            SizedBox(
-              height: Get.height * 0.04,
+            const SizedBox(height: 26),
+            Row(
+              children: [
+                Expanded(child: divider(height: 1)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: BodySmallText(continueWithAccountsString,
+                      color: AppColorConstants.subHeadingTextColor),
+                ),
+                Expanded(child: divider(height: 1)),
+              ],
             ),
+            const SizedBox(height: 22),
             const SocialLogin(
               hidePhoneLogin: false,
-            ).setPadding(left: 45, right: 45),
+            ),
             SizedBox(
-              height: Get.height * 0.2,
+              height: Get.height * 0.08,
             ),
           ]),
         ).setPadding(left: 25, right: 25),

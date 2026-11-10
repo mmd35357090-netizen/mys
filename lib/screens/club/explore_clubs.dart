@@ -69,15 +69,27 @@ class ExploreClubsState extends State<ExploreClubs> {
     return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       floatingActionButton: Container(
-        height: 50,
-        width: 50,
-        color: AppColorConstants.themeColor,
+        height: 56,
+        width: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(colors: [
+            AppColorConstants.themeColor,
+            AppColorConstants.themeColor.withValues(alpha: 0.78)
+          ]),
+          boxShadow: [
+            BoxShadow(
+                color: AppColorConstants.themeColor.withValues(alpha: 0.35),
+                blurRadius: 14,
+                offset: const Offset(0, 6))
+          ],
+        ),
         child: ThemeIconWidget(
           ThemeIcon.plus,
-          size: 25,
+          size: 26,
           color: Colors.white,
         ),
-      ).circular.ripple(() {
+      ).ripple(() {
         Get.to(() => CategoriesList(clubsController: _clubsController))!
             .then((value) {
           loadData();

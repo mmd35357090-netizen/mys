@@ -36,23 +36,43 @@ class VerifyOTPForSignupState extends State<VerifyOTPForSignup> {
                     const SizedBox(
                       height: 50,
                     ),
-                    Heading4Text(
-                      otpVerificationString.tr,
-                      weight: TextWeight.bold,
-                      color: AppColorConstants.themeColor,
-                      textAlign: TextAlign.start,
-                    ),
-                    BodyLargeText(
-                      pleaseEnterOneTimePasswordString.tr,
-                      textAlign: TextAlign.center,
-                    ).setPadding(top: 43, bottom: 35),
+                    Center(
+                child: Container(
+                  height: 84,
+                  width: 84,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  ),
+                  child: Icon(Icons.mark_email_read_outlined,
+                      size: 40, color: AppColorConstants.themeColor),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Heading4Text(
+                otpVerificationString.tr,
+                weight: TextWeight.bold,
+                textAlign: TextAlign.center,
+              ),
+                    BodyMediumText(
+                pleaseEnterOneTimePasswordString.tr,
+                textAlign: TextAlign.center,
+                color: AppColorConstants.subHeadingTextColor,
+              ).setPadding(top: 10, bottom: 28),
                     SizedBox(
-                      height: 100,
+                      height: 70,
                       child: OTPFieldView(
                         length: loginController.pinLength,
                         defaultPinTheme: PinTheme(
-                            height: 50,
+                            height: 56,
                             width: 50,
+                            decoration: BoxDecoration(
+                              color: AppColorConstants.cardColor,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                  color: AppColorConstants.dividerColor
+                                      .withValues(alpha: 0.8)),
+                            ),
                             textStyle: TextStyle(
                                 fontSize: FontSizes.h4,
                                 fontWeight: TextWeight.medium)),
@@ -66,6 +86,7 @@ class VerifyOTPForSignupState extends State<VerifyOTPForSignup> {
                       ),
                     ),
                     Obx(() => Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             BodyLargeText(
                               didntReceivedCodeString.tr,

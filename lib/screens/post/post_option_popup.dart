@@ -25,7 +25,7 @@ class PostOptionsPopup extends StatelessWidget {
     options.add(pollButton());
 
     return SizedBox(
-      height: 30,
+      height: 40,
       child: ListView.separated(
         padding: EdgeInsets.only(
             left: DesignConstants.horizontalPadding,
@@ -140,18 +140,24 @@ class ModalComponents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ThemeIconWidget(icon),
-        const SizedBox(
-          width: 10,
-        ),
-        BodySmallText(
-          name,
-        ),
-      ],
-    ).hP8.borderWithRadius(value: 0.5, radius: 5).ripple(() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.6),
+            width: 0.8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ThemeIconWidget(icon, size: 18, color: AppColorConstants.themeColor),
+          const SizedBox(width: 8),
+          BodySmallText(name, weight: TextWeight.medium),
+        ],
+      ),
+    ).ripple(() {
       onPress!();
     });
   }

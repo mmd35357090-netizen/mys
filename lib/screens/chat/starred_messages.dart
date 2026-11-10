@@ -93,18 +93,26 @@ class _StarredMessagesState extends State<StarredMessages> {
 
   Widget selectedMessageView() {
     return Container(
-      color: AppColorConstants.backgroundColor.darken(0.02),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        border: Border(
+            top: BorderSide(
+                color: AppColorConstants.dividerColor.withValues(alpha: 0.5))),
+      ),
       height: 70,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          BodyLargeText(deleteString.tr, weight: TextWeight.bold).ripple(() {
+          BodyLargeText(deleteString.tr,
+              weight: TextWeight.bold, color: AppColorConstants.red).ripple(() {
             deleteMessageActionPopup();
           }),
-          BodyLargeText(forwardString.tr, weight: TextWeight.bold).ripple(() {
+          BodyLargeText(forwardString.tr,
+              weight: TextWeight.bold, color: AppColorConstants.themeColor).ripple(() {
             selectUserForMessageForward();
           }),
-          BodyLargeText(unStarString.tr, weight: TextWeight.bold).ripple(() {
+          BodyLargeText(unStarString.tr,
+              weight: TextWeight.bold, color: AppColorConstants.themeColor).ripple(() {
             _chatRoomDetailController.unStarMessages();
             _chatDetailController.setToActionMode(
                 mode: ChatMessageActionMode.none);

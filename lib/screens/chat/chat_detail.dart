@@ -442,90 +442,96 @@ class _ChatDetailState extends State<ChatDetail> {
             ? replyMessageView()
             : Container(),
         Container(
-          color: AppColorConstants.backgroundColor.darken(0.02),
-          // height: 70,
-          child: Column(
+          color: AppColorConstants.backgroundColor,
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            // height: 40,
-                            child: Obx(() => TextField(
-                                  controller:
-                                      _chatDetailController.messageTf.value,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      fontSize: FontSizes.h5,
-                                      fontWeight: TextWeight.regular,
-                                      color: AppColorConstants.mainTextColor),
-                                  maxLines: 5,
-                                  minLines: 1,
-                                  onChanged: (text) {
-                                    _chatDetailController.messageChanges();
-                                  },
-                                  decoration: InputDecoration(
-                                      floatingLabelBehavior:
-                                          FloatingLabelBehavior.never,
-                                      border: InputBorder.none,
-                                      contentPadding: const EdgeInsets.only(
-                                          left: 10, right: 10, top: 5),
-                                      labelStyle: TextStyle(
-                                          fontSize: FontSizes.b2,
-                                          fontWeight: TextWeight.medium,
-                                          color: AppColorConstants.themeColor),
-                                      hintStyle: TextStyle(
-                                          fontSize: FontSizes.h6,
-                                          fontWeight: TextWeight.regular,
-                                          color: AppColorConstants.themeColor),
-                                      hintText: pleaseEnterMessageString.tr),
-                                )),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Obx(() {
-                          return _chatDetailController
-                                  .messageTf.value.text.isNotEmpty
-                              ? Heading5Text(
-                                  sendString.tr,
-                                  weight: TextWeight.bold,
-                                  color: AppColorConstants.themeColor,
-                                ).ripple(() {
-                                  sendMessage();
-                                })
-                              : Container(
-                                  height: 30,
-                                  width: 30,
-                                  color: AppColorConstants.themeColor,
-                                  child: ThemeIconWidget(
-                                    ThemeIcon.plusSymbol,
-                                    color: Colors.white,
-                                  ),
-                                ).circular.ripple(() {
-                                  openMediaSharingOptionView();
-                                  // chatDetailController
-                                  //     .expandCollapseActions();
-                                });
-                        }),
-                      ],
-                    ),
+              Container(
+                height: 44,
+                width: 44,
+                decoration: BoxDecoration(
+                  color: AppColorConstants.cardColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: AppColorConstants.dividerColor
+                          .withValues(alpha: 0.6)),
+                ),
+                child: Icon(Icons.add_rounded,
+                    color: AppColorConstants.themeColor, size: 26),
+              ).ripple(() {
+                openMediaSharingOptionView();
+              }),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColorConstants.cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                        color: AppColorConstants.dividerColor
+                            .withValues(alpha: 0.6)),
                   ),
-                ],
+                  child: Obx(() => TextField(
+                        controller: _chatDetailController.messageTf.value,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                            fontSize: FontSizes.h5,
+                            fontWeight: TextWeight.regular,
+                            color: AppColorConstants.mainTextColor),
+                        maxLines: 5,
+                        minLines: 1,
+                        onChanged: (text) {
+                          _chatDetailController.messageChanges();
+                        },
+                        decoration: InputDecoration(
+                            floatingLabelBehavior:
+                                FloatingLabelBehavior.never,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            hintStyle: TextStyle(
+                                fontSize: FontSizes.h6,
+                                fontWeight: TextWeight.regular,
+                                color:
+                                    AppColorConstants.subHeadingTextColor),
+                            hintText: pleaseEnterMessageString.tr),
+                      )),
+                ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(width: 10),
+              Obx(() {
+                final hasText =
+                    _chatDetailController.messageTf.value.text.isNotEmpty;
+                return Container(
+                  height: 44,
+                  width: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(colors: [
+                      AppColorConstants.themeColor,
+                      AppColorConstants.themeColor.withValues(alpha: 0.78)
+                    ]),
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppColorConstants.themeColor
+                              .withValues(alpha: 0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4))
+                    ],
+                  ),
+                  child: Icon(hasText ? Icons.send_rounded : Icons.attach_file_rounded,
+                      color: Colors.white, size: 21),
+                ).ripple(() {
+                  if (hasText) {
+                    sendMessage();
+                  } else {
+                    openMediaSharingOptionView();
+                  }
+                });
+              }),
             ],
-          ).hp(DesignConstants.horizontalPadding),
+          ),
         )
       ],
     );
@@ -533,7 +539,7 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget cantChatView() {
     return Container(
-      color: AppColorConstants.backgroundColor.darken(0.02),
+      color: AppColorConstants.cardColor,
       height: 70,
       child: Center(
         child: BodyLargeText(
@@ -730,13 +736,18 @@ class _ChatDetailState extends State<ChatDetail> {
 
   Widget dateSeparatorWidget(ChatMessageModel chatMessage) {
     return Container(
-      color: AppColorConstants.themeColor.lighten(0.2).withValues(alpha: 0.5),
-      width: 120,
-      child: Center(
-        child: BodySmallText(chatMessage.dateString)
-            .setPadding(left: 8, right: 8, top: 4, bottom: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
       ),
-    ).round(15).bP25;
+      child: BodySmallText(chatMessage.dateString,
+          color: AppColorConstants.subHeadingTextColor,
+          weight: TextWeight.medium),
+    ).bP25;
   }
 
   void messageTapped(ChatMessageModel model) async {

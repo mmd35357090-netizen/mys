@@ -26,6 +26,8 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InputField(
+        borderColor: AppColorConstants.dividerColor.withValues(alpha: 0.7),
+        showBorder: true,
         controller: controller,
         hintText: hintText,
         icon: icon,
@@ -34,9 +36,7 @@ class AppTextField extends StatelessWidget {
         onChanged: onChanged,
         maxLength: maxLength,
         backgroundColor: AppColorConstants.cardColor.darken(0.02),
-        showBorder: true,
-        borderColor: AppColorConstants.borderColor,
-        cornerRadius: 12,
+        cornerRadius: 14,
         iconColor: AppColorConstants.iconColor,
         focusStatusChangeHandler: focusStatusChangeHandler);
   }
@@ -59,13 +59,13 @@ class AppPasswordTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PasswordField(
+      borderColor: AppColorConstants.dividerColor.withValues(alpha: 0.7),
+        showBorder: true,
       controller: controller,
       hintText: hintText,
       icon: icon,
       backgroundColor: AppColorConstants.cardColor.darken(0.02),
-      showBorder: true,
-      borderColor: AppColorConstants.borderColor,
-      cornerRadius: 12,
+      cornerRadius: 14,
       iconColor: AppColorConstants.iconColor,
       onChanged: onChanged,
     );
@@ -96,6 +96,8 @@ class AppMobileTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RoundedInputMobileNumberField(
+      borderColor: AppColorConstants.dividerColor.withValues(alpha: 0.7),
+        showBorder: true,
       controller: controller,
       hintText: hintText,
       countryCodeText: countryCodeText,
@@ -103,9 +105,7 @@ class AppMobileTextField extends StatelessWidget {
       label: label,
       backgroundColor: AppColorConstants.cardColor.darken(0.02),
       // textStyle: TextStyle(fontSize: FontSizes.h6),
-      showBorder: true,
-      borderColor: AppColorConstants.borderColor,
-      cornerRadius: 12,
+      cornerRadius: 14,
       onChanged: onChanged,
       iconColor: AppColorConstants.iconColor,
     );
@@ -144,9 +144,7 @@ class AppDateTextField extends StatelessWidget {
       hintText: hintText,
       label: label,
       backgroundColor: AppColorConstants.cardColor.withValues(alpha: 0.7),
-      showBorder: true,
-      borderColor: AppColorConstants.borderColor,
-      cornerRadius: 12,
+      cornerRadius: 14,
       onChanged: onChanged,
       format: format,
       iconColor: AppColorConstants.iconColor,
@@ -190,9 +188,7 @@ class AppDateTimeTextField extends StatelessWidget {
       label: label,
       backgroundColor: AppColorConstants.cardColor.darken(0.02),
       // textStyle: TextStyle(fontSize: FontSizes.h6),
-      showBorder: true,
-      borderColor: AppColorConstants.borderColor,
-      cornerRadius: 12,
+      cornerRadius: 14,
       onChanged: onChanged,
       iconColor: AppColorConstants.iconColor,
     );
@@ -230,9 +226,7 @@ class AppPriceTextField extends StatelessWidget {
       label: label,
       backgroundColor: AppColorConstants.cardColor.darken(0.02),
       // textStyle: TextStyle(fontSize: FontSizes.h6),
-      showBorder: true,
-      borderColor: AppColorConstants.borderColor,
-      cornerRadius: 12,
+      cornerRadius: 14,
       onChanged: onChanged,
       currencyValueChanged: currencyValueChanged,
       iconColor: AppColorConstants.iconColor,
@@ -267,9 +261,7 @@ class AppDropdownField extends StatelessWidget {
       value: value,
       backgroundColor: AppColorConstants.cardColor.darken(0.02),
       // textStyle: TextStyle(fontSize: FontSizes.h6),
-      showBorder: true,
-      borderColor: AppColorConstants.borderColor,
-      cornerRadius: 12,
+      cornerRadius: 14,
       onChanged: onChanged,
       iconColor: AppColorConstants.iconColor,
     );

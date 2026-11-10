@@ -58,15 +58,27 @@ class ClubDetailState extends State<ClubDetail> {
       backgroundColor: AppColorConstants.backgroundColor,
       floatingActionButton: widget.club.createdByUser!.isMe
           ? Container(
-              height: 50,
-              width: 50,
-              color: AppColorConstants.themeColor,
+              height: 56,
+              width: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(colors: [
+                  AppColorConstants.themeColor,
+                  AppColorConstants.themeColor.withValues(alpha: 0.78)
+                ]),
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.35),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6))
+                ],
+              ),
               child: ThemeIconWidget(
                 ThemeIcon.edit,
-                size: 25,
+                size: 24,
                 color: Colors.white,
               ),
-            ).circular.ripple(() {
+            ).ripple(() {
               Future.delayed(
                 Duration.zero,
                 () => showGeneralDialog(
@@ -112,10 +124,10 @@ class ClubDetailState extends State<ClubDetail> {
                                   const SizedBox(
                                     height: 24,
                                   ),
-                                  BodyLargeText(
+                                  Heading5Text(
                                           _clubDetailController
                                               .club.value!.name!,
-                                          weight: TextWeight.medium)
+                                          weight: TextWeight.bold)
                                       .hp(DesignConstants.horizontalPadding),
                                   const SizedBox(
                                     height: 12,
@@ -205,16 +217,16 @@ class ClubDetailState extends State<ClubDetail> {
       children: [
         if (_clubDetailController.club.value!.createdByUser!.isMe == false)
           Container(
-                  height: 30,
-                  color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                  height: 38,
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.14),
                   child: Row(
                     children: [
                       Icon(
                         _clubDetailController.club.value!.isJoined == true
                             ? Icons.exit_to_app
                             : Icons.add,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
+                        color: AppColorConstants.themeColor,
+                        size: 17,
                       ),
                       const SizedBox(
                         width: 5,
@@ -229,10 +241,11 @@ class ClubDetailState extends State<ClubDetail> {
                                       true
                                   ? requestedString.tr
                                   : requestJoinString.tr
-                              : joinString.tr)
+                              : joinString.tr,
+                      weight: TextWeight.semiBold)
                     ],
-                  ).hP8)
-              .round(5)
+                  ).hP16)
+              .round(19)
               .ripple(() {
             if (_clubDetailController.club.value!.isRequested == false) {
               if (_clubDetailController.club.value!.isJoined == true) {
@@ -246,22 +259,22 @@ class ClubDetailState extends State<ClubDetail> {
             _clubDetailController.club.value!.isJoined == true)
           Container(
                   // width: 40,
-                  height: 30,
-                  color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                  height: 38,
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.14),
                   child: Row(
                     children: [
                       Icon(
                         Icons.chat,
                         size: 15,
-                        color: AppColorConstants.iconColor,
+                        color: AppColorConstants.themeColor,
                       ),
                       const SizedBox(
                         width: 5,
                       ),
-                      BodyLargeText(chatString.tr)
+                      BodyLargeText(chatString.tr, weight: TextWeight.semiBold)
                     ],
-                  ).hP8)
-              .round(5)
+                  ).hP16)
+              .round(19)
               .ripple(() {
             Loader.show(status: loadingString.tr);
             _chatDetailController.getRoomDetail(
@@ -273,8 +286,8 @@ class ClubDetailState extends State<ClubDetail> {
         if (_clubDetailController.club.value!.createdByUser!.isMe)
           Container(
                   // width: 40,
-                  height: 30,
-                  color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                  height: 38,
+                  color: AppColorConstants.themeColor.withValues(alpha: 0.14),
                   child: Row(
                     children: [
                       Image.asset(
@@ -287,10 +300,10 @@ class ClubDetailState extends State<ClubDetail> {
                       const SizedBox(
                         width: 5,
                       ),
-                      BodyLargeText(inviteString.tr)
+                      BodyLargeText(inviteString.tr, weight: TextWeight.semiBold)
                     ],
-                  ).hP8)
-              .round(5)
+                  ).hP16)
+              .round(19)
               .ripple(() {
             Get.to(() => InviteUsersToClub(
                   clubId: widget.club.id!,

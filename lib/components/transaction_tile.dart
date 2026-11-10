@@ -14,7 +14,7 @@ class TransactionTile extends StatelessWidget {
     final Color color = credit ? AppColorConstants.green : AppColorConstants.red;
     final bool isMoney = model.transactionMedium == TransactionMedium.money;
     final String amountText = isMoney
-        ? '${credit ? '+' : '-'} \$${model.amount}'
+        ? '${credit ? '+' : '-'} \$${(num.tryParse(model.amount.toString()) ?? 0).toStringAsFixed(2)}'
         : '${credit ? '+' : '-'} ${model.coins} ${coinsString.tr}';
     final String statusText = model.status == 1
         ? pendingString.tr
