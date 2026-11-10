@@ -4,6 +4,8 @@ class VerificationRequest {
   int id = 0;
   String userMessage = '';
   String? adminMessage = '';
+  String? documentType;
+  String? documentNumber;
 
   int status = 0;
   int createdAt = 0;
@@ -16,6 +18,8 @@ class VerificationRequest {
     required this.adminMessage,
     required this.createdAt,
     required this.updatedAt,
+    this.documentType,
+    this.documentNumber,
   });
 
   factory VerificationRequest.fromJson(Map<String, dynamic> json) =>
@@ -26,6 +30,8 @@ class VerificationRequest {
         adminMessage: json["admin_message"],
         createdAt: json["created_at"],
         updatedAt: json["updated_at"],
+        documentType: json["document_type"]?.toString(),
+        documentNumber: json["document_number"]?.toString(),
       );
 
   String get sentOn {

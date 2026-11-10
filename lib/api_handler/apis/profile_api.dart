@@ -172,6 +172,7 @@ class ProfileApi {
   static sendProfileVerificationRequest(
       {required String userMessage,
       required String documentType,
+      String documentNumber = '',
       required List<Map<String, String>> images,
       required VoidCallback resultCallback}) async {
     var url = NetworkConstantsUtil.requestVerification;
@@ -180,6 +181,7 @@ class ProfileApi {
       "user_message": userMessage,
       'document': images,
       'document_type': documentType,
+      'document_number': documentNumber,
     }).then((result) {
       resultCallback();
     });

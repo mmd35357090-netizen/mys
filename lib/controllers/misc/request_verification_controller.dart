@@ -11,7 +11,10 @@ class RequestVerificationController extends GetxController {
       <VerificationRequest>[].obs;
 
   Rx<TextEditingController> messageTf = TextEditingController().obs;
-  Rx<TextEditingController> documentType = TextEditingController().obs;
+  Rx<TextEditingController> documentType =
+      TextEditingController(text: nidString.tr).obs;
+
+  Rx<TextEditingController> documentNumber = TextEditingController().obs;
 
   RxList<File> selectedImages = <File>[].obs;
 
@@ -52,8 +55,9 @@ class RequestVerificationController extends GetxController {
   }
 
   clear() {
-    documentType.value.text = '';
+    documentType.value.text = nidString.tr;
     messageTf.value.text = '';
+    documentNumber.value.text = '';
     selectedImages.clear();
   }
 
@@ -84,6 +88,24 @@ class RequestVerificationController extends GetxController {
           message: pleaseSelectDocumentTypeString.tr, isSuccess: false);
       return;
     }
+    final number = documentNumber.value.text.trim();
+    final isNid = documentType.value.text == nidString.tr;
+    final isOther = documentType.value.text == otherString.tr;
+    if (!isOther && number.isEmpty) {
+      AppUtil.showToast(
+          message: 'Please enter your document number', isSuccess: false);
+      return;
+    }
+    if (isNid && !RegExp(r'^(\d{10}|\d{13}|\d{17})$').hasMatch(number)) {
+      AppUtil.showToast(
+          message: 'NID number must be 10, 13 or 17 digits', isSuccess: false);
+      return;
+    }
+    if (number.isNotEmpty && number.length < 4) {
+      AppUtil.showToast(
+          message: 'Document number is too short', isSuccess: false);
+      return;
+    }
     if (selectedImages.isEmpty) {
       AppUtil.showToast(message: pleaseUploadProofString.tr, isSuccess: false);
       return;
@@ -108,6 +130,7 @@ class RequestVerificationController extends GetxController {
     ProfileApi.sendProfileVerificationRequest(
         userMessage: messageTf.value.text,
         documentType: documentType.value.text,
+        documentNumber: number,
         images: idProofImages,
         resultCallback: () {
           Loader.dismiss();
