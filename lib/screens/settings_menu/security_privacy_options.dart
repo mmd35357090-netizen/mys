@@ -1,6 +1,7 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import '../../universal_components/menu_tiles.dart';
+import '../../util/biometric_helper.dart';
 
 
 class PrivacyOptions extends StatefulWidget {
@@ -32,8 +33,7 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
                   16, DesignConstants.horizontalPadding, 40),
               children: [
                 Obx(() => MenuSection(tiles: [
-                      if (settingsController.bioMetricType.value != 0)
-                        bioMetricLoginTile(),
+                      bioMetricLoginTile(),
                       accountPrivacyTile(),
                       onlineStatusTile(),
                     ])),
@@ -57,15 +57,31 @@ class _PrivacyOptionsState extends State<PrivacyOptions> {
   }
 
   Widget bioMetricLoginTile() {
+    final state = settingsController.bioMetricState.value;
+    final ready = state == BiometricState.ready;
+    final type = settingsController.bioMetricType.value;
+    final title = type == 1
+        ? 'Face unlock'
+        : type == 2
+            ? 'Fingerprint unlock'
+            : faceIdOrTouchIdString.tr;
+    final subtitle = ready
+        ? unlockYourAppUsingBiometricLoginString.tr
+        : state == BiometricState.notEnrolled
+            ? 'Add a fingerprint or face in your phone Settings to use this.'
+            : 'Biometric is not supported on this device.';
     return MenuRow(
       icon: Icons.fingerprint_rounded,
       color: const Color(0xFF10B981),
-      title: faceIdOrTouchIdString.tr,
-      subtitle: unlockYourAppUsingBiometricLoginString.tr,
-      trailing: _switch(settingsController.bioMetricAuthStatus.value,
-          (value) {
-        settingsController.biometricLogin(value);
-      }),
+      title: title,
+      subtitle: subtitle,
+      trailing: Switch(
+        value: settingsController.bioMetricAuthStatus.value,
+        activeColor: AppColorConstants.themeColor,
+        onChanged: (ready || settingsController.bioMetricAuthStatus.value)
+            ? (value) => settingsController.biometricLogin(value)
+            : null,
+      ),
     );
   }
 

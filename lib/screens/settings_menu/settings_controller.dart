@@ -9,6 +9,7 @@ import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
 import '../../manager/location_manager.dart';
 import '../../util/shared_prefs.dart';
+import '../../util/biometric_helper.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 
 class SettingsController extends GetxController {
@@ -27,6 +28,7 @@ class SettingsController extends GetxController {
 
   var localAuth = LocalAuthentication();
   RxInt bioMetricType = 0.obs;
+  Rx<BiometricState> bioMetricState = BiometricState.ready.obs;
   RxBool isPrivateAccount = false.obs;
   RxBool isShareOnlineStatus = true.obs;
 
@@ -115,48 +117,42 @@ List<Map<String, String>> languagesList = [
   }
 
   Future<void> checkBiometric() async {
-  try {
-    final bool canCheck =
-        await localAuth.canCheckBiometrics;
-    final bool supported =
-        await localAuth.isDeviceSupported();
-
-    if (!canCheck || !supported) {
-      bioMetricType.value = 0;
-      return;
-    }
-
-    final List<BiometricType> availableBiometrics =
-        await localAuth.getAvailableBiometrics();
-
-    if (availableBiometrics.contains(BiometricType.face)) {
-      bioMetricType.value = 1;
-    } else if (availableBiometrics
-        .contains(BiometricType.fingerprint)) {
-      bioMetricType.value = 2;
-    } else {
-      bioMetricType.value = 0;
-    }
-  } catch (e) {
-    bioMetricType.value = 0;
-  }
+    bioMetricType.value = await BiometricHelper.type();
+    bioMetricState.value = await BiometricHelper.state();
   }
 
   void biometricLogin(bool status) async {
-    try {
-      bool didAuthenticate = await localAuth.authenticate(
-          localizedReason: status == true
-              ? pleaseAuthenticateToUseBiometricString.tr
-              : pleaseAuthenticateToRemoveBiometricString.tr);
+    // refresh the switch to the real stored value if we bail out
+    final previous = bioMetricAuthStatus.value;
+    if (status) {
+      final st = await BiometricHelper.state();
+      if (st != BiometricState.ready) {
+        bioMetricAuthStatus.value = previous;
+        bioMetricAuthStatus.refresh();
+        AppUtil.showToast(
+            message: st == BiometricState.notEnrolled
+                ? 'No fingerprint / face is set up on this phone. Add one in phone Settings first.'
+                : 'Biometric is not supported on this device.',
+            isSuccess: false);
+        return;
+      }
+    }
+    final ok = await BiometricHelper.authenticate(status == true
+        ? pleaseAuthenticateToUseBiometricString.tr
+        : pleaseAuthenticateToRemoveBiometricString.tr);
 
-      if (didAuthenticate == true) {
-        SharedPrefs().setBioMetricAuthStatus(status);
-        bioMetricAuthStatus.value = status;
-      }
-    } on PlatformException catch (e) {
-      if (e.code == auth_error.notAvailable) {
-        // Handle this exception here.
-      }
+    if (ok) {
+      SharedPrefs().setBioMetricAuthStatus(status);
+      bioMetricAuthStatus.value = status;
+      // keep the server flag in sync (best effort, silent)
+      try {
+        ProfileApi.updateBiometricSetting(
+            setting: status ? 1 : 0, resultCallback: () {});
+      } catch (_) {}
+    } else {
+      // user cancelled / failed: put the switch back
+      bioMetricAuthStatus.value = previous;
+      bioMetricAuthStatus.refresh();
     }
   }
 
