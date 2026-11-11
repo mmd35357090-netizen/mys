@@ -1,3 +1,4 @@
+import 'package:foap/helper/date_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/account.dart';
 import 'package:foap/screens/login_sign_up/verif_otp_for_forgot_password.dart';
@@ -136,10 +137,16 @@ class LoginController extends GetxController {
     required String email,
     required String userName,
     required String password,
+    String fullName = '',
+    String confirmPassword = '',
+    DateTime? dob,
+    int? gender,
   }) {
     final ProfileController profileController = Get.find();
 
-    if (FormValidator().isTextEmpty(userName)) {
+    if (FormValidator().isTextEmpty(fullName)) {
+      AppUtil.showToast(message: pleaseEnterNameString.tr, isSuccess: false);
+    } else if (FormValidator().isTextEmpty(userName)) {
       AppUtil.showToast(
           message: pleaseEnterUserNameString.tr, isSuccess: false);
     } else if (profileController.userNameCheckStatus.value != 1) {
@@ -153,14 +160,28 @@ class LoginController extends GetxController {
       showErrorMessage(
         pleaseEnterValidEmailString.tr,
       );
+    } else if (dob == null) {
+      AppUtil.showToast(
+          message: 'Please select your date of birth', isSuccess: false);
+    } else if (DateTime.now().difference(dob).inDays < 365 * 13) {
+      AppUtil.showToast(
+          message: 'You must be at least 13 years old to sign up',
+          isSuccess: false);
     } else if (FormValidator().isTextEmpty(password)) {
       showErrorMessage(
         pleaseEnterPasswordString.tr,
+      );
+    } else if (password != confirmPassword) {
+      showErrorMessage(
+        passwordsDoesNotMatchedString.tr,
       );
     } else {
       AuthApi.register(
           email: email,
           name: userName,
+          fullName: fullName,
+          dob: dob.formatTo('yyyy-MM-dd'),
+          gender: gender,
           password: password,
           successCallback: (token) {
             Get.to(() => VerifyOTPForSignup(

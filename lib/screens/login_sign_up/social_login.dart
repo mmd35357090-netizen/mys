@@ -20,6 +20,10 @@ String sha256ofString(String input) {
 class SocialLogin extends StatefulWidget {
   final bool hidePhoneLogin;
 
+  /// Temporarily hidden. Set to true to bring them back.
+  static const bool showPhoneLogin = false;
+  static const bool showFacebookLogin = false;
+
   const SocialLogin({super.key, required this.hidePhoneLogin});
 
   @override
@@ -53,8 +57,8 @@ class _SocialLoginState extends State<SocialLogin> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        widget.hidePhoneLogin == false
-            ? Container(
+        if (widget.hidePhoneLogin == false && SocialLogin.showPhoneLogin)
+          Container(
                 height: 52,
                 width: 52,
                 color: AppColorConstants.cardColor,
@@ -69,7 +73,8 @@ class _SocialLoginState extends State<SocialLogin> {
                 ))).round(16).ripple(() {
                 Get.offAll(() => const PhoneLoginScreen());
               })
-            : Container(
+        else if (widget.hidePhoneLogin == true)
+          Container(
                 height: 52,
                 width: 52,
                 color: AppColorConstants.cardColor,
@@ -114,7 +119,8 @@ class _SocialLoginState extends State<SocialLogin> {
             _handleAppleSignIn();
             // Get.to(() => const InstagramView());
           }),
-        Container(
+        if (SocialLogin.showFacebookLogin)
+          Container(
             height: 52,
             width: 52,
             color: AppColorConstants.cardColor,

@@ -178,6 +178,9 @@ class AuthApi {
   static register(
       {required String email,
       required String name,
+      String? fullName,
+      String? dob,
+      int? gender,
       required String password,
       required Function(String) successCallback}) async {
     String? fcmToken = await SharedPrefs().getFCMToken();
@@ -186,7 +189,9 @@ class AuthApi {
     await ApiWrapper()
         .postApiWithoutToken(url: NetworkConstantsUtil.register, param: {
       "username": name,
-      "name": name,
+      "name": (fullName ?? '').trim().isNotEmpty ? fullName!.trim() : name,
+      if ((dob ?? '').isNotEmpty) "dob": dob,
+      if (gender != null) "sex": gender.toString(),
       "email": email,
       "password": password,
       "device_token": fcmToken ?? '',

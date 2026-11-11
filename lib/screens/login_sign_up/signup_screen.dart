@@ -1,3 +1,4 @@
+import 'package:foap/helper/date_extension.dart';
 import 'package:flutter/gestures.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/login_signup_imports.dart';
@@ -12,7 +13,11 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class SignUpScreenState extends State<SignUpScreen> {
+  TextEditingController fullName = TextEditingController();
   TextEditingController userName = TextEditingController();
+  TextEditingController confirmPassword = TextEditingController();
+  DateTime? dob;
+  int? gender; // 1 male, 2 female, 3 other
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   SettingsController settingsController = Get.find();
@@ -73,6 +78,14 @@ class SignUpScreenState extends State<SignUpScreen> {
             Heading3Text(createAnAccountString.tr,
                 weight: TextWeight.bold, textAlign: TextAlign.center),
             const SizedBox(height: 26),
+            AppTextField(
+              icon: ThemeIcon.account,
+              hintText: nameString.tr,
+              controller: fullName,
+            ),
+            SizedBox(
+              height: Get.height * 0.015,
+            ),
             Stack(
               children: [
                 AppTextField(
@@ -117,6 +130,14 @@ class SignUpScreenState extends State<SignUpScreen> {
             SizedBox(
               height: Get.height * 0.015,
             ),
+            _dobField(),
+            SizedBox(
+              height: Get.height * 0.015,
+            ),
+            _genderRow(),
+            SizedBox(
+              height: Get.height * 0.015,
+            ),
             AppPasswordTextField(
               controller: password,
               hintText: passwordString.tr,
@@ -158,6 +179,15 @@ class SignUpScreenState extends State<SignUpScreen> {
                     )
                   : Container();
             }),
+            SizedBox(
+              height: Get.height * 0.015,
+            ),
+            AppPasswordTextField(
+              controller: confirmPassword,
+              hintText: confirmPasswordString.tr,
+              icon: ThemeIcon.lock,
+              onChanged: (value) {},
+            ),
             SizedBox(
               height: Get.height * 0.015,
             ),
@@ -245,14 +275,97 @@ class SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  Widget _dobField() {
+    return Container(
+      height: 56,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor.darken(0.02),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.7)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.cake_outlined,
+              size: 20, color: AppColorConstants.iconColor),
+          const SizedBox(width: 12),
+          Expanded(
+            child: BodyLargeText(
+              dob == null ? dateOfBirthString.tr : dob!.formatTo('dd MMM yyyy'),
+              color: dob == null
+                  ? AppColorConstants.subHeadingTextColor
+                  : AppColorConstants.mainTextColor,
+            ),
+          ),
+        ],
+      ),
+    ).ripple(() async {
+      FocusScope.of(context).requestFocus(FocusNode());
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: dob ?? DateTime(DateTime.now().year - 18, 1, 1),
+        firstDate: DateTime(1920),
+        lastDate: DateTime.now(),
+      );
+      if (picked != null) {
+        setState(() => dob = picked);
+      }
+    });
+  }
+
+  Widget _genderRow() {
+    final items = [
+      [1, maleString.tr],
+      [2, femaleString.tr],
+      [3, otherString.tr],
+    ];
+    return Row(
+      children: items.map((e) {
+        final selected = gender == e[0];
+        return Expanded(
+          child: Container(
+            height: 46,
+            margin: EdgeInsets.only(right: e[0] == 3 ? 0 : 8),
+            decoration: BoxDecoration(
+              color: selected
+                  ? AppColorConstants.themeColor.withValues(alpha: 0.12)
+                  : AppColorConstants.cardColor.darken(0.02),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                  color: selected
+                      ? AppColorConstants.themeColor
+                      : AppColorConstants.dividerColor.withValues(alpha: 0.7),
+                  width: selected ? 1.4 : 1),
+            ),
+            child: Center(
+              child: BodyMediumText(
+                e[1] as String,
+                weight: TextWeight.semiBold,
+                color: selected
+                    ? AppColorConstants.themeColor
+                    : AppColorConstants.mainTextColor,
+              ),
+            ),
+          ).ripple(() => setState(() => gender = e[0] as int)),
+        );
+      }).toList(),
+    );
+  }
+
   addSignUpBtn() {
     return AppThemeButton(
       onPress: () {
         FocusScope.of(context).requestFocus(FocusNode());
         loginController.register(
+          fullName: fullName.text.trim(),
           userName: userName.text,
           email: email.text,
+          dob: dob,
+          gender: gender,
           password: password.text,
+          confirmPassword: confirmPassword.text,
         );
       },
       text: signUpString.tr,
