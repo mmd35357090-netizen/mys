@@ -69,7 +69,7 @@ class FollowRequestListState extends State<FollowRequestList> {
                                   },
                                   separatorBuilder: (context, index) {
                                     return const SizedBox(
-                                      height: 20,
+                                      height: 12,
                                     );
                                   },
                                 ).addPullToRefresh(

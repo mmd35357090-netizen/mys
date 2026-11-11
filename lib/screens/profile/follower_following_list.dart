@@ -109,7 +109,7 @@ class FollowerFollowingState extends State<FollowerFollowingList> {
                                     },
                                     separatorBuilder: (context, index) {
                                       return const SizedBox(
-                                        height: 20,
+                                        height: 12,
                                       );
                                     },
                                   ).hp(DesignConstants.horizontalPadding),

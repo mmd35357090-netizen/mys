@@ -1,3 +1,4 @@
+import 'package:foap/util/biometric_helper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../../controllers/profile/profile_controller.dart';
 import '../../universal_components/rounded_input_field.dart';
@@ -36,7 +37,11 @@ class ChangePasswordState extends State<ChangePassword> {
 
               title: changePwdString.tr,
               rightBtnTitle: doneString.tr,
-              completion: () {
+              completion: () async {
+                if (!await BiometricHelper.confirmIfEnabled(
+                    changePwdString.tr)) {
+                  return;
+                }
                 profileController.resetPassword(
                     oldPassword: oldPassword.text,
                     newPassword: newPassword.text,
@@ -46,21 +51,33 @@ class ChangePasswordState extends State<ChangePassword> {
           const SizedBox(
             height: 20,
           ),
-          Column(
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColorConstants.cardColor,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                  color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                  width: 0.6),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5))
+              ],
+            ),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Heading6Text(oldPwdStrString.tr,
-                  weight: TextWeight.medium),
+              BodyMediumText(oldPwdStrString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.semiBold),
               addTextField(oldPassword, 'old_password').tP8,
-              Heading6Text(newPwdStrString.tr,
-                  weight: TextWeight.medium),
+              BodyMediumText(newPwdStrString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.semiBold),
               addTextField(newPassword, 'new_password').tP8,
-              Heading6Text(confirmPwdStrString.tr,
-                      weight: TextWeight.medium)
+              BodyMediumText(confirmPwdStrString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.semiBold)
                   .vP8,
               addTextField(confirmPassword, 'confirm_password'),
             ],
-          ).hp(DesignConstants.horizontalPadding)
+          )).hp(DesignConstants.horizontalPadding)
         ]),
       ),
     );

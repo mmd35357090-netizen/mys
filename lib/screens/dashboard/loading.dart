@@ -80,6 +80,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      canPop: false,
       backgroundColor: AppColorConstants.backgroundColor,
       body: _type == 0
           ? const SizedBox()

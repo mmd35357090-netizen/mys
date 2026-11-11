@@ -1,3 +1,4 @@
+import 'package:foap/util/biometric_helper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/post/saved_posts.dart';
@@ -132,8 +133,13 @@ class _SettingsState extends State<Settings> {
                             cancelHandler: () {
                               Get.back();
                             },
-                            okHandler: () {
-                              _settingsController.deleteAccount();
+                            okHandler: () async {
+                              final ok =
+                                  await BiometricHelper.confirmIfEnabled(
+                                      deleteAccountString.tr);
+                              if (ok) {
+                                _settingsController.deleteAccount();
+                              }
                             });
                       }, danger: true),
                     ]),

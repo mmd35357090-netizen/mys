@@ -106,88 +106,113 @@ class _VoiceRecordState extends State<VoiceRecord> {
     return Container(
       color: AppColorConstants.backgroundColor,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // const Spacer(),
+          const SizedBox(height: 12),
           Container(
-            height: 150,
-            color: AppColorConstants.backgroundColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ThemeIconWidget(
-                  ThemeIcon.mic,
-                  color: AppColorConstants.themeColor,
-                  size: 60,
-                ),
-                // const SizedBox(
-                //   width: 10,
-                // ),
-                SizedBox(
-                  width: 150,
-                  child: Heading1Text(
-                    '${_seconds ~/ 60}:${(_seconds % 60).toString().padLeft(2, '0')}',
-                    weight: TextWeight.regular,
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              ],
+            height: 4,
+            width: 40,
+            color: AppColorConstants.dividerColor,
+          ).round(2),
+          const SizedBox(height: 24),
+          Container(
+            height: 84,
+            width: 84,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: (isRecorded
+                      ? AppColorConstants.themeColor
+                      : AppColorConstants.red)
+                  .withValues(alpha: 0.12),
             ),
-          ).round(20).p16,
-          const SizedBox(
-            height: 10,
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 50,
-                  width: 50,
-                  color: AppColorConstants.cardColor,
-                  child: Center(
-                    child: ThemeIconWidget(
-                      isRecorded == true ? ThemeIcon.send : ThemeIcon.stop,
-                      size: 25,
-                    ),
-                  ),
-                ).circular.ripple(() {
-                  setState(() {
-                    if (isRecorded == true) {
-                      sendRecording();
-                    } else {
-                      stopRecording();
-                      isRecorded = true;
-                    }
-                  });
-                }),
-                const SizedBox(
-                  width: 50,
-                ),
-                Container(
-                  height: 50,
-                  width: 50,
-                  color: AppColorConstants.cardColor,
-                  child: Center(
-                    child: ThemeIconWidget(
-                      ThemeIcon.close,
-                      color: AppColorConstants.iconColor,
-                      size: 25,
-                    ),
-                  ),
-                ).circular.ripple(() {
-                  Get.back();
-                })
-              ],
+            child: Center(
+              child: ThemeIconWidget(
+                ThemeIcon.mic,
+                color: isRecorded
+                    ? AppColorConstants.themeColor
+                    : AppColorConstants.red,
+                size: 40,
+              ),
             ),
           ),
-          const SizedBox(
-            height: 40,
+          const SizedBox(height: 16),
+          Text(
+            '${_seconds ~/ 60}:${(_seconds % 60).toString().padLeft(2, '0')}',
+            style: TextStyle(
+                fontSize: 38,
+                fontWeight: FontWeight.w800,
+                color: AppColorConstants.mainTextColor),
           ),
+          const SizedBox(height: 4),
+          BodySmallText(
+            isRecorded ? 'Ready to send' : 'Recording…',
+            color: AppColorConstants.subHeadingTextColor,
+            weight: TextWeight.semiBold,
+          ),
+          const SizedBox(height: 28),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 54,
+                width: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColorConstants.cardColor,
+                  border: Border.all(
+                      color: AppColorConstants.dividerColor, width: 0.8),
+                ),
+                child: Center(
+                  child: ThemeIconWidget(
+                    ThemeIcon.close,
+                    color: AppColorConstants.iconColor,
+                    size: 22,
+                  ),
+                ),
+              ).ripple(() {
+                Get.back();
+              }),
+              const SizedBox(width: 36),
+              Container(
+                height: 70,
+                width: 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: [
+                    AppColorConstants.themeColor,
+                    AppColorConstants.themeColor.withValues(alpha: 0.75)
+                  ]),
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppColorConstants.themeColor
+                            .withValues(alpha: 0.35),
+                        blurRadius: 14,
+                        offset: const Offset(0, 6))
+                  ],
+                ),
+                child: Center(
+                  child: ThemeIconWidget(
+                    isRecorded == true ? ThemeIcon.send : ThemeIcon.stop,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ).ripple(() {
+                setState(() {
+                  if (isRecorded == true) {
+                    sendRecording();
+                  } else {
+                    stopRecording();
+                    isRecorded = true;
+                  }
+                });
+              }),
+            ],
+          ),
+          const SizedBox(height: 36),
         ],
       ),
-    ).topRounded(40);
+    ).topRounded(32);
   }
 
   stopRecording() async {

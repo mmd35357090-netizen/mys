@@ -10,6 +10,7 @@ class AppScaffold extends StatelessWidget {
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? bottomNavigationBar;
   final bool? extendBodyBehindAppBar;
+  final bool canPop;
 
   const AppScaffold(
       {super.key,
@@ -20,14 +21,13 @@ class AppScaffold extends StatelessWidget {
       this.bottomNavigationBar,
       this.resizeToAvoidBottomInset,
       this.extendBodyBehindAppBar,
+      this.canPop = true,
       this.floatingActionButtonLocation});
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
+    return PopScope(
+        canPop: canPop,
         child: Scaffold(
             backgroundColor:
                 backgroundColor ?? AppColorConstants.backgroundColor,

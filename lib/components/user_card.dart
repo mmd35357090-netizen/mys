@@ -1124,7 +1124,19 @@ class FollowRequestSenderUserTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1132,7 +1144,7 @@ class FollowRequestSenderUserTile extends StatelessWidget {
             children: [
               UserAvatarView(
                 user: profile,
-                size: 40,
+                size: 46,
                 hideLiveIndicator: true,
                 hideOnlineIndicator: true,
               ),
@@ -1167,12 +1179,12 @@ class FollowRequestSenderUserTile extends StatelessWidget {
                 ));
           }),
           const SizedBox(
-            height: 20,
+            height: 14,
           ),
           Row(
             children: [
               SizedBox(
-                height: 35,
+                height: 38,
                 width: 120,
                 child: AppThemeButton(
                     // icon: ThemeIcon.message,
@@ -1185,7 +1197,7 @@ class FollowRequestSenderUserTile extends StatelessWidget {
                 width: 10,
               ),
               SizedBox(
-                height: 35,
+                height: 38,
                 width: 120,
                 child: AppThemeBorderButton(
                     backgroundColor: AppColorConstants.cardColor,
@@ -1198,8 +1210,8 @@ class FollowRequestSenderUserTile extends StatelessWidget {
             ],
           ),
         ],
-      ).p(DesignConstants.horizontalPadding),
-    ).round(20);
+      ).p16,
+    );
   }
 }
 

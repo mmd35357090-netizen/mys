@@ -77,7 +77,7 @@ class BlockedUsersListState extends State<BlockedUsersList> {
                                       },
                                       separatorBuilder: (context, index) {
                                         return const SizedBox(
-                                          height: 20,
+                                          height: 12,
                                         );
                                       },
                                     ).hp(DesignConstants.horizontalPadding),

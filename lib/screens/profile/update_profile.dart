@@ -29,317 +29,182 @@ class UpdateProfileState extends State<UpdateProfile> {
     });
   }
 
+  Widget _card(List<Widget> rows) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
+      child: Column(children: rows),
+    );
+  }
+
+  Widget _row(IconData icon, String label, Widget value, VoidCallback onTap,
+      {bool last = false}) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              height: 36,
+              width: 36,
+              color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+              child: Icon(icon, size: 18, color: AppColorConstants.themeColor),
+            ).round(11),
+            const SizedBox(width: 12),
+            Expanded(
+              child: BodyLargeText(label, weight: TextWeight.semiBold),
+            ),
+            Flexible(child: value),
+            const SizedBox(width: 8),
+            ThemeIconWidget(
+              ThemeIcon.nextArrow,
+              color: AppColorConstants.subHeadingTextColor,
+              size: 13,
+            )
+          ],
+        ).setPadding(left: 14, right: 14, top: 14, bottom: 14).ripple(onTap),
+        if (!last)
+          Divider(
+              height: 1,
+              indent: 62,
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.6)),
+      ],
+    );
+  }
+
+  Widget _val(String text) {
+    return BodyMediumText(text,
+        maxLines: 1,
+        textAlign: TextAlign.end,
+        color: AppColorConstants.subHeadingTextColor);
+  }
+
+  Widget _sectionTitle(String t) {
+    return BodySmallText(t.toUpperCase(),
+            color: AppColorConstants.subHeadingTextColor,
+            weight: TextWeight.bold)
+        .setPadding(left: 6, bottom: 8, top: 22);
+  }
+
+  void _go(Widget page) {
+    Get.to(() => page)!.then((value) {
+      reloadData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
       body: Column(
         children: [
-          backNavigationBar(title: ''),
+          backNavigationBar(title: editProfileString.tr),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   addProfileView(),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Row(
-                    children: [
-                      BodyLargeText(
-                        userNameString.tr,
-                        weight: TextWeight.medium,
-                      ),
-                      const Spacer(),
-                      Obx(() => profileController.user.value != null
-                          ? BodyMediumText(
-                              profileController.user.value!.userName,
-                            )
-                          : Container()),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const ChangeUserName())!.then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(
-                        categoryString.tr,
-                        weight: TextWeight.medium,
-                      ),
-                      const Spacer(),
-                      Obx(() => profileController.user.value != null
-                          ? BodyMediumText(
-                              profileController
-                                  .user.value!.profileCategoryTypeName,
-                            )
-                          : Container()),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const SetProfileCategoryType(
-                              isFromSignup: false,
-                            ))!
-                        .then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  if (profileController.user.value!.accountCreatedWith == 1)
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            BodyLargeText(
-                              passwordString.tr,
-                              weight: TextWeight.medium,
-                            ),
-                            const Spacer(),
-                            const BodyMediumText(
-                              '********',
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            ThemeIconWidget(
-                              ThemeIcon.edit,
-                              color: AppColorConstants.iconColor,
-                              size: 15,
-                            )
-                          ],
-                        ).ripple(() {
-                          Get.to(() => const ChangePassword());
-                        }),
-                        divider().vP16
-                      ],
-                    ),
-                  Row(
-                    children: [
-                      BodyLargeText(
-                        phoneNumberString.tr,
-                        weight: TextWeight.medium,
-                      ),
-                      const Spacer(),
-                      Obx(() => profileController.user.value != null
-                          ? BodyMediumText(
-                              profileController.user.value!.phone ?? '',
-                            )
-                          : Container()),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const ChangePhoneNumber())!.then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(paymentDetailString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => profileController.user.value != null
-                          ? BodyMediumText(
-                              profileController.user.value!.paypalId ?? '',
-                            )
-                          : Container()),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const ChangePaypalId())!.then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(locationString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => BodyMediumText(
-                            '${profileController.user.value?.country ?? ''} ${profileController.user.value?.city ?? ''}',
-                          )),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const ChangeLocation())!.then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(nameString.tr, weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => BodyMediumText(
-                            profileController.user.value?.name ?? '',
-                          )),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const AddName(isSettingProfile: false))!
-                        .then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(dateOfBirthString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => BodyMediumText(
-                            profileController.user.value?.dob ?? '',
-                          )),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const SetDateOfBirth(isSettingProfile: false))!
-                        .then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(genderString.tr, weight: TextWeight.medium),
-                      const Spacer(),
-                      Obx(() => BodyMediumText(
-                            profileController.user.value?.genderType ==
+                  _sectionTitle(accountString.tr),
+                  Obx(() => _card([
+                        _row(
+                            Icons.alternate_email_rounded,
+                            userNameString.tr,
+                            _val(profileController.user.value?.userName ?? ''),
+                            () => _go(const ChangeUserName())),
+                        _row(
+                            Icons.category_outlined,
+                            categoryString.tr,
+                            _val(profileController
+                                    .user.value?.profileCategoryTypeName ??
+                                ''),
+                            () => _go(const SetProfileCategoryType(
+                                  isFromSignup: false,
+                                ))),
+                        if (profileController.user.value?.accountCreatedWith ==
+                            1)
+                          _row(Icons.lock_outline_rounded, passwordString.tr,
+                              _val('********'), () {
+                            Get.to(() => const ChangePassword());
+                          }),
+                        _row(
+                            Icons.phone_outlined,
+                            phoneNumberString.tr,
+                            _val(profileController.user.value?.phone ?? ''),
+                            () => _go(const ChangePhoneNumber())),
+                        _row(
+                            Icons.account_balance_wallet_outlined,
+                            paymentDetailString.tr,
+                            _val(profileController.user.value?.paypalId ?? ''),
+                            () => _go(const ChangePaypalId()),
+                            last: true),
+                      ])),
+                  _sectionTitle(personalDetailsString.tr),
+                  Obx(() => _card([
+                        _row(
+                            Icons.person_outline_rounded,
+                            nameString.tr,
+                            _val(profileController.user.value?.name ?? ''),
+                            () => _go(const AddName(isSettingProfile: false))),
+                        _row(
+                            Icons.place_outlined,
+                            locationString.tr,
+                            _val(
+                                '${profileController.user.value?.country ?? ''} ${profileController.user.value?.city ?? ''}'),
+                            () => _go(const ChangeLocation())),
+                        _row(
+                            Icons.cake_outlined,
+                            dateOfBirthString.tr,
+                            _val(profileController.user.value?.dob ?? ''),
+                            () => _go(
+                                const SetDateOfBirth(isSettingProfile: false))),
+                        _row(
+                            Icons.wc_rounded,
+                            genderString.tr,
+                            _val(profileController.user.value?.genderType ==
                                     GenderType.male
                                 ? maleString.tr
                                 : profileController.user.value?.genderType ==
                                         GenderType.female
                                     ? femaleString.tr
-                                    : otherString.tr,
-                          )),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const SetYourGender(isSettingProfile: false))!
-                        .then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(personalDetailsString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() =>
-                            const AddPersonalInfo(isSettingProfile: false))!
-                        .then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(interestsString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const AddInterests(
-                              isSettingProfile: false,
-                            ))!
-                        .then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
-                  Row(
-                    children: [
-                      BodyLargeText(professionalDetailString.tr,
-                          weight: TextWeight.medium),
-                      const Spacer(),
-                      ThemeIconWidget(
-                        ThemeIcon.edit,
-                        color: AppColorConstants.iconColor,
-                        size: 15,
-                      )
-                    ],
-                  ).ripple(() {
-                    Get.to(() => const AddProfessionalDetails(
-                            isSettingProfile: false))!
-                        .then((value) {
-                      reloadData();
-                    });
-                  }),
-                  divider().vP16,
+                                    : otherString.tr),
+                            () => _go(
+                                const SetYourGender(isSettingProfile: false)),
+                            last: true),
+                      ])),
+                  _sectionTitle(moreString.tr),
+                  _card([
+                    _row(
+                        Icons.badge_outlined,
+                        personalDetailsString.tr,
+                        const SizedBox(),
+                        () => _go(
+                            const AddPersonalInfo(isSettingProfile: false))),
+                    _row(
+                        Icons.favorite_border_rounded,
+                        interestsString.tr,
+                        const SizedBox(),
+                        () => _go(
+                            const AddInterests(isSettingProfile: false))),
+                    _row(
+                        Icons.work_outline_rounded,
+                        professionalDetailString.tr,
+                        const SizedBox(),
+                        () => _go(const AddProfessionalDetails(
+                            isSettingProfile: false)),
+                        last: true),
+                  ]),
+                  const SizedBox(height: 40),
                 ],
               ).hp(DesignConstants.horizontalPadding),
             ),
@@ -353,53 +218,69 @@ class UpdateProfileState extends State<UpdateProfile> {
     return GetBuilder<ProfileController>(
         init: profileController,
         builder: (ctx) {
-          return SizedBox(
-            height: 225,
-            child: profileController.user.value != null
-                ? SizedBox(
-                    width: Get.width,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          UserAvatarView(
-                                  user: profileController.user.value!,
-                                  size: 85,
-                                  onTapHandler: () {})
-                              .ripple(() {
-                            openImagePickingPopup();
-                          }),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          BodySmallText(
-                            editProfilePictureString.tr,
-                          ).vP4.ripple(() {
-                            openImagePickingPopup();
-                          }),
-                          Heading6Text(
-                            profileController.user.value!.userName,
-                            weight: TextWeight.bold,
-                          ).setPadding(bottom: 4),
-                          profileController.user.value?.email != null
-                              ? BodyMediumText(
-                                  '${profileController.user.value!.email}',
-                                  color: AppColorConstants.mainTextColor,
-                                  weight: TextWeight.regular,
-                                )
-                              : Container(),
-                          profileController.user.value?.country != null
-                              ? BodyMediumText(
-                                  '${profileController.user.value?.country ?? ''},${profileController.user.value?.city ?? ''}',
-                                  color: AppColorConstants.mainTextColor,
-                                  weight: TextWeight.regular,
-                                ).vP4
-                              : Container(),
-                        ]).p8,
-                  )
-                : Container(),
+          final user = profileController.user.value;
+          return Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.symmetric(vertical: 22),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColorConstants.themeColor,
+                    AppColorConstants.themeColor.withValues(alpha: 0.72)
+                  ]),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: user == null
+                ? const SizedBox(height: 120)
+                : Column(children: [
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: const BoxDecoration(
+                              color: Colors.white, shape: BoxShape.circle),
+                          child: UserAvatarView(
+                              user: user, size: 85, onTapHandler: () {}),
+                        ),
+                        Container(
+                          height: 30,
+                          width: 30,
+                          decoration: BoxDecoration(
+                              color: AppColorConstants.cardColor,
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.white, width: 2)),
+                          child: Icon(Icons.camera_alt_rounded,
+                              size: 15, color: AppColorConstants.themeColor),
+                        ),
+                      ],
+                    ).ripple(() {
+                      openImagePickingPopup();
+                    }),
+                    const SizedBox(height: 10),
+                    BodySmallText(
+                      editProfilePictureString.tr,
+                      color: Colors.white70,
+                    ).vP4.ripple(() {
+                      openImagePickingPopup();
+                    }),
+                    Heading5Text(
+                      user.userName,
+                      color: Colors.white,
+                      weight: TextWeight.bold,
+                    ).setPadding(bottom: 2),
+                    if (user.email != null)
+                      BodyMediumText('${user.email}',
+                          color: Colors.white, weight: TextWeight.regular),
+                    if (user.country != null)
+                      BodyMediumText('${user.country ?? ''}, ${user.city ?? ''}',
+                              color: Colors.white70, weight: TextWeight.regular)
+                          .vP4,
+                  ]),
           );
         });
   }

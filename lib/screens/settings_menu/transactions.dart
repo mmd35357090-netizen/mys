@@ -1,3 +1,4 @@
+import 'package:foap/util/biometric_helper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -204,7 +205,11 @@ class PaymentWithdrawalState extends State<Transactions> {
           AppUtil.showToast(
               message: pleaseEnterPaypalIdString.tr, isSuccess: false);
         } else {
-          _profileController.withdrawalRequest();
+          BiometricHelper.confirmIfEnabled(withdrawString.tr).then((ok) {
+            if (ok) {
+              _profileController.withdrawalRequest();
+            }
+          });
         }
       },
       child: Container(

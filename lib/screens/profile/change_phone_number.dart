@@ -48,17 +48,31 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
             const SizedBox(
               height: 20,
             ),
-            Column(
+            Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColorConstants.cardColor,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                  color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                  width: 0.6),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5))
+              ],
+            ),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BodyLargeText(phoneNumberString.tr,
-                    weight: TextWeight.medium),
+                BodyMediumText(phoneNumberString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.semiBold),
                 const SizedBox(
                   height: 8,
                 ),
                 addTextField(),
               ],
-            ).hp(DesignConstants.horizontalPadding)
+            )).hp(DesignConstants.horizontalPadding)
           ]),
         ));
   }

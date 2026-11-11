@@ -1,3 +1,4 @@
+import 'package:foap/util/biometric_helper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import '../../controllers/profile/profile_controller.dart';
 
@@ -32,20 +33,38 @@ class _ChangePaypalIdState extends State<ChangePaypalId> {
 
               title: paymentDetailString.tr,
               rightBtnTitle: doneString.tr,
-              completion: () {
+              completion: () async {
+                if (!await BiometricHelper.confirmIfEnabled(
+                    paymentDetailString.tr)) {
+                  return;
+                }
                 profileController.updatePaypalId(
                     paypalId: paypalId.text, );
               }),
           const SizedBox(
             height: 20,
           ),
-          Column(
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColorConstants.cardColor,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                  color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                  width: 0.6),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5))
+              ],
+            ),
+            child: Column(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Heading6Text(paypalIdString.tr,
-                      weight: TextWeight.medium),
+                  BodyMediumText(paypalIdString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.semiBold),
                   Container(
                     color: Colors.transparent,
                     height: 50,
@@ -58,7 +77,7 @@ class _ChangePaypalIdState extends State<ChangePaypalId> {
                 ],
               ).vP8,
             ],
-          ).hp(DesignConstants.horizontalPadding),
+          )).hp(DesignConstants.horizontalPadding),
         ],
       ),
     );
