@@ -172,7 +172,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                       addPhotoString.tr,
                     )),
                 ListTile(
-                    leading: const Icon(Icons.camera_alt_outlined,
+                    leading: Icon(Icons.camera_alt_outlined,
                         color: AppColorConstants.mainTextColor),
                     title: BodyLargeText(
                       takePhotoString.tr,
@@ -188,7 +188,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                     }),
                 divider(),
                 ListTile(
-                    leading: const Icon(Icons.wallpaper_outlined,
+                    leading: Icon(Icons.wallpaper_outlined,
                         color: AppColorConstants.mainTextColor),
                     title: BodyLargeText(
                       chooseFromGalleryString.tr,
@@ -204,7 +204,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                     }),
                 divider(),
                 ListTile(
-                    leading: const Icon(Icons.close, color: AppColorConstants.mainTextColor),
+                    leading: Icon(Icons.close, color: AppColorConstants.mainTextColor),
                     title: BodyLargeText(cancelString.tr),
                     onTap: () => Get.back()),
               ],
