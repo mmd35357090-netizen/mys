@@ -3,7 +3,16 @@ import 'package:foap/helper/imports/common_import.dart';
 Widget backNavigationBar({required String title}) {
   return Container(
     height: 100,
-    color: AppColorConstants.cardColor,
+    decoration: BoxDecoration(
+      color: AppColorConstants.cardColor,
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(22)),
+      boxShadow: [
+        BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4))
+      ],
+    ),
     child: Stack(
       alignment: Alignment.center,
       children: [
@@ -11,17 +20,16 @@ Widget backNavigationBar({required String title}) {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              height: 40,
-              width: 40,
-              child: Center(
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  size: 20,
-                  color: AppColorConstants.iconColor,
-                ),
-              ),
-            ).ripple(() {
+            Container(
+              height: 38,
+              width: 38,
+              color: AppColorConstants.themeColor.withValues(alpha: 0.1),
+              child: Center(child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 17,
+                color: AppColorConstants.iconColor,
+              )),
+            ).round(19).ripple(() {
               Get.back();
             }),
             const SizedBox(
@@ -29,7 +37,7 @@ Widget backNavigationBar({required String title}) {
             )
           ],
         ),
-        BodyLargeText(title.tr, maxLines: 1, weight: TextWeight.medium)
+        BodyLargeText(title.tr, maxLines: 1, weight: TextWeight.bold)
       ],
     ).setPadding(
         left: DesignConstants.horizontalPadding,
@@ -42,23 +50,35 @@ Widget backNavigationBarWithTrailingWidget(
     {required String title, required Widget widget}) {
   return Container(
     height: 100,
-    color: AppColorConstants.cardColor,
+    decoration: BoxDecoration(
+      color: AppColorConstants.cardColor,
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(22)),
+      boxShadow: [
+        BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4))
+      ],
+    ),
     width: double.infinity,
     child: Stack(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-                width: 50,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: ThemeIconWidget(
-                    ThemeIcon.backArrow,
-                    size: 18,
-                    color: AppColorConstants.iconColor,
-                  ),
-                )).ripple(() {
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+              height: 38,
+              width: 38,
+              color: AppColorConstants.themeColor.withValues(alpha: 0.1),
+              child: Center(child: ThemeIconWidget(
+                ThemeIcon.backArrow,
+                size: 17,
+                color: AppColorConstants.iconColor,
+              )),
+            ).round(19),
+            ).ripple(() {
               Get.back();
             }),
             widget,
@@ -72,6 +92,7 @@ Widget backNavigationBarWithTrailingWidget(
           child: Center(
             child: BodyLargeText(
               title,
+              weight: TextWeight.bold,
             ),
           ),
         )
@@ -93,16 +114,32 @@ Widget profileScreensNavigationBar(
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ThemeIconWidget(
+          Container(
+              height: 38,
+              width: 38,
+              color: AppColorConstants.themeColor.withValues(alpha: 0.1),
+              child: Center(child: ThemeIconWidget(
             ThemeIcon.backArrow,
-            size: 18,
+            size: 17,
             color: AppColorConstants.iconColor,
-          ).ripple(() {
+          )),
+            ).round(19).ripple(() {
             Get.back();
           }),
           if (rightBtnTitle != null)
-            BodyLargeText(rightBtnTitle.tr, weight: TextWeight.medium)
-                .ripple(() {
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  AppColorConstants.themeColor,
+                  AppColorConstants.themeColor.withValues(alpha: 0.75)
+                ]),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: BodyMediumText(rightBtnTitle.tr,
+                  color: Colors.white, weight: TextWeight.semiBold),
+            ).ripple(() {
               completion();
             }),
         ],
@@ -113,7 +150,7 @@ Widget profileScreensNavigationBar(
         left: 0,
         right: 0,
         child: Center(
-          child: BodyLargeText(title.tr, weight: TextWeight.medium),
+          child: BodyLargeText(title.tr, weight: TextWeight.bold),
         ),
       )
     ],

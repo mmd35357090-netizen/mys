@@ -17,16 +17,38 @@ class PaymentMethodTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-            color: AppColorConstants.cardColor.darken(),
-            height: 50,
-            width: double.infinity,
+      height: 62,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+            color: isSelected
+                ? AppColorConstants.themeColor
+                : AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: isSelected ? 1.4 : 0.6),
+        boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5))
+          ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
             child: Image.asset(
               icon,
-              width: double.infinity,
-              height: 50,
-            ).p(12))
-        .round(10)
-        .vP8
-        .ripple(press!);
+              height: 36,
+              fit: BoxFit.contain,
+            ),
+          ),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: AppColorConstants.subHeadingTextColor,
+          ),
+        ],
+      ).hP16,
+    ).vP8.ripple(press!);
   }
 }

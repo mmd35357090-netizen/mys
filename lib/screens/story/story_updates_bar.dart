@@ -30,79 +30,122 @@ class StoryUpdatesBar extends StatelessWidget {
             width: storyCircleSize + 20,
             child: Column(
               children: [
-                SizedBox(
-                  height: storyCircleSize,
-                  width: storyCircleSize,
-                  child: ThemeIconWidget(
-                    ThemeIcon.plusSymbol,
-                    size: 28,
-                    color: AppColorConstants.themeColor.darken(),
-                  ),
-                ).borderWithRadius(value: 2, radius: 50).ripple(() {
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      height: storyCircleSize,
+                      width: storyCircleSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColorConstants.themeColor
+                            .withValues(alpha: 0.12),
+                        border: Border.all(
+                            color: AppColorConstants.themeColor
+                                .withValues(alpha: 0.35),
+                            width: 1.5),
+                      ),
+                      child: Icon(Icons.person_rounded,
+                          size: storyCircleSize * 0.5,
+                          color: AppColorConstants.themeColor
+                              .withValues(alpha: 0.6)),
+                    ),
+                    Positioned(
+                      right: -2,
+                      bottom: -2,
+                      child: Container(
+                        height: 22,
+                        width: 22,
+                        decoration: BoxDecoration(
+                          color: AppColorConstants.themeColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: AppColorConstants.backgroundColor,
+                              width: 2),
+                        ),
+                        child: const Icon(Icons.add_rounded,
+                            size: 15, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ).ripple(() {
                   addStoryCallback();
                 }),
                 const SizedBox(
-                  height: 4,
+                  height: 6,
                 ),
-                BodySmallText(yourStoryString.tr,
-                    weight: TextWeight.medium)
+                BodySmallText(yourStoryString.tr, weight: TextWeight.medium)
               ],
             ),
           );
         } else {
+          final story = stories[index - 1];
+          final viewed = story.isViewed == true;
           return SizedBox(
               width: storyCircleSize + 20,
               child: Column(
                 children: [
                   Container(
-                    child: stories[index - 1].userImage != null
-                        ? CachedNetworkImage(
-                            imageUrl: stories[index - 1].userImage!,
-                            fit: BoxFit.cover,
-                            height: storyCircleSize,
-                            width: storyCircleSize,
-                            placeholder: (context, url) => SizedBox(
-                                height: 20,
-                                width: 20,
-                                child:
-                                    const CircularProgressIndicator().p16),
-                            errorWidget: (context, url, error) =>
-                                const SizedBox(
+                    padding: const EdgeInsets.all(2.5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: viewed
+                          ? null
+                          : LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColorConstants.themeColor,
+                                AppColorConstants.themeColor
+                                    .withValues(alpha: 0.55),
+                              ],
+                            ),
+                      color: viewed ? AppColorConstants.disabledColor : null,
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColorConstants.backgroundColor),
+                      child: ClipOval(
+                        child: story.userImage != null
+                            ? CachedNetworkImage(
+                                imageUrl: story.userImage!,
+                                fit: BoxFit.cover,
+                                height: storyCircleSize - 9,
+                                width: storyCircleSize - 9,
+                                placeholder: (context, url) => SizedBox(
                                     height: 20,
                                     width: 20,
-                                    child: Icon(Icons.error)),
-                          )
-                        : SizedBox(
-                            height: storyCircleSize,
-                            width: storyCircleSize,
-                            child: BodyMediumText(
-                                stories[index - 1].userName.getInitials),
-                          ),
-                  )
-                      .borderWithRadius(
-                          value: 2,
-                          radius: 40,
-                          color: stories[index - 1].isViewed == true
-                              ? AppColorConstants.disabledColor
-                              : AppColorConstants.themeColor)
-                      .ripple(() {
-                    viewStoryCallback(stories[index - 1]);
+                                    child:
+                                        const CircularProgressIndicator().p16),
+                                errorWidget: (context, url, error) =>
+                                    const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: Icon(Icons.error)),
+                              )
+                            : SizedBox(
+                                height: storyCircleSize - 9,
+                                width: storyCircleSize - 9,
+                                child: Center(
+                                    child: BodyMediumText(
+                                        story.userName.getInitials)),
+                              ),
+                      ),
+                    ),
+                  ).ripple(() {
+                    viewStoryCallback(story);
                   }),
-                  // MediaThumbnailView(
-                  //   borderColor:
-                  //   stories[index  - 1].isViewed == true
-                  //       ? AppColorConstants.disabledColor
-                  //       : AppColorConstants.themeColor,
-                  //   media: stories[index  - 1].media.last,
-                  // ).ripple(() {
-                  //   viewStoryCallback(stories[index  - 1]);
-                  // }),
                   const SizedBox(
-                    height: 4,
+                    height: 6,
                   ),
                   Expanded(
-                    child: BodySmallText(stories[index - 1].userName,
-                            maxLines: 1, weight: TextWeight.medium)
+                    child: BodySmallText(story.userName,
+                            maxLines: 1,
+                            weight: viewed
+                                ? TextWeight.regular
+                                : TextWeight.semiBold)
                         .hP4,
                   ),
                 ],

@@ -67,11 +67,11 @@ class _ExploreFavOffersState extends State<ExploreFavOffers> {
                                       ? Row(
                                           children: [
                                             Container(
-                                              height: 20,
-                                              width: 5,
+                                              height: 22,
+                                              width: 4,
                                               color:
                                                   AppColorConstants.themeColor,
-                                            ).round(5),
+                                            ).round(2),
                                             const SizedBox(
                                               width: 10,
                                             ),

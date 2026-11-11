@@ -131,8 +131,22 @@ class OfferCommentsScreenState extends State<OfferCommentsScreen> {
 
   Widget buildMessageTextField() {
     return Container(
-      height: 50.0,
-      margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      height: 54.0,
+      margin: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
+      padding: const EdgeInsets.only(left: 6, right: 6),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -141,10 +155,11 @@ class OfferCommentsScreenState extends State<OfferCommentsScreen> {
               onChanged: (text) {},
               decoration: InputDecoration(
                 border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14),
                 hintText: writeCommentString.tr,
                 hintStyle: TextStyle(
                     fontSize: FontSizes.b2,
-                    color: AppColorConstants.mainTextColor),
+                    color: AppColorConstants.subHeadingTextColor),
               ),
               textInputAction: TextInputAction.send,
               style: TextStyle(
@@ -159,21 +174,27 @@ class OfferCommentsScreenState extends State<OfferCommentsScreen> {
                     () => _controller
                         .jumpTo(_controller.position.maxScrollExtent));
               },
-            ).hP8.borderWithRadius(value: 0.5, radius: 15),
+            ),
           ),
-          const SizedBox(width: 20),
           Container(
-            width: 45,
-            height: 45,
-            color: AppColorConstants.mainTextColor,
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(colors: [
+                AppColorConstants.themeColor,
+                AppColorConstants.themeColor.withValues(alpha: 0.75)
+              ]),
+            ),
             child: InkWell(
               onTap: addNewMessage,
-              child: Icon(
-                Icons.send,
-                color: AppColorConstants.themeColor,
+              child: const Icon(
+                Icons.send_rounded,
+                size: 19,
+                color: Colors.white,
               ),
             ),
-          ).circular
+          )
         ],
       ),
     );

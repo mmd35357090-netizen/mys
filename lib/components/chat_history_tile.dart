@@ -143,7 +143,19 @@ class PublicChatGroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -157,7 +169,7 @@ class PublicChatGroupCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     )
                   : Center(child: Heading1Text(room.name!.getInitials)),
-            ).topRounded(10).ripple(() {
+            ).topRounded(20).ripple(() {
               previewBtnClicked();
             }),
           ),
@@ -196,7 +208,7 @@ class PublicChatGroupCard extends StatelessWidget {
                               ? ThemeIcon.checkMark
                               : ThemeIcon.plus,
                           color: Colors.white,
-                        )).topLeftDiognalRounded(20).ripple(() {
+                        )).topLeftDiognalRounded(22).ripple(() {
                       if (room.amIMember == true) {
                         leaveBtnClicked();
                       } else {
@@ -217,6 +229,6 @@ class PublicChatGroupCard extends StatelessWidget {
                   )).hP4,
         ],
       ),
-    ).round(15);
+    ).round(20);
   }
 }

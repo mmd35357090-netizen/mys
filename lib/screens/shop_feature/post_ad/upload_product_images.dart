@@ -83,16 +83,36 @@ class _UploadProductImagesState extends State<UploadProductImages> {
                   //     (widget.adModel!.images ?? [])[index]));
                 }
               },
-              child: SizedBox(
+              child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColorConstants.cardColor,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                            color: index == (widget.adModel!.images).length
+                                ? AppColorConstants.themeColor
+                                    .withValues(alpha: 0.5)
+                                : AppColorConstants.dividerColor
+                                    .withValues(alpha: 0.6),
+                            width: 1),
+                      ),
+                      clipBehavior: Clip.antiAlias,
                       height: double.infinity,
                       width: double.infinity,
                       child: index == (widget.adModel!.images).length
-                          ? Center(
-                              child: ThemeIconWidget(
-                              ThemeIcon.plus,
-                              size: 50,
-                            ))
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_photo_alternate_outlined,
+                                    size: 32,
+                                    color: AppColorConstants.themeColor),
+                                const SizedBox(height: 4),
+                                BodySmallText(addPhotoString.tr,
+                                    color: AppColorConstants.themeColor,
+                                    weight: TextWeight.semiBold),
+                              ],
+                            )
                           : Stack(
+                              fit: StackFit.expand,
                               children: [
                                 CachedNetworkImage(
                                     imageUrl: (widget.adModel!.images)[index],
@@ -100,21 +120,21 @@ class _UploadProductImagesState extends State<UploadProductImages> {
                                     height: double.infinity,
                                     width: double.infinity),
                                 Positioned(
-                                    top: 10,
-                                    right: 10,
+                                    top: 6,
+                                    right: 6,
                                     child: Container(
-                                      color: AppColorConstants.themeColor,
-                                      child: ThemeIconWidget(
-                                        ThemeIcon.delete,
-                                        color: Colors.white,
-                                      ).p8,
-                                    ).round(10).ripple(() {
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: const BoxDecoration(
+                                          color: Colors.black54,
+                                          shape: BoxShape.circle),
+                                      child: const Icon(Icons.close_rounded,
+                                          size: 16, color: Colors.white),
+                                    ).ripple(() {
                                       widget.adModel!.images.removeAt(index);
                                       setState(() {});
                                     }))
                               ],
-                            ))
-                  .borderWithRadius(value: 1, radius: 10));
+                            )));
         });
   }
 

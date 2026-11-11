@@ -78,13 +78,29 @@ class OfferCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: size ?? 100,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Stack(
+            child: ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(22)),
+              child: Stack(
               fit: StackFit.expand,
               children: [
                 CachedNetworkImage(
@@ -92,20 +108,29 @@ class OfferCategoryCard extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
                 Container(
-                  color: Colors.black45,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.65)
+                      ],
+                    ),
+                  ),
                 ),
                 Positioned(
-                    bottom: 5,
-                    left: 5,
-                    right: 5,
-                    child: BodyMediumText(
+                    bottom: 10,
+                    left: 12,
+                    right: 12,
+                    child: BodyLargeText(
                       category.name,
                       maxLines: 1,
                       weight: TextWeight.semiBold,
                       color: Colors.white,
                     ))
               ],
-            ),
+            )),
           ),
           const SizedBox(
             height: 10,
@@ -128,14 +153,14 @@ class OfferCategoryCard extends StatelessWidget {
                 const Spacer(),
                 ThemeIconWidget(ThemeIcon.nextArrow),
               ],
-            ).hP4,
+            ).hP16,
           ).ripple(() {
             Get.to(() => ExploreBusiness(
                   addBackBtn: true,
                   category: category,
                 ));
           }),
-          divider(height: 1).vP4,
+          divider(height: 1).vP4.hP16,
           SizedBox(
                   height: 40,
                   child: Row(
@@ -154,7 +179,7 @@ class OfferCategoryCard extends StatelessWidget {
                       const Spacer(),
                       ThemeIconWidget(ThemeIcon.nextArrow),
                     ],
-                  ).hP4)
+                  ).hP16)
               .ripple(() {
             Get.to(() => ExploreOffers(
                   addBackBtn: true,

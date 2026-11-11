@@ -28,8 +28,8 @@ class _ChatGPTState extends State<ChatGPT> {
           Obx(() => Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.only(
-                    top: 50,
-                    bottom: 50,
+                    top: 20,
+                    bottom: 20,
                     left: DesignConstants.horizontalPadding,
                     right: DesignConstants.horizontalPadding),
                 itemBuilder: (ctx, index) {
@@ -81,13 +81,33 @@ class _ChatGPTState extends State<ChatGPT> {
                         if (message.isSent) const Spacer(),
                         Container(
                           constraints: BoxConstraints(
-                              minWidth: 50, maxWidth: Get.width - 100),
-                          color: message.isSent
-                              ? AppColorConstants.cardColor
-                              : AppColorConstants.themeColor,
-                          child: BodyLargeText(message.content).setPadding(
-                              left: 10, right: 10, top: 8, bottom: 8),
-                        ).round(10),
+                              minWidth: 50, maxWidth: Get.width - 80),
+                          decoration: BoxDecoration(
+                            color: message.isSent
+                                ? AppColorConstants.cardColor
+                                : AppColorConstants.themeColor,
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(18),
+                              topRight: const Radius.circular(18),
+                              bottomLeft:
+                                  Radius.circular(message.isSent ? 18 : 4),
+                              bottomRight:
+                                  Radius.circular(message.isSent ? 4 : 18),
+                            ),
+                            border: message.isSent
+                                ? Border.all(
+                                    color: AppColorConstants.dividerColor
+                                        .withValues(alpha: 0.5),
+                                    width: 0.6)
+                                : null,
+                          ),
+                          child: BodyLargeText(message.content,
+                                  color: message.isSent
+                                      ? AppColorConstants.mainTextColor
+                                      : Colors.white)
+                              .setPadding(
+                                  left: 14, right: 14, top: 10, bottom: 10),
+                        ),
                         if (!message.isSent) const Spacer(),
                       ],
                     ),
@@ -116,8 +136,18 @@ class _ChatGPTState extends State<ChatGPT> {
     return Column(
       children: [
         Container(
-          color: AppColorConstants.backgroundColor.darken(0.02),
-          height: 70,
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 14,
+                  offset: const Offset(0, -4))
+            ],
+          ),
+          height: 84,
           child: Column(
             children: [
               const SizedBox(
@@ -161,10 +191,19 @@ class _ChatGPTState extends State<ChatGPT> {
                         const SizedBox(
                           width: 10,
                         ),
-                        Heading5Text(
-                          sendString.tr,
-                          weight: TextWeight.bold,
-                          color: AppColorConstants.themeColor,
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(colors: [
+                              AppColorConstants.themeColor,
+                              AppColorConstants.themeColor
+                                  .withValues(alpha: 0.75)
+                            ]),
+                          ),
+                          child: const Icon(Icons.send_rounded,
+                              color: Colors.white, size: 18),
                         ).ripple(() {
                           if (textField.text.isNotEmpty) {
                             _chatGPTController.sendMessage(textField.text);

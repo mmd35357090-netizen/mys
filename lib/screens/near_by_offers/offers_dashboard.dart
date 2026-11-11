@@ -40,11 +40,26 @@ class OffersDashboard extends StatelessWidget {
     return Obx(() => AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: items[_dashboardController.currentIndex.value],
-        bottomNavigationBar: SizedBox(
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 14,
+                  offset: const Offset(0, -4))
+            ],
+          ),
           height: MediaQuery.of(context).viewPadding.bottom > 0 ? 90 : 70.0,
           width: Get.width,
-          child: BottomNavigationBar(
-            backgroundColor: AppColorConstants.backgroundColor,
+          child: ClipRRect(
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            child: BottomNavigationBar(
+            backgroundColor: AppColorConstants.cardColor,
+            elevation: 0,
             type: BottomNavigationBarType.fixed,
             currentIndex: _dashboardController.currentIndex.value,
             selectedFontSize: 12,
@@ -92,7 +107,7 @@ class OffersDashboard extends StatelessWidget {
               //   label: '',
               // ),
             ],
-          ),
+          )),
         )));
   }
 

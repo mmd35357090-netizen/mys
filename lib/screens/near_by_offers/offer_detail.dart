@@ -26,7 +26,7 @@ class OfferDetail extends StatelessWidget {
               widget: Obx(() => Container(
                     height: 40,
                     width: 40,
-                    color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
                     child: ThemeIconWidget(
                         _offersController.currentOffer.value!.isFavourite
                             ? ThemeIcon.favFilled
@@ -34,7 +34,7 @@ class OfferDetail extends StatelessWidget {
                         color: _offersController.currentOffer.value!.isFavourite
                             ? AppColorConstants.red
                             : AppColorConstants.iconColor),
-                  ).round(10).ripple(() {
+                  ).round(20).ripple(() {
                     _offersController
                         .favUnFavOffer(_offersController.currentOffer.value!);
                   }))),

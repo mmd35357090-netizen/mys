@@ -8,7 +8,19 @@ class MediaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4))
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -17,9 +29,9 @@ class MediaCard extends StatelessWidget {
               imageUrl: model.image ?? '',
               fit: BoxFit.cover,
               // height: 110,
-            ).round(12),
+            ).round(14),
           ),
-          BodySmallText(model.name ?? '', weight: TextWeight.regular)
+          BodySmallText(model.name ?? '', maxLines: 1, weight: TextWeight.semiBold)
               .setPadding(top: 12, bottom: 6),
           BodySmallText(
             model.showTime ?? '',
@@ -27,8 +39,8 @@ class MediaCard extends StatelessWidget {
             color: AppColorConstants.themeColor,
           ),
         ],
-      ).p(12),
-    ).round(15);
+      ).p(10),
+    );
   }
 }
 

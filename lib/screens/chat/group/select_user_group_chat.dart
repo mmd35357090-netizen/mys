@@ -42,18 +42,36 @@ class SelectUserForGroupChatState extends State<SelectUserForGroupChat> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ThemeIconWidget(
-                      ThemeIcon.close,
-                      size: 20,
-                    ).ripple(() {
+                    Container(
+                      height: 38,
+                      width: 38,
+                      color: AppColorConstants.cardColor,
+                      child: Center(
+                        child: ThemeIconWidget(
+                          ThemeIcon.close,
+                          size: 18,
+                        ),
+                      ),
+                    ).round(19).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Heading6Text(
-                            widget.group == null
-                                ? nextString.tr
-                                : inviteString.tr,
-                            weight: TextWeight.medium)
-                        .ripple(() {
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          AppColorConstants.themeColor,
+                          AppColorConstants.themeColor.withValues(alpha: 0.75)
+                        ]),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: BodyMediumText(
+                          widget.group == null
+                              ? nextString.tr
+                              : inviteString.tr,
+                          color: Colors.white,
+                          weight: TextWeight.semiBold),
+                    ).ripple(() {
                       if (widget.group == null) {
                         if (selectUserForGroupChatController
                             .selectedFriends.isNotEmpty) {

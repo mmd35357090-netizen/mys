@@ -140,7 +140,7 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                       fit: BoxFit.cover,
                       height: double.infinity,
                       width: double.infinity,
-                    ).round(5),
+                    ).round(14),
                     _highlightsController.stories[index].isVideoPost() == true
                         ? Positioned(
                         top: 0,
@@ -149,7 +149,7 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                         bottom: 0,
                         child: ThemeIconWidget(
                           ThemeIcon.play,
-                          size: 80,
+                          size: 44,
                           color: Colors.white,
                         ))
                         : Container()
@@ -161,12 +161,16 @@ class _ChooseStoryForHighlightsState extends State<ChooseStoryForHighlights> {
                   top: 5,
                   right: 5,
                   child: Container(
-                    height: 20,
-                    width: 20,
-                    color: AppColorConstants.themeColor,
-                    child: ThemeIconWidget(
-                        ThemeIcon.checkMark, color: Colors.white, size: 15, ),
-                  ).circular)
+                    height: 24,
+                    width: 24,
+                    decoration: BoxDecoration(
+                      color: AppColorConstants.themeColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: const Icon(Icons.check_rounded,
+                        color: Colors.white, size: 14),
+                  ))
                   : Container()
             ],
           ));

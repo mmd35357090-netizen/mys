@@ -35,14 +35,23 @@ class _MyAdsState extends State<MyAds> {
   Widget build(BuildContext context) {
     return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
-      floatingActionButton: SizedBox(
-        height: 40,
-        width: 40,
-        child: ThemeIconWidget(
-          ThemeIcon.plus,
-          size: 40,
-          color: AppColorConstants.themeColor,
+      floatingActionButton: Container(
+        height: 56,
+        width: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(colors: [
+            AppColorConstants.themeColor,
+            AppColorConstants.themeColor.withValues(alpha: 0.78)
+          ]),
+          boxShadow: [
+            BoxShadow(
+                color: AppColorConstants.themeColor.withValues(alpha: 0.35),
+                blurRadius: 14,
+                offset: const Offset(0, 6))
+          ],
         ),
+        child: const Icon(Icons.add_rounded, size: 30, color: Colors.white),
       ).ripple(() {
         Get.to(() => ChooseListingCategory(
               ad: AdModel(images: []),

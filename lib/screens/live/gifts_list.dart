@@ -67,11 +67,12 @@ class _GiftsPageViewState extends State<GiftsPageView> {
                 ),
                 currentView == 0
                     ? Container(
-                            color: AppColorConstants.themeColor,
-                            child: BodyLargeText(coinsString.tr,
-                                    weight: TextWeight.semiBold)
+                            color: const Color(0xFFF59E0B),
+                            child: BodyMediumText(coinsString.tr,
+                                    color: Colors.white,
+                                    weight: TextWeight.bold)
                                 .setPadding(
-                                    left: 10, right: 10, top: 5, bottom: 5))
+                                    left: 14, right: 14, top: 6, bottom: 6))
                         .round(20)
                         .ripple(() {
                         setState(() {
@@ -89,7 +90,7 @@ class _GiftsPageViewState extends State<GiftsPageView> {
                       }),
               ],
             ).p16,
-          ).topRounded(20),
+          ).topRounded(26),
           Expanded(child: pages[currentView]),
         ],
       ),
@@ -146,12 +147,12 @@ class _GiftsListingState extends State<GiftsListing> {
               )),
           Obx(() => Expanded(
                 child: GridView.builder(
-                    padding: const EdgeInsets.only(top: 20, bottom: 25),
+                    padding: const EdgeInsets.fromLTRB(12, 16, 12, 25),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5,
-                            childAspectRatio: 1,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            childAspectRatio: 0.9,
                             crossAxisCount: 4),
                     itemCount: _giftController.gifts.length,
                     itemBuilder: (context, index) {
@@ -167,7 +168,16 @@ class _GiftsListingState extends State<GiftsListing> {
   }
 
   Widget giftBox(GiftModel gift) {
-    return Column(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColorConstants.themeColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.4),
+            width: 0.6),
+      ),
+      child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image.network(
@@ -185,16 +195,17 @@ class _GiftsListingState extends State<GiftsListing> {
           children: [
             ThemeIconWidget(
               ThemeIcon.diamond,
-              size: 20,
+              size: 16,
               color: AppColorConstants.themeColor,
             ),
             const SizedBox(
-              width: 5,
+              width: 4,
             ),
-            BodyMediumText(gift.coins.toString()),
+            BodyMediumText(gift.coins.toString(), weight: TextWeight.bold),
           ],
         )
       ],
-    ).round(10);
+    ),
+    );
   }
 }

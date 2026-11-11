@@ -48,7 +48,9 @@ class _ETicketState extends State<ETicket> {
                 SingleChildScrollView(
                   child: WidgetsToImage(
                       controller: controller,
-                      child: Column(
+                      child: Container(
+                        color: AppColorConstants.backgroundColor,
+                        child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(
@@ -56,11 +58,26 @@ class _ETicketState extends State<ETicket> {
                           ),
                           Center(
                             child: Container(
-                              color: Colors.white,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                    color: AppColorConstants.themeColor
+                                        .withValues(alpha: 0.35),
+                                    width: 1.4),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black
+                                          .withValues(alpha: 0.08),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6))
+                                ],
+                              ),
                               child: QrImageView(
                                 data: "${widget.booking.id}",
                                 version: QrVersions.auto,
-                                size: Get.width * 0.7,
+                                size: Get.width * 0.6,
                               ),
                             ),
                           ),
@@ -76,7 +93,7 @@ class _ETicketState extends State<ETicket> {
                             height: 100,
                           ),
                         ],
-                      )),
+                      ))),
                 ),
                 Positioned(
                     bottom: 20,
@@ -97,14 +114,26 @@ class _ETicketState extends State<ETicket> {
   Widget eventInfoWidget() {
     return Container(
       width: double.infinity,
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BodySmallText(eventString.tr, weight: TextWeight.medium),
+              BodySmallText(eventString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.medium),
               const SizedBox(
                 height: 10,
               ),
@@ -123,7 +152,7 @@ class _ETicketState extends State<ETicket> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BodySmallText(dateAndTimeString.tr, weight: TextWeight.medium),
+              BodySmallText(dateAndTimeString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.medium),
               const SizedBox(
                 height: 10,
               ),
@@ -137,7 +166,7 @@ class _ETicketState extends State<ETicket> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BodySmallText(eventLocationString.tr, weight: TextWeight.medium),
+              BodySmallText(eventLocationString.tr, color: AppColorConstants.subHeadingTextColor, weight: TextWeight.medium),
               const SizedBox(
                 height: 10,
               ),
@@ -154,6 +183,7 @@ class _ETicketState extends State<ETicket> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BodySmallText(eventOrganizerString.tr,
+                    color: AppColorConstants.subHeadingTextColor,
                     weight: TextWeight.medium),
                 const SizedBox(
                   height: 10,
@@ -172,13 +202,25 @@ class _ETicketState extends State<ETicket> {
           bottom: 25,
           left: DesignConstants.horizontalPadding,
           right: DesignConstants.horizontalPadding),
-    ).round(20).hp(DesignConstants.horizontalPadding);
+    ).hp(DesignConstants.horizontalPadding);
   }
 
   Widget bookingInfoWidget() {
     return Container(
       width: double.infinity,
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -216,14 +258,16 @@ class _ETicketState extends State<ETicket> {
               ).circular.rP16,
               Container(
                 color: widget.booking.statusType == BookingStatus.cancelled
-                    ? AppColorConstants.red.withValues(alpha: 0.7)
-                    : AppColorConstants.themeColor.withValues(alpha: 0.7),
+                    ? AppColorConstants.red
+                    : AppColorConstants.green,
                 child: BodySmallText(
                   widget.booking.statusType == BookingStatus.cancelled
                       ? cancelledString.tr
                       : confirmedString.tr,
-                ).p4,
-              ).round(5)
+                  color: Colors.white,
+                  weight: TextWeight.semiBold,
+                ).setPadding(left: 12, right: 12, top: 4, bottom: 4),
+              ).round(12)
             ],
           ),
           const SizedBox(
@@ -292,7 +336,7 @@ class _ETicketState extends State<ETicket> {
           bottom: 25,
           left: DesignConstants.horizontalPadding,
           right: DesignConstants.horizontalPadding),
-    ).round(20).hp(DesignConstants.horizontalPadding);
+    ).hp(DesignConstants.horizontalPadding);
   }
 
   saveTicket() {

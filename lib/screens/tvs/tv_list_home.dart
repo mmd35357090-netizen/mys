@@ -93,7 +93,7 @@ class _TvListHomeState extends State<TvListHome> {
             width: Get.width,
             height: 200,
           )
-            .round(10)
+            .round(20)
             .setPadding(top: 10, bottom: 0, left: 15, right: 15)
             .ripple(() {
             bannerClickAction(_tvStreamingController.banners.first);
@@ -109,7 +109,7 @@ class _TvListHomeState extends State<TvListHome> {
                     width: Get.width,
                     height: 200,
                   )
-                      .round(10)
+                      .round(20)
                       .setPadding(top: 10, bottom: 0, left: 10, right: 10)
                       .ripple(() {
                     bannerClickAction(banner);
@@ -135,12 +135,12 @@ class _TvListHomeState extends State<TvListHome> {
                     .entries
                     .map((entry) {
                   return Container(
-                    width: 12.0,
-                    height: 12.0,
+                    width: _current == entry.key ? 22.0 : 8.0,
+                    height: 8.0,
                     margin: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 4.0),
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(4),
                         color: (Theme.of(context).brightness ==
                                     Brightness.dark
                                 ? AppColorConstants.themeColor
@@ -200,16 +200,24 @@ class _TvListHomeState extends State<TvListHome> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         children: [
-          Heading6Text(model.name, weight: TextWeight.medium).setPadding(
+          Heading6Text(model.name, weight: TextWeight.bold).setPadding(
               top: 20,
               bottom: 8,
               left: DesignConstants.horizontalPadding,
               right: 0),
           const Spacer(),
-          ThemeIconWidget(
-            ThemeIcon.nextArrow,
-            size: 15,
-          ).rP16.ripple(() {
+          Container(
+            height: 28,
+            width: 28,
+            color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+            child: Center(
+              child: ThemeIconWidget(
+                ThemeIcon.nextArrow,
+                size: 13,
+                color: AppColorConstants.themeColor,
+              ),
+            ),
+          ).round(14).rP16.ripple(() {
             Get.to(() => TvListByCategory(category: model));
           }),
         ],
@@ -222,13 +230,50 @@ class _TvListHomeState extends State<TvListHome> {
           physics: const ClampingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemCount: model.tvs.length,
-          itemBuilder: (BuildContext context, int index) =>
-              CachedNetworkImage(
-            imageUrl: model.tvs[index].image,
-            fit: BoxFit.cover,
+          itemBuilder: (BuildContext context, int index) => Container(
             height: 170,
             width: 180,
-          ).round(10).ripple(() {
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4))
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Stack(fit: StackFit.expand, children: [
+                CachedNetworkImage(
+                  imageUrl: model.tvs[index].image,
+                  fit: BoxFit.cover,
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(10, 16, 10, 8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.7)
+                        ],
+                      ),
+                    ),
+                    child: BodySmallText(model.tvs[index].name,
+                        color: Colors.white,
+                        maxLines: 1,
+                        weight: TextWeight.semiBold),
+                  ),
+                ),
+              ]),
+            ),
+          ).ripple(() {
             Get.to(() => TVChannelDetail(
                   tvModel: model.tvs[index],
                 ));

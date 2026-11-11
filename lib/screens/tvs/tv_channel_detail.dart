@@ -109,22 +109,19 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                     isPlayingTv: true,
                                     // showMinimumHeight: isKeyboardVisible,
                                   )
-                                : SizedBox(
+                                : CachedNetworkImage(
+                                    imageUrl: widget.tvModel.image,
+                                    fit: BoxFit.cover,
                                     width: Get.width,
-                                    height: 250,
-                                    child: CachedNetworkImage(
-                                      imageUrl: widget.tvModel.image,
-                                      fit: BoxFit.cover,
-                                      width: Get.width,
-                                      height: 200,
-                                    )),
+                                    height: 230,
+                                  ).round(22).hP16,
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Heading6Text(
+                                  Heading5Text(
                                     widget.tvModel.name,
                                     weight: TextWeight.bold,
-                                  ).bP25,
+                                  ).bP16,
                                   read_more.ReadMoreText(
                                       widget.tvModel.description,
                                       trimLines: 2,
@@ -150,8 +147,7 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                               AppColorConstants.mainTextColor)),
                                   Heading5Text(
                                           '${moreFromString.tr} ${widget.tvModel.name}',
-                                          weight: TextWeight.bold,
-                                          color: AppColorConstants.themeColor)
+                                          weight: TextWeight.bold)
                                       .setPadding(top: 15)
                                 ]).setPadding(left: 15, right: 15, top: 15),
                           ]),
@@ -169,7 +165,7 @@ class _TVChannelDetailState extends State<TVChannelDetail> {
                                         crossAxisCount: 2,
                                         crossAxisSpacing: 10.0,
                                         mainAxisSpacing: 10.0,
-                                        mainAxisExtent: 180),
+                                        mainAxisExtent: 200),
                                 itemBuilder: (ctx, index) {
                                   MediaModel model = MediaModel(
                                       _tvStreamingController

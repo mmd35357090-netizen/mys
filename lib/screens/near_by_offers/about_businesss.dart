@@ -23,106 +23,19 @@ class AboutBusiness extends StatelessWidget {
             ],
           ),
           const SizedBox(
-            height: 20,
+            height: 16,
           ),
-          BodyMediumText(
-            addressString.tr,
-            color: AppColorConstants.subHeadingTextColor,
-            weight: TextWeight.bold,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          BodyMediumText(
-            business.address,
-            color: AppColorConstants.mainTextColor,
-            weight: TextWeight.medium,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          BodyMediumText(
-            aboutString.tr,
-            color: AppColorConstants.subHeadingTextColor,
-            weight: TextWeight.bold,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          BodyMediumText(
-            business.name,
-            weight: TextWeight.regular,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
+          _infoCard(Icons.place_rounded, addressString.tr, business.address),
+          _infoCard(Icons.info_outline_rounded, aboutString.tr, business.name),
           if (business.openTime != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BodyMediumText(
-                      openTimeString.tr,
-                      color: AppColorConstants.subHeadingTextColor,
-                      weight: TextWeight.bold,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    BodyMediumText(
-                      business.openTime!,
-                      weight: TextWeight.semiBold,
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BodyMediumText(
-                      closeTimeString.tr,
-                      color: AppColorConstants.subHeadingTextColor,
-                      weight: TextWeight.bold,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    BodyMediumText(
-                      business.closeTime!,
-                      weight: TextWeight.semiBold,
-                    ),
-                  ],
-                ),
-              ],
-            ).bp(20),
+            _infoCard(Icons.schedule_rounded,
+                '${openTimeString.tr} - ${closeTimeString.tr}',
+                '${business.openTime!}  -  ${business.closeTime!}'),
           if (business.priceRangeFrom != null)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BodyMediumText(
-                  'Price range',
-                  color: AppColorConstants.subHeadingTextColor,
-                  weight: TextWeight.bold,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                BodyMediumText(
-                  '${business.priceRangeFrom!} - ${business.priceRangeTo!}',
-                  weight: TextWeight.semiBold,
-                ),
-              ],
-            ).bp(20),
-          BodyMediumText(
-            offers.tr,
-            color: AppColorConstants.subHeadingTextColor,
-            weight: TextWeight.bold,
-          ),
-          BodyMediumText(
-            business.totalCoupons.toString(),
-            weight: TextWeight.semiBold,
-          ),
+            _infoCard(Icons.payments_rounded, 'Price range',
+                '${business.priceRangeFrom!} - ${business.priceRangeTo!}'),
+          _infoCard(Icons.local_offer_rounded, offers.tr,
+              business.totalCoupons.toString()),
           const SizedBox(
             height: 150,
           ),
@@ -130,4 +43,49 @@ class AboutBusiness extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _infoCard(IconData icon, String label, String value) {
+  return Container(
+    width: double.infinity,
+    margin: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: AppColorConstants.cardColor,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(
+          color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+          width: 0.6),
+      boxShadow: [
+        BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 5))
+      ],
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 38,
+          width: 38,
+          color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+          child: Icon(icon, size: 19, color: AppColorConstants.themeColor),
+        ).round(12),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BodySmallText(label,
+                  color: AppColorConstants.subHeadingTextColor,
+                  weight: TextWeight.semiBold),
+              const SizedBox(height: 4),
+              BodyMediumText(value, weight: TextWeight.semiBold),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }

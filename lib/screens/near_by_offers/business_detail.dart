@@ -103,7 +103,7 @@ class BusinessDetail extends StatelessWidget {
               widget: Obx(() => Container(
                     height: 40,
                     width: 40,
-                    color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
                     child: ThemeIconWidget(
                         _nearbyOfferController
                                 .currentBusiness.value!.isFavourite
@@ -113,7 +113,7 @@ class BusinessDetail extends StatelessWidget {
                                 .currentBusiness.value!.isFavourite
                             ? AppColorConstants.red
                             : AppColorConstants.iconColor),
-                  ).round(10).ripple(() {
+                  ).round(20).ripple(() {
                     _nearbyOfferController.favUnFavBusiness(
                         _nearbyOfferController.currentBusiness.value!);
                   }))),

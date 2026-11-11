@@ -37,7 +37,7 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(
-                        height: 350,
+                        height: 330,
                         child: _chatRoomDetailController
                                 .currentRoom.value!.image!.isNotEmpty
                             ? CachedNetworkImage(
@@ -47,26 +47,38 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                               )
                             : Center(
                                 child: Heading1Text(_chatRoomDetailController
-                                    .currentRoom.value!.name!.getInitials))),
+                                    .currentRoom.value!.name!.getInitials))).bottomRounded(28),
                     const SizedBox(
-                      height: 24,
+                      height: 20,
                     ),
-                    BodyLargeText(
+                    Heading4Text(
                             _chatRoomDetailController.currentRoom.value!.name!,
-                            weight: TextWeight.medium)
+                            weight: TextWeight.bold)
                         .hp(DesignConstants.horizontalPadding),
                     const SizedBox(
                       height: 12,
                     ),
                     Row(
                       children: [
-                        ThemeIconWidget(ThemeIcon.userGroup),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        BodyMediumText(
-                          publicGroupString.tr,
-                          weight: TextWeight.medium,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColorConstants.themeColor
+                                .withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(children: [
+                            ThemeIconWidget(ThemeIcon.userGroup,
+                                size: 14,
+                                color: AppColorConstants.themeColor),
+                            const SizedBox(width: 6),
+                            BodySmallText(
+                              publicGroupString.tr,
+                              color: AppColorConstants.themeColor,
+                              weight: TextWeight.semiBold,
+                            ),
+                          ]),
                         ),
                         // ThemeIconWidget(
                         //   ThemeIcon.circle,
@@ -88,9 +100,22 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                     const SizedBox(
                       height: 20,
                     ),
-                    BodyMediumText(_chatRoomDetailController
-                            .currentRoom.value!.description!)
-                        .hp(DesignConstants.horizontalPadding),
+                    if (_chatRoomDetailController
+                        .currentRoom.value!.description!.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColorConstants.cardColor,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                              color: AppColorConstants.dividerColor
+                                  .withValues(alpha: 0.5),
+                              width: 0.6),
+                        ),
+                        child: BodyMediumText(_chatRoomDetailController
+                            .currentRoom.value!.description!),
+                      ).hp(DesignConstants.horizontalPadding),
+                    const SizedBox(height: 30),
                   ],
                 ),
               )),
@@ -107,8 +132,8 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                 false)
               Container(
                       // width: 40,
-                      height: 30,
-                      color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                      height: 38,
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.14),
                       child: Row(
                         children: [
                           Icon(
@@ -129,8 +154,8 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                               ? joinedString.tr
                               : joinString.tr)
                         ],
-                      ).hP8)
-                  .round(5)
+                      ).hP16)
+                  .round(19)
                   .ripple(() {
                 if (_chatRoomDetailController.currentRoom.value!.amIMember ==
                     true) {
@@ -145,8 +170,8 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
             if (_chatRoomDetailController.currentRoom.value!.amIMember == true)
               Container(
                       // width: 40,
-                      height: 30,
-                      color: AppColorConstants.themeColor.withValues(alpha: 0.2),
+                      height: 38,
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.14),
                       child: Row(
                         children: [
                           Icon(
@@ -159,8 +184,8 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
                           ),
                           BodyLargeText(chatString.tr)
                         ],
-                      ).hP8)
-                  .round(5)
+                      ).hP16)
+                  .round(19)
                   .ripple(() {
                 Get.to(() => ChatDetail(
                     chatRoom: _chatRoomDetailController.currentRoom.value!));
@@ -192,11 +217,18 @@ class PublicGroupDetailState extends State<PublicGroupDetail> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ThemeIconWidget(
-              ThemeIcon.backArrow,
-              size: 20,
-              color: Colors.white,
-            ).ripple(() {
+            Container(
+              height: 38,
+              width: 38,
+              color: Colors.black.withValues(alpha: 0.35),
+              child: Center(
+                child: ThemeIconWidget(
+                  ThemeIcon.backArrow,
+                  size: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ).round(19).ripple(() {
               Get.back();
             }),
             Obx(() => _chatRoomDetailController.currentRoom.value!.amIGroupAdmin

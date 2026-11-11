@@ -38,15 +38,16 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
           const SizedBox(
             height: 20,
           ),
-          Heading5Text(setProfileCategoryTypeString.tr,
-              ),
+          Heading4Text(setProfileCategoryTypeString.tr,
+              weight: TextWeight.bold),
           const SizedBox(
             height: 20,
           ),
           BodySmallText(weWillSearchUserInCategoryString.tr,
               textAlign: TextAlign.center,
+              color: AppColorConstants.subHeadingTextColor,
               weight: TextWeight.medium,
-             ),
+             ).hp(DesignConstants.horizontalPadding),
           const SizedBox(
             height: 20,
           ),
@@ -58,14 +59,34 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
                   itemBuilder: (ctx, index) {
                     CategoryModel category =
                         _setProfileCategoryController.categories[index];
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        BodyLargeText(
-                          category.name,
-                        ),
-                        ThemeIconWidget(ThemeIcon.nextArrow)
-                      ],
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: AppColorConstants.cardColor,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                            color: AppColorConstants.dividerColor
+                                .withValues(alpha: 0.5),
+                            width: 0.6),
+                        boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5))
+          ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          BodyLargeText(
+                            category.name,
+                            weight: TextWeight.semiBold,
+                          ),
+                          ThemeIconWidget(ThemeIcon.nextArrow,
+                              size: 14, color: AppColorConstants.themeColor)
+                        ],
+                      ),
                     ).ripple(() {
                       Get.to(() => FindRandomUser(
                             isCalling: widget.isCalling,
@@ -74,7 +95,7 @@ class _ChooseProfileCategoryState extends State<ChooseProfileCategory> {
                     });
                   },
                   separatorBuilder: (ctx, index) {
-                    return const SizedBox(height: 20);
+                    return const SizedBox(height: 12);
                   }))),
           AppThemeButton(
               text: skipString.tr,

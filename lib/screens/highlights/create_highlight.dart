@@ -44,10 +44,16 @@ class _CreateHighlightState extends State<CreateHighlight> {
                 Get.back();
               }),
               const Spacer(),
-              Heading6Text(createString.tr,
-                      weight: TextWeight.medium,
-                      color: AppColorConstants.themeColor)
-                  .ripple(() {
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColorConstants.themeColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: BodyLargeText(createString.tr,
+                    weight: TextWeight.bold, color: Colors.white),
+              ).ripple(() {
                 if (nameText.text.isNotEmpty) {
                   highlightsController
                       .createHighlights(name: nameText.text);
@@ -70,7 +76,14 @@ class _CreateHighlightState extends State<CreateHighlight> {
           const SizedBox(
             height: 25,
           ),
-          Center(
+          Container(
+            decoration: BoxDecoration(
+              color: AppColorConstants.cardColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                  color: AppColorConstants.dividerColor.withValues(alpha: 0.7)),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             child: TextField(
               controller: nameText,
               textAlign: TextAlign.center,
@@ -99,18 +112,18 @@ class _CreateHighlightState extends State<CreateHighlight> {
 
   addProfileView() {
     return SizedBox(
-      height: 100,
+      height: 110,
       child: Obx(() => Column(children: [
             Container(
               child: CircleAvatar(
-                radius: 32,
-                backgroundColor: AppColorConstants.themeColor,
+                radius: 36,
+                backgroundColor: AppColorConstants.cardColor,
                 child: highlightsController.pickedImage.value != null
                     ? Image.file(
                         highlightsController.pickedImage.value!,
                         fit: BoxFit.cover,
-                        height: 64,
-                        width: 64,
+                        height: 72,
+                        width: 72,
                       ).circular
                     : highlightsController.model == null ||
                             highlightsController.model?.picture == null
@@ -118,17 +131,17 @@ class _CreateHighlightState extends State<CreateHighlight> {
                             imageUrl: highlightsController
                                 .selectedStoriesMedia.first.image!,
                             fit: BoxFit.cover,
-                            height: 64,
-                            width: 64,
+                            height: 72,
+                            width: 72,
                           ).circular
                         : ClipRRect(
-                            borderRadius: BorderRadius.circular(32.0),
+                            borderRadius: BorderRadius.circular(36.0),
                             child: CachedNetworkImage(
                               imageUrl:
                                   highlightsController.model!.picture!,
                               fit: BoxFit.cover,
-                              height: 64.0,
-                              width: 64.0,
+                              height: 72.0,
+                              width: 72.0,
                               placeholder: (context, url) =>
                                   AppUtil.addProgressIndicator(size: 100),
                               errorWidget: (context, url, error) => Icon(
@@ -139,7 +152,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
               ).p4,
             )
                 .borderWithRadius(
-                    value: 2, radius: 40, color: AppColorConstants.themeColor)
+                    value: 3, radius: 50, color: AppColorConstants.themeColor)
                 .ripple(() {
               openImagePickingPopup();
             })
@@ -160,7 +173,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                     )),
                 ListTile(
                     leading: const Icon(Icons.camera_alt_outlined,
-                        color: Colors.black87),
+                        color: AppColorConstants.mainTextColor),
                     title: BodyLargeText(
                       takePhotoString.tr,
                     ),
@@ -176,7 +189,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                 divider(),
                 ListTile(
                     leading: const Icon(Icons.wallpaper_outlined,
-                        color: Colors.black87),
+                        color: AppColorConstants.mainTextColor),
                     title: BodyLargeText(
                       chooseFromGalleryString.tr,
                     ),
@@ -191,7 +204,7 @@ class _CreateHighlightState extends State<CreateHighlight> {
                     }),
                 divider(),
                 ListTile(
-                    leading: const Icon(Icons.close, color: Colors.black87),
+                    leading: const Icon(Icons.close, color: AppColorConstants.mainTextColor),
                     title: BodyLargeText(cancelString.tr),
                     onTap: () => Get.back()),
               ],

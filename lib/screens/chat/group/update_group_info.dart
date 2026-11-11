@@ -45,15 +45,32 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ThemeIconWidget(
-                      ThemeIcon.close,
-                      size: 20,
-                    ).ripple(() {
+                    Container(
+                      height: 38,
+                      width: 38,
+                      color: AppColorConstants.cardColor,
+                      child: Center(
+                        child: ThemeIconWidget(
+                          ThemeIcon.close,
+                          size: 18,
+                        ),
+                      ),
+                    ).round(19).ripple(() {
                       Navigator.of(context).pop();
                     }),
-                    Heading5Text(updateString.tr,
-                            weight: TextWeight.medium)
-                        .ripple(() {
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          AppColorConstants.themeColor,
+                          AppColorConstants.themeColor.withValues(alpha: 0.75)
+                        ]),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: BodyMediumText(updateString.tr,
+                          color: Colors.white, weight: TextWeight.semiBold),
+                    ).ripple(() {
                       updateGroup();
                     }),
                   ],
@@ -71,7 +88,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
           ).hp(DesignConstants.horizontalPadding),
 
           SizedBox(
-            height: 250,
+            height: 270,
             child: Column(
               children: [
                 const SizedBox(
@@ -80,29 +97,30 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                 Row(
                   children: [
                     Obx(() => Container(
-                          height: 50,
-                          width: 50,
-                          color: AppColorConstants.cardColor.darken(),
+                          height: 64,
+                          width: 64,
+                          color: AppColorConstants.themeColor.withValues(alpha: 0.12),
                           child:
                               enterGroupInfoController.groupImagePath.isNotEmpty
                                   ? Image.file(
                                       File(enterGroupInfoController
                                           .groupImagePath.value),
                                       fit: BoxFit.cover,
-                                      height: 50,
-                                      width: 50,
+                                      height: 64,
+                                      width: 64,
                                     )
                                   : widget.group.image != null &&
                                           widget.group.image?.isNotEmpty == true
                                       ? CachedNetworkImage(
                                           imageUrl: widget.group.image!,
                                           fit: BoxFit.cover,
-                                          height: 50,
-                                          width: 50,
+                                          height: 64,
+                                          width: 64,
                                         )
                                       : ThemeIconWidget(
                                           ThemeIcon.camera,
-                                          size: 15,
+                                          size: 22,
+                                          color: AppColorConstants.themeColor,
                                         ),
                         ).circular.ripple(() {
                           openImagePickingPopup();

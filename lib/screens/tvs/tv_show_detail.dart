@@ -142,6 +142,12 @@ class _TVShowDetailState extends State<TVShowDetail> {
   episodeTile(TVShowEpisodeModel episode) {
     return Card(
       color: AppColorConstants.cardColor,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.6)),
       child: ListTile(
         contentPadding: const EdgeInsets.all(6),
         leading: Stack(
@@ -151,8 +157,10 @@ class _TVShowDetailState extends State<TVShowDetail> {
               fit: BoxFit.cover,
               height: 50,
               width: Get.width / 4.5,
-            ),
-            const Positioned.fill(child: Icon(Icons.play_circle))
+            ).round(10),
+            Positioned.fill(
+                child: Icon(Icons.play_circle_fill_rounded,
+                    color: Colors.white.withValues(alpha: 0.9)))
           ],
         ),
         title: BodyLargeText(episode.name ?? ''),
@@ -165,7 +173,7 @@ class _TVShowDetailState extends State<TVShowDetail> {
             left: DesignConstants.horizontalPadding,
             right: DesignConstants.horizontalPadding,
             bottom: 5)
-        .round(10);
+        ;
   }
 
   Widget episodeInfo() {
@@ -175,16 +183,20 @@ class _TVShowDetailState extends State<TVShowDetail> {
         Row(
           children: [
             Container(
-                    color: AppColorConstants.themeColor,
-                    child: Text(widget.showModel.ageGroup ?? "")
-                        .setPadding(left: 10, right: 10, top: 5, bottom: 5))
-                .round(10),
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                    child: BodyMediumText(widget.showModel.ageGroup ?? "",
+                            color: AppColorConstants.themeColor,
+                            weight: TextWeight.semiBold)
+                        .setPadding(left: 12, right: 12, top: 5, bottom: 5))
+                .round(14),
             const SizedBox(width: 10),
             Container(
-                    color: AppColorConstants.themeColor,
-                    child: Text(widget.showModel.language ?? "")
-                        .setPadding(left: 10, right: 10, top: 5, bottom: 5))
-                .round(10),
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                    child: BodyMediumText(widget.showModel.language ?? "",
+                            color: AppColorConstants.themeColor,
+                            weight: TextWeight.semiBold)
+                        .setPadding(left: 12, right: 12, top: 5, bottom: 5))
+                .round(14),
           ],
         ).bP25,
         Row(

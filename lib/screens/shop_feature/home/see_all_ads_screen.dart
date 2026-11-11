@@ -37,15 +37,17 @@ class SeeAllPropertyState extends State<SeeAllAdListing> {
         body: Column(
           children: [
             SizedBox(
-              height: 120,
+              height: 110,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
-                          onTap: () => Get.back(),
-                          child: Icon(Icons.arrow_back_ios,
-                              color: AppColorConstants.themeColor))
-                      .rP4,
+                  Container(
+                    height: 38,
+                    width: 38,
+                    color: AppColorConstants.cardColor,
+                    child: Icon(Icons.arrow_back_ios_new_rounded,
+                        size: 16, color: AppColorConstants.themeColor),
+                  ).round(19).ripple(() => Get.back()).rP8,
                   Expanded(child: SFSearchBar(
                     onSearchCompleted: (value) {
                       if (value.length > 2) {

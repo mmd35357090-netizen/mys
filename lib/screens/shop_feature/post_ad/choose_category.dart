@@ -49,11 +49,17 @@ class _ChooseListingCategoryState extends State<ChooseListingCategory> {
               ),
               Expanded(
                 child: Obx(() => GridView.builder(
-                      padding: EdgeInsets.zero,
+                      padding: EdgeInsets.fromLTRB(
+                          DesignConstants.horizontalPadding,
+                          12,
+                          DesignConstants.horizontalPadding,
+                          110),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 1.5,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1.4,
                       ),
                       scrollDirection: Axis.vertical,
                       itemCount: shopController.categories.length,

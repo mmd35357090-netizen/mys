@@ -27,34 +27,53 @@ class _GroupSettingsState extends State<GroupSettings> {
             height: 20,
           ),
           Container(
-            color: AppColorConstants.cardColor,
-            height: 65,
+            decoration: BoxDecoration(
+              color: AppColorConstants.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                  color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                  width: 0.6),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5))
+              ],
+            ),
+            height: 68,
             child: Column(
               // padding: const EdgeInsets.only(top: 10, bottom: 10),
               children: [
                 Row(
                   children: [
                     Container(
-                      height: 30,
-                      width: 30,
-                      color: AppColorConstants.themeColor,
-                      child: ThemeIconWidget(
-                        ThemeIcon.send,
-                        size: 20,
+                      height: 36,
+                      width: 36,
+                      color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                      child: Center(
+                        child: ThemeIconWidget(
+                          ThemeIcon.send,
+                          size: 18,
+                          color: AppColorConstants.themeColor,
+                        ),
                       ),
-                    ).round(5),
+                    ).round(12),
                     const SizedBox(
                       width: 15,
                     ),
-                    Heading5Text(
+                    BodyLargeText(
                       sendMessagesString.tr,
+                      weight: TextWeight.semiBold,
                     ),
                     const Spacer(),
-                    Obx(() => Heading6Text(
+                    Obx(() => BodyMediumText(
                           _chatDetailController.chatRoom.value!.groupAccess == 1
                               ? onlyAdminsString.tr
                               : allParticipantsString.tr,
+                          color: AppColorConstants.themeColor,
+                          weight: TextWeight.semiBold,
                         )),
+                    const SizedBox(width: 6),
                     ThemeIconWidget(
                       ThemeIcon.nextArrow,
                       size: 12,
@@ -65,7 +84,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                 }),
               ],
             ).p16,
-          ),
+          ).hP16,
         ],
       ),
     );

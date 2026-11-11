@@ -60,7 +60,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
             ),
           ).hp(DesignConstants.horizontalPadding),
           SizedBox(
-            height: 250,
+            height: 270,
             child: Column(
               children: [
                 const SizedBox(
@@ -69,20 +69,21 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                 Row(
                   children: [
                     Obx(() => Container(
-                          height: 50,
-                          width: 50,
-                          color: AppColorConstants.cardColor.darken(),
+                          height: 64,
+                          width: 64,
+                          color: AppColorConstants.themeColor.withValues(alpha: 0.12),
                           child: enterGroupInfoController.groupImagePath.isEmpty
                               ? ThemeIconWidget(
                                   ThemeIcon.camera,
-                                  size: 15,
+                                  size: 22,
+                                  color: AppColorConstants.themeColor,
                                 )
                               : Image.file(
                                   File(enterGroupInfoController
                                       .groupImagePath.value),
                                   fit: BoxFit.cover,
-                                  height: 50,
-                                  width: 50,
+                                  height: 64,
+                                  width: 64,
                                 ),
                         ).circular.ripple(() {
                           openImagePickingPopup();
@@ -115,23 +116,36 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
           Obx(() => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      BodyMediumText(
-                        publicGroupString.tr,
-                        weight: TextWeight.semiBold,
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ThemeIconWidget(
-                              enterGroupInfoController.isPublicGroup.value
-                                  ? ThemeIcon.selectedCheckbox
-                                  : ThemeIcon.emptyCheckbox)
-                          .ripple(() {
-                        enterGroupInfoController.togglePublicGroup();
-                      }),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColorConstants.cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                          color: AppColorConstants.dividerColor
+                              .withValues(alpha: 0.6)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.public_rounded,
+                            color: AppColorConstants.themeColor),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: BodyMediumText(
+                            publicGroupString.tr,
+                            weight: TextWeight.semiBold,
+                          ),
+                        ),
+                        Switch(
+                          value: enterGroupInfoController.isPublicGroup.value,
+                          activeColor: AppColorConstants.themeColor,
+                          onChanged: (_) {
+                            enterGroupInfoController.togglePublicGroup();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -139,6 +153,7 @@ class _EnterGroupInfoState extends State<EnterGroupInfo> {
                   if (enterGroupInfoController.isPublicGroup.value)
                     BodySmallText(
                       groupGroupInfoString.tr,
+                      color: AppColorConstants.subHeadingTextColor,
                     ),
                 ],
               ).hp(DesignConstants.horizontalPadding)),

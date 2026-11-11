@@ -24,7 +24,7 @@ class ReviewsList extends StatelessWidget {
           return ReviewsTile(review: _ratingController.ratings[index]);
         },
         separatorBuilder: (context, index) {
-          return divider().vP16;
+          return const SizedBox(height: 12);
         }));
   }
 }

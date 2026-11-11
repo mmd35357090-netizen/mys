@@ -11,7 +11,19 @@ class ReviewsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5))
+          ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -23,16 +35,17 @@ class ReviewsTile extends StatelessWidget {
                       height: 48,
                       width: 48,
                       fit: BoxFit.cover,
-                    ).round(10).rP16
+                    ).circular.rP16
                   : Container(
                       color: AppColorConstants.themeColor,
                       height: 48,
                       width: 48,
                       child: Center(
                         child: Heading4Text(
-                            review.user!.userName.getInitials.toUpperCase()),
+                            review.user!.userName.getInitials.toUpperCase(),
+                            color: Colors.white),
                       ),
-                    ).circular,
+                    ).circular.rP16,
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -64,6 +77,6 @@ class ReviewsTile extends StatelessWidget {
           BodyMediumText(review.reviewMsg).bP16,
         ],
       ).p16,
-    ).round(10);
+    );
   }
 }

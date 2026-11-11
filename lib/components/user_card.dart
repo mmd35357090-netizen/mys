@@ -902,7 +902,22 @@ class BlockedUserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
+      child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(child: UserInfo(model: profile)),
@@ -922,7 +937,7 @@ class BlockedUserTile extends StatelessWidget {
                   }
                 }))
       ],
-    );
+    ));
   }
 }
 

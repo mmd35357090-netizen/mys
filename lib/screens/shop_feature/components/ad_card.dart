@@ -23,10 +23,9 @@ class _AdCardState extends State<AdCard> {
       onTap: () => widget.pressed(),
       child: Container(
         height: 250,
-        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: AppColorConstants.cardColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
               color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
               width: 0.6),
@@ -34,7 +33,7 @@ class _AdCardState extends State<AdCard> {
             BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 12,
-                offset: const Offset(0, 5)),
+                offset: const Offset(0, 5))
           ],
         ),
         child: Column(
@@ -64,7 +63,7 @@ class _AdCardState extends State<AdCard> {
                           ? Container(
                               color: AppColorConstants.red,
                               width: 140,
-                              height: 30,
+                              height: 28,
                               child: Row(
                                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -86,14 +85,15 @@ class _AdCardState extends State<AdCard> {
                           : Container(),
                       widget.ad.featured == 1
                           ? Container(
-                              width: 120,
-                              color: Colors.yellow,
-                              child: Center(
-                                  child: BodySmallText(
+                              color: Colors.amber,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              child: BodyExtraSmallText(
                                 'Featured',
+                                color: Colors.black,
                                 weight: TextWeight.bold,
-                              )).p8,
-                            )
+                              ),
+                            ).round(12)
                           : Container()
                     ],
                   )
@@ -114,12 +114,16 @@ class _AdCardState extends State<AdCard> {
                   BodyExtraSmallText(
                     widget.ad.finalPriceString,
                     weight: TextWeight.bold,
-                    color: AppColorConstants.red,
+                    color: AppColorConstants.themeColor,
                   ),
-                  Icon(Icons.favorite,
+                  Icon(
+                          widget.ad.isFavorite == 1
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 22,
                           color: widget.ad.isFavorite == 1
                               ? AppColorConstants.red
-                              : AppColorConstants.mainTextColor)
+                              : AppColorConstants.subHeadingTextColor)
                       .ripple(() {
                     if (widget.ad.isFavorite == 0) {
                       widget.ad.isFavorite = 1;
@@ -131,7 +135,7 @@ class _AdCardState extends State<AdCard> {
                   })
                 ],
               )
-            ]).p16,
+            ]).p12,
       ),
     );
   }
@@ -157,8 +161,22 @@ class _HorizontalAdCardState extends State<HorizontalAdCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => widget.pressed(),
-      child: SizedBox(
+      child: Container(
         width: Get.width * 0.8,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColorConstants.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.6),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5))
+          ],
+        ),
         child:
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           SizedBox(
@@ -200,7 +218,7 @@ class _HorizontalAdCardState extends State<HorizontalAdCard> {
                   BodyExtraSmallText(
                     '${widget.ad.currency ?? '\$'} ${widget.ad.price}',
                     weight: TextWeight.bold,
-                    color: AppColorConstants.red,
+                    color: AppColorConstants.themeColor,
                   ),
                   Icon(Icons.favorite,
                           color: widget.ad.isFavorite == 1
@@ -239,8 +257,22 @@ class MyAdCard extends StatefulWidget {
 class _MyAdCardState extends State<MyAdCard> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: Get.width * 0.8,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          color: AppColorConstants.cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.6),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5))
+          ],
+        ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(
             height: 100,

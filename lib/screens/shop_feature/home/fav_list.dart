@@ -31,14 +31,18 @@ class FavProductsListScreenState extends State<FavProductsListScreen> {
           children: [
             backNavigationBar(title: favouriteString.tr),
             Expanded(
-              child: Obx(() => GridView.builder(
+              child: Obx(() => shopController.favAds.isEmpty
+                  ? emptyData(title: noDataString, subTitle: '')
+                  : GridView.builder(
                   padding: EdgeInsets.only(
-                      top: 20,
+                      top: 16,
+                      bottom: 40,
                       left: DesignConstants.horizontalPadding,
                       right: DesignConstants.horizontalPadding),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.6,
+                      mainAxisSpacing: 10,
                       crossAxisSpacing: 10),
                   itemCount: shopController.favAds.length,
                   itemBuilder: (BuildContext context, int index) {
