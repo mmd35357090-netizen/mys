@@ -37,10 +37,10 @@ class _AdCardState extends State<AdCard> {
           ],
         ),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                  child: Stack(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
                 children: [
                   SizedBox(
                           width: double.infinity,
@@ -65,7 +65,6 @@ class _AdCardState extends State<AdCard> {
                               width: 140,
                               height: 28,
                               child: Row(
-                                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Icon(
                                     Icons.local_offer,
@@ -98,56 +97,58 @@ class _AdCardState extends State<AdCard> {
                     ],
                   )
                 ],
-              )),
-              
-    child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          // আপনার আগের সব কোড এখানে থাকবে...
-          children: [
-            BodyLargeText(widget.ad.title!,
-                    maxLines: 1, weight: TextWeight.bold)
-                .bP4,
-            BodyExtraSmallText(
-              widget.ad.locations!.customLocation!,
-              weight: TextWeight.semiBold,
-              color: AppColorConstants.subHeadingTextColor,
-              maxLines: 1,
-            ).bP4,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BodyExtraSmallText(
-                  widget.ad.finalPriceString,
-                  weight: TextWeight.bold,
-                  color: AppColorConstants.themeColor,
-                ),
-                Icon(
-                        widget.ad.isFavorite == 1
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        size: 22,
-                        color: widget.ad.isFavorite == 1
-                            ? AppColorConstants.red
-                            : AppColorConstants.subHeadingTextColor)
-                    .ripple(() {
-                  if (widget.ad.isFavorite == 0) {
-                    widget.ad.isFavorite = 1;
-                  } else {
-                    widget.ad.isFavorite = 0;
-                  }
-                  widget.favPressed();
-                  setState(() {});
-                })
-              ],
-            )
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BodyLargeText(widget.ad.title!,
+                          maxLines: 1, weight: TextWeight.bold)
+                      .bP4,
+                  BodyExtraSmallText(
+                    widget.ad.locations!.customLocation!,
+                    weight: TextWeight.semiBold,
+                    color: AppColorConstants.subHeadingTextColor,
+                    maxLines: 1,
+                  ).bP4,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BodyExtraSmallText(
+                        widget.ad.finalPriceString,
+                        weight: TextWeight.bold,
+                        color: AppColorConstants.themeColor,
+                      ),
+                      Icon(
+                              widget.ad.isFavorite == 1
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              size: 22,
+                              color: widget.ad.isFavorite == 1
+                                  ? AppColorConstants.red
+                                  : AppColorConstants.subHeadingTextColor)
+                          .ripple(() {
+                        if (widget.ad.isFavorite == 0) {
+                          widget.ad.isFavorite = 1;
+                        } else {
+                          widget.ad.isFavorite = 0;
+                        }
+                        widget.favPressed();
+                        setState(() {});
+                      })
+                    ],
+                  )
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
 class HorizontalAdCard extends StatefulWidget {
   final AdModel ad;
   final VoidCallback pressed;
@@ -184,8 +185,7 @@ class _HorizontalAdCardState extends State<HorizontalAdCard> {
                 offset: const Offset(0, 5))
           ],
         ),
-        child:
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           SizedBox(
               width: 100,
               child: (widget.ad.images).isNotEmpty
@@ -254,8 +254,7 @@ class MyAdCard extends StatefulWidget {
   final AdModel ad;
   final Function actionHandler;
 
-  const MyAdCard(
-      {super.key, required this.ad, required this.actionHandler});
+  const MyAdCard({super.key, required this.ad, required this.actionHandler});
 
   @override
   State<MyAdCard> createState() => _MyAdCardState();
@@ -268,18 +267,18 @@ class _MyAdCardState extends State<MyAdCard> {
       width: Get.width * 0.8,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-          color: AppColorConstants.cardColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
-              width: 0.6),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 12,
-                offset: const Offset(0, 5))
-          ],
-        ),
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(
             height: 100,
@@ -309,11 +308,6 @@ class _MyAdCardState extends State<MyAdCard> {
                 maxLines: 2,
                 weight: TextWeight.semiBold,
               ).bP4,
-              // BodyExtraSmallText(
-              //   widget.ad.locations!.customLocation!,
-              //   weight: TextWeight.semiBold,
-              //   color: AppColorConstants.subHeadingTextColor,
-              // ).bP4,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
