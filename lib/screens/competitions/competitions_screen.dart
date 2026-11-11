@@ -53,7 +53,8 @@ class CompetitionsState extends State<CompetitionsScreen> {
             labelColor: AppColorConstants.themeColor,
             unselectedLabelColor: AppColorConstants.mainTextColor,
             indicatorColor: AppColorConstants.themeColor,
-            indicatorWeight: 2,
+            indicatorWeight: 3,
+            indicatorSize: TabBarIndicatorSize.label,
             unselectedLabelStyle: TextStyle(
             fontSize: FontSizes.b2),
             labelStyle: TextStyle(

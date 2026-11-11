@@ -46,11 +46,23 @@ class TvDashboardScreenState extends State<TvDashboardScreen> {
     return Obx(() => AppScaffold(
         backgroundColor: AppColorConstants.backgroundColor,
         body: items[_dashboardController.currentIndex.value],
-        bottomNavigationBar: SizedBox(
+        bottomNavigationBar: Container(
           height: MediaQuery.of(context).viewPadding.bottom > 0 ? 90 : 70.0,
           width: Get.width,
+          decoration: BoxDecoration(
+            color: AppColorConstants.cardColor,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4))
+            ],
+          ),
           child: BottomNavigationBar(
-            backgroundColor: AppColorConstants.backgroundColor,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
             type: BottomNavigationBarType.fixed,
             currentIndex: _dashboardController.currentIndex.value,
             selectedFontSize: 12,

@@ -34,16 +34,33 @@ class AdDetailState extends State<AdDetailScreen> {
               children: [
                 InkWell(
                     onTap: () => Get.back(),
-                    child: Icon(Icons.arrow_back_ios,
-                        color: AppColorConstants.themeColor)),
+                    child: Container(
+                      height: 44,
+                      width: 44,
+                      decoration: BoxDecoration(
+                          color: AppColorConstants.cardColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: AppColorConstants.dividerColor
+                                  .withValues(alpha: 0.6))),
+                      child: Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 18, color: AppColorConstants.mainTextColor),
+                    )),
                 Row(
                   children: [
                     InkWell(
                         onTap: () => Scaffold.of(context).openDrawer(),
                         child: Container(
-                          height: 50,
-                          color: Colors.grey.withValues(alpha: 0.1),
+                          height: 44,
+                          width: 44,
+                          decoration: BoxDecoration(
+                              color: AppColorConstants.cardColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: AppColorConstants.dividerColor
+                                      .withValues(alpha: 0.6))),
                           child: IconButton(
+                              padding: EdgeInsets.zero,
                               onPressed: () {
                                 favBtnClicked();
                               },
@@ -51,7 +68,7 @@ class AdDetailState extends State<AdDetailScreen> {
                                   color: widget.adModel.isFavorite == 1
                                       ? AppColorConstants.themeColor
                                       : Colors.grey.withValues(alpha: 0.5))),
-                        ).round(10)),
+                        )),
                   ],
                 ),
               ],
@@ -89,26 +106,28 @@ class AdDetailState extends State<AdDetailScreen> {
                             ).hP16,
                           ).round(5).hP16.tP16
                         : Center(
-                            child: BodyLargeText(
+                            child: Heading4Text(
                               ' ${widget.adModel.currency!} ${widget.adModel.price!}',
                               weight: TextWeight.bold,
+                              color: AppColorConstants.themeColor,
                             ),
                           ),
                     widget.adModel.featured == 1
                         ? Container(
-                            width: 120,
-                            color: Colors.yellow,
+                            width: 110,
+                            color: const Color(0xFFF59E0B).withValues(alpha: 0.18),
                             child: Center(
-                                child: BodyLargeText(
+                                child: BodyMediumText(
                               'Featured',
+                              color: const Color(0xFFB45309),
                               weight: TextWeight.bold,
                             )).p8,
-                          ).hP16.tP16
+                          ).round(14).hP16.tP16
                         : Container(),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        BodyLargeText(widget.adModel.title!,
+                        Heading5Text(widget.adModel.title!,
                                 weight: TextWeight.bold)
                             .vP16,
                         // Row(
@@ -148,7 +167,20 @@ class AdDetailState extends State<AdDetailScreen> {
                                       ))
                                 },
                             child: Container(
-                              color: Colors.grey.withValues(alpha: 0.1),
+                              decoration: BoxDecoration(
+                                color: AppColorConstants.cardColor,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                    color: AppColorConstants.dividerColor
+                                        .withValues(alpha: 0.5),
+                                    width: 0.6),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.05),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 5))
+                                ],
+                              ),
                               height: 110,
                               child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -182,7 +214,8 @@ class AdDetailState extends State<AdDetailScreen> {
                                               ]),
                                           Container(
                                             height: 50,
-                                            color: AppColorConstants.cardColor,
+                                            color: AppColorConstants.themeColor
+                                                .withValues(alpha: 0.12),
                                             child: Row(
                                               children: [
                                                 IconButton(
@@ -204,12 +237,12 @@ class AdDetailState extends State<AdDetailScreen> {
                                                             .themeColor)),
                                               ],
                                             ),
-                                          ).round(10)
+                                          ).round(16)
                                         ],
                                       ).hP16,
                                     )
                                   ]),
-                            ).round(10).hp(25))
+                            ).hp(25))
                         .vp(50),
                   ])),
             ),
@@ -281,7 +314,7 @@ class AdDetailState extends State<AdDetailScreen> {
                             AppUtil.addProgressIndicator(),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
-                      )).round(15).hP16,
+                      )).round(22).hP16,
                 ))
             .toList(),
           enlargeCenterPage: false,

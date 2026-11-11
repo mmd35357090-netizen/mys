@@ -37,7 +37,7 @@ class CategoryCard extends StatelessWidget {
             ),
           ),
         ],
-      ).round(5).p4,
+      ).round(18).p4,
     );
   }
 }
@@ -76,7 +76,7 @@ class CategoryCardForPost extends StatelessWidget {
             ),
           )
         ],
-      ),
+      ).round(16),
     );
   }
 }

@@ -100,7 +100,7 @@ class _CallHistoryState extends State<CallHistory> {
                             },
                             separatorBuilder:
                                 (BuildContext context, int index) {
-                              return divider(height: 0.2).vP8;
+                              return const SizedBox(height: 4);
                             })
                         : _callHistoryController.isLoading == true
                             ? Container()

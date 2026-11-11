@@ -58,9 +58,9 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              mainAxisSpacing: 8,
-                              crossAxisSpacing: 8,
-                              childAspectRatio: 1),
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                              childAspectRatio: 0.9),
                       itemCount: _liveUserController.liveStreamUser.length,
                       padding: EdgeInsets.only(
                           left: DesignConstants.horizontalPadding,
@@ -70,46 +70,88 @@ class _LiveUserScreenState extends State<LiveUserScreen> {
                             _liveUserController.liveStreamUser[index];
 
                         return Container(
-                          color: AppColorConstants.themeColor
-                              .withValues(alpha: 0.2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(22),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColorConstants.themeColor
+                                    .withValues(alpha: 0.28),
+                                AppColorConstants.themeColor
+                                    .withValues(alpha: 0.08),
+                              ],
+                            ),
+                            border: Border.all(
+                                color: AppColorConstants.dividerColor
+                                    .withValues(alpha: 0.5),
+                                width: 0.6),
+                          ),
                           child: Stack(
                             children: [
-                              Center(
+                              Align(
+                                alignment: const Alignment(0, -0.25),
                                 child: UserPlaneImageView(
-                                  size: Get.width / 3,
+                                  size: Get.width / 4,
                                   user: liveStreaming.host![0],
-                                  // hideBorder: true,
-                                  // hideOnlineIndicator: true,
-                                  // hideLiveIndicator: true,
                                 ),
                               ),
                               Positioned(
-                                top: 15,
+                                top: 10,
+                                left: 10,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 9, vertical: 4),
+                                  decoration: BoxDecoration(
+                                      color: AppColorConstants.red,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: const Text('LIVE',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.6)),
+                                ),
+                              ),
+                              Positioned(
+                                top: 10,
                                 right: 10,
                                 child: Container(
-                                  width: 70,
-                                  height: 30,
-                                  color: AppColorConstants.themeColor,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black
+                                          .withValues(alpha: 0.45),
+                                      borderRadius: BorderRadius.circular(12)),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      ThemeIconWidget(
-                                        ThemeIcon.group,
+                                      const Icon(Icons.remove_red_eye_rounded,
+                                          size: 13, color: Colors.white),
+                                      const SizedBox(width: 4),
+                                      BodySmallText(
+                                        liveStreaming.totalUsers!.formatNumber,
                                         color: Colors.white,
-                                      ).p4,
-                                      BodyLargeText(
-                                        liveStreaming
-                                            .totalUsers!.formatNumber,
-                                        color: Colors.white,
+                                        weight: TextWeight.semiBold,
                                       )
                                     ],
                                   ),
-                                ).round(20),
+                                ),
+                              ),
+                              Positioned(
+                                left: 12,
+                                right: 12,
+                                bottom: 12,
+                                child: BodyMediumText(
+                                  liveStreaming.host![0].userName,
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  weight: TextWeight.bold,
+                                ),
                               ),
                             ],
                           ),
-                        ).round(20).ripple(() {
+                        ).ripple(() {
                           _liveUserController.getLiveDetail(
                               channelName: liveStreaming.channelName,
                               resultCallback: (result) {

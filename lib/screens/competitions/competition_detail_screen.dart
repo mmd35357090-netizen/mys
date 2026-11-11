@@ -114,14 +114,14 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              BodyLargeText(
+                              Heading5Text(
                                 competitionController.competition.value!.title,
                                 weight: TextWeight.bold,
-                                color: AppColorConstants.themeColor,
                               ).bP8,
                               BodyMediumText(
                                 competitionController
                                     .competition.value!.description,
+                                color: AppColorConstants.subHeadingTextColor,
                               ),
                             ],
                           ).p16,
@@ -173,9 +173,9 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
         // You won't see infinite size error
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 4.0,
-            mainAxisSpacing: 4.0,
-            mainAxisExtent: 100),
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 10.0,
+            mainAxisExtent: 110),
         itemBuilder: (BuildContext context, int index) => InkWell(
             onTap: () async {
               // File path = await AppUtil.findPath(model.exampleImages[index]);
@@ -189,7 +189,7 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
               placeholder: (context, url) =>
                   AppUtil.addProgressIndicator(size: 100),
               errorWidget: (context, url, error) => const Icon(Icons.error),
-            ).round(10)),
+            ).round(16)),
         // staggeredTileBuilder: (int index) => new StaggeredTile.count(1, 1),
       ),
       const SizedBox(height: 155)
@@ -236,6 +236,8 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
 
     return Positioned(
       bottom: 0,
+      left: 0,
+      right: 0,
       child: InkWell(
           onTap: () async {
             if (model.isJoined) {
@@ -252,12 +254,31 @@ class CompetitionDetailState extends State<CompetitionDetailScreen> {
           },
           child: Container(
             width: Get.width,
-            height: 95,
-            color: AppColorConstants.themeColor,
-            child: Center(
-              child: Heading6Text(
-                title,
+            padding: EdgeInsets.fromLTRB(
+                DesignConstants.horizontalPadding,
+                12,
+                DesignConstants.horizontalPadding,
+                24),
+            color: AppColorConstants.backgroundColor,
+            child: Container(
+              height: 52,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(colors: [
+                  AppColorConstants.themeColor,
+                  AppColorConstants.themeColor.withValues(alpha: 0.78)
+                ]),
+                boxShadow: [
+                  BoxShadow(
+                      color:
+                          AppColorConstants.themeColor.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 5))
+                ],
               ),
+              child: BodyLargeText(title,
+                  color: Colors.white, weight: TextWeight.bold),
             ),
           )),
     );

@@ -18,91 +18,77 @@ class AboutJob extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 30),
-              Row(
+              const SizedBox(height: 20),
+              Heading4Text(job.title, weight: TextWeight.bold),
+              const SizedBox(height: 10),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14)),
+                child: BodySmallText(job.category!.name,
+                    color: AppColorConstants.themeColor,
+                    weight: TextWeight.semiBold),
+              ),
+              const SizedBox(height: 18),
+              _card(Column(
+                children: [
+                  _infoRow(Icons.work_outline_rounded, experienceString.tr,
+                      '${job.minExperience} ${yearString.tr} - ${job.maxExperience} ${yearString.tr}'),
+                  const SizedBox(height: 14),
+                  _infoRow(Icons.payments_outlined, salaryString.tr,
+                      '\$${job.minSalary} - \$${job.maxSalary}'),
+                  const SizedBox(height: 14),
+                  _infoRow(Icons.location_on_outlined, locationString.tr,
+                      '${job.city}, ${job.state}, ${job.country}'),
+                ],
+              )),
+              const SizedBox(height: 14),
+              _card(Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Heading4Text(
-                      job.title,
-                      weight: TextWeight.semiBold,
-                    ),
+                  BodyLargeText(skillsString.tr, weight: TextWeight.bold),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: job.skills
+                        .split(',')
+                        .map((e) => e.trim())
+                        .where((e) => e.isNotEmpty)
+                        .map((e) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 5),
+                              decoration: BoxDecoration(
+                                  color: AppColorConstants.backgroundColor,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                      color: AppColorConstants.dividerColor
+                                          .withValues(alpha: 0.7))),
+                              child: BodySmallText(e),
+                            ))
+                        .toList(),
                   ),
                 ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                      color: AppColorConstants.themeColor.withValues(alpha: 0.5),
-                      child: BodySmallText(job.category!.name)
-                          .setPadding(left: 20, right: 20, top: 8, bottom: 8))
-                  .round(5),
-              divider(height: 0.1).vP16,
-              Column(
+              )),
+              const SizedBox(height: 14),
+              _card(Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      BodyLargeText(
-                        experienceString.tr,
-                        weight: TextWeight.semiBold,
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      BodyLargeText(
-                          '${job.minExperience} ${yearString.tr} - ${job.maxExperience} ${yearString.tr}'),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      BodyLargeText(salaryString.tr,
-                          weight: TextWeight.semiBold),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      BodyLargeText('\$${job.minSalary} - \$${job.maxSalary}'),
-                    ],
-                  )
+                  BodyLargeText(aboutString, weight: TextWeight.bold),
+                  const SizedBox(height: 10),
+                  BodyMediumText(job.description,
+                      color: AppColorConstants.subHeadingTextColor),
                 ],
-              ),
-              divider(height: 0.1).vP16,
-              BodyLargeText(
-                skillsString.tr,
-                weight: TextWeight.semiBold,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              BodyMediumText(job.skills),
-              divider(height: 0.1).vP16,
-              BodyLargeText(
-                locationString.tr,
-                weight: TextWeight.semiBold,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              BodyMediumText('${job.city},${job.state},${job.country}'),
-              divider(height: 0.1).vP16,
-              BodyLargeText(
-                aboutString,
-                weight: TextWeight.semiBold,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              BodyMediumText(job.description),
-              divider(height: 0.1).vP16,
-              createdBy(),
+              )),
+              const SizedBox(height: 14),
+              _card(createdBy()),
               const SizedBox(
                 height: 100,
               ),
             ],
-          ),
+          ).hp(DesignConstants.horizontalPadding),
         ),
         if (!job.isApplied)
           Positioned(
@@ -115,6 +101,54 @@ class AboutJob extends StatelessWidget {
                   Get.to(() => ApplyJob(job));
                 }),
           ),
+      ],
+    );
+  }
+
+  Widget _card(Widget child) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _infoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Container(
+          height: 38,
+          width: 38,
+          decoration: BoxDecoration(
+              color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon, size: 20, color: AppColorConstants.themeColor),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BodySmallText(label,
+                  color: AppColorConstants.subHeadingTextColor),
+              const SizedBox(height: 2),
+              BodyMediumText(value, weight: TextWeight.semiBold),
+            ],
+          ),
+        ),
       ],
     );
   }

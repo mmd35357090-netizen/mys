@@ -63,7 +63,19 @@ class LikeListState extends State<LikeList> {
     }
 
     return Container(
-            color: AppColorConstants.cardColor,
+            decoration: BoxDecoration(
+              color: AppColorConstants.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                  color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                  width: 0.6),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5))
+              ],
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -100,7 +112,7 @@ class LikeListState extends State<LikeList> {
                 }),
                 const Spacer(),
                 AppThemeBorderButton(
-                    height: 30,
+                    height: 36,
                     borderColor: AppColorConstants.themeColor,
                     text: likeBackString.tr,
                     onPress: () {
@@ -120,9 +132,8 @@ class LikeListState extends State<LikeList> {
                           });
                     })
               ],
-            ).paddingSymmetric(horizontal: 15, vertical: 20))
-        .round(10)
-        .setPadding(bottom: 15, left: 15, right: 15);
+            ).paddingSymmetric(horizontal: 14, vertical: 14))
+        .setPadding(bottom: 14, left: 15, right: 15);
   }
 
   Widget userPictureView(UserModel user, double size) {
@@ -144,7 +155,7 @@ class LikeListState extends State<LikeList> {
                   size: size / 2,
                 )),
           ).borderWithRadius(
-            value: 1, radius: size / 3, color: AppColorConstants.themeColor)
+            value: 0, radius: size / 2, color: Colors.transparent)
         : SizedBox(
             height: size,
             width: size,
@@ -158,6 +169,6 @@ class LikeListState extends State<LikeList> {
               ),
             ),
           ).borderWithRadius(
-            value: 1, radius: size / 3, color: AppColorConstants.themeColor);
+            value: 0, radius: size / 2, color: Colors.transparent);
   }
 }

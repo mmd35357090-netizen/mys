@@ -9,8 +9,14 @@ class CallHistoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
-      color: AppColorConstants.cardColor,
+      height: 76,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -42,6 +48,9 @@ class CallHistoryTile extends StatelessWidget {
                         ? ThemeIcon.mobile
                         : ThemeIcon.videoCamera,
                     size: 15,
+                    color: model.isMissedCall
+                        ? AppColorConstants.red
+                        : AppColorConstants.themeColor,
                   ),
                   const SizedBox(
                     width: 5,
@@ -54,7 +63,7 @@ class CallHistoryTile extends StatelessWidget {
                             : incomingString.tr,
                     color: model.isMissedCall
                         ? AppColorConstants.red
-                        : AppColorConstants.mainTextColor,
+                        : AppColorConstants.subHeadingTextColor,
                   ),
                 ],
               )
@@ -96,7 +105,7 @@ class CallHistoryTile extends StatelessWidget {
           //   size: 20,
           // ),
         ],
-      ).hP8,
-    ).round(10);
+      ).hP8.hP8,
+    );
   }
 }

@@ -103,7 +103,7 @@ class MatchedListState extends State<MatchedList> {
                       ).bP16,
                     ))
           .borderWithRadius(
-              value: 1, radius: 10, color: AppColorConstants.themeColor)
+              value: 0, radius: 18, color: Colors.transparent)
           .ripple(() {
         Get.to(() => OtherUserProfile(
               userId: profile.id,
@@ -120,21 +120,21 @@ class MatchedListState extends State<MatchedList> {
               BodyLargeText(
                 (profile.name == null ? profile.userName : profile.name ?? '') +
                     (yearStr != null ? ', $yearStr' : ''),
-                weight: TextWeight.medium,
+                weight: TextWeight.bold,
                 color: Colors.white,
-              ).setPadding(left: 5, bottom: 10),
+              ).setPadding(left: 8, bottom: 10),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Flexible(
                     child: Container(
                   height: 40,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: Colors.black.withValues(alpha: 0.38),
                   child:  Center(
                       child: ThemeIconWidget(
                     ThemeIcon.close,
                     size: 18,
                     color: Colors.white,
                   )),
-                ).rp(1).leftRounded(10).ripple(() {
+                ).rp(1).leftRounded(16).ripple(() {
                   datingController.likeUnlikeProfile(
                       DatingActions.undoLiked, profile.id.toString());
                   setState(() {
@@ -144,14 +144,14 @@ class MatchedListState extends State<MatchedList> {
                 Flexible(
                     child: Container(
                   height: 40,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: Colors.black.withValues(alpha: 0.38),
                   child:  Center(
                       child: ThemeIconWidget(
                     ThemeIcon.chatBordered,
                     size: 18,
                     color: Colors.white,
                   )),
-                ).lp(1).rightRounded(10).ripple(() {
+                ).lp(1).rightRounded(16).ripple(() {
                   Loader.show(status: loadingString.tr);
                   _chatDetailController.getChatRoomWithUser(
                       userId: profile.id,

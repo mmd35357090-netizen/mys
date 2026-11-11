@@ -102,34 +102,38 @@ class _PodcastDetailState extends State<PodcastDetail> {
 
   Widget podcastInfo() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SizedBox(
-          width: Get.width,
-          height: 200,
-          child: CachedNetworkImage(
-            imageUrl: widget.podcastModel.image,
-            fit: BoxFit.cover,
-            width: Get.width,
-            height: 200,
-          )),
+      CachedNetworkImage(
+        imageUrl: widget.podcastModel.image,
+        fit: BoxFit.cover,
+        width: Get.width,
+        height: 220,
+      ).round(22).setPadding(
+          left: DesignConstants.horizontalPadding,
+          right: DesignConstants.horizontalPadding,
+          top: 8),
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
           children: [
             Container(
-                    color: AppColorConstants.themeColor,
-                    child: BodyLargeText(widget.podcastModel.ageGroup)
-                        .setPadding(left: 10, right: 10, top: 5, bottom: 5))
-                .round(10),
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                    child: BodyMediumText(widget.podcastModel.ageGroup,
+                            color: AppColorConstants.themeColor,
+                            weight: TextWeight.semiBold)
+                        .setPadding(left: 12, right: 12, top: 5, bottom: 5))
+                .round(14),
             const SizedBox(width: 10),
             Container(
-                    color: AppColorConstants.themeColor,
-                    child: BodyLargeText(widget.podcastModel.language)
-                        .setPadding(left: 10, right: 10, top: 5, bottom: 5))
-                .round(10),
+                    color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+                    child: BodyMediumText(widget.podcastModel.language,
+                            color: AppColorConstants.themeColor,
+                            weight: TextWeight.semiBold)
+                        .setPadding(left: 12, right: 12, top: 5, bottom: 5))
+                .round(14),
           ],
         ),
-        BodyLargeText(
+        Heading5Text(
           widget.podcastModel.name,
-          weight: FontWeight.bold,
+          weight: TextWeight.bold,
         ).vP16,
         read_more.ReadMoreText(
           widget.podcastModel.description,
@@ -158,7 +162,13 @@ class _PodcastDetailState extends State<PodcastDetail> {
 
   Widget addRecord(int index) {
     return Container(
-      color: AppColorConstants.cardColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+      ),
       height: 60,
       child: ListTile(
         contentPadding: const EdgeInsets.all(6),
@@ -171,7 +181,9 @@ class _PodcastDetailState extends State<PodcastDetail> {
               height: 50,
               width: 50,
             ).round(10),
-            const Positioned.fill(child: Icon(Icons.play_circle))
+            Positioned.fill(
+                child: Icon(Icons.play_circle_fill_rounded,
+                    color: Colors.white.withValues(alpha: 0.9)))
           ],
         ),
         title: BodyLargeText(
@@ -181,7 +193,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
         ),
         dense: true,
       ),
-    ).round(10).ripple(() {
+    ).ripple(() {
       Get.to(() => AudioSongPlayer(
           currentSongIndex: index,
           songsArray: _podcastStreamingController.podcastEpisodes,

@@ -14,23 +14,49 @@ class AskGalleryPermission extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: 200,
-            width: 200,
-            color: AppColorConstants.themeColor.withValues(alpha: 0.1),
-            child: ThemeIconWidget(
-              ThemeIcon.gallery,
-              size: 100,
-              color: AppColorConstants.themeColor,
+            height: 150,
+            width: 150,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColorConstants.themeColor.withValues(alpha: 0.18),
+                  AppColorConstants.themeColor.withValues(alpha: 0.06)
+                ],
+              ),
             ),
-          ).circular,
+            child: Center(
+              child: Container(
+                height: 96,
+                width: 96,
+                decoration: BoxDecoration(
+                    color: AppColorConstants.themeColor,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppColorConstants.themeColor
+                              .withValues(alpha: 0.35),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6))
+                    ]),
+                child: Center(
+                  child: ThemeIconWidget(ThemeIcon.gallery,
+                      size: 46, color: Colors.white),
+                ),
+              ),
+            ),
+          ),
           const SizedBox(
             height: 40,
           ),
           BodyLargeText(
             'We will access your gallery for sharing image/video with friends in chat and create posts',
             textAlign: TextAlign.center,
-            weight: TextWeight.semiBold,
-          ),
+            weight: TextWeight.medium,
+            color: AppColorConstants.subHeadingTextColor,
+          ).hP16,
           const SizedBox(
             height: 50,
           ),

@@ -43,16 +43,17 @@ class CompetitionCardState extends State<CompetitionCard> {
                         AppUtil.addProgressIndicator(size: 100),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
-                  ).overlay(Colors.black38).round(20).bP25,
+                  ).overlay(Colors.black45).round(24).bP25,
                 ),
                 CompetitionHighlightBar(model: model),
                 Positioned(
                     left: DesignConstants.horizontalPadding,
                     right: DesignConstants.horizontalPadding,
-                    bottom: 70,
-                    child: Heading4Text(
+                    bottom: 76,
+                    child: Heading5Text(
                       model.title,
-                      weight: TextWeight.semiBold,
+                      maxLines: 2,
+                      weight: TextWeight.bold,
                       color: Colors.white,
                     ))
               ],
@@ -85,13 +86,13 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 0,
-      left: 30,
-      right: 30,
+      left: 14,
+      right: 14,
+      bottom: 14,
       child: Container(
-        height: 50.0,
-        color: AppColorConstants.backgroundColor,
-        padding: const EdgeInsets.only(left: 10, right: 10),
+        height: 48.0,
+        color: AppColorConstants.cardColor,
+        padding: const EdgeInsets.only(left: 14, right: 14),
         child: Row(
             mainAxisAlignment: model.winnerAnnounced()
                 ? MainAxisAlignment.center
@@ -134,11 +135,7 @@ class _CompetitionHighlightBarState extends State<CompetitionHighlightBar> {
                       weight: TextWeight.bold,
                       color: AppColorConstants.themeColor)
             ]),
-      ).shadowWithBorder(
-          shadowOpacity: 0.1,
-          borderColor: AppColorConstants.themeColor,
-          radius: 15,
-          borderWidth: 2),
+      ).round(16),
     );
   }
 

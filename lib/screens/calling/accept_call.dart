@@ -37,7 +37,19 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       backgroundColor: AppColorConstants.backgroundColor,
-      body: incomingCallView(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColorConstants.themeColor.withValues(alpha: 0.14),
+              AppColorConstants.backgroundColor,
+            ],
+          ),
+        ),
+        child: incomingCallView(),
+      ),
     );
   }
 
@@ -108,13 +120,31 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
             //   width: 250,
             // ),
             Container(
-              color: AppColorConstants.themeColor,
-              child: UserAvatarView(
-                user: widget.call.opponent,
-                size: 150,
-                onTapHandler: () {},
-              ).p8,
-            ).circular,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColorConstants.themeColor.withValues(alpha: 0.18),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: AppColorConstants.themeColor, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                        color:
+                            AppColorConstants.themeColor.withValues(alpha: 0.3),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8))
+                  ],
+                ),
+                child: UserAvatarView(
+                  user: widget.call.opponent,
+                  size: 150,
+                  onTapHandler: () {},
+                ).p4,
+              ),
+            ),
           ],
         ),
         const SizedBox(
@@ -133,7 +163,7 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
               ? ringingString
               : incomingCallString,
           weight: TextWeight.medium,
-          color: AppColorConstants.mainTextColor,
+          color: AppColorConstants.subHeadingTextColor,
         ),
         const SizedBox(
           height: 150,
@@ -149,30 +179,48 @@ class _AcceptCallScreenState extends State<AcceptCallScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              color: AppColorConstants.red,
-              height: 80,
-              width: 80,
+              decoration: BoxDecoration(
+                color: AppColorConstants.red,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColorConstants.red.withValues(alpha: 0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6))
+                ],
+              ),
+              height: 76,
+              width: 76,
               child: ThemeIconWidget(
                 ThemeIcon.declineCall,
                 size: 30,
                 color: Colors.white,
               ).p16,
-            ).circular.ripple(() {
+            ).ripple(() {
               agoraCallController.declineCall(call: widget.call);
             }),
             const SizedBox(
-              width: 25,
+              width: 50,
             ),
             Container(
-              color: AppColorConstants.themeColor,
-              height: 80,
-              width: 80,
+              decoration: BoxDecoration(
+                color: AppColorConstants.green,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColorConstants.green.withValues(alpha: 0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6))
+                ],
+              ),
+              height: 76,
+              width: 76,
               child: ThemeIconWidget(
                 ThemeIcon.acceptCall,
                 size: 30,
                 color: Colors.white,
               ).p16,
-            ).circular.ripple(() {
+            ).ripple(() {
               agoraCallController.initiateAcceptCall(call: widget.call);
             }),
           ],

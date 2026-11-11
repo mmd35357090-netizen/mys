@@ -3,14 +3,27 @@ import '../../model/offer_model.dart';
 
 class OfferCard extends StatelessWidget {
   final OfferModel offer;
-  const OfferCard({super.key, required this.offer}) ;
+  const OfferCard({super.key, required this.offer});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 250,
+      height: 260,
       width: double.infinity,
-      color: AppColorConstants.backgroundColor,
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5))
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
           Expanded(
@@ -18,38 +31,41 @@ class OfferCard extends StatelessWidget {
               imageUrl: offer.coverImage,
               fit: BoxFit.cover,
               width: double.infinity,
-              // height: double.infinity,
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          Wrap(
-            children: [
-              BodyExtraLargeText(
-                '${codeString.tr.toUpperCase()} : ',
-                weight: TextWeight.bold,
-              ),
-              BodyExtraLargeText(
-                offer.code,
-                weight: TextWeight.bold,
-                color: AppColorConstants.themeColor,
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          BodyLargeText(
-            offer.name,
-            weight: TextWeight.regular,
-            color: AppColorConstants.mainTextColor,
-          ),
-          const SizedBox(
-            height: 20,
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BodyLargeText(offer.name,
+                          maxLines: 1, weight: TextWeight.bold),
+                      const SizedBox(height: 4),
+                      BodySmallText(
+                          '${codeString.tr.toUpperCase()} : ',
+                          color: AppColorConstants.subHeadingTextColor),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  decoration: BoxDecoration(
+                      color:
+                          AppColorConstants.themeColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: BodyLargeText(offer.code,
+                      weight: TextWeight.bold,
+                      color: AppColorConstants.themeColor),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-    ).shadowWithBorder(borderWidth: 0);
+    );
   }
 }
