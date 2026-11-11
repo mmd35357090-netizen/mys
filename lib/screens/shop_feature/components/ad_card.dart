@@ -99,43 +99,50 @@ class _AdCardState extends State<AdCard> {
                   )
                 ],
               )),
-              BodyLargeText(widget.ad.title!,
-                      maxLines: 1, weight: TextWeight.bold)
-                  .bP4,
-              BodyExtraSmallText(
-                widget.ad.locations!.customLocation!,
-                weight: TextWeight.semiBold,
-                color: AppColorConstants.subHeadingTextColor,
-                maxLines: 1,
-              ).bP4,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BodyExtraSmallText(
-                    widget.ad.finalPriceString,
-                    weight: TextWeight.bold,
-                    color: AppColorConstants.themeColor,
-                  ),
-                  Icon(
-                          widget.ad.isFavorite == 1
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          size: 22,
-                          color: widget.ad.isFavorite == 1
-                              ? AppColorConstants.red
-                              : AppColorConstants.subHeadingTextColor)
-                      .ripple(() {
-                    if (widget.ad.isFavorite == 0) {
-                      widget.ad.isFavorite = 1;
-                    } else {
-                      widget.ad.isFavorite = 0;
-                    }
-                    widget.favPressed();
-                    setState(() {});
-                  })
-                ],
-              )
-            ]).p12,
+              
+    child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          // আপনার আগের সব কোড এখানে থাকবে...
+          children: [
+            BodyLargeText(widget.ad.title!,
+                    maxLines: 1, weight: TextWeight.bold)
+                .bP4,
+            BodyExtraSmallText(
+              widget.ad.locations!.customLocation!,
+              weight: TextWeight.semiBold,
+              color: AppColorConstants.subHeadingTextColor,
+              maxLines: 1,
+            ).bP4,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BodyExtraSmallText(
+                  widget.ad.finalPriceString,
+                  weight: TextWeight.bold,
+                  color: AppColorConstants.themeColor,
+                ),
+                Icon(
+                        widget.ad.isFavorite == 1
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        size: 22,
+                        color: widget.ad.isFavorite == 1
+                            ? AppColorConstants.red
+                            : AppColorConstants.subHeadingTextColor)
+                    .ripple(() {
+                  if (widget.ad.isFavorite == 0) {
+                    widget.ad.isFavorite = 1;
+                  } else {
+                    widget.ad.isFavorite = 0;
+                  }
+                  widget.favPressed();
+                  setState(() {});
+                })
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
