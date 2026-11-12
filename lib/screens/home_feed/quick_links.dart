@@ -1,3 +1,5 @@
+import 'package:foap/screens/profile/friends_screen.dart';
+import 'package:foap/api_handler/apis/misc_api.dart';
 import 'package:foap/controllers/coupons/near_by_offers.dart';
 import 'package:foap/controllers/fund_raising/fund_raising_controller.dart';
 import 'package:foap/controllers/shop/shop_controller.dart';
@@ -76,6 +78,23 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
   final FundRaisingController _fundRaisingController = Get.find();
   final NearByOffersController _nearByOffersController = Get.find();
 
+  int _pendingRequests = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRequestCount();
+  }
+
+  void _loadRequestCount() {
+    MiscApi.getFollowRequests(
+        page: 1,
+        resultCallback: (_, meta) {
+          if (!mounted) return;
+          setState(() => _pendingRequests = meta.totalCount);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => GridView(
@@ -91,6 +110,11 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
                 mainAxisSpacing: 10.0,
                 childAspectRatio: 2.8),
             children: [
+              _friendsTile().ripple(() {
+                widget.callback();
+                Get.to(() => const FriendsScreen())
+                    ?.then((_) => _loadRequestCount());
+              }),
               for (QuickLink link in _homeController.quickLinks)
                 quickLinkView2(link).ripple(() {
                   widget.callback();
@@ -212,6 +236,65 @@ class _QuickLinkWidgetState extends State<QuickLinkWidget> {
         ],
       ),
     ).round(20);
+  }
+
+  Widget _friendsTile() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: AppColorConstants.cardColor,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+            color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+            width: 0.6),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 5)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Icon(Icons.people_alt_rounded,
+                size: 24, color: AppColorConstants.themeColor),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: BodySmallText(
+              friendsAndRequestsString.tr,
+              weight: TextWeight.semiBold,
+              maxLines: 2,
+            ),
+          ),
+          if (_pendingRequests > 0)
+            Container(
+              constraints: const BoxConstraints(minWidth: 22),
+              height: 22,
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColorConstants.red,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Text(
+                _pendingRequests > 99 ? '99+' : '$_pendingRequests',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   Widget quickLinkView2(QuickLink link) {

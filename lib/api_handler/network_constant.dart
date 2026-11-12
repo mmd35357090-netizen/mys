@@ -80,7 +80,14 @@ class NetworkConstantsUtil {
   static String currentLiveUsers =
       'followers/my-following-live?expand=followingUserDetail,followingUserDetail.isFollowing,,followingUserDetail.isFollower,followingUserDetail.userLiveDetail,followingUserDetail.subscriptionPlanUser&user_id=';
   static String acceptFollowRequestString = 'followers/accept-request';
-  static String declineFollowRequestString = 'followers/cancel-request';
+  // receiver declines a request: the row is deleted from the other side
+  static String declineFollowRequestString = 'followers/delete-request';
+  // sender cancels a request he sent
+  static String cancelSentFollowRequest = 'followers/cancel-request';
+  static String mySentFollowRequests =
+      'followers/my-following-request?expand=followingUserDetail,followingUserDetail.isFollowing,followingUserDetail.isFollower';
+  static String myFriends =
+      'followers/my-friends?expand=followerUserDetail,followerUserDetail.isFollowing,followerUserDetail.isFollower,followerUserDetail.subscriptionPlanUser';
 
   static String getSettings = 'settings?expand=featureList';
   static String reportGenericComment = 'reported-contents';
