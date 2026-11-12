@@ -6,6 +6,7 @@ import 'package:foap/helper/file_extension.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/string_extension.dart';
 import 'package:video_compress/video_compress.dart';
+import '../profile/profile_controller.dart';
 import '../../api_handler/apis/misc_api.dart';
 import '../../helper/enum_linking.dart';
 import '../../model/location.dart';
@@ -20,6 +21,24 @@ class AddPostController extends GetxController {
 
   RxBool isPosting = false.obs;
   RxBool isErrorInPosting = false.obs;
+
+  /// What the background post is doing right now (shown to the user):
+  /// 0 preparing, 1 compressing video, 2 uploading, 3 publishing
+  RxInt postingStage = 0.obs;
+
+  /// 0.0 - 1.0 of the whole post (all files)
+  RxDouble postingProgress = 0.0.obs;
+  RxString postingDetail = ''.obs;
+
+  List<double> _mediaProgress = [];
+  VoidCallback? _retryAction;
+
+  void _setProgress(int index, double value) {
+    if (index >= _mediaProgress.length) return;
+    _mediaProgress[index] = value.clamp(0.0, 1.0);
+    final total = _mediaProgress.fold<double>(0, (a, b) => a + b);
+    postingProgress.value = (total / _mediaProgress.length).clamp(0.0, 1.0);
+  }
 
   RxBool enableComments = true.obs;
 
@@ -38,6 +57,9 @@ class AddPostController extends GetxController {
     currentIndex.value = 0;
     isPosting.value = false;
     isErrorInPosting.value = false;
+    postingStage.value = 0;
+    postingProgress.value = 0;
+    postingDetail.value = '';
     isPreviewMode.value = false;
     enableComments.value = true;
     taggedLocation.value = null;
@@ -75,13 +97,10 @@ class AddPostController extends GetxController {
   }
 
   retryPublish() {
-    submitPost(
-        items: postingMedia,
-        title: postingTitle,
-        postType: currentPostType!,
-        isPaidContent: false,
-        allowComments: true,
-        postCompletionHandler: () {});
+    final retry = _retryAction;
+    if (retry != null) {
+      retry();
+    }
   }
 
   void submitPost(
@@ -99,51 +118,83 @@ class AddPostController extends GetxController {
       int? audioId,
       double? audioStartTime,
       double? audioEndTime}) async {
+    if (isPosting.value && !isErrorInPosting.value) {
+      AppUtil.showToast(
+          message: 'Another post is still uploading', isSuccess: false);
+      return;
+    }
+
+    // everything below runs in the background, the user is free to leave
+    if (!isErrorInPosting.value) {
+      Get.back();
+    }
+
     currentPostType = postType;
     postingMedia = items;
     postingTitle = title;
     isPosting.value = true;
+    isErrorInPosting.value = false;
+    postingStage.value = 0;
+    postingProgress.value = 0;
+    _mediaProgress = List<double>.filled(items.length, 0.0);
 
-    List<Map<String, String>> responses;
+    _retryAction = () => submitPost(
+        postType: postType,
+        items: items,
+        title: title,
+        allowComments: allowComments,
+        postCompletionHandler: postCompletionHandler,
+        isPaidContent: isPaidContent,
+        competitionId: competitionId,
+        clubId: clubId,
+        eventId: eventId,
+        fundRaisingCampaignId: fundRaisingCampaignId,
+        isReel: isReel,
+        audioId: audioId,
+        audioStartTime: audioStartTime,
+        audioEndTime: audioEndTime);
+
     try {
-      responses = await Future.wait([
-        for (Media media in items)
-          uploadMedia(
-            media,
-            competitionId,
-          )
+      var responses = await Future.wait([
+        for (int i = 0; i < items.length; i++)
+          uploadMedia(items[i], competitionId, i)
       ]);
-    } catch (e) {
-      // An upload failed (the reason was already shown to the user).
-      // Show the retry / discard bar instead of waiting forever.
-      Loader.dismiss();
-      isErrorInPosting.value = true;
-      return;
-    }
 
-    publishAction(
-      postType: postType,
-      galleryItems: responses,
-      postCompletionHandler: postCompletionHandler,
-      title: title,
-      tags: title.getHashtags(),
-      location: taggedLocation.value,
-      mentions: title.getMentions(),
-      allowComments: allowComments,
-      competitionId: competitionId,
-      isPaidContent: isPaidContent,
-      clubId: clubId,
-      eventId: eventId,
-      fundRaisingCampaignId: fundRaisingCampaignId,
-      isReel: isReel,
-      audioId: audioId,
-      audioStartTime: audioStartTime,
-      audioEndTime: audioEndTime,
-    );
+      postingStage.value = 3;
+      postingProgress.value = 1;
+
+      publishAction(
+        postType: postType,
+        galleryItems: responses,
+        postCompletionHandler: postCompletionHandler,
+        title: title,
+        tags: title.getHashtags(),
+        location: taggedLocation.value,
+        mentions: title.getMentions(),
+        allowComments: allowComments,
+        competitionId: competitionId,
+        isPaidContent: isPaidContent,
+        clubId: clubId,
+        eventId: eventId,
+        fundRaisingCampaignId: fundRaisingCampaignId,
+        isReel: isReel,
+        audioId: audioId,
+        audioStartTime: audioStartTime,
+        audioEndTime: audioEndTime,
+      );
+    } catch (_) {
+      _failPosting();
+    }
+  }
+
+  void _failPosting() {
+    Loader.dismiss();
+    isErrorInPosting.value = true;
+    AppUtil.showToast(message: postFailedString.tr, isSuccess: false);
   }
 
   Future<Map<String, String>> uploadMedia(
-      Media media, int? competitionId) async {
+      Media media, int? competitionId, int index) async {
     Map<String, String> gallery = {};
     final completer = Completer<Map<String, String>>();
 
@@ -155,11 +206,11 @@ class AddPostController extends GetxController {
       Uint8List mainFileData = await media.file!.compress();
 
       file = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}.jpg')
+              '${tempDir.path}/${media.id!.replaceAll('/', '')}.${media.file!.extension}')
           .create();
       file.writeAsBytesSync(mainFileData);
       uploadMainFile(
-          file, media, videoThumbnailPath, competitionId, completer);
+          file, media, videoThumbnailPath, competitionId, completer, index);
     } else if (media.mediaType == GalleryMediaType.gif) {
       gallery = {
         'filename': media.filePath!,
@@ -171,54 +222,98 @@ class AddPostController extends GetxController {
       };
       completer.complete(gallery);
     } else if (media.mediaType == GalleryMediaType.video) {
-      Loader.show(status: loadingString.tr);
-      MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-        media.file!.path,
-        quality: VideoQuality.DefaultQuality,
-        deleteOrigin: false, // It's false by default
-      );
+      File videoToUpload = media.file!;
+      final bool isSmall = videoToUpload.lengthSync() < 15 * 1024 * 1024;
 
-      // code after compressing
-      file = mediaInfo!.file!;
+      if (!isSmall) {
+        // step 1: compress, only big videos, progress 0 to 40 percent
+        postingStage.value = 1;
+        final sub = VideoCompress.compressProgress$.subscribe((p) {
+          _setProgress(index, (p / 100.0) * 0.4);
+        });
+        try {
+          MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+            media.file!.path,
+            quality: VideoQuality.DefaultQuality,
+            deleteOrigin: false,
+          );
+          if (mediaInfo?.file != null) {
+            videoToUpload = mediaInfo!.file!;
+          }
+        } finally {
+          sub.unsubscribe();
+        }
+      }
+      _setProgress(index, 0.4);
 
-      File videoThumbnail = await File(
-              '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.jpg')
-          .create();
+      // step 2: thumbnail, small
+      postingStage.value = 2;
+      if (media.thumbnail != null) {
+        File videoThumbnail = await File(
+                '${tempDir.path}/${media.id!.replaceAll('/', '')}_thumbnail.jpg')
+            .create();
+        videoThumbnail.writeAsBytesSync(media.thumbnail!);
 
-      videoThumbnail.writeAsBytesSync(media.thumbnail!);
+        final thumbCompleter = Completer<void>();
+        await MiscApi.uploadFile(videoThumbnail.path,
+            type: UploadMediaType.post,
+            mediaType: GalleryMediaType.photo,
+            showLoader: false,
+            resultCallback: (fileName, filePath) async {
+              videoThumbnailPath = fileName;
+              await videoThumbnail.delete();
+              thumbCompleter.complete();
+            },
+            failureHandler: () {
+              if (!thumbCompleter.isCompleted) thumbCompleter.complete();
+            });
+        await thumbCompleter.future;
+      }
 
-      await MiscApi.uploadFile(videoThumbnail.path,
-          type: UploadMediaType.post, mediaType: media.mediaType!,
-          resultCallback: (fileName, filePath) async {
-        videoThumbnailPath = fileName;
-        await videoThumbnail.delete();
-      });
-
-      uploadMainFile(
-          file, media, videoThumbnailPath, competitionId, completer);
+      // step 3: the video itself, progress 40 to 100 percent
+      uploadMainFile(videoToUpload, media, videoThumbnailPath, competitionId,
+          completer, index,
+          deleteAfter: videoToUpload.path != media.file!.path);
     } else {
       // for audio files
       uploadMainFile(media.file!, media, videoThumbnailPath, competitionId,
-          completer);
+          completer, index,
+          deleteAfter: false);
     }
 
     return completer.future;
   }
 
   Future uploadMainFile(File file, Media media, String? videoThumbnailPath,
-      int? competitionId, Completer completer) async {
+      int? competitionId, Completer completer, int index,
+      {bool deleteAfter = true}) async {
     Map<String, String> gallery = {};
+    postingStage.value = 2;
+    final bool isVideo = media.mediaType == GalleryMediaType.video;
 
     await MiscApi.uploadFile(file.path,
-        type: UploadMediaType.post, mediaType: media.mediaType!,
-        errorHandler: (message) {
-      if (!completer.isCompleted) {
-        completer.completeError(message);
-      }
-    }, resultCallback: (fileName, filePath) async {
+        type: UploadMediaType.post,
+        mediaType: media.mediaType!,
+        showLoader: false,
+        onProgress: (sent, total) {
+          if (total <= 0) return;
+          final fraction = sent / total;
+          _setProgress(index, isVideo ? 0.4 + fraction * 0.6 : fraction);
+        },
+        failureHandler: () {
+          if (!completer.isCompleted) {
+            completer.completeError('upload failed');
+          }
+        },
+        resultCallback: (fileName, filePath) async {
       String imagePath = fileName;
 
-      await file.delete();
+      if (deleteAfter) {
+        try {
+          await file.delete();
+        } catch (_) {}
+      }
+      _setProgress(index, 1);
 
       gallery = {
         'filename': imagePath,
@@ -275,7 +370,6 @@ class AddPostController extends GetxController {
         audioEndTime: audioEndTime,
         resultCallback: (postId) async {
           if (postId != null) {
-            Get.back();
             postCompletionHandler();
             postingMedia = [];
             postingTitle = '';
@@ -285,13 +379,17 @@ class AddPostController extends GetxController {
             PostApi.getPostDetail(postId, resultCallback: (result) {
               if (result != null) {
                 _homeController.addNewPost(result);
+                if (Get.isRegistered<ProfileController>()) {
+                  Get.find<ProfileController>().addMyNewPost(result);
+                }
               }
               isPosting.value = false;
+              AppUtil.showToast(message: postedString.tr, isSuccess: true);
             });
 
             clear();
           } else {
-            isErrorInPosting.value = true;
+            _failPosting();
           }
         });
   }

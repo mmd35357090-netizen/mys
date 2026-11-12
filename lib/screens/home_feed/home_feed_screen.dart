@@ -342,67 +342,132 @@ Widget postsView() {
   }
 
   Widget postingView() {
-    return Obx(
-      () => _addPostController.isPosting.value
-          ? Container(
-              height: 55,
-              color: AppColorConstants.cardColor,
-              child: Row(
-                children: [
-                  if (_addPostController.postingMedia.isNotEmpty &&
-                      _addPostController.postingMedia.first.mediaType !=
-                          GalleryMediaType.gif)
-                    _addPostController.postingMedia.first.thumbnail != null
-                        ? Image.memory(
-                            _addPostController
-                                .postingMedia.first.thumbnail!,
-                            fit: BoxFit.cover,
-                            width: 40,
-                            height: 40,
-                          ).round(5)
-                        : _addPostController
-                                    .postingMedia.first.mediaType ==
-                                GalleryMediaType.photo
-                            ? Image.file(
-                                _addPostController
-                                    .postingMedia.first.file!,
-                                fit: BoxFit.cover,
-                                width: 40,
-                                height: 40,
-                              ).round(5)
-                            : const SizedBox.shrink(),
-                  const SizedBox(width: 10),
-                  Heading5Text(
-                    _addPostController.isErrorInPosting.value
-                        ? postFailedString.tr
-                        : postingString.tr,
-                  ),
-                  const Spacer(),
-                  if (_addPostController.isErrorInPosting.value)
-                    Row(
-                      children: [
-                        Heading5Text(
-                          discardString.tr,
-                          weight: TextWeight.medium,
-                        ).ripple(() {
-                          _addPostController.discardFailedPost();
-                        }),
-                        const SizedBox(width: 20),
-                        Heading5Text(
-                          retryString.tr,
-                          weight: TextWeight.medium,
-                        ).ripple(() {
-                          _addPostController.retryPublish();
-                        }),
-                      ],
-                    ),
-                ],
-              ).hP8,
-            ).backgroundCard(radius: 10).bp(20)
-          : const SizedBox.shrink(),
-    );
-  }
+    return Obx(() {
+      if (!_addPostController.isPosting.value) {
+        return const SizedBox.shrink();
+      }
+      final failed = _addPostController.isErrorInPosting.value;
+      final stage = _addPostController.postingStage.value;
+      final progress = _addPostController.postingProgress.value;
+      final media = _addPostController.postingMedia;
+      final bool hasVideo = media.any((e) => e.mediaType == GalleryMediaType.video);
 
+      String label;
+      if (failed) {
+        label = postFailedString.tr;
+      } else if (stage == 1) {
+        label = 'Preparing your video…';
+      } else if (stage == 2) {
+        label = hasVideo ? 'Uploading your video…' : 'Uploading…';
+      } else if (stage == 3) {
+        label = 'Publishing your post…';
+      } else {
+        label = postingString.tr;
+      }
+      final percent = (progress * 100).clamp(0, 100).toInt();
+
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColorConstants.cardColor,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+              color: failed
+                  ? AppColorConstants.red.withValues(alpha: 0.6)
+                  : AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              width: 0.8),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 5))
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (media.isNotEmpty &&
+                    media.first.mediaType != GalleryMediaType.gif)
+                  media.first.thumbnail != null
+                      ? Image.memory(
+                          media.first.thumbnail!,
+                          fit: BoxFit.cover,
+                          width: 44,
+                          height: 44,
+                        ).round(10)
+                      : media.first.mediaType == GalleryMediaType.photo &&
+                              media.first.file != null
+                          ? Image.file(
+                              media.first.file!,
+                              fit: BoxFit.cover,
+                              width: 44,
+                              height: 44,
+                            ).round(10)
+                          : const SizedBox.shrink(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BodyLargeText(label, weight: TextWeight.bold),
+                      if (!failed)
+                        BodySmallText(
+                          stage == 3
+                              ? 'Almost done'
+                              : 'You can keep using the app, it continues in the background',
+                          color: AppColorConstants.subHeadingTextColor,
+                        ),
+                    ],
+                  ),
+                ),
+                if (!failed)
+                  BodyMediumText('$percent%',
+                      weight: TextWeight.bold,
+                      color: AppColorConstants.themeColor),
+              ],
+            ),
+            if (!failed) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: stage == 3 ? null : progress,
+                  minHeight: 6,
+                  backgroundColor:
+                      AppColorConstants.themeColor.withValues(alpha: 0.12),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColorConstants.themeColor),
+                ),
+              ),
+            ],
+            if (failed) ...[
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  BodyMediumText(discardString.tr,
+                          weight: TextWeight.semiBold,
+                          color: AppColorConstants.subHeadingTextColor)
+                      .ripple(() {
+                    _addPostController.discardFailedPost();
+                  }),
+                  const SizedBox(width: 24),
+                  BodyMediumText(retryString.tr,
+                          weight: TextWeight.bold,
+                          color: AppColorConstants.themeColor)
+                      .ripple(() {
+                    _addPostController.retryPublish();
+                  }),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ).bp(16);
+    });
+  }
 
   
 Widget storiesView() {

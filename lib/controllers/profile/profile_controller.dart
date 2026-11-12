@@ -427,6 +427,16 @@ class ProfileController extends GetxController {
     collaborations.refresh();
   }
 
+  /// A post the user just published shows up on their own profile at once
+  void addMyNewPost(PostModel post) {
+    if (user.value?.id != post.user.id) return;
+    if (posts.indexWhere((e) => e.id == post.id) == -1) {
+      posts.insert(0, post);
+      posts.refresh();
+      update();
+    }
+  }
+
   void getPosts(
       {required int userId, required VoidCallback callback}) async {
     if (postDataWrapper.haveMoreData.value == true &&

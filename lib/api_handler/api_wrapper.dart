@@ -218,8 +218,12 @@ class ApiWrapper {
       {required String file,
       required UploadMediaType type,
       required GalleryMediaType mediaType,
-      required String url}) async {
-    Loader.show(status: loadingString.tr);
+      required String url,
+      bool showLoader = true,
+      void Function(int sent, int total)? onProgress}) async {
+    if (showLoader) {
+      Loader.show(status: loadingString.tr);
+    }
     String? authKey = await SharedPrefs().getAuthorizationKey();
 
     var request = http.MultipartRequest(
@@ -231,24 +235,43 @@ class ApiWrapper {
           'mediaFile', file,
           contentType: MediaType('video', 'mp4')));
     } else if (mediaType == GalleryMediaType.audio) {
-      // voice recordings are AAC in an .m4a (MPEG-4) container, not mp3
-      final String lowerName = file.toLowerCase();
-      final bool isMp4Audio = lowerName.endsWith('.m4a') ||
-          lowerName.endsWith('.mp4') ||
-          lowerName.endsWith('.aac');
       request.files.add(await http.MultipartFile.fromPath(
           'mediaFile', file,
-          contentType:
-              isMp4Audio ? MediaType('audio', 'mp4') : MediaType('audio', 'mpeg')));
+          contentType: MediaType('audio', 'mp3')));
     } else {
       request.files
           .add(await http.MultipartFile.fromPath('mediaFile', file));
     }
-    var res = await request.send();
+
+    http.StreamedResponse res;
+    if (onProgress == null) {
+      res = await request.send();
+    } else {
+      // same request, but we count the bytes as they leave the phone
+      final int total = request.contentLength;
+      final Stream<List<int>> body = request.finalize();
+      final streamed = http.StreamedRequest('POST', request.url)
+        ..headers.addAll(request.headers)
+        ..contentLength = total;
+      int sent = 0;
+      body.listen((chunk) {
+        sent += chunk.length;
+        streamed.sink.add(chunk);
+        onProgress(sent, total);
+      }, onDone: () {
+        streamed.sink.close();
+      }, onError: (e) {
+        streamed.sink.addError(e);
+        streamed.sink.close();
+      }, cancelOnError: true);
+      res = await http.Client().send(streamed);
+    }
     var responseData = await res.stream.toBytes();
     var responseString = String.fromCharCodes(responseData);
     dynamic data = _decoder.convert(responseString);
-    Loader.dismiss();
+    if (showLoader) {
+      Loader.dismiss();
+    }
 
     return ApiResponse.fromJson(data);
   }

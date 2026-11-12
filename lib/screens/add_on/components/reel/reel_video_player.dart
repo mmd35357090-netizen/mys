@@ -24,8 +24,11 @@ class ReelVideoPlayer extends StatefulWidget {
 
 class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
   late Future<void> initializeVideoPlayerFuture;
+  double _doubleTapX = 0;
   VideoPlayerController? videoPlayerController;
   late bool playVideo;
+  // the user paused by tapping: stay paused until the reel is left and come back
+  bool userPaused = false;
   final ReelsController _reelsController = Get.find();
   final UserFollowUnfollowBtnController _userFollowUnfollowBtnController =
       UserFollowUnfollowBtnController();
@@ -76,11 +79,32 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
             }
             if (snapshot.connectionState == ConnectionState.done) {
               return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    final c = videoPlayerController!;
+                    if (c.value.isPlaying) {
+                      userPaused = true;
+                      pause();
+                    } else {
+                      userPaused = false;
+                      play();
+                    }
+                  },
+                  onDoubleTapDown: (d) => _doubleTapX = d.localPosition.dx,
+                  onDoubleTap: () {
+                    final c = videoPlayerController!;
+                    final back = _doubleTapX < Get.width / 2;
+                    final t = c.value.position +
+                        Duration(seconds: back ? -10 : 10);
+                    c.seekTo(t < Duration.zero
+                        ? Duration.zero
+                        : (t > c.value.duration ? c.value.duration : t));
+                  },
                   onLongPress: () {
                     pause();
                   },
                   onLongPressUp: () {
-                    play();
+                    if (!userPaused) play();
                   },
                   child: VisibilityDetector(
                     key: Key(widget.reel.gallery.first.filePath),
@@ -88,6 +112,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                       if (info.visibleFraction == 1.0) {
                         play();
                       } else if (info.visibleFraction < 0.4) {
+                        userPaused = false;
                         pause();
                       }
                     },
@@ -381,7 +406,48 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                   openActionPopup();
                 })
               ],
-            ))
+            )),
+        // big pause mark while paused, so it is clear the reel is stopped
+        Positioned.fill(
+          child: IgnorePointer(
+            child: ValueListenableBuilder<VideoPlayerValue>(
+              valueListenable: videoPlayerController!,
+              builder: (_, v, __) => Center(
+                child: AnimatedOpacity(
+                  opacity: (v.isInitialized && !v.isPlaying && userPaused)
+                      ? 1
+                      : 0,
+                  duration: const Duration(milliseconds: 150),
+                  child: Container(
+                    height: 76,
+                    width: 76,
+                    decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        shape: BoxShape.circle),
+                    child: const Icon(Icons.play_arrow_rounded,
+                        color: Colors.white, size: 48),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // drag to go forward or back
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: VideoProgressIndicator(
+            videoPlayerController!,
+            allowScrubbing: true,
+            padding: const EdgeInsets.only(top: 14, bottom: 0),
+            colors: VideoProgressColors(
+              playedColor: Colors.white,
+              bufferedColor: Colors.white.withValues(alpha: 0.35),
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -409,6 +475,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
   }
 
   play() {
+    if (userPaused) return;
     videoPlayerController!.play().then((value) => {
           // videoPlayerController!.addListener(checkVideoProgress)
         });
