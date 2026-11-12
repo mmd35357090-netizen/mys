@@ -503,32 +503,54 @@ class _ChatDetailState extends State<ChatDetail> {
               Obx(() {
                 final hasText =
                     _chatDetailController.messageTf.value.text.isNotEmpty;
-                return Container(
-                  height: 44,
-                  width: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: [
-                      AppColorConstants.themeColor,
-                      AppColorConstants.themeColor.withValues(alpha: 0.78)
-                    ]),
-                    boxShadow: [
-                      BoxShadow(
-                          color: AppColorConstants.themeColor
-                              .withValues(alpha: 0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4))
-                    ],
+                // Messenger style: a one-tap "like" while the field is empty,
+                // the send button as soon as the user types something.
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    if (hasText) {
+                      sendMessage();
+                    } else {
+                      sendLike();
+                    }
+                  },
+                  onLongPress: () {
+                    if (!hasText) openMediaSharingOptionView();
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    height: 44,
+                    width: 44,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: hasText
+                          ? LinearGradient(colors: [
+                              AppColorConstants.themeColor,
+                              AppColorConstants.themeColor
+                                  .withValues(alpha: 0.78)
+                            ])
+                          : null,
+                      boxShadow: hasText
+                          ? [
+                              BoxShadow(
+                                  color: AppColorConstants.themeColor
+                                      .withValues(alpha: 0.3),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4))
+                            ]
+                          : null,
+                    ),
+                    child: Icon(
+                        hasText
+                            ? Icons.send_rounded
+                            : Icons.thumb_up_alt_rounded,
+                        color: hasText
+                            ? Colors.white
+                            : AppColorConstants.themeColor,
+                        size: hasText ? 21 : 30),
                   ),
-                  child: Icon(hasText ? Icons.send_rounded : Icons.attach_file_rounded,
-                      color: Colors.white, size: 21),
-                ).ripple(() {
-                  if (hasText) {
-                    sendMessage();
-                  } else {
-                    openMediaSharingOptionView();
-                  }
-                });
+                );
               }),
             ],
           ),
@@ -867,6 +889,14 @@ class _ChatDetailState extends State<ChatDetail> {
                     onTap: () => Get.back()),
               ],
             ));
+  }
+
+  // one tap "like" (thumbs up) message, like in Facebook Messenger
+  sendLike() {
+    _chatDetailController.sendTextMessage(
+        messageText: '\u{1F44D}',
+        mode: _chatDetailController.actionMode.value,
+        room: _chatDetailController.chatRoom.value!);
   }
 
   sendMessage() {

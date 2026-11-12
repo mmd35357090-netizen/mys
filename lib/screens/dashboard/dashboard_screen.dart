@@ -73,29 +73,31 @@ class DashboardState extends State<DashboardScreen> {
   }
 
   Widget _bottomBar() {
+    // RedotPay style: solid icons, label under every icon, the selected tab
+    // sits in a soft capsule and takes the accent colour.
     const items = [
-      [Icons.home_outlined, Icons.home_rounded, 'Home'],
-      [Icons.search_rounded, Icons.search_rounded, 'Explore'],
-      [Icons.play_circle_outline_rounded, Icons.play_circle_rounded, 'Reels'],
-      [Icons.chat_bubble_outline_rounded, Icons.chat_bubble_rounded, 'Chat'],
-      [Icons.account_circle_outlined, Icons.account_circle_rounded, 'Profile'],
+      [Icons.home_rounded, 'Home'],
+      [Icons.search_rounded, 'Explore'],
+      [Icons.play_circle_rounded, 'Reels'],
+      [Icons.chat_bubble_rounded, 'Chat'],
+      [Icons.account_circle_rounded, 'Profile'],
     ];
     final int current = _dashboardController.currentIndex.value;
     return SafeArea(
       top: false,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: AppColorConstants.cardColor,
-          borderRadius: BorderRadius.circular(26),
+          color: AppColorConstants.cardColor.withValues(alpha: 0.97),
+          borderRadius: BorderRadius.circular(34),
           border: Border.all(
-              color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+              color: AppColorConstants.dividerColor.withValues(alpha: 0.4),
               width: 0.6),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withValues(alpha: 0.10),
-                blurRadius: 22,
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 24,
                 offset: const Offset(0, 8)),
           ],
         ),
@@ -104,7 +106,7 @@ class DashboardState extends State<DashboardScreen> {
             final bool active = i == current;
             final Color color = active
                 ? AppColorConstants.themeColor
-                : AppColorConstants.iconColor;
+                : AppColorConstants.mainTextColor;
             return Expanded(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -112,12 +114,13 @@ class DashboardState extends State<DashboardScreen> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOut,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 9),
                   decoration: BoxDecoration(
                     color: active
-                        ? AppColorConstants.themeColor.withValues(alpha: 0.12)
+                        ? AppColorConstants.mainTextColor
+                            .withValues(alpha: 0.07)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -125,16 +128,16 @@ class DashboardState extends State<DashboardScreen> {
                       Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          Icon(active ? items[i][1] as IconData : items[i][0] as IconData,
-                              size: 25, color: color),
+                          Icon(items[i][0] as IconData,
+                              size: 26, color: color),
                           if (i == 3 &&
                               _dashboardController.unreadMsgCount.value > 0)
                             Positioned(
                               right: -4,
                               top: -2,
                               child: Container(
-                                height: 9,
-                                width: 9,
+                                height: 10,
+                                width: 10,
                                 decoration: BoxDecoration(
                                   color: AppColorConstants.red,
                                   shape: BoxShape.circle,
@@ -148,11 +151,12 @@ class DashboardState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        items[i][2] as String,
+                        items[i][1] as String,
+                        maxLines: 1,
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 11.5,
                           fontWeight:
-                              active ? FontWeight.w700 : FontWeight.w500,
+                              active ? FontWeight.w700 : FontWeight.w600,
                           color: color,
                         ),
                       ),

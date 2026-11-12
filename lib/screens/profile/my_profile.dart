@@ -112,7 +112,7 @@ class MyProfileState extends State<MyProfile> {
                                 delegate: SliverAppBarDelegate(SizedBox(
                                     height: 50,
                                     child: SMTabBar(
-                                        tabs: tabs, canScroll: false))),
+                                        tabs: tabs, canScroll: true))),
                                 pinned: true,
                                 // floating: true,
                               )
