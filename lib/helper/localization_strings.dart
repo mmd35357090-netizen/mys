@@ -159,6 +159,9 @@ String kindlyEnterEmailString = "Kindly fill in your email address";
 String didntReceivedCodeString = "If you didn’t receive code,";
 
 String sendString = 'Send';
+String sendCoinsString = 'Send coins';
+String coinsSentString = 'Coins sent successfully';
+String enterCoinsString = 'Enter number of coins';
 String sentString = 'Sent';
 String failedString = 'Failed';
 
@@ -464,6 +467,33 @@ String followersString = 'Followers';
 
 String postsString = 'Posts';
 String savedPostsString = 'Saved Posts';
+String collectionsString = 'Collections';
+String pleaseEnterValidTicketString =
+    'Please enter ticket type, price and limit';
+String noTicketsYetString = 'No tickets yet. Tap + to add one.';
+String soldString = 'sold';
+String relationsString = 'Relations';
+String myRelationsString = 'My relations';
+String invitationsString = 'Invitations';
+String addRelationString = 'Add relation';
+String invitationSentString = 'Invitation sent';
+String invitedYouString = 'invited you';
+String noRelationsString = 'Nothing here yet';
+String removeRelationString = 'Remove relation';
+String areYouSureRemoveRelationString =
+    'Are you sure you want to remove this relation?';
+String newCollectionString = 'New collection';
+String collectionNameString = 'Collection name';
+String addToCollectionString = 'Add to collection';
+String addedToCollectionString = 'Added to collection';
+String noCollectionString = 'No collections yet. Tap + to create one.';
+String noCollectionPostsString = 'No posts in this collection yet';
+String deleteCollectionString = 'Delete collection';
+String areYouSureDeleteCollectionString =
+    'Are you sure you want to delete this collection?';
+String removeFromCollectionString = 'Remove from collection';
+String areYouSureRemoveFromCollectionString =
+    'Remove this post from the collection?';
 String postString = 'Post';
 String sentAPostString = 'Sent a Post';
 String videosString = 'Videos';

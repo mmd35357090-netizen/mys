@@ -11,6 +11,7 @@ import '../../screens/post/edit_post.dart';
 import '../../screens/profile/my_profile.dart';
 import '../../screens/profile/other_user_profile.dart';
 import '../post_card_controller.dart';
+import '../../screens/post/collections_screen.dart';
 
 class PostUserInfo extends StatefulWidget {
   final PostModel post;
@@ -325,6 +326,17 @@ class _PostUserInfoState extends State<PostUserInfo> {
                 ListTile(
                     title: Center(
                         child: Heading6Text(
+                      addToCollectionString.tr,
+                      weight: TextWeight.semiBold,
+                    )),
+                    onTap: () {
+                      Get.back();
+                      showAddToCollectionSheet(widget.post.id);
+                    }),
+                divider(),
+                ListTile(
+                    title: Center(
+                        child: Heading6Text(
                       editPostString.tr,
                       weight: TextWeight.semiBold,
                     )),
@@ -385,6 +397,17 @@ class _PostUserInfoState extends State<PostUserInfo> {
             )
           : Wrap(
               children: [
+                ListTile(
+                    title: Center(
+                        child: Heading6Text(
+                      addToCollectionString.tr,
+                      weight: TextWeight.bold,
+                    )),
+                    onTap: () {
+                      Get.back();
+                      showAddToCollectionSheet(widget.post.id);
+                    }),
+                divider(),
                 ListTile(
                     title: Center(
                         child: Heading6Text(

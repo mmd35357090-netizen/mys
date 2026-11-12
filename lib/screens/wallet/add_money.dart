@@ -155,7 +155,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
       final Completer<String?> done = Completer<String?>();
       await MiscApi.uploadFile(_proof!.path,
           type: UploadMediaType.depositProof,
-          mediaType: GalleryMediaType.photo, errorHandler: (_) {
+          mediaType: GalleryMediaType.photo, failureHandler: () {
         if (!done.isCompleted) done.complete(null);
       }, resultCallback: (fileName, fileUrl) {
         if (!done.isCompleted) done.complete(fileName);

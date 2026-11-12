@@ -224,6 +224,8 @@ class NetworkConstantsUtil {
   static String getPodcastHostDetail =
       'podcasts/podcast-host-details?id={{host_id}}';
 
+  static String podcastAddFavorite = 'podcasts/add-favorite';
+  static String podcastRemoveFavorite = 'podcasts/remove-favorite';
   static String getPodcasts = 'podcast-shows?expand=podcastShow';
   static String getPodcastEpisode = 'podcast-shows/podcast-show-episodes?';
 
@@ -284,6 +286,8 @@ class NetworkConstantsUtil {
 
   //***********Events Creation***********//
   static String createEvent = 'events/create-event';
+  static String createEventTicket = 'events/create-ticket';
+  static String updateEventTicket = 'events/update-ticket';
   static String updateEvent = 'events/';
   static String myEventsList = 'events/my-event?expand=createdByUser';
   static String updateEventStatus = 'events/update-status';
@@ -321,6 +325,16 @@ class NetworkConstantsUtil {
   //***********Package and coins***********//
   static String getPackages = 'packages';
   static String subscribePackage = 'payments/package-subscription';
+  static String relationTypes = 'relations';
+  static String relationInvite = 'relations/invite';
+  static String myRelationInvitations =
+      'relations/my-invitation?expand=createdBy,relationShip';
+  static String myRelations = 'relations/my-relation?expand=user,relationShip';
+  static String updateRelationInvitation = 'relations/update-invitation';
+  static String collections = 'collections';
+  static String collectionAddPost = 'collections/add-post';
+  static String collectionRemovePost = 'collections/remove-post';
+  static String sendCoin = 'payments/send-coin';
   static String redeemCoins = 'payments/redeem-coin';
   static String coinHistory = 'payments/coin-history';
   static String creatorAdImpression = 'creator-pool/impression';

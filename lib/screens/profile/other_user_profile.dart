@@ -1,3 +1,4 @@
+import 'relations_screen.dart';
 import 'package:foap/universal_components/profile_widgets.dart';
 import 'package:foap/controllers/subscription/subscription_controller.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -14,6 +15,8 @@ import '../chat/chat_detail.dart';
 import '../highlights/hightlights_viewer.dart';
 import '../live/gifts_list.dart';
 import '../settings_menu/settings_controller.dart';
+import 'package:foap/api_handler/apis/wallet_api.dart';
+import 'package:foap/util/biometric_helper.dart';
 
 class OtherUserProfile extends StatefulWidget {
   final int userId;
@@ -437,6 +440,52 @@ class OtherUserProfileState extends State<OtherUserProfile>
     );
   }
 
+  void _sendCoins() {
+    final TextEditingController amountController = TextEditingController();
+    Get.dialog(AlertDialog(
+      backgroundColor: AppColorConstants.cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Heading6Text(sendCoinsString.tr, weight: TextWeight.bold),
+      content: TextField(
+        controller: amountController,
+        keyboardType: TextInputType.number,
+        autofocus: true,
+        decoration: InputDecoration(hintText: enterCoinsString.tr),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Get.back(), child: Text(cancelString.tr)),
+        TextButton(
+            onPressed: () async {
+              final coins = int.tryParse(amountController.text.trim()) ?? 0;
+              if (coins <= 0) {
+                AppUtil.showToast(
+                    message: enterCoinsString.tr, isSuccess: false);
+                return;
+              }
+              Get.back();
+              final ok = await BiometricHelper.confirmIfEnabled(
+                  sendCoinsString.tr);
+              if (!ok) return;
+              await WalletApi.sendCoin(
+                  receiverId: widget.userId,
+                  coins: coins,
+                  resultCallback: (success, message) {
+                    if (success) {
+                      Get.find<UserProfileManager>().refreshProfile();
+                      AppUtil.showToast(
+                          message: coinsSentString.tr, isSuccess: true);
+                    } else {
+                      AppUtil.showToast(
+                          message: message ?? '', isSuccess: false);
+                    }
+                  });
+            },
+            child: Text(sendString.tr)),
+      ],
+    ));
+  }
+
   void openActionPopup() {
     showModalBottomSheet(
         context: context,
@@ -449,6 +498,20 @@ class OtherUserProfileState extends State<OtherUserProfile>
                       onTap: () async {
                         Get.back();
                         _profileController.reportUser();
+                      }),
+                  divider(),
+                  ListTile(
+                      title: Center(child: BodyLargeText(addRelationString.tr)),
+                      onTap: () {
+                        Get.back();
+                        showInviteRelationSheet(widget.userId);
+                      }),
+                  divider(),
+                  ListTile(
+                      title: Center(child: BodyLargeText(sendCoinsString.tr)),
+                      onTap: () {
+                        Get.back();
+                        _sendCoins();
                       }),
                   divider(),
                   ListTile(

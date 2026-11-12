@@ -199,6 +199,13 @@ class PodcastStreamingController extends GetxController {
         });
   }
 
+  favUnfavHost(HostModel host) {
+    host.isFavorite = host.isFavorite == 1 ? 0 : 1;
+    hosts.refresh();
+    update();
+    PodcastApi.favUnfavHost(host.isFavorite == 1, host.id);
+  }
+
   getHostById(int hostId, Function(HostModel) completionCallBack) {
     Loader.show(status: loadingString.tr);
 

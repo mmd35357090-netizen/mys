@@ -55,15 +55,41 @@ class _PodcastHostDetailState extends State<PodcastHostDetail> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                          width: Get.width,
-                          height: 200,
-                          child: CachedNetworkImage(
-                            imageUrl: widget.host?.image ?? "",
-                            fit: BoxFit.cover,
+                      Stack(children: [
+                        SizedBox(
                             width: Get.width,
                             height: 200,
-                          )),
+                            child: CachedNetworkImage(
+                              imageUrl: widget.host?.image ?? "",
+                              fit: BoxFit.cover,
+                              width: Get.width,
+                              height: 200,
+                            )),
+                        if (widget.host != null)
+                          Positioned(
+                              right: 16,
+                              top: 12,
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.4),
+                                    shape: BoxShape.circle),
+                                child: Icon(
+                                  widget.host!.isFavorite == 1
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                  size: 22,
+                                  color: widget.host!.isFavorite == 1
+                                      ? Colors.red
+                                      : Colors.white,
+                                ),
+                              ).ripple(() {
+                                _podcastStreamingController
+                                    .favUnfavHost(widget.host!);
+                                setState(() {});
+                              })),
+                      ]),
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

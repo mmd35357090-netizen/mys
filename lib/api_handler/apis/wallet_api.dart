@@ -79,6 +79,20 @@ class WalletApi {
     });
   }
 
+  static Future sendCoin(
+      {required int receiverId,
+      required int coins,
+      required Function(bool, String?) resultCallback}) async {
+    var url = NetworkConstantsUtil.sendCoin;
+
+    await ApiWrapper().postApi(url: url, param: {
+      "receiver_id": receiverId.toString(),
+      "coin": coins.toString()
+    }).then((result) {
+      resultCallback(result?.success == true, result?.message);
+    });
+  }
+
   static Future rewardCoins() async {
     var url = NetworkConstantsUtil.rewardedAdCoins;
 

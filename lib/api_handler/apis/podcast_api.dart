@@ -134,6 +134,17 @@ class PodcastApi {
     });
   }
 
+  static favUnfavHost(bool fav, int hostId) async {
+    var url = fav
+        ? NetworkConstantsUtil.podcastAddFavorite
+        : NetworkConstantsUtil.podcastRemoveFavorite;
+
+    await ApiWrapper()
+        .postApi(url: url, param: {"id": hostId.toString()}).then((result) {
+      if (result?.success == true) {}
+    });
+  }
+
   static getPodcastHostById(
       {required int hostId,
         required Function(HostModel) resultCallback}) async {

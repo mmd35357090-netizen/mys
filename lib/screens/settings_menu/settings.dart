@@ -1,3 +1,5 @@
+import 'package:foap/screens/profile/relations_screen.dart';
+import 'package:foap/screens/post/collections_screen.dart';
 import 'package:foap/util/biometric_helper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
@@ -80,6 +82,14 @@ class _SettingsState extends State<Settings> {
                       _tile(Icons.bookmark_border_rounded,
                           const Color(0xFF0EA5E9), savedPostsString.tr, () {
                         Get.to(() => const SavedPosts());
+                      }),
+                      _tile(Icons.people_outline_rounded,
+                          const Color(0xFFF59E0B), relationsString.tr, () {
+                        Get.to(() => const RelationsScreen());
+                      }),
+                      _tile(Icons.folder_copy_outlined,
+                          const Color(0xFF8B5CF6), collectionsString.tr, () {
+                        Get.to(() => const CollectionsScreen());
                       }),
                       _tile(Icons.lock_outline_rounded,
                           const Color(0xFF14B8A6), privacyString.tr, () {

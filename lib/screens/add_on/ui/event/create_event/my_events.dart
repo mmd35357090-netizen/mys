@@ -8,6 +8,7 @@ import '../../../model/create_event_model.dart';
 import 'choose_category.dart';
 import 'create_event.dart';
 import 'event_detail.dart';
+import 'manage_tickets.dart';
 
 class MyEventListing extends StatefulWidget {
   const MyEventListing({super.key});
@@ -107,8 +108,16 @@ class MyEventListingState extends State<MyEventListing> {
                                 .setEditableEvent(events[index]);
                             Get.to(() => EnterEventDetail());
                           },
-                          addTicketsBtnClicked: () {},
-                          viewTicketsBtnClicked: () {},
+                          addTicketsBtnClicked: () {
+                            Get.to(() => ManageEventTickets(
+                                eventId: events[index].id ?? 0,
+                                eventName: events[index].name ?? ''));
+                          },
+                          viewTicketsBtnClicked: () {
+                            Get.to(() => ManageEventTickets(
+                                eventId: events[index].id ?? 0,
+                                eventName: events[index].name ?? ''));
+                          },
                           previewBtnClicked: () {
                             Get.to(() => ProviderEventDetail(
                                       event: events[index],
