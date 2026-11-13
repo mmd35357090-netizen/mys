@@ -1,4 +1,6 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart'
+    show RTCVideoView, RTCVideoViewObjectFit;
 import 'package:foap/components/timer_widget.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/call_model.dart';
@@ -144,6 +146,13 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
   // Generate local preview
   Widget _renderLocalPreview() {
     // if (_joined) {
+    final own = agoraCallController.ownSession;
+    if (own != null) {
+      return RTCVideoView(own.localRenderer,
+          mirror: own.usingFrontCamera,
+          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover);
+    }
+    if (agoraCallController.engine == null) return Container();
     return AgoraVideoView(
       controller: VideoViewController(
         rtcEngine: agoraCallController.engine!,
@@ -184,7 +193,14 @@ class _VideoCallingScreenState extends State<VideoCallingScreen> {
                         videoPausedString.tr,
                         color: AppColorConstants.mainTextColor,
                       )))
-                  : AgoraVideoView(
+                  : agoraCallController.ownSession != null
+                      ? RTCVideoView(
+                          agoraCallController.ownSession!.remoteRenderer,
+                          objectFit: RTCVideoViewObjectFit
+                              .RTCVideoViewObjectFitCover)
+                      : agoraCallController.engine == null
+                      ? Container()
+                      : AgoraVideoView(
                       controller: VideoViewController.remote(
                         rtcEngine: agoraCallController.engine!,
                         canvas: VideoCanvas(

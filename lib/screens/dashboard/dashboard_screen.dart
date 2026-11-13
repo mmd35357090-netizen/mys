@@ -1,3 +1,4 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
@@ -67,6 +68,8 @@ class DashboardState extends State<DashboardScreen> {
                 ? Container()
                 : Scaffold(
                     backgroundColor: AppColorConstants.backgroundColor,
+                    // let pages scroll behind the floating glass bar
+                    extendBody: true,
                     body: widgets[_dashboardController.currentIndex.value],
                     bottomNavigationBar: _bottomBar(),
                   ));
@@ -87,19 +90,27 @@ class DashboardState extends State<DashboardScreen> {
       top: false,
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 6),
-        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: AppColorConstants.cardColor.withValues(alpha: 0.97),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-              color: AppColorConstants.dividerColor.withValues(alpha: 0.4),
-              width: 0.6),
           boxShadow: [
             BoxShadow(
                 color: Colors.black.withValues(alpha: 0.12),
                 blurRadius: 18,
                 offset: const Offset(0, 6)),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          // translucent so the feed shows through, like a glass bar
+          color: AppColorConstants.cardColor.withValues(alpha: 0.62),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+              color: Colors.white.withValues(alpha: 0.35), width: 0.8),
         ),
         child: Row(
           children: List.generate(items.length, (i) {
@@ -166,6 +177,9 @@ class DashboardState extends State<DashboardScreen> {
               ),
             );
           }),
+        ),
+            ),
+          ),
         ),
       ),
     );

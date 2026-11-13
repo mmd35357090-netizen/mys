@@ -1,3 +1,4 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:foap/components/post_card/poll_post_tile.dart';
@@ -293,40 +294,83 @@ class PostContent extends StatelessWidget {
                             )),
                       )),
                 if (model.isLocked)
-                  Container(
-                    height: 350,
-                    width: double.infinity,
-                    color: AppColorConstants.themeColor,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ThemeIconWidget(
-                          ThemeIcon.lock,
-                          color: Colors.white,
-                          size: 150,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Heading5Text(
-                          subscribeToViewThisContentString.tr.replaceAll(
-                              '{{userName}}', model.user.userName),
-                          color: Colors.white,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ).ripple(() {
+                  _lockedTeaser().ripple(() {
                     Get.to(OtherUserProfile(
                         userId: model.user.id, user: model.user));
                   })
               ],
             )),
       ],
+    );
+  }
+
+  /// Subscribers-only post as seen by everybody else: the picture is shown
+  /// heavily blurred behind a lock badge, so people get a hint of what they
+  /// would unlock instead of a plain locked box.
+  Widget _lockedTeaser() {
+    String preview = '';
+    if (model.gallery.isNotEmpty) {
+      final g = model.gallery.first;
+      preview = (g.mediaType == 2 ? g.videoThumbnail : g.filePath) ?? '';
+      if (g.mediaType == 3) preview = '';
+    }
+    final fallback = Container(color: AppColorConstants.themeColor);
+    return SizedBox(
+      height: 350,
+      width: double.infinity,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (preview.startsWith('http'))
+            ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+              child: Image.network(preview,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => fallback),
+            )
+          else
+            fallback,
+          Container(color: Colors.black.withValues(alpha: 0.30)),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.22),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.5), width: 1),
+                ),
+                child:
+                    const Icon(Icons.lock_rounded, color: Colors.white, size: 40),
+              ),
+              const SizedBox(height: 14),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Heading5Text(
+                  subscribeToViewThisContentString.tr
+                      .replaceAll('{{userName}}', model.user.userName),
+                  color: Colors.white,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: BodyMediumText(subscribeString.tr,
+                    weight: TextWeight.bold,
+                    color: AppColorConstants.themeColor),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

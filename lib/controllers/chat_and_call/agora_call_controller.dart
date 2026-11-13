@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:foap/controllers/chat_and_call/voip_controller.dart';
+import 'package:foap/controllers/chat_and_call/own_call_session.dart';
+import '../../api_handler/apis/rtc_api.dart';
 import 'package:foap/helper/imports/call_imports.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/dashboard_imports.dart';
@@ -25,6 +27,10 @@ class AgoraCallController extends GetxController {
 
   RtcEngine? engine;
 
+  // Own WebRTC server mode (no Agora): set while such a call is running.
+  OwnCallSession? ownSession;
+  final RxBool useOwn = false.obs;
+
   final RxInt remoteUserId = 0.obs;
 
   final RxBool isFront = false.obs;
@@ -38,9 +44,7 @@ class AgoraCallController extends GetxController {
   // Speaker ON/OFF state
   final RxBool speakerphoneEnabled = false.obs;
 
-  // empty until this device starts a call (a 'late' field threw an error when
-  // a call event arrived before any call was made from this device)
-  String localCallId = '';
+  late String localCallId;
   UserModel? opponent;
 
   bool _isEndingCall = false;
@@ -74,6 +78,13 @@ class AgoraCallController extends GetxController {
   // --------------------------------------------------
 
   Future<void> initializeCalling({required Call call}) async {
+    // The server decides: own WebRTC server or Agora.
+    final rtcConfig = await RtcApi.getConfig();
+    if (rtcConfig != null && rtcConfig.enabled) {
+      await _initializeOwnCalling(call: call, config: rtcConfig);
+      return;
+    }
+
     final appId =
         _settingsController.setting.value?.agoraApiKey ?? '';
 
@@ -144,6 +155,81 @@ class AgoraCallController extends GetxController {
   }
 
   // --------------------------------------------------
+  // OWN SERVER (WebRTC + TURN) CALL
+  // --------------------------------------------------
+
+  Future<void> _initializeOwnCalling({
+    required Call call,
+    required RtcConfig config,
+  }) async {
+    if (_isEndingCall) return;
+    final generation = ++_callGeneration;
+
+    try {
+      final authKey = await SharedPrefs().getAuthorizationKey() ?? '';
+
+      final session = OwnCallSession(
+        config: config,
+        room: call.channelName,
+        isCaller: call.isOutGoing,
+        video: call.callType != 1,
+        authToken: authKey,
+        onPeerPresent: () {
+          remoteJoined.value = true;
+          remoteUserId.value = call.opponent.id;
+          update();
+        },
+        onPeerLeft: () {
+          remoteUserId.value = 0;
+          update();
+        },
+        onConnected: () {
+          reConnectingRemoteView.value = false;
+          update();
+        },
+        onReconnecting: () {
+          reConnectingRemoteView.value = true;
+          update();
+        },
+        onFailed: () {
+          debugPrint('Own call failed to connect.');
+        },
+      );
+
+      ownSession = session;
+      useOwn.value = true;
+      await session.start();
+
+      // video calls start on the loudspeaker, audio calls on the earpiece
+      if (call.callType != 1) {
+        try {
+          await session.setSpeaker(true);
+          speakerphoneEnabled.value = true;
+        } catch (e) {
+          debugPrint('Speaker error: $e');
+        }
+      }
+
+      if (_isEndingCall || generation != _callGeneration) {
+        await cleanupAgora();
+        return;
+      }
+
+      if (call.callType == 1) {
+        Get.to(() => AudioCallingScreen(call: call));
+      } else {
+        Get.to(() => VideoCallingScreen(call: call));
+      }
+
+      update();
+    } catch (e, stackTrace) {
+      debugPrint('Initialize own calling error: $e');
+      debugPrint('$stackTrace');
+      await cleanupAgora();
+    }
+  }
+
+  // --------------------------------------------------
   // CREATE AGORA ENGINE
   // --------------------------------------------------
 
@@ -187,6 +273,18 @@ class AgoraCallController extends GetxController {
   // --------------------------------------------------
 
   Future<void> onToggleCamera() async {
+    final own = ownSession;
+    if (own != null) {
+      if (_isEndingCall) return;
+      try {
+        await own.switchCamera();
+        isFront.value = !isFront.value;
+      } catch (e) {
+        debugPrint('Switch camera error: $e');
+      }
+      return;
+    }
+
     final currentEngine = engine;
 
     if (currentEngine == null || _isEndingCall) return;
@@ -213,6 +311,14 @@ class AgoraCallController extends GetxController {
   // --------------------------------------------------
 
   Future<void> onToggleMuteAudio() async {
+    final own = ownSession;
+    if (own != null) {
+      if (_isEndingCall) return;
+      mutedAudio.value = own.setMicMuted(!mutedAudio.value);
+      update();
+      return;
+    }
+
     final currentEngine = engine;
 
     if (currentEngine == null || _isEndingCall) return;
@@ -235,6 +341,14 @@ class AgoraCallController extends GetxController {
   // --------------------------------------------------
 
   Future<void> onToggleMuteVideo() async {
+    final own = ownSession;
+    if (own != null) {
+      if (_isEndingCall) return;
+      mutedVideo.value = own.setCameraMuted(!mutedVideo.value);
+      update();
+      return;
+    }
+
     final currentEngine = engine;
 
     if (currentEngine == null || _isEndingCall) return;
@@ -522,6 +636,18 @@ class AgoraCallController extends GetxController {
       return;
     }
 
+    final own = ownSession;
+    if (own != null) {
+      ownSession = null;
+      try {
+        await own.dispose();
+      } catch (e) {
+        debugPrint('Own call cleanup error: $e');
+      }
+      useOwn.value = false;
+      speakerphoneEnabled.value = false;
+    }
+
     final oldEngine = engine;
     engine = null;
 
@@ -606,6 +732,20 @@ Future<void> _performAgoraCleanup(
 }
 
     Future<void> toggleSpeakerphone() async {
+    final own = ownSession;
+    if (own != null) {
+      if (_isEndingCall) return;
+      final on = !speakerphoneEnabled.value;
+      try {
+        await own.setSpeaker(on);
+        speakerphoneEnabled.value = on;
+        update();
+      } catch (e) {
+        debugPrint('Toggle speakerphone error: $e');
+      }
+      return;
+    }
+
     final currentEngine = engine;
 
     if (currentEngine == null || _isEndingCall) return;
