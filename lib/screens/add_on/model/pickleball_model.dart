@@ -73,6 +73,7 @@ class PickleballMatchModel {
   int startTime = 0;
   int status = 1; // 1 ongoing, 2 cancelled, 10 completed
   int winnerTeamId = 0;
+  int createdBy = 0;
   PickleballCourtModel? court;
   List<PickleballTeamModel> teams = [];
 
@@ -89,12 +90,40 @@ class PickleballMatchModel {
     m.status = int.tryParse((json['status'] ?? 1).toString()) ?? 1;
     m.winnerTeamId =
         int.tryParse((json['winner_team_id'] ?? 0).toString()) ?? 0;
+    m.createdBy = int.tryParse((json['created_by'] ?? 0).toString()) ?? 0;
     if (json['court'] != null) {
       m.court = PickleballCourtModel.fromJson(json['court']);
     }
     final t = json['matchTeam'];
     if (t is List) {
       m.teams = t.map((e) => PickleballTeamModel.fromJson(e)).toList();
+    }
+    return m;
+  }
+}
+
+class PickleballTopPlayer {
+  int id = 0;
+  String name = '';
+  String image = '';
+  int points = 0;
+  int wins = 0;
+  int losses = 0;
+  int matches = 0;
+
+  PickleballTopPlayer._();
+
+  factory PickleballTopPlayer.fromJson(dynamic json) {
+    final m = PickleballTopPlayer._();
+    m.id = json['id'] ?? 0;
+    m.name = (json['name'] ?? json['username'] ?? '').toString();
+    m.image = (json['picture'] ?? '').toString();
+    final s = json['pickleballSummary'];
+    if (s != null) {
+      m.points = int.tryParse((s['totalPoint'] ?? 0).toString()) ?? 0;
+      m.wins = int.tryParse((s['totalWin'] ?? 0).toString()) ?? 0;
+      m.losses = int.tryParse((s['totalLoss'] ?? 0).toString()) ?? 0;
+      m.matches = int.tryParse((s['totalMatch'] ?? 0).toString()) ?? 0;
     }
     return m;
   }

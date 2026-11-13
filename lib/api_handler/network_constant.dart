@@ -361,6 +361,13 @@ class NetworkConstantsUtil {
   static String likeProfiles = 'datings/profile-like-by-other-users';
   static String pickleballMatches = 'pickleballs/match-list';
   static String pickleballCourts = 'pickleball-courts';
+  static String pickleballMatchDetail = 'pickleballs';
+  static String pickleballCreateMatch = 'pickleballs/create-match';
+  static String pickleballReplyInvitation = 'pickleballs/reply-match-invitation';
+  static String pickleballAddPlayer = 'pickleballs/add-team-player';
+  static String pickleballRemovePlayer = 'pickleballs/remove-team-player';
+  static String pickleballDeclareResult = 'pickleballs/declare-match-result';
+  static String pickleballTopPlayers = 'pickleballs/top-player';
   static String datingPackages = 'datings/subscription-package';
   static String subscribeDatingPackage = 'datings/subscribe-package';
   static String getLanguages = 'languages';

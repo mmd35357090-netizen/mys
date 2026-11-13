@@ -1,7 +1,9 @@
 import 'package:foap/helper/imports/common_import.dart';
+import 'package:intl/intl.dart';
 import '../../../../api_handler/apis/pickleball_api.dart';
 import '../../../../model/api_meta_data.dart';
 import '../../model/pickleball_model.dart';
+import 'pickleball_match_screens.dart';
 
 BoxDecoration _cardDecoration() => BoxDecoration(
       color: AppColorConstants.cardColor,
@@ -136,6 +138,17 @@ class _PickleballMatchesScreenState extends State<PickleballMatchesScreen> {
                 _reset();
               }),
               const Spacer(),
+              Icon(Icons.add_circle_outline_rounded,
+                      color: AppColorConstants.themeColor)
+                  .ripple(() async {
+                final created = await Get.to(() => const CreatePickleballMatch());
+                if (created == true) _reset();
+              }),
+              const SizedBox(width: 12),
+              Icon(Icons.emoji_events_outlined,
+                      color: AppColorConstants.themeColor)
+                  .ripple(() => Get.to(() => const PickleballTopPlayersScreen())),
+              const SizedBox(width: 12),
               Icon(Icons.stadium_outlined, color: AppColorConstants.themeColor)
                   .ripple(() => Get.to(() => const PickleballCourtsScreen())),
             ]),
@@ -191,7 +204,10 @@ class _PickleballMatchesScreenState extends State<PickleballMatchesScreen> {
           for (final team in match.teams) _teamRow(match, team),
         ],
       ),
-    );
+    ).ripple(() async {
+      await Get.to(() => PickleballMatchDetail(matchId: match.id));
+      _reset();
+    });
   }
 
   Widget _teamRow(PickleballMatchModel match, PickleballTeamModel team) {
