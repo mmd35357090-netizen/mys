@@ -63,6 +63,7 @@ dependencies:
   audio_service: ^0.18.13
   audio_video_progress_bar: ^2.0.1
   agora_rtc_engine: ^6.3.2
+  flutter_webrtc: ^1.6.3
   permission_handler: ^11.1.0
   flutter_ringtone_player: ^4.0.0+2
   socket_io_client: ^3.0.2
