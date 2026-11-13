@@ -19,7 +19,11 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
   void initState() {
     super.initState();
     phoneNumber.text = _userProfileManager.user.value!.phone ?? '';
-    countryCode = _userProfileManager.user.value!.countryCode ?? '+1';
+    // the server keeps the dial code without "+" (e.g. 880), the picker shows "+880"
+    final saved = (_userProfileManager.user.value!.countryCode ?? '')
+        .replaceAll('+', '')
+        .trim();
+    countryCode = saved.isEmpty ? '+1' : '+$saved';
   }
 
   @override
@@ -82,6 +86,7 @@ class ChangePhoneNumberState extends State<ChangePhoneNumber> {
       height: 50,
       child: AppMobileTextField(
         onChanged: (value) {},
+        countryCodeText: countryCode,
         countryCodeValueChanged: (value) {
           countryCode = value;
           setState(() {});

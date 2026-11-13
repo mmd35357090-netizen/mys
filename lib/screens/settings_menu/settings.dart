@@ -1,5 +1,6 @@
 import 'package:foap/screens/profile/relations_screen.dart';
 import 'package:foap/screens/post/collections_screen.dart';
+import 'package:foap/screens/add_on/ui/pickleball/pickleball_screens.dart';
 import 'package:foap/util/biometric_helper.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
@@ -90,6 +91,10 @@ class _SettingsState extends State<Settings> {
                       _tile(Icons.folder_copy_outlined,
                           const Color(0xFF8B5CF6), collectionsString.tr, () {
                         Get.to(() => const CollectionsScreen());
+                      }),
+                      _tile(Icons.sports_tennis_rounded,
+                          const Color(0xFF22C55E), pickleballString.tr, () {
+                        Get.to(() => const PickleballMatchesScreen());
                       }),
                       _tile(Icons.lock_outline_rounded,
                           const Color(0xFF14B8A6), privacyString.tr, () {

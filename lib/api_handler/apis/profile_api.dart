@@ -62,14 +62,34 @@ class ProfileApi {
       required Function(String) resultCallback}) async {
     var url = NetworkConstantsUtil.updatePhone;
 
-    await ApiWrapper().postApi(url: url, param: {
-      "country_code": countryCode,
-      "phone": phone
-    }).then((result) {
+    try {
+      final result = await ApiWrapper().postApi(url: url, param: {
+        "country_code": countryCode,
+        "phone": phone
+      });
+
       if (result?.success == true) {
-        resultCallback(result!.data['verify_token']);
+        // the server returns the otp only when it is NOT in live mode (no real
+        // sms is sent then), so a tester can still finish the change
+        final otp = (result!.data['otp'] ?? '').toString();
+        if (otp.isNotEmpty) {
+          AppUtil.showToast(message: 'Test OTP: $otp', isSuccess: true);
+        }
+        resultCallback(result.data['verify_token']);
+      } else {
+        // the code could not be sent (number already used, SMS gateway
+        // error ...): tell the user instead of staying silent
+        Loader.dismiss();
+        AppUtil.showToast(
+            message: (result?.message ?? '').isNotEmpty
+                ? result!.message!
+                : pleaseTryAgainString.tr,
+            isSuccess: false);
       }
-    });
+    } catch (_) {
+      Loader.dismiss();
+      AppUtil.showToast(message: pleaseTryAgainString.tr, isSuccess: false);
+    }
   }
 
   static updatePaymentDetails(

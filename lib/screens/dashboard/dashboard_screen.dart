@@ -86,19 +86,19 @@ class DashboardState extends State<DashboardScreen> {
     return SafeArea(
       top: false,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-        padding: const EdgeInsets.all(5),
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 6),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: AppColorConstants.cardColor.withValues(alpha: 0.97),
-          borderRadius: BorderRadius.circular(34),
+          borderRadius: BorderRadius.circular(28),
           border: Border.all(
               color: AppColorConstants.dividerColor.withValues(alpha: 0.4),
               width: 0.6),
           boxShadow: [
             BoxShadow(
                 color: Colors.black.withValues(alpha: 0.12),
-                blurRadius: 24,
-                offset: const Offset(0, 8)),
+                blurRadius: 18,
+                offset: const Offset(0, 6)),
           ],
         ),
         child: Row(
@@ -114,13 +114,13 @@ class DashboardState extends State<DashboardScreen> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOut,
-                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
                   decoration: BoxDecoration(
                     color: active
                         ? AppColorConstants.mainTextColor
                             .withValues(alpha: 0.07)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -129,15 +129,15 @@ class DashboardState extends State<DashboardScreen> {
                         clipBehavior: Clip.none,
                         children: [
                           Icon(items[i][0] as IconData,
-                              size: 26, color: color),
+                              size: 22, color: color),
                           if (i == 3 &&
                               _dashboardController.unreadMsgCount.value > 0)
                             Positioned(
                               right: -4,
                               top: -2,
                               child: Container(
-                                height: 10,
-                                width: 10,
+                                height: 8,
+                                width: 8,
                                 decoration: BoxDecoration(
                                   color: AppColorConstants.red,
                                   shape: BoxShape.circle,
@@ -149,12 +149,12 @@ class DashboardState extends State<DashboardScreen> {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
                         items[i][1] as String,
                         maxLines: 1,
                         style: TextStyle(
-                          fontSize: 11.5,
+                          fontSize: 10.5,
                           fontWeight:
                               active ? FontWeight.w700 : FontWeight.w600,
                           color: color,

@@ -359,6 +359,10 @@ class NetworkConstantsUtil {
   static String undoProfileLike = 'datings/profile-action-remove';
   static String matchedProfiles = 'datings/profile-matching';
   static String likeProfiles = 'datings/profile-like-by-other-users';
+  static String pickleballMatches = 'pickleballs/match-list';
+  static String pickleballCourts = 'pickleball-courts';
+  static String datingPackages = 'datings/subscription-package';
+  static String subscribeDatingPackage = 'datings/subscribe-package';
   static String getLanguages = 'languages';
 
   //*********** Misc ***********//

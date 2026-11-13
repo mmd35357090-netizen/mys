@@ -5,6 +5,7 @@ import 'package:foap/universal_components/rounded_input_field.dart';
 
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../../model/preference_model.dart';
+import 'dating_plans.dart';
 
 class SetDatingPreference extends StatefulWidget {
   const SetDatingPreference({super.key});
@@ -126,6 +127,22 @@ class SetDatingPreferenceState extends State<SetDatingPreference> {
           backNavigationBar(
             title: preferencesString.tr,
           ),
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColorConstants.themeColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(children: [
+              Icon(Icons.workspace_premium_rounded,
+                  color: AppColorConstants.themeColor),
+              const SizedBox(width: 10),
+              Expanded(child: BodyMediumText(datingPlansString.tr)),
+              Icon(Icons.chevron_right_rounded,
+                  color: AppColorConstants.themeColor),
+            ]),
+          ).ripple(() => Get.to(() => const DatingPlans())),
           GetBuilder<DatingController>(
               init: datingController,
               builder: (ctx) {
