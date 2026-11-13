@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:livekit_client/livekit_client.dart'
+    show VideoTrackRenderer, VideoViewFit;
 import 'package:animate_do/animate_do.dart';
 import 'package:foap/helper/number_extension.dart';
 import 'package:foap/screens/live/banned_users.dart';
@@ -1305,7 +1307,14 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
               videoPausedString.tr,
               color: AppColorConstants.subHeadingTextColor,
             )))
-        : _agoraLiveController.engine != null
+        : _agoraLiveController.ownLive != null
+            ? (_agoraLiveController.isStreaming.value &&
+                    _agoraLiveController.ownLive!.localVideo != null
+                ? VideoTrackRenderer(
+                    _agoraLiveController.ownLive!.localVideo!,
+                    fit: VideoViewFit.cover)
+                : Container(color: AppColorConstants.backgroundColor))
+            : _agoraLiveController.engine != null
             ? AgoraVideoView(
                 controller: VideoViewController(
                   rtcEngine: _agoraLiveController.engine!,
@@ -1340,6 +1349,15 @@ class _LiveBroadcastScreenState extends State<LiveBroadcastScreen>
                         videoPausedString.tr,
                         color: AppColorConstants.subHeadingTextColor,
                       )))
+                  : _agoraLiveController.ownLive != null
+                      ? (_agoraLiveController
+                                  .ownLive!.remoteVideos[host.userDetail.id] !=
+                              null
+                          ? VideoTrackRenderer(
+                              _agoraLiveController
+                                  .ownLive!.remoteVideos[host.userDetail.id]!,
+                              fit: VideoViewFit.cover)
+                          : Container(color: AppColorConstants.backgroundColor))
                   : _agoraLiveController.engine != null
                       ? AgoraVideoView(
                           controller: VideoViewController.remote(

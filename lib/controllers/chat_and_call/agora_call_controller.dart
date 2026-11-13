@@ -79,7 +79,8 @@ class AgoraCallController extends GetxController {
 
   Future<void> initializeCalling({required Call call}) async {
     // The server decides: own WebRTC server or Agora.
-    final rtcConfig = await RtcApi.getConfig();
+    final rtcConfig =
+        await RtcApi.getConfig(isAudio: call.callType == 1);
     if (rtcConfig != null && rtcConfig.enabled) {
       await _initializeOwnCalling(call: call, config: rtcConfig);
       return;

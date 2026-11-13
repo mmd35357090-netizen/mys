@@ -65,6 +65,11 @@ class SettingModel {
   String? nativeAdUnitIdForiOS;
   bool feedNativeAdsEnabled;
   int adSource;
+
+  /// Engine per system: 0 off, 1 Agora, 2 own WebRTC server (calls only)
+  int audioCallProvider;
+  int videoCallProvider;
+  int liveProvider;
   bool adsReelsEnabled;
   bool adsVideoEnabled;
   int reelsAdEvery;
@@ -106,6 +111,9 @@ class SettingModel {
       this.nativeAdUnitIdForiOS,
       this.feedNativeAdsEnabled = false,
       this.adSource = 3,
+      this.audioCallProvider = 1,
+      this.videoCallProvider = 1,
+      this.liveProvider = 1,
       this.adsReelsEnabled = true,
       this.adsVideoEnabled = true,
       this.reelsAdEvery = 4,
@@ -183,6 +191,12 @@ class SettingModel {
                   0) ==
               1,
       adSource: int.tryParse((json["ad_source"] ?? '3').toString()) ?? 3,
+      audioCallProvider:
+          int.tryParse((json["audio_call_provider"] ?? '1').toString()) ?? 1,
+      videoCallProvider:
+          int.tryParse((json["video_call_provider"] ?? '1').toString()) ?? 1,
+      liveProvider:
+          int.tryParse((json["live_provider"] ?? '1').toString()) ?? 1,
       adsReelsEnabled:
           (int.tryParse((json["ads_reels_enabled"] ?? '1').toString()) ?? 1) == 1,
       adsVideoEnabled:
@@ -354,19 +368,23 @@ class SettingModel {
     return getFeatureAvailabilityStatus('star_message');
   }
 
+  /// Agora needs its key, own server needs none.
+  bool _engineReady(int provider) =>
+      provider == 2 || (provider == 1 && (agoraApiKey ?? '').isNotEmpty);
+
   bool get enableAudioCalling {
     return getFeatureAvailabilityStatus('enable_audio_calling') &&
-        (agoraApiKey ?? '').isNotEmpty;
+        _engineReady(audioCallProvider);
   }
 
   bool get enableVideoCalling {
     return getFeatureAvailabilityStatus('enable_video_calling') &&
-        (agoraApiKey ?? '').isNotEmpty;
+        _engineReady(videoCallProvider);
   }
 
   bool get enableLive {
     return getFeatureAvailabilityStatus('enable_live') &&
-        (agoraApiKey ?? '').isNotEmpty;
+        _engineReady(liveProvider);
   }
 
   bool get enableClubs {

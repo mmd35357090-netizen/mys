@@ -360,6 +360,7 @@ class NetworkConstantsUtil {
   static String matchedProfiles = 'datings/profile-matching';
   static String likeProfiles = 'datings/profile-like-by-other-users';
   static String rtcConfig = 'rtc/config';
+  static String rtcLiveToken = 'rtc/live-token';
   static String pickleballMatches = 'pickleballs/match-list';
   static String pickleballCourts = 'pickleball-courts';
   static String pickleballMatchDetail = 'pickleballs';

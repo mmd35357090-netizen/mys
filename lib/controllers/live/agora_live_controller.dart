@@ -9,6 +9,8 @@ import 'package:foap/helper/list_extension.dart';
 import 'package:foap/helper/string_extension.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'own_live_session.dart';
+import '../../api_handler/apis/rtc_api.dart';
 
 import '../../api_handler/apis/gift_api.dart';
 import '../../api_handler/apis/live_streaming_api.dart';
@@ -40,6 +42,9 @@ class AgoraLiveController extends GetxController {
   Rx<GiftModel?> sendingGift = Rx<GiftModel?>(null);
 
   RtcEngine? engine;
+
+  // Own LiveKit server mode (no Agora): set while such a live is running.
+  OwnLiveSession? ownLive;
 
   Rx<LiveModel?> live = Rx<LiveModel?>(null);
 
@@ -147,6 +152,16 @@ class AgoraLiveController extends GetxController {
     if (runningCleanup != null) {
       await runningCleanup;
       return;
+    }
+
+    final own = ownLive;
+    if (own != null) {
+      ownLive = null;
+      try {
+        await own.dispose();
+      } catch (e) {
+        debugPrint('Own live cleanup error: $e');
+      }
     }
 
     final currentEngine = engine;
@@ -351,7 +366,109 @@ class AgoraLiveController extends GetxController {
     Get.to(() => const LiveBroadcastScreen());
   }
 
+  // ---------------- own server (LiveKit) ----------------
+
+  Future<bool> _joinLiveOwn(LiveModel live) async {
+    final wantHost = live.amIHostInLive;
+    LiveRtcConfig? cfg = await LiveRtcApi.getConfig(
+        channel: live.channelName, wantHost: wantHost);
+    if (cfg == null || !cfg.enabled) return false;
+
+    // the live row may need a moment to exist on the server
+    for (var i = 0; wantHost && !cfg!.canPublish && i < 3; i++) {
+      await Future.delayed(const Duration(seconds: 1));
+      cfg = await LiveRtcApi.getConfig(
+          channel: live.channelName, wantHost: wantHost);
+      if (cfg == null || !cfg.enabled) return false;
+    }
+
+    this.live.value = live;
+    this.live.refresh();
+    sendTextMessage('Joined');
+
+    try {
+      await _connectOwn(cfg!);
+    } catch (e, st) {
+      debugPrint('Own live connect error: $e\n$st');
+      await cleanupAgora();
+      return false;
+    }
+
+    liveStartTime = DateTime.now();
+    channelName = live.channelName;
+
+    LiveStreamingApi.getLiveDetail(
+        channelName: live.channelName,
+        resultCallback: (result) {
+          this.live.value!.shareLink = result.shareLink;
+        });
+    return true;
+  }
+
+  Future<void> _connectOwn(LiveRtcConfig cfg) async {
+    final session = OwnLiveSession(
+      url: cfg.url,
+      token: cfg.token,
+      isHost: cfg.canPublish,
+      onRemoteChanged: () {
+        final own = ownLive;
+        if (own == null) return;
+        remoteJoinedUsers.value = own.remoteVideos.keys.toList();
+        videoPausedUsers.value = own.pausedVideos.toList();
+        videoPaused.value = own.pausedVideos.isNotEmpty;
+        update();
+      },
+      onLocalReady: () {
+        cameraInitiated = true;
+        isStreaming.value = true;
+        update();
+      },
+      onDisconnected: () {
+        reConnectingRemoteView.value = true;
+        update();
+      },
+    );
+    ownLive = session;
+    await session.connect();
+    reConnectingRemoteView.value = false;
+    update();
+  }
+
+  /// Audience becomes a publishing host (battle) or the other way round.
+  Future<void> _setLiveRole(bool host) async {
+    final current = live.value;
+    if (ownLive != null && current != null) {
+      var cfg = await LiveRtcApi.getConfig(
+          channel: current.channelName, wantHost: host);
+      if (host && cfg != null && cfg.enabled && !cfg.canPublish) {
+        await Future.delayed(const Duration(milliseconds: 1500));
+        cfg = await LiveRtcApi.getConfig(
+            channel: current.channelName, wantHost: host);
+      }
+      if (cfg == null || !cfg.enabled) return;
+      final old = ownLive;
+      ownLive = null;
+      await old?.dispose();
+      isStreaming.value = false;
+      cameraInitiated = false;
+      try {
+        await _connectOwn(cfg);
+      } catch (e) {
+        debugPrint('Own live role change error: $e');
+      }
+      return;
+    }
+    if (host) {
+      await engine?.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    } else {
+      await engine?.setClientRole(role: ClientRoleType.clientRoleAudience);
+    }
+  }
+
   _joinLive({required LiveModel live}) async {
+    // The server decides: own LiveKit server or Agora.
+    if (await _joinLiveOwn(live)) return;
+
     if (_settingsController.setting.value!.agoraApiKey!.isEmpty) {
       update();
       return;
@@ -745,6 +862,13 @@ class AgoraLiveController extends GetxController {
 
   //Switch Camera
   onToggleCamera() {
+    final own = ownLive;
+    if (own != null) {
+      own.switchCamera().then((_) {
+        isFront.value = !isFront.value;
+      }).catchError((err) {});
+      return;
+    }
     engine?.switchCamera().then((value) {
       isFront.value = !isFront.value;
     }).catchError((err) {});
@@ -753,12 +877,14 @@ class AgoraLiveController extends GetxController {
   //Audio On / Off
   void onToggleMuteAudio() {
     mutedAudio.value = !mutedAudio.value;
+    ownLive?.setMicEnabled(!mutedAudio.value);
     engine?.muteLocalAudioStream(mutedAudio.value);
   }
 
   //Video On / Off
   void onToggleMuteVideo() {
     mutedVideo.value = !mutedVideo.value;
+    ownLive?.setCameraEnabled(!mutedVideo.value);
     engine?.muteLocalVideoStream(mutedVideo.value);
   }
 
@@ -793,7 +919,7 @@ class AgoraLiveController extends GetxController {
     live.refresh();
 
     if (live.value!.battleDetail!.opponentHost.userDetail.isMe) {
-      await engine?.setClientRole(role: ClientRoleType.clientRoleAudience);
+      await _setLiveRole(false);
     }
   }
 
@@ -872,7 +998,7 @@ class AgoraLiveController extends GetxController {
 
     Timer(const Duration(seconds: 1), () {
       if (this.live.value?.id == live.id) {
-        engine?.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+        _setLiveRole(true);
         this.live.value!.battleDetail = battleDetail;
         this.live.value!.battleDetail!.battleUsers.add(LiveCallHostUser(
             userDetail: live.mainHostUserDetail!,
