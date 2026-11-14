@@ -33,7 +33,11 @@ class _ChatHistoryState extends State<ChatHistory> {
     return AppScaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColorConstants.backgroundColor,
-      floatingActionButton: Container(
+      // lifted above the floating bottom navigation bar
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+            bottom: 76 + MediaQuery.of(context).padding.bottom),
+        child: Container(
         height: 56,
         width: 56,
         decoration: BoxDecoration(
@@ -60,7 +64,8 @@ class _ChatHistoryState extends State<ChatHistory> {
         ),
       ).ripple(() {
         selectUsers();
-      }).bP16,
+      }),
+      ),
       body: KeyboardDismissOnTap(
           child: DefaultTabController(
               length: tabs.length,
@@ -126,7 +131,7 @@ class _ChatHistoryState extends State<ChatHistory> {
               ? ListView.separated(
                   padding: EdgeInsets.only(
                       top: 20,
-                      bottom: 50,
+                      bottom: 170,
                       left: DesignConstants.horizontalPadding,
                       right: DesignConstants.horizontalPadding),
                   itemCount: _chatController.groupedRooms.keys.length,

@@ -253,22 +253,31 @@ class MessageDeliveryStatusView extends StatelessWidget {
             const SizedBox(
               width: 5,
             ),
-            message.isMineMessage
-                ? ThemeIconWidget(
-                    message.messageStatusType == MessageStatus.sent
-                        ? ThemeIcon.sent
-                        : message.messageStatusType == MessageStatus.delivered
-                            ? ThemeIcon.delivered
-                            : message.messageStatusType == MessageStatus.read
-                                ? ThemeIcon.read
-                                : ThemeIcon.sending,
-                    size: 15,
-                    color: message.messageStatusType == MessageStatus.read
-                        ? Colors.blue
-                        : AppColorConstants.iconColor,
-                  )
-                : Container(),
+            message.isMineMessage ? _statusTick() : Container(),
           ],
         ));
+  }
+
+  // WhatsApp style ticks:  clock = sending,  one grey tick = sent,
+  // two grey ticks = delivered,  two green ticks = seen
+  Widget _statusTick() {
+    final status = message.messageStatusType;
+    IconData icon;
+    Color color = AppColorConstants.iconColor;
+    switch (status) {
+      case MessageStatus.read:
+        icon = Icons.done_all_rounded;
+        color = const Color(0xFF12B76A);
+        break;
+      case MessageStatus.delivered:
+        icon = Icons.done_all_rounded;
+        break;
+      case MessageStatus.sent:
+        icon = Icons.done_rounded;
+        break;
+      default:
+        icon = Icons.schedule_rounded;
+    }
+    return Icon(icon, size: 17, color: color);
   }
 }

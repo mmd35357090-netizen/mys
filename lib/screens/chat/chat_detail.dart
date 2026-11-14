@@ -499,57 +499,72 @@ class _ChatDetailState extends State<ChatDetail> {
                       )),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 6),
               Obx(() {
                 final hasText =
                     _chatDetailController.messageTf.value.text.isNotEmpty;
-                // Messenger style: a one-tap "like" while the field is empty,
-                // the send button as soon as the user types something.
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    if (hasText) {
-                      sendMessage();
-                    } else {
-                      sendLike();
-                    }
-                  },
-                  onLongPress: () {
-                    if (!hasText) openMediaSharingOptionView();
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    height: 44,
-                    width: 44,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: hasText
-                          ? LinearGradient(colors: [
-                              AppColorConstants.themeColor,
-                              AppColorConstants.themeColor
-                                  .withValues(alpha: 0.78)
-                            ])
-                          : null,
-                      boxShadow: hasText
-                          ? [
-                              BoxShadow(
-                                  color: AppColorConstants.themeColor
-                                      .withValues(alpha: 0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4))
-                            ]
-                          : null,
-                    ),
-                    child: Icon(
-                        hasText
-                            ? Icons.send_rounded
-                            : Icons.thumb_up_alt_rounded,
-                        color: hasText
-                            ? Colors.white
-                            : AppColorConstants.themeColor,
-                        size: hasText ? 21 : 30),
-                  ),
+                // WhatsApp / Messenger style:
+                //  field empty  -> voice recorder + one-tap like
+                //  typing       -> send button
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 160),
+                  child: hasText
+                      ? GestureDetector(
+                          key: const ValueKey('send'),
+                          behavior: HitTestBehavior.opaque,
+                          onTap: sendMessage,
+                          child: Container(
+                            height: 44,
+                            width: 44,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(colors: [
+                                AppColorConstants.themeColor,
+                                AppColorConstants.themeColor
+                                    .withValues(alpha: 0.78)
+                              ]),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: AppColorConstants.themeColor
+                                        .withValues(alpha: 0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4))
+                              ],
+                            ),
+                            child: const Icon(Icons.send_rounded,
+                                color: Colors.white, size: 21),
+                          ),
+                        )
+                      : Row(
+                          key: const ValueKey('mic_like'),
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: openVoiceRecord,
+                              child: SizedBox(
+                                height: 44,
+                                width: 40,
+                                child: Icon(Icons.mic_rounded,
+                                    color: AppColorConstants.themeColor,
+                                    size: 28),
+                              ),
+                            ),
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: sendLike,
+                              onLongPress: openMediaSharingOptionView,
+                              child: SizedBox(
+                                height: 44,
+                                width: 40,
+                                child: Icon(Icons.thumb_up_alt_rounded,
+                                    color: AppColorConstants.themeColor,
+                                    size: 28),
+                              ),
+                            ),
+                          ],
+                        ),
                 );
               }),
             ],
@@ -888,6 +903,21 @@ class _ChatDetailState extends State<ChatDetail> {
                     title: Center(child: BodyLargeText(cancelString.tr)),
                     onTap: () => Get.back()),
               ],
+            ));
+  }
+
+  // voice message: opens the recorder sheet, sends the clip when finished
+  void openVoiceRecord() {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (context) => VoiceRecord(
+              recordingCallback: (media) {
+                _chatDetailController.sendAudioMessage(
+                    media: media,
+                    mode: _chatDetailController.actionMode.value,
+                    room: _chatDetailController.chatRoom.value!);
+              },
             ));
   }
 

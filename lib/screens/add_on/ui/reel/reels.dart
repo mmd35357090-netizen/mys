@@ -62,6 +62,11 @@ class _ReelsState extends State<Reels> {
                               width: Get.width,
                               child: ReelVideoPlayer(
                                 reel: reels[slots[p]!],
+                                // keep content above the floating nav bar
+                                bottomInset: widget.needBackBtn
+                                    ? 0
+                                    : 84 +
+                                        MediaQuery.of(context).padding.bottom,
                               ),
                             )
                           else

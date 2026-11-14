@@ -13,9 +13,14 @@ import '../../../profile/other_user_profile.dart';
 class ReelVideoPlayer extends StatefulWidget {
   final PostModel reel;
 
+  // extra space at the bottom so the caption / action buttons stay above
+  // the floating bottom navigation bar (0 when there is no bar)
+  final double bottomInset;
+
   const ReelVideoPlayer({
     super.key,
     required this.reel,
+    this.bottomInset = 0,
   });
 
   @override
@@ -178,7 +183,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
               ),
             )),
         Positioned(
-            bottom: 25,
+            bottom: 25 + widget.bottomInset,
             left: DesignConstants.horizontalPadding,
             right: 60,
             child: Column(
@@ -292,7 +297,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
               ],
             )),
         Positioned(
-            bottom: 25,
+            bottom: 25 + widget.bottomInset,
             right: DesignConstants.horizontalPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
