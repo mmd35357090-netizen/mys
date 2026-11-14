@@ -14,7 +14,7 @@ class AppConfigConstants {
 
   static String appTagline = 'Share your day activity with friends';
   static const googleMapApiKey = 'AIzaSyA4vcqErGvq5NRbvhvq8JKSp0VFpNBBPjE';
-  static const restApiBaseUrl = 'https://facehub.sbehf.com/api/web/v1/';
+  static const restApiBaseUrl = 'https://connecttofriends.com/api/web/v1/';
 
   // Socket api url
   static const socketApiBaseUrl = "https://connecttofriends.com:4000/";
