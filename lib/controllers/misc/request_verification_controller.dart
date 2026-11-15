@@ -3,7 +3,6 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/verification_request_model.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
-import 'dart:async';
 import '../../api_handler/apis/misc_api.dart';
 
 class RequestVerificationController extends GetxController {
@@ -32,12 +31,30 @@ class RequestVerificationController extends GetxController {
         .isNotEmpty;
   }
 
-  String get verifiedOn {
-    int verifiedOn = verificationRequests
-        .where((request) => request.isApproved == true)
+  static const int maxFailedAttempts = 3;
+
+  // requests the admin rejected
+  int get failedAttempts =>
+      verificationRequests.where((request) => request.isRejected).length;
+
+  int get attemptsLeft => (maxFailedAttempts - failedAttempts).clamp(0, 3).toInt();
+
+  // 3 rejected requests: the account can not apply again
+  bool get isBlocked => failedAttempts >= maxFailedAttempts && !isApproved;
+
+  String get lastAdminMessage {
+    final rejected = verificationRequests
+        .where((request) => request.isRejected)
         .toList()
-        .first
-        .updatedAt!;
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return rejected.isEmpty ? '' : (rejected.first.adminMessage ?? '');
+  }
+
+  String get verifiedOn {
+    final approved =
+        verificationRequests.where((request) => request.isApproved).toList();
+    if (approved.isEmpty) return '';
+    int verifiedOn = approved.first.updatedAt ?? approved.first.createdAt;
 
     return DateFormat('dd-MM-yyyy hh:mm a')
         .format(DateTime.fromMillisecondsSinceEpoch(verifiedOn * 1000));
@@ -135,15 +152,26 @@ class RequestVerificationController extends GetxController {
         resultCallback: () {
           Loader.dismiss();
 
+          // show "pending" at once (do not wait for the list to reload) and stay on this
+          // screen: the user sees that the request is in review and can not send it twice
+          verificationRequests.insert(
+              0,
+              VerificationRequest(
+                  id: 0,
+                  status: 1,
+                  userMessage: '',
+                  adminMessage: '',
+                  createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                  updatedAt: null));
+          verificationRequests.refresh();
+          update();
+
           getVerificationRequests();
 
           AppUtil.showToast(
               message: verificationRequestSentString.tr, isSuccess: true);
 
           clear();
-          Timer(const Duration(seconds: 2), () {
-            Get.back();
-          });
         });
   }
 

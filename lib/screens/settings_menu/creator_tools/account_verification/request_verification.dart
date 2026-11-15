@@ -58,7 +58,9 @@ class _RequestVerificationState extends State<RequestVerification> {
                               : _requestVerificationController
                                       .isVerificationInProcess
                                   ? verificationPendingView()
-                                  : requestVerification(),
+                                  : _requestVerificationController.isBlocked
+                                      ? verificationBlockedView()
+                                      : requestVerification(),
                           const SizedBox(
                             height: 20,
                           ),
@@ -145,6 +147,51 @@ class _RequestVerificationState extends State<RequestVerification> {
         date: _requestVerificationController.requestSentOn);
   }
 
+  Widget verificationBlockedView() {
+    return _statusCard(
+        icon: Icons.block_rounded,
+        color: Colors.red,
+        title: 'Verification blocked',
+        subtitle:
+            '${RequestVerificationController.maxFailedAttempts} of your verification requests were rejected, so you can not apply again. Please contact support if you think this is a mistake.',
+        dateLabel: 'Rejected requests',
+        date:
+            '${_requestVerificationController.failedAttempts}/${RequestVerificationController.maxFailedAttempts}');
+  }
+
+  // shown above the form after a rejected / cancelled request
+  Widget _attemptsBanner() {
+    final c = _requestVerificationController;
+    if (c.failedAttempts == 0) return const SizedBox.shrink();
+    final reason = c.lastAdminMessage.trim();
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BodyMediumText('Your last request was not approved.',
+              weight: TextWeight.semiBold, color: Colors.red),
+          if (reason.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            BodySmallText(reason, color: AppColorConstants.mainTextColor),
+          ],
+          const SizedBox(height: 4),
+          BodySmallText(
+              'Attempts left: ${c.attemptsLeft} of ${RequestVerificationController.maxFailedAttempts}. '
+              'After ${RequestVerificationController.maxFailedAttempts} rejected requests this account can not apply again.',
+              color: AppColorConstants.subHeadingTextColor),
+        ],
+      ),
+    );
+  }
+
   Widget _section(
       {required IconData icon,
       required String title,
@@ -214,6 +261,7 @@ class _RequestVerificationState extends State<RequestVerification> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _attemptsBanner(),
           // hero
           Container(
             width: double.infinity,

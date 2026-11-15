@@ -24,12 +24,13 @@ class VerificationRequest {
 
   factory VerificationRequest.fromJson(Map<String, dynamic> json) =>
       VerificationRequest(
-        id: json["id"],
-        status: json["status"],
-        userMessage: json["user_message"],
-        adminMessage: json["admin_message"],
-        createdAt: json["created_at"],
-        updatedAt: json["updated_at"],
+        // tolerant parsing: a null / text value from the server must never break the whole list
+        id: int.tryParse('${json["id"]}') ?? 0,
+        status: int.tryParse('${json["status"]}') ?? 0,
+        userMessage: json["user_message"]?.toString() ?? '',
+        adminMessage: json["admin_message"]?.toString(),
+        createdAt: int.tryParse('${json["created_at"]}') ?? 0,
+        updatedAt: int.tryParse('${json["updated_at"]}'),
         documentType: json["document_type"]?.toString(),
         documentNumber: json["document_number"]?.toString(),
       );

@@ -1,8 +1,6 @@
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/wallet/coin_history.dart';
-import 'package:foap/screens/wallet/creator_dashboard.dart';
-import 'package:foap/screens/wallet/creator_earnings.dart';
 import '../../universal_components/menu_tiles.dart';
 
 class PaymentAndCoins extends StatefulWidget {
@@ -52,27 +50,6 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                     title: coinHistoryString.tr,
                     onTap: () {
                       Get.to(() => const CoinHistoryScreen());
-                    },
-                  ),
-                ]),
-                const SizedBox(height: 16),
-                MenuSection(tiles: [
-                  MenuTile(
-                    icon: Icons.insights_rounded,
-                    color: const Color(0xFF8B5CF6),
-                    title: 'Creator dashboard',
-                    subtitle: 'Earnings, gifts and ad revenue',
-                    onTap: () {
-                      Get.to(() => const CreatorDashboardScreen());
-                    },
-                  ),
-                  MenuTile(
-                    icon: Icons.ads_click_rounded,
-                    color: const Color(0xFF10B981),
-                    title: 'Ad earnings',
-                    subtitle: 'Your share of ad revenue',
-                    onTap: () {
-                      Get.to(() => const CreatorEarningsScreen());
                     },
                   ),
                 ]),
