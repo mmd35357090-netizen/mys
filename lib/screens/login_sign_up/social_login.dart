@@ -42,10 +42,16 @@ class _SocialLoginState extends State<SocialLogin> {
   @override
   void initState() {
     _googleSignIn.onCurrentUserChanged
-        .listen((GoogleSignInAccount? account) {
+        .listen((GoogleSignInAccount? account) async {
       if (account != null) {
+        // Google's signed proof: the server checks it before it logs anybody in
+        String idToken = '';
+        try {
+          idToken = (await account.authentication).idToken ?? '';
+        } catch (_) {}
         _loginController.socialLogin('google', account.id,
-            account.displayName ?? '', account.email);
+            account.displayName ?? '', account.email,
+            idToken: idToken);
         _googleSignIn.signOut();
       }
     });
@@ -204,7 +210,8 @@ class _SocialLoginState extends State<SocialLogin> {
 
     if (appleCredential.userIdentifier != null) {
       _loginController.socialLogin(
-          'apple', appleCredential.userIdentifier!, '', '');
+          'apple', appleCredential.userIdentifier!, '', '',
+          idToken: appleCredential.identityToken ?? '');
     }
   }
 }

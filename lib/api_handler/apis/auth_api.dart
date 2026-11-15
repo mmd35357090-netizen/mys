@@ -139,6 +139,7 @@ class AuthApi {
       required String socialType,
       required String socialId,
       required String email,
+      String idToken = '',
       required Function(String) successCallback}) async {
     String? fcmToken = await SharedPrefs().getFCMToken();
     String? voipToken = await SharedPrefs().getVoipToken();
@@ -151,6 +152,7 @@ class AuthApi {
           "username": userName,
           "social_type": socialType,
           "social_id": socialId,
+          "id_token": idToken,
           "email": email,
           "device_token": fcmToken ?? '',
           "device_token_voip_ios": voipToken ?? '',
@@ -438,18 +440,21 @@ class AuthApi {
     Loader.show(status: loadingString.tr);
 
     AuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: token, smsCode: '123456');
+        verificationId: token, smsCode: otp);
     UserCredential authResult =
         await FirebaseAuth.instance.signInWithCredential(credential);
     Loader.dismiss();
 
     if (authResult.user != null) {
+      // the server checks this Firebase proof, so nobody can log in as another phone number
+      String firebaseIdToken = await authResult.user!.getIdToken() ?? '';
       String? fcmToken = await SharedPrefs().getFCMToken();
       String? voipToken = await SharedPrefs().getVoipToken();
 
       dynamic param = {
         "country_code": countryCode,
         "phone": phone,
+        "firebase_id_token": firebaseIdToken,
         "device_type": Platform.isAndroid ? '1' : '2',
         "device_token": fcmToken ?? '',
         "device_token_voip_ios": voipToken ?? '',

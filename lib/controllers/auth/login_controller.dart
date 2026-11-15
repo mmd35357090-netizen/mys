@@ -89,7 +89,8 @@ class LoginController extends GetxController {
     }
   }
 
-  void socialLogin(String type, String userId, String name, String email) {
+  void socialLogin(String type, String userId, String name, String email,
+      {String idToken = ''}) {
     Loader.show(status: loadingString.tr);
 
     AuthApi.socialLogin(
@@ -98,6 +99,7 @@ class LoginController extends GetxController {
         socialType: type,
         socialId: userId,
         email: email,
+        idToken: idToken,
         successCallback: (authKey) async {
           Loader.dismiss();
           loginSuccess(authKey);
