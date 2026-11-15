@@ -65,8 +65,13 @@ class _ReelsState extends State<Reels> {
                                 // keep content above the floating nav bar
                                 bottomInset: widget.needBackBtn
                                     ? 0
-                                    : 84 +
-                                        MediaQuery.of(context).padding.bottom,
+                                    // the dashboard Scaffold (extendBody) already
+                                    // reports the bar height in padding.bottom,
+                                    // so this adapts to every phone
+                                    : (MediaQuery.of(context).padding.bottom -
+                                            8)
+                                        .clamp(0.0, 140.0)
+                                        .toDouble(),
                               ),
                             )
                           else

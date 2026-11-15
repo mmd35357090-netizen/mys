@@ -465,9 +465,11 @@ class _ChatDetailState extends State<ChatDetail> {
               const SizedBox(width: 10),
               Expanded(
                 child: Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: AppColorConstants.cardColor,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(22),
                     border: Border.all(
                         color: AppColorConstants.dividerColor
                             .withValues(alpha: 0.6)),
@@ -476,7 +478,7 @@ class _ChatDetailState extends State<ChatDetail> {
                         controller: _chatDetailController.messageTf.value,
                         textAlign: TextAlign.start,
                         style: TextStyle(
-                            fontSize: FontSizes.h5,
+                            fontSize: 15,
                             fontWeight: TextWeight.regular,
                             color: AppColorConstants.mainTextColor),
                         maxLines: 5,
@@ -488,10 +490,12 @@ class _ChatDetailState extends State<ChatDetail> {
                             floatingLabelBehavior:
                                 FloatingLabelBehavior.never,
                             border: InputBorder.none,
+                            isDense: true,
+                            hintMaxLines: 1,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
+                                horizontal: 16, vertical: 11),
                             hintStyle: TextStyle(
-                                fontSize: FontSizes.h6,
+                                fontSize: 15,
                                 fontWeight: TextWeight.regular,
                                 color:
                                     AppColorConstants.subHeadingTextColor),
