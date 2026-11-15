@@ -48,7 +48,7 @@ jobs:
       # Release Keystore Setup
       # ==============================
       - name: Setup release keystore
-        if: ${{ inputs.build_type == 'release' }}
+        if: ${{ inputs.build_type == 'release' || inputs.build_type == 'bundle' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -107,11 +107,12 @@ jobs:
         with:
           name: mys-release-aab
           path: build/app/outputs/bundle/release/app-release.aab
+      
       # ==============================
       # Cleanup sensitive files
       # ==============================
       - name: Cleanup release keystore
-        if: ${{ always() && inputs.build_type == 'release' }}
+        if: ${{ always() && (inputs.build_type == 'release' || inputs.build_type == 'bundle') }}
         run: |
           rm -f android/key/upload-keystore.jks
           rm -f android/key.properties
