@@ -35,7 +35,7 @@
                 <data android:scheme="https" />
 
                 <!-- Include one or more domains that should be verified. -->
-                <data android:host="facehub.sbehf.com" android:pathPrefix="/" />
+                <data android:host="connecttofriends.com" android:pathPrefix="/" />
             </intent-filter>
 
             <intent-filter>

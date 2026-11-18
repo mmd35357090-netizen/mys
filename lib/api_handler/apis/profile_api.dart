@@ -194,17 +194,21 @@ class ProfileApi {
       required String documentType,
       String documentNumber = '',
       required List<Map<String, String>> images,
-      required VoidCallback resultCallback}) async {
+      required Function(bool ok, String message) resultCallback}) async {
     var url = NetworkConstantsUtil.requestVerification;
 
-    await ApiWrapper().postApi(url: url, param: {
-      "user_message": userMessage,
-      'document': images,
-      'document_type': documentType,
-      'document_number': documentNumber,
-    }).then((result) {
-      resultCallback();
-    });
+    try {
+      final result = await ApiWrapper().postApi(url: url, param: {
+        "user_message": userMessage,
+        'document': images,
+        'document_type': documentType,
+        'document_number': documentNumber,
+      });
+      // tell the screen whether the server really accepted the request
+      resultCallback(result?.success == true, result?.message ?? '');
+    } catch (_) {
+      resultCallback(false, '');
+    }
   }
 
   static cancelProfileVerificationRequest(
@@ -222,18 +226,23 @@ class ProfileApi {
   }
 
   static getVerificationRequestHistory(
-      {required Function(List<VerificationRequest>)
-          resultCallback}) async {
+      {required Function(List<VerificationRequest>) resultCallback,
+      VoidCallback? onError}) async {
     var url = NetworkConstantsUtil.requestVerificationHistory;
 
-    await ApiWrapper().getApi(url: url).then((result) {
+    try {
+      final result = await ApiWrapper().getApi(url: url);
       if (result?.success == true) {
         var items = result!.data['verification']['items'];
 
         resultCallback(List<VerificationRequest>.from(
-            items.map((x) => VerificationRequest.fromJson(x))));
+            (items as List).map((x) => VerificationRequest.fromJson(x))));
+      } else {
+        onError?.call();
       }
-    });
+    } catch (_) {
+      onError?.call();
+    }
   }
 
   static uploadProfileImage(Uint8List imageData,

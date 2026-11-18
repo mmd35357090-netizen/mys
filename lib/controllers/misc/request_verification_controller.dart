@@ -2,6 +2,7 @@ import 'package:foap/api_handler/apis/profile_api.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/model/verification_request_model.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 import 'dart:io';
 import '../../api_handler/apis/misc_api.dart';
 
@@ -16,6 +17,10 @@ class RequestVerificationController extends GetxController {
   Rx<TextEditingController> documentNumber = TextEditingController().obs;
 
   RxList<File> selectedImages = <File>[].obs;
+
+  // false until the server answered once (so the form is never shown by mistake while loading)
+  RxBool isLoaded = false.obs;
+  RxBool isSubmitting = false.obs;
 
   bool get isVerificationInProcess {
     return verificationRequests
@@ -78,12 +83,20 @@ class RequestVerificationController extends GetxController {
     selectedImages.clear();
   }
 
-  getVerificationRequests() {
+  Future<void> getVerificationRequests() {
+    final done = Completer<void>();
     ProfileApi.getVerificationRequestHistory(resultCallback: (result) {
+      result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       verificationRequests.value = result;
       verificationRequests.refresh();
+      isLoaded.value = true;
       update();
+      if (!done.isCompleted) done.complete();
+    }, onError: () {
+      isLoaded.value = true;
+      if (!done.isCompleted) done.complete();
     });
+    return done.future;
   }
 
   setSelectedDocumentType(String document) {
@@ -100,6 +113,8 @@ class RequestVerificationController extends GetxController {
   }
 
   submitRequest(BuildContext context) async {
+    if (isSubmitting.value) return; // ignore a second tap
+    if (isVerificationInProcess) return; // one request at a time
     if (documentType.value.text.isEmpty) {
       AppUtil.showToast(
           message: pleaseSelectDocumentTypeString.tr, isSuccess: false);
@@ -128,6 +143,7 @@ class RequestVerificationController extends GetxController {
       return;
     }
 
+    isSubmitting.value = true;
     List<Map<String, String>> idProofImages = [];
 
     Loader.show(status: loadingString.tr);
@@ -144,34 +160,56 @@ class RequestVerificationController extends GetxController {
       });
     }
 
+    if (idProofImages.length != selectedImages.length) {
+      // a picture did not upload: do not send half a request
+      Loader.dismiss();
+      isSubmitting.value = false;
+      AppUtil.showToast(
+          message: 'Could not upload the photo. Please try again.',
+          isSuccess: false);
+      return;
+    }
+
     ProfileApi.sendProfileVerificationRequest(
         userMessage: messageTf.value.text,
         documentType: documentType.value.text,
         documentNumber: number,
         images: idProofImages,
-        resultCallback: () {
-          Loader.dismiss();
+        resultCallback: (ok, message) async {
+          if (!ok) {
+            // the server did NOT take the request: say why, and do not claim success
+            Loader.dismiss();
+            isSubmitting.value = false;
+            AppUtil.showToast(
+                message: message.isNotEmpty
+                    ? message
+                    : 'Could not send the request. Please try again.',
+                isSuccess: false);
+            await getVerificationRequests();
+            return;
+          }
 
-          // show "pending" at once (do not wait for the list to reload) and stay on this
-          // screen: the user sees that the request is in review and can not send it twice
-          verificationRequests.insert(
-              0,
-              VerificationRequest(
-                  id: 0,
-                  status: 1,
-                  userMessage: '',
-                  adminMessage: '',
-                  createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-                  updatedAt: null));
-          verificationRequests.refresh();
+          clear();
+          await getVerificationRequests();
+          if (!isVerificationInProcess) {
+            // accepted, but the list does not show it as waiting yet: show "in review" anyway
+            verificationRequests.insert(
+                0,
+                VerificationRequest(
+                    id: 0,
+                    status: 1,
+                    userMessage: '',
+                    adminMessage: '',
+                    createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                    updatedAt: null));
+            verificationRequests.refresh();
+          }
           update();
-
-          getVerificationRequests();
+          Loader.dismiss();
+          isSubmitting.value = false;
 
           AppUtil.showToast(
               message: verificationRequestSentString.tr, isSuccess: true);
-
-          clear();
         });
   }
 

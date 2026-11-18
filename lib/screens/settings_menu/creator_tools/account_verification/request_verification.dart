@@ -51,16 +51,22 @@ class _RequestVerificationState extends State<RequestVerification> {
                           const SizedBox(
                             height: 20,
                           ),
-                          _requestVerificationController.isApproved ||
-                                  _userProfileManager
-                                      .user.value!.isVerified
-                              ? alreadyVerifiedView()
-                              : _requestVerificationController
-                                      .isVerificationInProcess
-                                  ? verificationPendingView()
-                                  : _requestVerificationController.isBlocked
-                                      ? verificationBlockedView()
-                                      : requestVerification(),
+                          !_requestVerificationController.isLoaded.value
+                              ? const Padding(
+                                  padding: EdgeInsets.only(top: 120),
+                                  child: CircularProgressIndicator(),
+                                )
+                              : _requestVerificationController.isApproved ||
+                                      _userProfileManager
+                                          .user.value!.isVerified
+                                  ? alreadyVerifiedView()
+                                  : _requestVerificationController
+                                          .isVerificationInProcess
+                                      ? verificationPendingView()
+                                      : _requestVerificationController
+                                              .isBlocked
+                                          ? verificationBlockedView()
+                                          : requestVerification(),
                           const SizedBox(
                             height: 20,
                           ),

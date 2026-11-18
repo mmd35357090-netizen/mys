@@ -41,7 +41,7 @@ class VerificationRequest {
   }
 
   bool get isProcessing {
-    return status == 1;
+    return status == 1 || status == 0; // 0 = saved without a status, still waiting for review
   }
 
   bool get isCancelled {
