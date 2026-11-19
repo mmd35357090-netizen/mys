@@ -17,7 +17,7 @@ class AppConfigConstants {
   static const restApiBaseUrl = 'https://connecttofriends.com/api/web/v1/';
 
   // Socket api url
-  static const socketApiBaseUrl = "https://connecttofriends.com:4000/";
+  static const socketApiBaseUrl = "https://connecttofriends.com/";
 
   // Chat encryption key -- DO NOT CHANGE THIS
   static const encryptionKey = 'bbC2H19lkVbQDfakxcrtNMQdd0FloLyw';
