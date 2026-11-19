@@ -157,13 +157,91 @@ class DatingApi {
   }
 
   static getDatingProfilesApi(
-      {required Function(List<UserModel>) resultCallback}) async {
+      {required Function(List<UserModel>) resultCallback,
+      Function(bool limitReached, int dailyLimit)? limitCallback,
+      Function(Map<int, int>)? distanceCallback,
+      VoidCallback? errorCallback}) async {
     var url = NetworkConstantsUtil.getDatingProfiles;
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
-        var items = result!.data['preferenceMatchProfile'];
+        var items = result!.data['preferenceMatchProfile'] ?? [];
+        limitCallback?.call(result.data['limitReached'] == true,
+            int.tryParse('${result.data['dailyLimit'] ?? 0}') ?? 0);
+        final dist = <int, int>{};
+        final d = result.data['distances'];
+        if (d is Map) {
+          d.forEach((k, v) {
+            final id = int.tryParse('$k');
+            final km = int.tryParse('$v');
+            if (id != null && km != null) dist[id] = km;
+          });
+        }
+        distanceCallback?.call(dist);
         resultCallback(
             List<UserModel>.from(items.map((x) => UserModel.fromJson(x))));
+      } else {
+        errorCallback?.call();
+      }
+    });
+  }
+
+  /// Like (or Super Like). [resultCallback] gets whether it became a match.
+  static likeProfile(
+      {required String profileId,
+      bool superLike = false,
+      required Function(bool isMatch) resultCallback,
+      VoidCallback? errorCallback}) async {
+    await ApiWrapper().postApi(url: NetworkConstantsUtil.profileLike, param: {
+      'profile_user_id': profileId,
+      if (superLike) 'super_like': '1'
+    }).then((result) {
+      if (result?.success == true) {
+        resultCallback(result!.data['is_match'] == true ||
+            (int.tryParse('${result.data['like'] ?? 0}') ?? 0) >= 2);
+      } else {
+        errorCallback?.call();
+      }
+    });
+  }
+
+  /// Undo the last skip. Gives back the profile id that was restored.
+  static rewindProfile(
+      {required Function(int profileUserId) resultCallback}) async {
+    await ApiWrapper()
+        .postApi(url: NetworkConstantsUtil.datingRewind, param: {}).then((result) {
+      if (result?.success == true) {
+        resultCallback(int.tryParse('${result!.data['profile_user_id']}') ?? 0);
+      }
+    });
+  }
+
+  static boostProfile({required VoidCallback resultCallback}) async {
+    await ApiWrapper()
+        .postApi(url: NetworkConstantsUtil.datingBoost, param: {}).then((result) {
+      if (result?.success == true) {
+        resultCallback();
+      }
+    });
+  }
+
+  static pauseProfile(
+      {required bool paused, required VoidCallback resultCallback}) async {
+    await ApiWrapper().postApi(
+        url: NetworkConstantsUtil.datingPause,
+        param: {'paused': paused ? '1' : '0'}).then((result) {
+      if (result?.success == true) {
+        resultCallback();
+      }
+    });
+  }
+
+  static getDatingStatus(
+      {required Function(Map<String, dynamic>) resultCallback}) async {
+    await ApiWrapper()
+        .getApi(url: NetworkConstantsUtil.datingStatus)
+        .then((result) {
+      if (result?.success == true && result!.data is Map) {
+        resultCallback(Map<String, dynamic>.from(result.data));
       }
     });
   }
@@ -199,13 +277,29 @@ class DatingApi {
     });
   }
 
+  static getProfilePhotos(
+      {required int userId,
+      required Function(List<String>) resultCallback}) async {
+    await ApiWrapper()
+        .getApi(url: '${NetworkConstantsUtil.datingProfilePhotos}$userId')
+        .then((result) {
+      if (result?.success == true) {
+        final items = result!.data['photos'] ?? [];
+        resultCallback(List<String>.from(items.map((x) => x.toString())));
+      }
+    });
+  }
+
   static getLikeProfilesApi(
-      {required Function(List<UserModel>) resultCallback}) async {
+      {required Function(List<UserModel>) resultCallback,
+      Function(bool locked, int count)? lockCallback}) async {
     var url = NetworkConstantsUtil.likeProfiles;
 
     await ApiWrapper().getApi(url: url).then((result) {
       if (result?.success == true) {
         var items = result!.data['profileLikeByOtherUsers'] ?? [];
+        lockCallback?.call(result.data['likes_locked'] == true,
+            int.tryParse('${result.data['likes_count'] ?? 0}') ?? 0);
         resultCallback(
             List<UserModel>.from(items.map((x) => UserModel.fromJson(x))));
       }

@@ -223,6 +223,17 @@ Future<void> main() async {
               : const LoadingScreen(),
     )));
   }
+
+  // App was closed and the user tapped a notification: open that page after start-up.
+  try {
+    final RemoteMessage? initial =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initial != null && initial.data.isNotEmpty) {
+      NotificationManager().handleLaunchNotification(initial.data);
+    }
+  } catch (e) {
+    debugPrint('Initial notification error: $e');
+  }
 }
 
 class SocialifiedApp extends StatefulWidget {

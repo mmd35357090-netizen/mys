@@ -3,6 +3,8 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
 import 'package:foap/screens/chat/chat_detail.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
+import 'dart:ui' as ui;
+import 'package:foap/screens/add_on/ui/dating/dating_plans.dart';
 import 'package:intl/intl.dart';
 
 class LikeList extends StatefulWidget {
@@ -42,11 +44,61 @@ class LikeListState extends State<LikeList> {
                       : ListView.builder(
                           padding: const EdgeInsets.only(top: 15, bottom: 15),
                           shrinkWrap: true,
-                          itemCount: datingController.likeUsers.length,
+                          itemCount: datingController.likeUsers.length +
+                              (datingController.likesLocked.value ? 1 : 0),
                           itemBuilder: (BuildContext context, int index) {
+                            if (datingController.likesLocked.value) {
+                              if (index == 0) return _lockBanner();
+                              return _lockedTile(index - 1);
+                            }
                             return matchedTile(index);
                           }))),
         ],
+      ),
+    );
+  }
+
+  Widget _lockBanner() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF7B4DFF), Color(0xFFE5484D)]),
+      ),
+      child: Row(children: [
+        const Icon(Icons.lock_rounded, color: Colors.white, size: 28),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            '${datingController.likesCount.value} people like you. Get a dating plan to see who.',
+            style: const TextStyle(
+                color: Colors.white, fontSize: 14.5, fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(width: 8),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: const Color(0xFF7B4DFF),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20))),
+          onPressed: () => Get.to(() => const DatingPlans()),
+          child: const Text('See'),
+        ),
+      ]),
+    );
+  }
+
+  Widget _lockedTile(int index) {
+    return GestureDetector(
+      onTap: () => Get.to(() => const DatingPlans()),
+      child: AbsorbPointer(
+        child: ImageFiltered(
+          imageFilter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: matchedTile(index),
+        ),
       ),
     );
   }

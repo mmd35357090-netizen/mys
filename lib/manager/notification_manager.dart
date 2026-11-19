@@ -90,6 +90,10 @@ class NotificationManager {
 
     if (callType != null) {
       showHideCallNotificationsOnAndroid(message);
+    } else if (!Get.isRegistered<UserProfileManager>()) {
+      // Running in the background isolate (app closed / in background): GetX and the UI
+      // do not exist there. The system already shows the notification, so do nothing.
+      return;
     } else {
       // if (Platform.isAndroid) {
       //   // handleAndroidNotifications(message);
@@ -184,14 +188,44 @@ class NotificationManager {
       // handle this tap once. (Listening forever made every earlier tap run
       // again on each return from the background.)
       final dynamic tapData = jsonDecode(response.payload!);
-      FGBGEvents.instance.stream.first.then((event) {
-        handleNotificationTap(
-            tapData, event == FGBGType.foreground ? true : false);
-      }).catchError((_) {});
+      handleNotificationTap(tapData, false);
     }
   }
 
+  /// Notification that started the app from the closed state. It is handled once the
+  /// home screen is ready (see [handleLaunchNotification]).
+  static Map<String, dynamic>? launchData;
+
+  /// Waits (max ~25 s) until the user is logged in and the first screen is shown,
+  /// then opens the page the notification points to.
+  Future<void> handleLaunchNotification(Map<String, dynamic> data) async {
+    for (int i = 0; i < 50; i++) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      try {
+        if (Get.isRegistered<UserProfileManager>() &&
+            Get.find<UserProfileManager>().user.value != null &&
+            Get.key.currentState != null) {
+          break;
+        }
+      } catch (_) {}
+      if (i == 49) return;
+    }
+    // let the loading screen finish moving to the home screen
+    await Future.delayed(const Duration(milliseconds: 2500));
+    await handleNotificationTap(data, false);
+  }
+
   handleNotificationTap(dynamic data, bool isInForeground) async {
+    try {
+      await _handleNotificationTap(data, isInForeground);
+    } catch (e) {
+      // a bad / incomplete notification must never crash or close the app
+      debugPrint('Notification tap error: $e');
+    }
+  }
+
+  _handleNotificationTap(dynamic data, bool isInForeground) async {
+    if (!Get.isRegistered<AgoraLiveController>()) return;
     final AgoraLiveController agoraLiveController = Get.find();
 
     int notificationType =
@@ -284,6 +318,15 @@ class NotificationManager {
   }
 
   handleForegroundNotifications(dynamic data) async {
+    try {
+      await _handleForegroundNotifications(data);
+    } catch (e) {
+      debugPrint('Foreground notification error: $e');
+    }
+  }
+
+  _handleForegroundNotifications(dynamic data) async {
+    if (!Get.isRegistered<AgoraLiveController>()) return;
     int notificationType =
         int.parse(data['notification_type'] as String? ?? '0');
     String accountId = (data['receiver_id'] ?? '').toString();
@@ -293,7 +336,7 @@ class NotificationManager {
     if (notificationType == 1) {
       int referenceId = int.parse(data['reference_id'] as String);
 
-      String message = data['body'];
+      String message = (data['body'] ?? data['title'] ?? '').toString();
 
       // following notification
       UsersApi.getOtherUser(
@@ -308,7 +351,7 @@ class NotificationManager {
           });
     } else if (notificationType == 2) {
       int referenceId = int.parse(data['reference_id'] as String);
-      String message = data['title'];
+      String message = (data['title'] ?? data['body'] ?? '').toString();
       // comment notification
 
       showNotificationBanner(
@@ -324,7 +367,7 @@ class NotificationManager {
       // liked post notification
 
       int referenceId = int.parse(data['reference_id'] as String);
-      String message = data['title'];
+      String message = (data['title'] ?? data['body'] ?? '').toString();
 
       showNotificationBanner(
           title: newLikeString.tr,
@@ -341,7 +384,7 @@ class NotificationManager {
       String channelName = data['channelName'];
       String agoraToken = data['token'];
       int userId = int.parse(data['userId'] as String);
-      String message = data['body'];
+      String message = (data['body'] ?? data['title'] ?? '').toString();
 
       UsersApi.getOtherUser(
           userId: userId,
@@ -367,7 +410,9 @@ class NotificationManager {
       {required Widget widget, required SayHiAppAccount? account}) {
     // OverlaySupportEntry.of(Get.context!)!.dismiss();
     UserProfileManager manager = Get.find();
-    if (manager.user.value!.id.toString() == account?.userId) {
+    if (manager.user.value == null) return;
+    // (account == null happens when the notification has no receiver id: just open the page)
+    if (account == null || manager.user.value!.id.toString() == account.userId) {
       Get.to(() => widget);
     } else {
       if (account != null) {
@@ -465,6 +510,8 @@ performActionOnCallNotificationBanner(
 
         if (askConfirmation) {
           if (Get.context == null) {
+            // app was closed: after this call ends, go to the home screen (nothing is behind it)
+            isLaunchedFromCallNotification = true;
             runApp(Phoenix(
                 child: SocialifiedApp(
               startScreen: AcceptCallScreen(

@@ -788,6 +788,8 @@ Future<void> _performAgoraCleanup(
           SharedPrefs().setCallNotificationData(null);
 
       if (isLaunchedFromCallNotification) {
+        // only for the call that started the app; later calls must return to the previous screen
+        isLaunchedFromCallNotification = false;
         Get.offAll(() => const DashboardScreen());
       } else if (Get.key.currentState?.canPop() == true) {
         Get.back();

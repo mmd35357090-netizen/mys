@@ -42,62 +42,69 @@ class DatingDashboardState extends State<DatingDashboard> {
         backgroundColor: AppColorConstants.backgroundColor,
         body: items[_dashboardController.currentIndex.value],
         bottomNavigationBar: Container(
-          height: MediaQuery.of(context).viewPadding.bottom > 0 ? 90 : 70.0,
-          width: Get.width,
+          padding: EdgeInsets.only(
+              top: 8,
+              bottom: MediaQuery.of(context).viewPadding.bottom > 0 ? 18 : 8),
           decoration: BoxDecoration(
             color: AppColorConstants.cardColor,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(
+                top: BorderSide(
+                    color: AppColorConstants.dividerColor.withValues(alpha: 0.5),
+                    width: 0.6)),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, -4))
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, -2))
             ],
           ),
-          child: BottomNavigationBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _dashboardController.currentIndex.value,
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
-            unselectedItemColor: Colors.grey,
-            selectedItemColor: AppColorConstants.themeColor,
-            onTap: (index) => {onTabTapped(index)},
-            items: [
-              BottomNavigationBarItem(
-                  icon: ThemeIconWidget(ThemeIcon.dating,
-                      size: 24,
-                      color: _dashboardController.currentIndex.value == 0
-                          ? AppColorConstants.themeColor
-                          : AppColorConstants.iconColor),
-                  label: ''),
-              BottomNavigationBarItem(
-                  icon: ThemeIconWidget(ThemeIcon.fav,
-                      size: 24,
-                      color: _dashboardController.currentIndex.value == 1
-                          ? AppColorConstants.themeColor
-                          : AppColorConstants.iconColor),
-                  label: ''),
-              BottomNavigationBarItem(
-                  icon: ThemeIconWidget(ThemeIcon.thumbsUp,
-                      size: 24,
-                      color: _dashboardController.currentIndex.value == 2
-                          ? AppColorConstants.themeColor
-                          : AppColorConstants.iconColor),
-                  label: ''),
-              BottomNavigationBarItem(
-                icon: ThemeIconWidget(ThemeIcon.filterIcon,
-                    size: 24,
-                    color: _dashboardController.currentIndex.value == 3
-                        ? AppColorConstants.themeColor
-                        : AppColorConstants.iconColor),
-                label: '',
-              ),
+          child: Row(
+            children: [
+              _tab(0, ThemeIcon.dating, datingString.tr),
+              _tab(1, ThemeIcon.fav, matchedString.tr),
+              _tab(2, ThemeIcon.thumbsUp, likesString.tr),
+              _tab(3, ThemeIcon.filterIcon, preferencesString.tr),
             ],
           ),
         )));
+  }
+
+  Widget _tab(int index, ThemeIcon icon, String label) {
+    final bool selected = _dashboardController.currentIndex.value == index;
+    final Color color =
+        selected ? AppColorConstants.themeColor : AppColorConstants.iconColor;
+    return Expanded(
+      child: InkWell(
+        onTap: () => onTabTapped(index),
+        borderRadius: BorderRadius.circular(14),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+              decoration: BoxDecoration(
+                color: selected
+                    ? AppColorConstants.themeColor.withValues(alpha: 0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ThemeIconWidget(icon, size: 22, color: color),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                  color: color),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void onTabTapped(int index) async {

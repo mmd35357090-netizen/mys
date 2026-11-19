@@ -357,6 +357,11 @@ class NetworkConstantsUtil {
   static String profileLike = 'datings/profile-action-like';
   static String profileSkip = 'datings/profile-action-skip';
   static String undoProfileLike = 'datings/profile-action-remove';
+  static String datingRewind = 'datings/profile-action-rewind';
+  static String datingBoost = 'datings/boost';
+  static String datingPause = 'datings/pause';
+  static String datingStatus = 'datings/dating-status';
+  static String datingProfilePhotos = 'datings/profile-photos?user_id=';
   static String matchedProfiles = 'datings/profile-matching';
   static String likeProfiles = 'datings/profile-like-by-other-users';
   static String rtcConfig = 'rtc/config';
