@@ -4,6 +4,7 @@ import 'package:foap/screens/add_on/controller/dating/dating_controller.dart';
 import 'package:foap/screens/chat/chat_detail.dart';
 import 'package:foap/screens/profile/other_user_profile.dart';
 import 'dart:ui' as ui;
+import 'package:foap/screens/add_on/ui/dating/dating_extras.dart';
 import 'package:foap/screens/add_on/ui/dating/dating_plans.dart';
 import 'package:intl/intl.dart';
 
@@ -168,20 +169,12 @@ class LikeListState extends State<LikeList> {
                     borderColor: AppColorConstants.themeColor,
                     text: likeBackString.tr,
                     onPress: () {
-                      datingController.likeUnlikeProfile(
-                          DatingActions.liked, profile.id.toString());
-                      Loader.show(status: loadingString.tr);
-                      _chatDetailController.getChatRoomWithUser(
-                          userId: profile.id,
-                          callback: (room) {
-                            Loader.dismiss();
-                            Get.to(() => ChatDetail(
-                                  chatRoom: room,
-                                ));
-                            setState(() {
-                              datingController.likeUsers.removeAt(index);
-                            });
-                          });
+                      // they already liked me, so this is a match: celebrate and offer to chat
+                      datingController.likeProfile(profile,
+                          onMatch: (u) => showMatchDialog(u));
+                      setState(() {
+                        datingController.likeUsers.removeAt(index);
+                      });
                     })
               ],
             ).paddingSymmetric(horizontal: 14, vertical: 14))

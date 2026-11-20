@@ -88,7 +88,37 @@ void showMatchDialog(UserModel other) {
                     child: _avatar(other.picture, 96)),
               ],
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 22),
+            const Text('Break the ice',
+                style: TextStyle(color: Colors.white70, fontSize: 13)),
+            const SizedBox(height: 8),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: _icebreakers
+                  .map((m) => GestureDetector(
+                        onTap: () {
+                          Get.back();
+                          _openChat(other, firstMessage: m);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.5)),
+                          ),
+                          child: Text(m,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 13)),
+                        ),
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: 22),
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -122,15 +152,31 @@ void showMatchDialog(UserModel other) {
   );
 }
 
-void _openChat(UserModel user) {
+const List<String> _icebreakers = [
+  'Hey! Nice to match with you 👋',
+  'What does a perfect weekend look like for you?',
+  'Coffee or tea? ☕',
+];
+
+void _openChat(UserModel user, {String? firstMessage}) {
   if (!Get.isRegistered<ChatDetailController>()) return;
   final ChatDetailController chat = Get.find();
   Loader.show(status: loadingString.tr);
   chat.getChatRoomWithUser(
       userId: user.id,
-      callback: (room) {
+      callback: (room) async {
         Loader.dismiss();
         Get.to(() => ChatDetail(chatRoom: room));
+        if (firstMessage != null) {
+          // give the chat screen a moment to open, then send the chosen opener
+          await Future.delayed(const Duration(milliseconds: 600));
+          try {
+            await chat.sendTextMessage(
+                messageText: firstMessage,
+                mode: ChatMessageActionMode.none,
+                room: room);
+          } catch (_) {}
+        }
       });
 }
 
@@ -248,6 +294,19 @@ void showDatingProfileDetail(
                               shape: BoxShape.circle)),
                     ],
                   ]),
+                  if (p.isOnline ||
+                      (p.chatLastTimeOnline != null &&
+                          p.chatLastTimeOnline! > 0)) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      p.isOnline ? 'Active now' : p.lastSeenAtTime,
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: p.isOnline
+                              ? const Color(0xFF2ECC71)
+                              : AppColorConstants.iconColor),
+                    ),
+                  ],
                   if (facts.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Wrap(
