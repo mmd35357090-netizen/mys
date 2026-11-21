@@ -25,6 +25,8 @@ class SupportRequest {
   String? email;
   String? phone;
   String? requestMessage;
+  String? subject;
+  int? priority;
   String? replyMessage;
   int? isReply;
   int? status;
@@ -40,6 +42,8 @@ class SupportRequest {
       email,
       phone,
       requestMessage,
+      subject,
+      priority,
       replyMessage,
       isReply,
       status,
@@ -55,6 +59,8 @@ class SupportRequest {
     email = json['email'];
     phone = json['phone'];
     requestMessage = json['request_message'];
+    subject = json['subject']?.toString();
+    priority = json['priority'] is int ? json['priority'] : int.tryParse('${json['priority'] ?? 0}');
     replyMessage = json['reply_message'];
     isReply = json['is_reply'];
     status = json['status'];
@@ -72,6 +78,8 @@ class SupportRequest {
     data['email'] = email;
     data['phone'] = phone;
     data['request_message'] = requestMessage;
+    data['subject'] = subject;
+    data['priority'] = priority;
     data['reply_message'] = replyMessage;
     data['is_reply'] = isReply;
     data['status'] = status;

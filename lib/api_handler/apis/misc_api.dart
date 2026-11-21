@@ -168,12 +168,14 @@ class MiscApi {
       {required String name,
       required String email,
       required String phone,
+      String subject = 'other',
       required String message}) async {
     var url = NetworkConstantsUtil.submitRequest;
     dynamic param = {
       "name": name,
       "email": email,
       "phone": phone,
+      "subject": subject,
       "request_message": message
     };
     await ApiWrapper().postApi(url: url, param: param).then((result) {

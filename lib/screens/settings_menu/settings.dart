@@ -37,7 +37,12 @@ class _SettingsState extends State<Settings> {
           body: Column(
             children: [
               if (_settingsController.appearanceChanged!.value) Container(),
-              backNavigationBar(title: settingsString.tr),
+              backNavigationBarWithTrailingWidget(
+                title: settingsString.tr,
+                widget: _settingsController.setting.value!.enableDarkLightModeSwitch
+                    ? _darkModeSwitch()
+                    : const SizedBox(width: 38),
+              ),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.fromLTRB(
@@ -124,9 +129,6 @@ class _SettingsState extends State<Settings> {
                               '${installThisCoolAppString.tr}\n${_settingsController.setting.value!.iosAppLink ?? ''}\n ${_settingsController.setting.value!.androidAppLink ?? ''}');
                         }),
                     ]),
-                    if (_settingsController
-                        .setting.value!.enableDarkLightModeSwitch)
-                      _section('', [darkModeTile()]),
                     _section('', [
                       _tile(Icons.logout_rounded, const Color(0xFFEF4444),
                           logoutString.tr, () {
@@ -256,6 +258,23 @@ class _SettingsState extends State<Settings> {
         ),
       ),
     );
+  }
+
+  // dark mode switch lives in the top bar
+  Widget _darkModeSwitch() {
+    final on = _settingsController.darkMode.value;
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Icon(on ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+          size: 18, color: AppColorConstants.iconColor),
+      Transform.scale(
+        scale: 0.8,
+        child: Switch(
+          value: on,
+          activeColor: AppColorConstants.themeColor,
+          onChanged: (val) => _settingsController.appearanceModeChanged(val),
+        ),
+      ),
+    ]);
   }
 
   Widget darkModeTile() {

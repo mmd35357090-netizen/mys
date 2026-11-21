@@ -15,6 +15,45 @@ class _HelpScreenState extends State<HelpScreen> {
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final messageController = TextEditingController();
+  final UserProfileManager _userProfileManager = Get.find();
+  String subject = 'account';
+
+  static const Map<String, String> subjects = {
+    'account': 'Account & login',
+    'payment': 'Payment, wallet & coins',
+    'deposit': 'Deposit / withdraw',
+    'subscription': 'Subscription & VIP',
+    'event': 'Events & tickets',
+    'dating': 'Dating',
+    'chat_call': 'Chat & calls',
+    'content': 'Posts, reels & stories',
+    'report': 'Report a user or content',
+    'bug': 'App problem / bug',
+    'suggestion': 'Suggestion',
+    'other': 'Other',
+  };
+
+  bool get _isVip => _userProfileManager.user.value?.isVIPUser == true;
+
+  Widget _subjectField() {
+    return DropdownButtonFormField<String>(
+      value: subject,
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: 'Subject',
+        filled: true,
+        fillColor: AppColorConstants.cardColor,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColorConstants.disabledColor)),
+      ),
+      items: [
+        for (final e in subjects.entries)
+          DropdownMenuItem(value: e.key, child: Text(e.value)),
+      ],
+      onChanged: (v) => setState(() => subject = v ?? 'other'),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +109,27 @@ class _HelpScreenState extends State<HelpScreen> {
                         ],
                       ),
                     ),
+                    if (_isVip)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 18),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF4D6),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Row(children: [
+                          Icon(Icons.workspace_premium_rounded, color: Color(0xFFE0A100)),
+                          SizedBox(width: 10),
+                          Expanded(
+                              child: Text('VIP priority support: your request is handled first.',
+                                  style: TextStyle(fontSize: 13, color: Colors.black87))),
+                        ]),
+                      ),
+                    _subjectField(),
+                    SizedBox(
+                      height: Get.height * 0.025,
+                    ),
                     AppTextField(
                       controller: nameController,
                       hintText: nameString.tr,
@@ -117,6 +177,7 @@ class _HelpScreenState extends State<HelpScreen> {
             name: nameController.text,
             email: emailController.text,
             phone: phoneController.text,
+            subject: subject,
             message: messageController.text);
 
         nameController.text = '';

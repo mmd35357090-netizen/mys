@@ -18,13 +18,18 @@ class HelpSupportController extends GetxController {
       {required String? name,
       required String? email,
       required String? phone,
+      String subject = 'other',
       required String? message}) {
     if (name!.isNotEmpty &&
         email!.isNotEmpty &&
         phone!.isNotEmpty &&
         message!.isNotEmpty) {
       MiscApi.sendSupportRequest(
-          name: name, email: email, phone: phone, message: message);
+          name: name,
+          email: email,
+          phone: phone,
+          subject: subject,
+          message: message);
       AppUtil.showToast(message: supportMessageSentString.tr, isSuccess: true);
     } else {
       AppUtil.showToast(message: fillFormString.tr, isSuccess: false);

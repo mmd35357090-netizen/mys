@@ -157,7 +157,10 @@ class OtherUserProfileState extends State<OtherUserProfile>
             ? 385
             : _highlightsController.highlights.isNotEmpty
                 ? 435.0
-                : 410) +
+                : (_highlightsController.isLoading.value == true
+                    ? 410.0
+                    : 335.0)) + // no highlights: no empty gap above the tabs
+
         categoryPortionHt +
         cityNamePortionHt;
   }
