@@ -2,6 +2,7 @@ import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/wallet/coin_history.dart';
 import '../../universal_components/menu_tiles.dart';
+import '../profile/change_paypal_id.dart';
 
 class PaymentAndCoins extends StatefulWidget {
   const PaymentAndCoins({super.key});
@@ -50,6 +51,21 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                     title: coinHistoryString.tr,
                     onTap: () {
                       Get.to(() => const CoinHistoryScreen());
+                    },
+                  ),
+                ]),
+                const SizedBox(height: 16),
+                MenuSection(tiles: [
+                  MenuTile(
+                    icon: Icons.account_balance_wallet_outlined,
+                    color: const Color(0xFF10B981),
+                    title: 'Payment account',
+                    subtitle: (_userProfileManager.user.value?.paypalId ?? '').isNotEmpty
+                        ? _userProfileManager.user.value!.paypalId!
+                        : 'PayPal, bKash, Nagad, USDT, Binance',
+                    onTap: () async {
+                      await Get.to(() => const ChangePaypalId());
+                      if (mounted) setState(() {});
                     },
                   ),
                 ]),

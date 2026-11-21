@@ -255,7 +255,9 @@ class _ChangePaypalIdState extends State<ChangePaypalId> {
                             setState(() => _loading = true);
                             _load();
                           },
-                          child: const Text('Could not load. Tap to retry')))
+                          child: Text(
+                              'Could not load. Tap to retry${PayoutApi.lastError.isEmpty ? '' : '\n\n${PayoutApi.lastError}'}',
+                              textAlign: TextAlign.center)))
                   : RefreshIndicator(
                       onRefresh: _load,
                       child: ListView(

@@ -141,12 +141,7 @@ class UpdateProfileState extends State<UpdateProfile> {
                             Icons.phone_outlined,
                             phoneNumberString.tr,
                             _val(profileController.user.value?.phone ?? ''),
-                            () => _go(const ChangePhoneNumber())),
-                        _row(
-                            Icons.account_balance_wallet_outlined,
-                            paymentDetailString.tr,
-                            _val(profileController.user.value?.paypalId ?? ''),
-                            () => _go(const ChangePaypalId()),
+                            () => _go(const ChangePhoneNumber()),
                             last: true),
                       ])),
                   _sectionTitle(personalDetailsString.tr),

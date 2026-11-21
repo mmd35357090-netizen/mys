@@ -65,10 +65,21 @@ class PayoutResult {
 }
 
 class PayoutApi {
+  /// why the last overview() failed (shown on the screen so the problem can be found)
+  static String lastError = '';
+
   static Future<PayoutOverview?> overview() async {
-    final r = await ApiWrapper().getApi(url: 'payout-methods');
-    if (r?.success == true && r!.data is Map) {
-      return PayoutOverview.fromJson(Map<String, dynamic>.from(r.data));
+    lastError = '';
+    try {
+      final r = await ApiWrapper().getApi(url: 'payout-methods');
+      if (r?.success == true && r!.data is Map) {
+        return PayoutOverview.fromJson(Map<String, dynamic>.from(r.data));
+      }
+      lastError = (r?.message ?? '').isNotEmpty
+          ? r!.message!
+          : 'Server answered without payout data${r?.data is Map ? ' (${(r!.data as Map).keys.take(3).join(', ')})' : ''}';
+    } catch (e) {
+      lastError = 'Request failed: $e';
     }
     return null;
   }
