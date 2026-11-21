@@ -181,7 +181,8 @@ class OtherUserProfileController extends GetxController {
           userId: userId,
           page: postDataWrapper.page,
           resultCallback: (result, metadata) {
-            posts.addAll(result);
+            // a profile shows only what this person posted
+            posts.addAll(result.where((p) => p.user.id == userId));
             posts.unique((e) => e.id);
             postDataWrapper.processCompletedWithData(metadata);
 
@@ -201,7 +202,7 @@ class OtherUserProfileController extends GetxController {
           postType: PostCategory.reel,
           page: reelsDataWrapper.page,
           resultCallback: (result, metadata) {
-            reels.addAll(result);
+            reels.addAll(result.where((p) => p.user.id == userId));
             reels.unique((e) => e.id);
             reelsDataWrapper.processCompletedWithData(metadata);
             update();

@@ -43,6 +43,16 @@ class EventDetailState extends State<EventDetail> {
     super.dispose();
   }
 
+  /// A broken piece of data must never turn the whole screen grey.
+  Widget _safe(Widget Function() build) {
+    try {
+      return build();
+    } catch (e, st) {
+      debugPrint('EventDetail section error: $e\n$st');
+      return const SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -56,10 +66,16 @@ class EventDetailState extends State<EventDetail> {
                   SizedBox(
                       height: 280,
                       width: Get.width,
-                      child: CachedNetworkImage(
-                        imageUrl: widget.event.image,
-                        fit: BoxFit.cover,
-                      )),
+                      child: widget.event.image.isEmpty
+                          ? Container(
+                              color: AppColorConstants.themeColor
+                                  .withValues(alpha: 0.15))
+                          : CachedNetworkImage(
+                              imageUrl: widget.event.image,
+                              fit: BoxFit.cover,
+                              errorWidget: (c, u, e) =>
+                                  Container(color: Colors.black12),
+                            )),
                   appBar(),
                   actionButtons()
                 ],
@@ -121,17 +137,17 @@ class EventDetailState extends State<EventDetail> {
                   Share.share(widget.event.shareLink!);
                 }),
               divider().vp(20),
-              eventInfo(),
+              _safe(() => eventInfo()),
               divider().vp(20),
-              eventOrganiserWidget(),
+              _safe(() => eventOrganiserWidget()),
               divider().vp(20),
-              eventGallery(),
+              _safe(() => eventGallery()),
               const SizedBox(
                 height: 24,
               ),
-              if (widget.event.latitude.isNotEmpty &&
-                  widget.event.longitude.isNotEmpty)
-                eventLocation(),
+              if (double.tryParse(widget.event.latitude) != null &&
+                  double.tryParse(widget.event.longitude) != null)
+                _safe(() => eventLocation()),
               const SizedBox(
                 height: 150,
               ),
@@ -139,7 +155,7 @@ class EventDetailState extends State<EventDetail> {
           ).hp(DesignConstants.horizontalPadding),
         ),
         if (!widget.event.isFree)
-          Obx(() => _eventDetailController.isLoading.value == true
+          Obx(() => _safe(() => _eventDetailController.isLoading.value == true
               ? Container()
               : _eventDetailController.event.value?.isCompleted == true
                   ? eventClosedWidget()
@@ -149,7 +165,7 @@ class EventDetailState extends State<EventDetail> {
                               true
                           ? soldOutWidget()
                           : buyTicketWidget()
-                      : ticketNotAddedWidget())
+                      : ticketNotAddedWidget()))
       ],
     );
   }
@@ -357,7 +373,7 @@ class EventDetailState extends State<EventDetail> {
                     ],
                   ).p16,
                 ).round(20)
-              : _eventDetailController.event.value?.createdByUser != null
+              : (_eventDetailController.event.value?.createdByUser.id ?? 0) > 0
                   ? Container(
                       color: AppColorConstants.cardColor,
                       child: Row(

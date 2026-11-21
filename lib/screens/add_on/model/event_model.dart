@@ -246,13 +246,13 @@ class EventTicketType {
 
   factory EventTicketType.fromJson(Map<String, dynamic> json) =>
       EventTicketType(
-        id: json["id"],
-        eventId: json["event_id"],
-        name: json["ticket_type"],
-        price: double.parse(json["price"].toString()),
-        limit: json["limit"],
-        availableTicket: json["available_ticket"],
-        status: json["status"],
+        id: json["id"] ?? 0,
+        eventId: json["event_id"] ?? 0,
+        name: (json["ticket_type"] ?? '').toString(),
+        price: double.tryParse('${json["price"]}') ?? 0,
+        limit: json["limit"] ?? 0,
+        availableTicket: json["available_ticket"] ?? 0,
+        status: json["status"] ?? 0,
       );
 }
 
@@ -269,9 +269,9 @@ class EventOrganizer {
 
   factory EventOrganizer.fromJson(Map<String, dynamic> json) =>
       EventOrganizer(
-        id: json["id"],
-        name: json["name"],
-        image: json["campaginImage"],
+        id: json["id"] ?? 0,
+        name: (json["name"] ?? '').toString(),
+        image: (json["campaginImage"] ?? '').toString(),
       );
 }
 
@@ -296,14 +296,14 @@ class EventCoupon {
   });
 
   factory EventCoupon.fromJson(Map<String, dynamic> json) => EventCoupon(
-        id: json["id"],
-        title: json["title"],
-        subTitle: json["subtitle"],
-        code: json["code"],
+        id: json["id"] ?? 0,
+        title: (json["title"] ?? '').toString(),
+        subTitle: (json["subtitle"] ?? '').toString(),
+        code: (json["code"] ?? '').toString(),
         minimumOrderPrice:
-            double.parse(json["minimum_order_price"].toString()),
-        image: json["imageUrl"],
-        discount: double.parse(json["coupon_value"].toString()),
+            double.tryParse('${json["minimum_order_price"]}') ?? 0,
+        image: (json["imageUrl"] ?? '').toString(),
+        discount: double.tryParse('${json["coupon_value"]}') ?? 0,
       );
 }
 
