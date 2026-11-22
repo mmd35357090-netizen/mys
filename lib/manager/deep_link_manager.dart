@@ -19,7 +19,15 @@ class DeepLinkManager {
     });
   }
 
-  static handleLink(Uri uri) {
+  static handleLink(Uri uri) async {
+    // when the app is started by the link, wait until the logged-in user is loaded
+    for (var i = 0;
+        i < 40 &&
+            !(Get.isRegistered<UserProfileManager>() &&
+                Get.find<UserProfileManager>().user.value != null);
+        i++) {
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
     String urlString = uri.path;
     if (urlString.contains('share-live')) {
       String? channelName = uri.queryParameters['id'];
@@ -29,6 +37,11 @@ class DeepLinkManager {
         LiveStreamingApi.getLiveDetail(
             channelName: channelName,
             resultCallback: (result) {
+              if (!result.isOngoing) {
+                AppUtil.showToast(
+                    message: 'This live has ended', isSuccess: false);
+                return;
+              }
               if (result.isOngoing) {
                 LiveModel live = LiveModel();
                 live.channelName = result.channelName;

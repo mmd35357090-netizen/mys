@@ -38,6 +38,18 @@
                 <data android:host="connecttofriends.com" android:pathPrefix="/" />
             </intent-filter>
 
+            <!-- live / post share links on connecttofriends.com open the app (instead of the browser) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="connecttofriends.com" />
+                <data android:host="www.connecttofriends.com" />
+                <data android:pathPrefix="/user-live-history" />
+                <data android:pathPrefix="/post" />
+            </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
