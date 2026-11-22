@@ -31,8 +31,7 @@ android {
     namespace "com.example.foap"
     
     // FIX: Moved out of defaultConfig
-    compileSdk 37
-    buildToolsVersion '37.0.0'
+    compileSdk 36
     ndkVersion "26.1.10909125"
 
     compileOptions {
@@ -52,7 +51,7 @@ android {
     defaultConfig {
         applicationId "com.connect.to.friends"
         minSdkVersion 24
-        targetSdkVersion 37
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         
