@@ -1,5 +1,6 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
+import '../../manager/deep_link_manager.dart';
 import 'package:foap/helper/imports/common_import.dart';
 import 'package:foap/helper/imports/chat_imports.dart';
 import '../../components/force_update_view.dart';
@@ -44,6 +45,8 @@ class DashboardState extends State<DashboardScreen> {
     super.initState();
     isAnyPageInStack = true;
     _locationManager.postLocation();
+    // a shared post / live link that opened the app is shown now
+    WidgetsBinding.instance.addPostFrameCallback((_) => DeepLinkManager.onDashboardReady());
     widgets = [
       const HomeFeedScreen(),
       const Explore(),

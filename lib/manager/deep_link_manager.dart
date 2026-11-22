@@ -9,25 +9,58 @@ import 'package:get/get.dart';
 import '../model/live_model.dart';
 
 class DeepLinkManager {
+  // A link that started the app is kept until the home screen is on the screen
+  // (splash / login would otherwise cover or replace the opened post).
+  static Uri? _pending;
+  static bool _dashboardReady = false;
+  static String _lastKey = '';
+  static DateTime _lastAt = DateTime.fromMillisecondsSinceEpoch(0);
+
   static init() {
     final appLinks = AppLinks();
 
-    // Subscribe to all events when app is started.
-    // (Use allStringLinkStream to get it as [String])
+    // links that arrive while the app is running (and, in newer app_links versions, the first link too)
     appLinks.uriLinkStream.listen((uri) {
       handleLink(uri);
     });
+
+    // the link that started the app (older app_links versions only give it here)
+    _loadInitial(appLinks);
   }
 
-  static handleLink(Uri uri) async {
-    // when the app is started by the link, wait until the logged-in user is loaded
-    for (var i = 0;
-        i < 40 &&
-            !(Get.isRegistered<UserProfileManager>() &&
-                Get.find<UserProfileManager>().user.value != null);
-        i++) {
-      await Future.delayed(const Duration(milliseconds: 500));
+  static Future<void> _loadInitial(AppLinks appLinks) async {
+    try {
+      final dynamic r = await (appLinks as dynamic).getInitialLink();
+      if (r is Uri) handleLink(r);
+    } catch (_) {}
+  }
+
+  /// called by the home (dashboard) screen once it is shown
+  static void onDashboardReady() {
+    _dashboardReady = true;
+    final p = _pending;
+    if (p != null) {
+      _pending = null;
+      Future.delayed(const Duration(milliseconds: 700), () => _open(p));
     }
+  }
+
+  static handleLink(Uri uri) {
+    // the same link can arrive twice (stream + initial link)
+    final key = uri.toString();
+    final now = DateTime.now();
+    if (key == _lastKey && now.difference(_lastAt).inSeconds < 5) return;
+    _lastKey = key;
+    _lastAt = now;
+
+    if (!_dashboardReady) {
+      _pending = uri;
+      return;
+    }
+    _open(uri);
+  }
+
+  static _open(Uri uri) {
     String urlString = uri.path;
     if (urlString.contains('share-live')) {
       String? channelName = uri.queryParameters['id'];
@@ -42,16 +75,14 @@ class DeepLinkManager {
                     message: 'This live has ended', isSuccess: false);
                 return;
               }
-              if (result.isOngoing) {
-                LiveModel live = LiveModel();
-                live.channelName = result.channelName;
-                live.mainHostUserDetail = result.host!.first;
-                live.token = result.token;
-                live.id = result.id;
-                agoraLiveController.joinAsAudience(
-                  live: live,
-                );
-              }
+              LiveModel live = LiveModel();
+              live.channelName = result.channelName;
+              live.mainHostUserDetail = result.host!.first;
+              live.token = result.token;
+              live.id = result.id;
+              agoraLiveController.joinAsAudience(
+                live: live,
+              );
             });
       }
     } else if (urlString.contains('event')) {
