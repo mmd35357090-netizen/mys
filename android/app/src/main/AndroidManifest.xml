@@ -48,6 +48,9 @@
                 <data android:host="www.connecttofriends.com" />
                 <data android:pathPrefix="/user-live-history" />
                 <data android:pathPrefix="/post" />
+                <!-- connecttofriends.com/<username>/p/<id>  and  /<username>/live/<id> -->
+                <data android:pathPattern="/.*/p/.*" />
+                <data android:pathPattern="/.*/live/.*" />
             </intent-filter>
 
             <intent-filter>

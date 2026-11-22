@@ -60,10 +60,17 @@ class DeepLinkManager {
     _open(uri);
   }
 
+  /// value that follows a path word:  /username/p/<id>  ->  _after(uri, 'p') = <id>
+  static String? _after(Uri uri, String word) {
+    final s = uri.pathSegments;
+    final i = s.indexOf(word);
+    return (i >= 0 && i + 1 < s.length && s[i + 1].isNotEmpty) ? s[i + 1] : null;
+  }
+
   static _open(Uri uri) {
     String urlString = uri.path;
-    if (urlString.contains('share-live')) {
-      String? channelName = uri.queryParameters['id'];
+    if (urlString.contains('share-live') || urlString.contains('/live/')) {
+      String? channelName = uri.queryParameters['id'] ?? _after(uri, 'live');
 
       if (channelName != null) {
         AgoraLiveController agoraLiveController = Get.find();
@@ -92,7 +99,7 @@ class DeepLinkManager {
         // Get.to(() => EventDetail(postUniqueId: postUniqueId));
       }
     } else {
-      String? postUniqueId = uri.queryParameters['pid'];
+      String? postUniqueId = uri.queryParameters['pid'] ?? _after(uri, 'p');
 
       if (postUniqueId != null) {
         Get.to(() => SinglePostDetail(postUniqueId: postUniqueId));
