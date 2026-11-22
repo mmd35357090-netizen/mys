@@ -3,6 +3,7 @@ import 'package:foap/helper/imports/setting_imports.dart';
 import 'package:foap/screens/wallet/coin_history.dart';
 import '../../universal_components/menu_tiles.dart';
 import '../profile/change_paypal_id.dart';
+import '../../api_handler/apis/payout_api.dart';
 
 class PaymentAndCoins extends StatefulWidget {
   const PaymentAndCoins({super.key});
@@ -16,10 +17,22 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
   final UserProfileManager _userProfileManager = Get.find();
 
   int coin = 0;
+  String _accountText = 'PayPal, bKash, Nagad, USDT, Binance';
+
+  // shows only the masked default account (never the full email / number)
+  Future<void> _loadAccount() async {
+    final o = await PayoutApi.overview();
+    if (!mounted || o == null) return;
+    final defs = o.methods.where((m) => m.isDefault).toList();
+    if (defs.isNotEmpty) {
+      setState(() => _accountText = '${defs.first.label} • ${defs.first.accountMasked}');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _loadAccount();
     coin = _userProfileManager.user.value!.coins;
   }
 
@@ -60,12 +73,10 @@ class _PaymentAndCoinsState extends State<PaymentAndCoins> {
                     icon: Icons.account_balance_wallet_outlined,
                     color: const Color(0xFF10B981),
                     title: 'Payment account',
-                    subtitle: (_userProfileManager.user.value?.paypalId ?? '').isNotEmpty
-                        ? _userProfileManager.user.value!.paypalId!
-                        : 'PayPal, bKash, Nagad, USDT, Binance',
+                    subtitle: _accountText,
                     onTap: () async {
                       await Get.to(() => const ChangePaypalId());
-                      if (mounted) setState(() {});
+                      _loadAccount();
                     },
                   ),
                 ]),

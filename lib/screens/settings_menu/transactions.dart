@@ -8,6 +8,7 @@ import '../../model/payment_model.dart';
 import '../wallet/add_money.dart';
 import '../../api_handler/apis/deposit_api.dart';
 import '../wallet/deposit_history.dart';
+import 'withdraw_screen.dart';
 
 class Transactions extends StatefulWidget {
   const Transactions({super.key});
@@ -191,26 +192,10 @@ class PaymentWithdrawalState extends State<Transactions> {
 
   withdrawBtn() {
     return InkWell(
-      onTap: () {
-        final int minWithdraw =
-            _settingsController.setting.value?.minWithdrawLimit ?? 50;
-        if (double.parse(_userProfileManager.user.value!.balance) < minWithdraw) {
-          AppUtil.showToast(
-              message: minWithdrawLimitString.tr.replaceAll(
-                  '{{cash}}',
-                  _settingsController.setting.value!.minWithdrawLimit
-                      .toString()),
-              isSuccess: false);
-        } else if ((_userProfileManager.user.value!.paypalId ?? '').isEmpty) {
-          AppUtil.showToast(
-              message: pleaseEnterPaypalIdString.tr, isSuccess: false);
-        } else {
-          BiometricHelper.confirmIfEnabled(withdrawString.tr).then((ok) {
-            if (ok) {
-              _profileController.withdrawalRequest();
-            }
-          });
-        }
+      onTap: () async {
+        await Get.to(() => const WithdrawScreen());
+        _profileController.getMyProfile();
+        _profileController.getTransactionHistory(() {});
       },
       child: Container(
         height: 40,
