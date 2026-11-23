@@ -223,9 +223,12 @@ class AddPostController extends GetxController {
       completer.complete(gallery);
     } else if (media.mediaType == GalleryMediaType.video) {
       File videoToUpload = media.file!;
-      final bool isSmall = videoToUpload.lengthSync() < 15 * 1024 * 1024;
+      // every post video is shrunk with video_compress (480p) before upload.
+      // Not done for: tiny videos (< 2 MB) and reels (already cut + shrunk in the reel screen).
+      final bool skipCompress = videoToUpload.lengthSync() < 2 * 1024 * 1024 ||
+          videoToUpload.path.contains('/reel_');
 
-      if (!isSmall) {
+      if (!skipCompress) {
         // step 1: compress, only big videos, progress 0 to 40 percent
         postingStage.value = 1;
         final sub = VideoCompress.compressProgress$.subscribe((p) {
@@ -234,11 +237,14 @@ class AddPostController extends GetxController {
         try {
           MediaInfo? mediaInfo = await VideoCompress.compressVideo(
             media.file!.path,
-            quality: VideoQuality.DefaultQuality,
+            quality: VideoQuality.Res640x480Quality,
+            frameRate: 30,
             deleteOrigin: false,
           );
-          if (mediaInfo?.file != null) {
-            videoToUpload = mediaInfo!.file!;
+          // use the shrunk file only when it is really smaller
+          if (mediaInfo?.file != null &&
+              mediaInfo!.file!.lengthSync() < videoToUpload.lengthSync()) {
+            videoToUpload = mediaInfo.file!;
           }
         } finally {
           sub.unsubscribe();

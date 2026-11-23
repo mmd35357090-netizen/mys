@@ -1,7 +1,10 @@
 
 import 'dart:async';
 
+import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:foap/screens/add_on/ui/reel/preview_reel_screen.dart';
 import 'package:foap/screens/add_on/controller/reel/create_reel_controller.dart';
 import 'package:foap/screens/add_on/ui/reel/select_music.dart';
 import 'package:foap/helper/imports/common_import.dart';
@@ -127,6 +130,19 @@ class _CreateReelScreenState extends State<CreateReelScreen>
       debugPrint('Flash operation failed: ${error.code}');
     } catch (error) {
       debugPrint('Flash error: $error');
+    }
+  }
+
+  /// pick a video that is already on the phone (instead of recording one)
+  Future<void> _pickFromGallery() async {
+    if (_screenClosing || _recordingOperationInProgress) return;
+    if (_createReelController.isRecording.value) return;
+    try {
+      final XFile? file = await ImagePicker().pickVideo(source: ImageSource.gallery);
+      if (file == null || !mounted) return;
+      Get.to(() => PreviewReelsScreen(reel: File(file.path)));
+    } catch (e) {
+      debugPrint('Gallery pick failed: $e');
     }
   }
 
@@ -398,6 +414,34 @@ class _CreateReelScreenState extends State<CreateReelScreen>
                             ),
                           ),
                         ),
+                        const SizedBox(height: 25),
+                        Obx(
+                          () => GestureDetector(
+                            onTap: () {
+                              if (_createReelController.isRecording.value) {
+                                return;
+                              }
+                              _createReelController.updateRecordingLength(60);
+                              _initAnimation();
+                              setState(() {});
+                            },
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _createReelController
+                                            .recordingLength.value ==
+                                        60
+                                    ? AppColorConstants.themeColor
+                                    : AppColorConstants.backgroundColor,
+                              ),
+                              child: const Center(
+                                child: BodySmallText('60s'),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ).setPadding(
                       left: 8,
@@ -406,6 +450,19 @@ class _CreateReelScreenState extends State<CreateReelScreen>
                       bottom: 12,
                     ),
                   ).round(20),
+                ),
+                Positioned(
+                  bottom: 28,
+                  left: 40,
+                  child: GestureDetector(
+                    onTap: _pickFromGallery,
+                    child: Container(
+                      height: 46,
+                      width: 46,
+                      color: AppColorConstants.themeColor,
+                      child: const Icon(Icons.video_library_rounded, size: 26),
+                    ).circular,
+                  ),
                 ),
                 Positioned(
                   bottom: 20,
