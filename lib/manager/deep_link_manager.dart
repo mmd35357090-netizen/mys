@@ -99,7 +99,10 @@ class DeepLinkManager {
         // Get.to(() => EventDetail(postUniqueId: postUniqueId));
       }
     } else {
-      String? postUniqueId = uri.queryParameters['pid'] ?? _after(uri, 'p');
+      String? postUniqueId = uri.queryParameters['pid'] ??
+          _after(uri, 'p') ??
+          _after(uri, 'reel') ??
+          _after(uri, 'video');
 
       if (postUniqueId != null) {
         Get.to(() => SinglePostDetail(postUniqueId: postUniqueId));

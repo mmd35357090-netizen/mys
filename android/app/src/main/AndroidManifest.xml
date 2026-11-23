@@ -51,6 +51,8 @@
                 <!-- connecttofriends.com/<username>/p/<id>  and  /<username>/live/<id> -->
                 <data android:pathPattern="/.*/p/.*" />
                 <data android:pathPattern="/.*/live/.*" />
+                <data android:pathPattern="/.*/reel/.*" />
+                <data android:pathPattern="/.*/video/.*" />
             </intent-filter>
 
             <intent-filter>
