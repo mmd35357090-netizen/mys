@@ -17,6 +17,8 @@ class FriendsScreen extends StatefulWidget {
 }
 
 class _FriendsScreenState extends State<FriendsScreen> {
+  // lets us reload the requests list when accept / decline fails
+  final _requestsKey = GlobalKey<_UserListTabState>();
   // null until the count is known
   int? _requestCount;
   int? _sentCount;
@@ -70,6 +72,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
               child: TabBarView(
                 children: [
                   _UserListTab(
+                    key: _requestsKey,
                     onTotal: (n) => _setCount(requests: n),
                     onRemoved: () => _setCount(
                         requests: ((_requestCount ?? 1) - 1).clamp(0, 1 << 30).toInt()),
@@ -87,13 +90,31 @@ class _FriendsScreenState extends State<FriendsScreen> {
                         remove();
                         MiscApi.acceptFollowRequest(
                             userId: user.id,
+                            resultCallback: (ok) {
+                              if (!ok) {
+                                // the server refused: bring the request back
+                                AppUtil.showToast(
+                                    message: 'Could not accept the request',
+                                    isSuccess: false);
+                                _requestsKey.currentState?._refresh();
+                              }
+                            },
                             completionHandler: () {
                               Get.find<UserProfileManager>().refreshProfile();
                             });
                       },
                       declineCallback: () {
                         remove();
-                        MiscApi.declineFollowRequest(userId: user.id);
+                        MiscApi.declineFollowRequest(
+                            userId: user.id,
+                            resultCallback: (ok) {
+                              if (!ok) {
+                                AppUtil.showToast(
+                                    message: 'Could not delete the request',
+                                    isSuccess: false);
+                                _requestsKey.currentState?._refresh();
+                              }
+                            });
                       },
                     ),
                   ),

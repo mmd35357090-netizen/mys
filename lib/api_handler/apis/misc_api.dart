@@ -123,20 +123,25 @@ class MiscApi {
 
   static acceptFollowRequest(
       {required int userId,
-      required VoidCallback completionHandler}) async {
+      required VoidCallback completionHandler,
+      ValueChanged<bool>? resultCallback}) async {
     var url = NetworkConstantsUtil.acceptFollowRequestString;
 
     await ApiWrapper().postApi(
         url: url, param: {"user_id": userId.toString()}).then((result) {
+      resultCallback?.call(result?.success == true);
       completionHandler();
     });
   }
 
-  static declineFollowRequest({required int userId}) async {
+  static declineFollowRequest(
+      {required int userId, ValueChanged<bool>? resultCallback}) async {
     var url = NetworkConstantsUtil.declineFollowRequestString;
 
     await ApiWrapper().postApi(
-        url: url, param: {"user_id": userId.toString()}).then((result) {});
+        url: url, param: {"user_id": userId.toString()}).then((result) {
+      resultCallback?.call(result?.success == true);
+    });
   }
 
   static updateNotificationSettings(
@@ -168,14 +173,12 @@ class MiscApi {
       {required String name,
       required String email,
       required String phone,
-      String subject = 'other',
       required String message}) async {
     var url = NetworkConstantsUtil.submitRequest;
     dynamic param = {
       "name": name,
       "email": email,
       "phone": phone,
-      "subject": subject,
       "request_message": message
     };
     await ApiWrapper().postApi(url: url, param: param).then((result) {
