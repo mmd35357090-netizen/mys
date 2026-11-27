@@ -225,7 +225,8 @@ class _UserListTab extends StatefulWidget {
   final VoidCallback? onRemoved;
 
   const _UserListTab(
-      {required this.loader,
+      {super.key,
+      required this.loader,
       required this.tileBuilder,
       required this.emptyText,
       this.onTotal,
