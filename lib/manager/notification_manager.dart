@@ -19,6 +19,8 @@ import '../model/live_model.dart';
 import '../screens/calling/accept_call.dart';
 import '../screens/competitions/competition_detail_screen.dart';
 import '../screens/home_feed/comments_screen.dart';
+import '../screens/profile/follow_requests.dart';
+import '../screens/settings_menu/notifications.dart';
 import '../util/shared_prefs.dart';
 
 class NotificationManager {
@@ -199,19 +201,23 @@ class NotificationManager {
   /// Waits (max ~25 s) until the user is logged in and the first screen is shown,
   /// then opens the page the notification points to.
   Future<void> handleLaunchNotification(Map<String, dynamic> data) async {
-    for (int i = 0; i < 50; i++) {
+    // Wait (max ~60 s: biometric / slow network) until the Dashboard is really on top.
+    // The loading screen does Get.offAll(Dashboard), which would wipe a page opened earlier.
+    bool ready = false;
+    for (int i = 0; i < 120; i++) {
       await Future.delayed(const Duration(milliseconds: 500));
       try {
         if (Get.isRegistered<UserProfileManager>() &&
             Get.find<UserProfileManager>().user.value != null &&
-            Get.key.currentState != null) {
+            Get.key.currentState != null &&
+            Get.currentRoute.contains('DashboardScreen')) {
+          ready = true;
           break;
         }
       } catch (_) {}
-      if (i == 49) return;
     }
-    // let the loading screen finish moving to the home screen
-    await Future.delayed(const Duration(milliseconds: 2500));
+    if (!ready) return;
+    await Future.delayed(const Duration(milliseconds: 800));
     await handleNotificationTap(data, false);
   }
 
@@ -229,7 +235,9 @@ class NotificationManager {
     final AgoraLiveController agoraLiveController = Get.find();
 
     int notificationType =
-        int.parse(data['notification_type'] as String? ?? '0');
+        int.tryParse((data['notification_type'] ?? '0').toString()) ?? 0;
+    // chat push always carries a room id: open that chat even if the type is missing
+    if (notificationType == 0 && data['room'] != null) notificationType = 100;
     String accountId = (data['receiver_id'] ?? '').toString();
     SayHiAppAccount? account = await SharedPrefs().getAccount(accountId);
 
@@ -313,7 +321,34 @@ class NotificationManager {
                 }
               }
             });
+      } else {
+        // every other type: open its page, or the notification list as a safe default
+        final Widget? page = _pageForType(notificationType, data);
+        navigateFromNotification(
+            widget: page ?? const NotificationsScreen(), account: account);
       }
+    }
+  }
+
+  /// Page for the simple "reference_id" notification types. null = no special page.
+  Widget? _pageForType(int type, dynamic data) {
+    final int? ref = int.tryParse((data['reference_id'] ?? '').toString());
+    switch (type) {
+      case 5: // won competition
+        if (ref == null) return null;
+        return CompetitionDetailScreen(
+            competitionId: ref, refreshPreviousScreen: () {});
+      case 7: // mentioned in a post
+        if (ref == null) return null;
+        return SinglePostDetail(postId: ref);
+      case 14: // your profile was liked
+      case 16: // follow request accepted
+        if (ref == null) return null;
+        return OtherUserProfile(userId: ref);
+      case 15: // new follow request
+        return const FollowRequestList();
+      default:
+        return null;
     }
   }
 
@@ -328,7 +363,7 @@ class NotificationManager {
   _handleForegroundNotifications(dynamic data) async {
     if (!Get.isRegistered<AgoraLiveController>()) return;
     int notificationType =
-        int.parse(data['notification_type'] as String? ?? '0');
+        int.tryParse((data['notification_type'] ?? '0').toString()) ?? 0;
     String accountId = (data['receiver_id'] ?? '').toString();
     SayHiAppAccount? account = await SharedPrefs().getAccount(accountId);
     final AgoraLiveController agoraLiveController = Get.find();
@@ -403,6 +438,16 @@ class NotificationManager {
                   agoraLiveController.joinAsAudience(live: live);
                 });
           });
+    } else if (notificationType != 100) {
+      // all other types: simple banner; tap opens the page (or the notification list)
+      final String title = (data['title'] ?? '').toString();
+      final String message = (data['body'] ?? '').toString();
+      showNotificationBanner(
+          title: title,
+          message: message,
+          account: account,
+          navigateTo:
+              _pageForType(notificationType, data) ?? const NotificationsScreen());
     }
   }
 
@@ -458,7 +503,7 @@ class NotificationManager {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         BodyLargeText(
-                          newFollowerString.tr,
+                          title,
                           weight: TextWeight.bold,
                           // color: AppColorConstants.themeColor,
                         ),
